@@ -1,0 +1,14 @@
+###############################################################################
+#
+#  SocketManager
+#
+#  An event loop supporting file descriptors and timers.
+#
+###############################################################################
+
+This module implements an event loop. Other modules can register file
+descriptors and callback functions that will be invoked when the associated
+file descriptors are ready for input or output. Periodic timers are also
+supported.
+
+This module uses the select system call.

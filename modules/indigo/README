@@ -1,0 +1,23 @@
+See TBD for details on Indigo-2 interfaces.
+
+Each of the following components gets a header file.  These contain 
+the prototypes of functions provided by that module across all the 
+interfaces to which it connects.  In addition any defines related to
+that component are given there.
+
+The components include:
+
+* forwarding
+* of_state_manager
+* of_connection_manager
+* port_manager
+
+In addition files are defined for the functions required by Indigo
+components:
+
+* error.h Definitions of error codes
+* time.h Time related definitions
+* memory.h Definitions of memory manipulation operations
+* logging.h Definitions for logging primitives
+* types.h Basic type definitions
+
