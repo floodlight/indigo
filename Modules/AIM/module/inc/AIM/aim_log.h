@@ -243,9 +243,11 @@ typedef struct aim_log_s {
 /**
  * Reasonable default option settings.
  */
+#ifndef AIM_LOG_OPTIONS_DEFAULT
 #define AIM_LOG_OPTIONS_DEFAULT                  \
     ( AIM_LOG_OPTION_BIT_ENABLE +                \
       AIM_LOG_OPTION_BIT_TIMESTAMP )
+#endif
 
 
 

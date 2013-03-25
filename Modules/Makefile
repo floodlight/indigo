@@ -24,6 +24,11 @@
 # Targets for managing the BigCode Module repository
 #
 ###############################################################################
+
+ifndef BUILDER
+export BUILDER=../Builder/unix
+endif
+
 -include Manifest.mk
 
 include $(BUILDER)/moduledir.mk

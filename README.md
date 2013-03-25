@@ -6,7 +6,7 @@ Core OpenFlow agent and infrastructure modules
 Overview
 ========
 
-This repository is available at git@github.com:floodlight/indigo.git.
+This repository is available at https://github.com/floodlight/indigo.git.
 It provides
 
 * The Indigo-2 architecture header files
@@ -19,8 +19,12 @@ Getting Started
 System Requirements
 -------------------
 
-This code has been run on Ubuntu 12.10 server.  The following packages
-were installed using apt-get:
+This code has been tested on Ubuntu 12.10 server with the packages
+indicated below.  In general, the code should build on Linux based
+servers with gcc, make and Python.
+
+The following packages were installed on Ubuntu 12.10 using apt-get to
+allow the unit tests to compile and run.
 
 * git (version 1.7.10.4)
 * make (GNU make version 3.81)
@@ -30,10 +34,9 @@ were installed using apt-get:
 Building Unit Tests
 -------------------
 
-Change directory to targets/bigcode-utests and "make".   This will make
-in each module's unit test directory and run the unit test.  In general,
-you will see a lot of output and occassionally even error messages for
-tests that run 
+Run `make check`.  This will build and run each module's unit test.  In
+general, you will see a lot of output and occasionally even error messages
+for tests that exercise error handling.
 
 Tracking Issues
 ===============
@@ -81,7 +84,7 @@ Architectural Overview
 ======================
 
 The Indigo architecture uses Loci, the C output of LoxiGen (available at
-git@github.com:floodlight/loxigen.git).  That library provides a set
+https://github.com/floodlight/loxigen.git).  That library provides a set
 of interfaces for working with OpenFlow objects.  In general, Loci
 definitions are prefixed with `of_`.  The Loci files are included in the
 indigo distribution, though they can be updated using LoxiGen directly.
@@ -118,12 +121,12 @@ The platform specific modules (not included in this distribution) are:
 manipulation of the platform's forwarding engine as represented by
 OpenFlow protocol updates.
 * Port manager:  This module exposes interfaces the allow the
-interogation and manipulation of the platforms data plane entries.
-* Configuration:  This module is provides platform and implementation
+interrogation and manipulation of the platforms data plane entries.
+* Configuration:  This module provides platform and implementation
 specific access to the interfaces provided by the other modules that
 permit updating the running configuration of the application.
 
-In addition to the Indigo architecture implemenations, some modules
+In addition to the Indigo architecture implementations, some modules
 providing basic infrastructure are also provided in this
 distribution.  These include:
 

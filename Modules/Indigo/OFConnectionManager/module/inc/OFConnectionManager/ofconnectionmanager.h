@@ -39,6 +39,10 @@
 #include <indigo/of_state_manager.h>
 #include <SocketManager/socketmanager.h>
 
+/**
+ * Global (read-only) counter for connection related errors.
+ */
+
 extern uint32_t ind_cxn_internal_errors;
 
 /**
@@ -80,9 +84,30 @@ extern indigo_error_t ind_cxn_enable_get(int *enable);
  */
 extern indigo_error_t ind_cxn_finish(void);
 
+
+/**
+ * Track objects for outstanding op count
+ *
+ * @param cxn The connection requesting the op
+ * @param obj The object associated with the request
+ *
+ * This function is exposed to allow other agents to register duplicates
+ * of messages that are generated to process complex operations.
+ * It is mostly used for tracking objects as required for barrier processing.
+ */
+
 extern indigo_error_t
 ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj);
 
+/**
+ * Set the pvs (I/O mgmt structure) to the given value
+ *
+ * @param cxn_id The Connection ID to set.
+ * @param pvs Pointer to the I/O mgmt structure
+ *
+ * cxn_id may be -1 which will apply to all active connections.  Copies the
+ * pointer to the pvs object; not a deep copy.
+ */
 indigo_error_t ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs);
 
 #endif /* __OFCONNECTIONMANAGER_H__ */
