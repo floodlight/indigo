@@ -1,0 +1,163 @@
+       Copyright 2013, Big Switch Networks, Inc. 
+
+Licensed under the Eclipse Public License, Version 1.0 (the
+"License"); you may not use this file except in compliance
+with the License. You may obtain a copy of the License at
+
+       http://www.eclipse.org/legal/epl-v10.html
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+either express or implied. See the License for the specific
+language governing permissions and limitations under the
+License.
+
+
+#if 0
+
+/**
+ * This file is currently INFORMATIONAL ONLY
+ *
+ * It's content will mostly be moved to loci_base.h, though the
+ * explanations will probably be moved into documentation.
+ *
+ * @todo Add autogen code to do non-strict and strict match checks
+ * for of_match structures.
+ */
+
+#define OF_MAC_ADDR_BYTES 6
+typedef struct of_mac_addr_s {
+   uint8_t addr[OF_MAC_ADDR_BYTES];
+} of_mac_addr_t;
+
+#define OF_IPV6_BYTES 16
+typedef struct of_ipv6_s {
+   uint8_t addr[OF_IPV6_BYTES];
+} of_ipv6_t;
+
+extern const of_mac_addr_t of_mac_addr_all_ones;
+extern const of_mac_addr_t of_mac_addr_all_zeros;
+
+const of_mac_addr_t of_mac_addr_all_ones = {
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+};
+/* Just to be explicit; static duration vars are init'd to 0 */
+const of_mac_addr_t of_mac_addr_all_zeros = {
+   0, 0, 0, 0, 0, 0
+};
+
+extern const of_ipv6_t of_ipv6_all_ones;
+extern const of_ipv6_t of_ipv6_all_zeros;
+
+const of_ipv6_t of_ipv6_all_ones = {
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
+};
+/* Just to be explicit; static duration vars are init'd to 0 */
+const of_ipv6_t of_ipv6_all_zeros = {
+   0, 0, 0, 0, 0, 0, 0, 0,
+   0, 0, 0, 0, 0, 0, 0, 0
+};
+
+/**
+ * This describes the treatment of "stict" vs "non-strict" queries of
+ * the flow table.  Set the spec for the OpenFlow description.
+ *
+ * Flow Space is the set of all possible headers (where headers are just
+ * the fields we may qualify on).  Given a (value, mask) pair for a particular
+ * field, these define a subset of flow space.  We'll call this FS(value, mask).
+ * A match in OpenFlow is a set of these pairs, so extend the notion to
+ * FS(match) to be the intersection of FS(value, mask) for the (value, mask)
+ * pairs in the match.
+ *
+ * Given two match descriptions, match1 and match2, we will need to check
+ * the relationship of the sets FS(match1) and FS(match2); in particular
+ * whether one is a subset of the other.
+ *
+ * We can do this by comparing corresponding (mask, value) pairs.
+ *
+ * The first step is to look at the masks.  The more specific the mask,
+ * the smaller the set of matching flows.  So (mask1, val1) may be a
+ * subset of (mask2, val2) if mask1 is more specific: That is, if a bit
+ * is set in mask2, it must be set in mask1. (Mask1 may have additional
+ * bits set.)  Then, the restriction of the values to the less specific
+ * mask (mask2) must agree.
+ *
+ * (Incidentally, the reason this is kind of complicated is probably because,
+ * given a particular value, the map from mask to subset of Flow Space is
+ * an example of a contravariant functor.)
+ *
+ * According to the spec, a "strict" query is one where the masks and
+ * values are equal.  This is easy and is equivalent to saying that the
+ * sets FS(match1) and FS(match2) are equal.
+ *
+ * For a "non-strict" query, the requirement is that the entry from the
+ * flow table that is being examined is "more specific" than the query
+ * parameters.  If match_q is the query's match parameters and match_e
+ * is the flow table entry's match parameters, then the requirement is
+ * that FS(match_e) is a subset of FS(match_q).
+ */
+
+
+/**
+ * Simple macro for checking if values are equal relative to some mask
+ * @param val1 One value
+ * @param val2 The other value
+ * @param mask The mask to use for the comparison
+ *
+ * All of the parameters should be of the same type.
+ * A 1 bit in the mask means pay attention to the corresponding bit of a value
+ *
+ * This should work on all integer types
+ */
+
+#define MASKED_VALUES_EQUAL(val1, val2, mask) \
+    ((val1) & (mask) == (val2) & (mask))
+
+/**
+ * Does mask1 specify a possible subset of mask2?
+ * @param mask1 First mask
+ * @param mask2 Second mask
+ *
+ * See description above.
+ *
+ * This checks if mask1 is more specific than mask2.  So if there is a
+ * bit in mask2 that is not set in mask 1, the result is false.
+ */
+
+#define MASK1_POTENTIAL_SUBSET(mask1, mask2) \
+    ((~(mask1) & (mask2)) == (typeof (mask1)) 0)
+
+/**
+ * Does this mask, value pair satisfy a non-strict query?
+ * @param query_mask The mask from the query
+ * @param query_val The value from the query
+ * @param entry_mask The mask from the flow table entry
+ * @param entry_val The value from the flow table entry
+ *
+ * See the description above.  Check if the masks have a potential
+ * subset relation; if so, check that the values agree on the
+ * less restrictive (query) mask.
+ */
+
+#define NON_STRICT_MATCH(query_mask, query_val, entry_mask, entry_val) \
+    (MASK1_POTENTIAL_SUBSET(entry_mask, query_mask) &&                 \
+     MASKED_VALUES_EQUAL(query_val, entry_val, query_mask))
+
+/**
+ * Does an entry's (mask, value) pair satisfy a strict query?
+ * @param query_mask The mask from the query
+ * @param query_val The value from the query
+ * @param entry_mask The mask from the flow table entry
+ * @param entry_val The value from the flow table entry
+ *
+ * See the description above.  Check if the masks are equal and the
+ * values (restricted to the common mask) are equal.
+ */
+
+#define STRICT_MATCH(query_mask, query_val, entry_mask, entry_val)     \
+    (((entry_mask) == (query_mask)) &&                                 \
+     MASKED_VALUES_EQUAL(query_val, entry_val, query_mask))
+
+#endif
