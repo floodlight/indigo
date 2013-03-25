@@ -1,0 +1,22 @@
+###############################################################################
+#
+# AIM
+#
+# Architecture and Infrastructure Module
+#
+###############################################################################
+
+This module provides fundamental primitive structures for other 
+modules.  
+
+In general, each functional module tries to be both platform independent and 
+provide a clean, self-contained and flexible interface with as few assumptions 
+about deployment in a particular environment as possible. 
+
+The AIM module provides portability infrastructure, common good-practice 
+definitions, and fundamental primitives useful through the code to address 
+common issues such as debug and output virtualization and configuration, 
+logging. 
+
+The AIM module cannot depend on any other module or any external package. 
+

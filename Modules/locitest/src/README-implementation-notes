@@ -1,0 +1,8 @@
+Notes on testing
+
+When populating scalar values, the first is set to 1 and thereafter the
+value used is incremented.  When a bunch of scalars are set or checked
+by a function, the current value being used is returned.  It is assumed
+that this will never be 0 (no roll over) as "check" will return 0 
+when a failure occurs.
+

@@ -1,0 +1,26 @@
+###############################################################################
+#
+#  OFStateManager
+#
+#  Core platform-independent OpenFlow module
+#
+###############################################################################
+
+The OFStateManager module implements the logic of the OpenFlow protocol. It
+includes a flowtable optimized for the database-like queries of OpenFlow
+control messages.
+
+This module receives OpenFlow messages from the controller(s) via the
+OFConnectionManager module. Depending on the message it may make calls
+into the platform-specific Forwarding and PortManager modules. These calls
+are usually asynchronous, allowing for easier hardware implementation.
+
+Hardware (through the Forwarding and PortManager modules) can signal events
+to OFStateManager through interfaces like indigo_core_packet_in. This module
+will generate the appropriate OpenFlow messages and send them to the controller.
+
+Platforms that use multiple threads to handle hardware events should ensure
+mutual exclusion when making calls into OFStateManager. A common design is
+to use a thread-safe queue to serialize messages from other threads, and
+register an eventfd or pipe with SocketManager that is notified when a new
+item is enqueued.

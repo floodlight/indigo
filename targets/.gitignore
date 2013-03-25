@@ -1,0 +1,4 @@
+build/
+*.mk
+!bigcode-utests/make/*.mk
+dependmodules.x
