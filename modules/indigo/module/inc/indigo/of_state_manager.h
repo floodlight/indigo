@@ -20,10 +20,13 @@
 /**
  * @file
  * @brief OpenFlow state manager module function prototypes
+ * @addtogroup indigo-OFStateManager
  *
  * This defines the API for all functions provided by the OpenFlow
  * state manager.  This includes fi_ and configuration interface
  * functions.
+ *
+ * @{
  */
 
 #ifndef _INDIGO_OF_STATE_MANAGER_H_
@@ -330,4 +333,4 @@ extern void indigo_core_connection_count_notify(
 
 
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
-
+/** @} */

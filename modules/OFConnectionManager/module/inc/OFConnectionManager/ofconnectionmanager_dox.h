@@ -17,29 +17,11 @@
  *
  ****************************************************************/
 
-/**************************************************************************//**
- *
- * OFConnectionManager Doxygen Header
- *
- *****************************************************************************/
 #ifndef __OFCONNECTIONMANAGER_DOX_H__
 #define __OFCONNECTIONMANAGER_DOX_H__
 
 /**
- * @defgroup OFConnectionManager OFConnectionManager - OFConnectionManager Description
- *
-
-The documentation overview for this module should go here.
-
- *
- * @{
- *
- * @defgroup ofconnectionmanager-ofconnectionmanager Public Interface
- * @defgroup ofconnectionmanager-config Compile Time Configuration
- * @defgroup ofconnectionmanager-porting Porting Macros
- *
- * @}
- *
+ * @defgroup OFConnectionManager OFConnectionManager Implementation
  */
 
 #endif /* __OFCONNECTIONMANAGER_DOX_H__ */

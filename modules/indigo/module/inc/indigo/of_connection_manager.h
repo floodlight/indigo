@@ -20,9 +20,12 @@
 /**
  * @file
  * @brief OpenFlow connection manager module function prototypes
+ * @addtogroup indigo-OFConnectionManager
  *
  * This defines the API for all functions provided by the OpenFlow
  * connection manager.
+ *
+ * @{
  */
 
 #ifndef _INDIGO_OF_CONNECTION_MANAGER_H_
@@ -416,3 +419,4 @@ void indigo_cxn_list_destroy(indigo_cxn_info_t* list);
 
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
+/* @} */

@@ -20,10 +20,13 @@
 /**
  * @file
  * @brief Port manager module function prototypes
+ * @addtogroup indigo-PortManager
  *
  * This defines the API for all functions provided by the Port
  * manager.  This includes the packet output function as well
  * as configuration related functions.
+ *
+ * @{
  */
 
 #ifndef _INDIGO_PORT_MANAGER_H_
@@ -281,3 +284,4 @@ extern indigo_error_t indigo_port_packet_emit_group(
 #endif
 
 #endif /* _INDIGO_PORT_MANAGER_H_ */
+/* @} */
