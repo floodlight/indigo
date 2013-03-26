@@ -6,12 +6,23 @@ Core OpenFlow agent and infrastructure modules
 Overview
 ========
 
+Indigo is an open source project to support OpenFlow on a range of physical
+and now virtual switch platforms.  The original version of Indigo was
+based on the Stanford reference implementation of an OpenFlow virtual
+switch.  This release represents a complete rearchitecture with a 
+continued focus on native support for hardware switching platforms and
+better support for a variety of virtual switching environments.
+
 This repository is available at https://github.com/floodlight/indigo.git.
-It provides
+It provides:
 
 * The Indigo-2 architecture header files
 * The implementation of the core modules related to OpenFlow switch state
 * Unit tests for each module
+
+Note that this repository does not currently build a stand alone application
+other than the unit tests.  The code here provides implementations of the
+platform independent components of an OpenFlow switch.
 
 Getting Started
 ===============
@@ -44,6 +55,19 @@ Generating Documentation
 
 Run `make doc`. This requires Doxygen. The generated HTML output can be found
 at `doc/html/index.html`.
+
+Next Steps
+==========
+
+To build a full OpenFlow switch implementation, you will need to create or
+obtain the Forwarding and Port Manager, platform specific module
+implementations.  See the Indigo developer's email list at
+indigo-dev@openflowhub.org for further discussion.
+
+Contributions are invited.  Please fork the repository and submit pull
+requests.  Note that currently pull requests may be incorporated 
+indirectly.  As the volume of contributions increases, we expect to 
+migrate to a more typical shared repository model.
 
 Tracking Issues
 ===============
