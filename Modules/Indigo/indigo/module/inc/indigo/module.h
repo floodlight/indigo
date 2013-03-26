@@ -30,6 +30,7 @@
 /**
  * @file
  * @brief Documentation file for Indigo architecture modules
+ * @addtogroup indigo-module
  *
  * This file has no definitions in it and is intended to document
  * conventions for Indigo module implementations.
@@ -44,6 +45,8 @@
  *
  * Conventions:
  * @li Do not respond to calls until enable is set to true
+ *
+ * @{
  */
 
 /**
@@ -85,4 +88,4 @@ typedef indigo_error_t (*indigo_example_module_enable_get)(int *enable);
 typedef indigo_error_t (*indigo_example_module_finish)(void);
 
 #endif /* _INDIGO_MODULE_H_ */
-
+/* @} */

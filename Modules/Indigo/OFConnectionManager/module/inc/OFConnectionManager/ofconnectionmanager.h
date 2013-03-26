@@ -17,13 +17,16 @@
  *
  ****************************************************************/
 
-/******************************************************************************
+/**
+ * @file
  *
- *  /module/inc/ofconnectionmanager.h
+ * @addtogroup OFConnectionManager
+ * @{
  *
- *  OFConnectionManager Public Interface
- *
- *****************************************************************************/
+ * This file defines the implementation-specific interfaces exposed by
+ * OFConnectionManager. Most functions provided by this module are defined
+ * in the Indigo @ref indigo-OFConnectionManager headers.
+ */
 
 
 #ifndef __OFCONNECTIONMANAGER_H__
@@ -111,3 +114,4 @@ ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj);
 indigo_error_t ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs);
 
 #endif /* __OFCONNECTIONMANAGER_H__ */
+/** @} */

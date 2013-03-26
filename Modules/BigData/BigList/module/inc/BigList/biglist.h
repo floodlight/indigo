@@ -122,13 +122,17 @@ biglist_t* biglist_reverse(biglist_t* bl);
  * @param bl The list
  * @param iter The iteration function.
  * @param cookie Cookie passed to your iterator.
+ * @returns 0 if iter returned 0 for all elements, nonzero otherwise
+ *
+ * If iter returns a nonzero value for any element then iteration will
+ * stop and that value will be returned by biglist_foreach.
  */
 int biglist_foreach(biglist_t* bl, biglist_iter_f iter, void* cookie);
 
 /**
  * @brief Sort the list.
  * @param bl The list.
- * @param cmp The element comparitor function.
+ * @param cmp The element comparator function.
  * @returns The new list.
  */
 biglist_t* biglist_sort(biglist_t* bl, biglist_compare_f cmp);
@@ -137,10 +141,10 @@ biglist_t* biglist_sort(biglist_t* bl, biglist_compare_f cmp);
  * @brief Insert an element into a sorted list.
  * @param bl The list
  * @param data The data to insert.
- * @param cmp The element comparitor function.
+ * @param cmp The element comparator function.
+ * @returns The new list.
  */
 biglist_t* biglist_insert_sorted(biglist_t* bl, void* data, biglist_compare_f cmp);
-
 
 /**
  * @brief Remove the given pointer from the list.
@@ -222,7 +226,8 @@ void** biglist_to_data_array(biglist_t* bl, int* size);
  * @brief Convert an array of biglist elements to a list in the same order.
  * @param bl The array of elements.
  * @param size The count.
- * @note The list is NOT freed at the end.
+ * @note The returned list is composed of the elements pointed to by
+ * the given array instead of being newly allocated.
  */
 biglist_t* biglist_from_array(biglist_t** bl, int size);
 
@@ -230,7 +235,7 @@ biglist_t* biglist_from_array(biglist_t** bl, int size);
  * @brief Convert an array of data pointers to a list in the same order.
  * @param data The array of data elements.
  * @param size The number of elements.
- * @returns A list containing the give data.
+ * @returns A list containing the given data.
  */
 biglist_t* biglist_from_data_array(void** data, int size);
 
@@ -262,7 +267,7 @@ int biglist_free_all(biglist_t* bl, biglist_free_f free_function);
  * @returns The current list.
  *
  * @note If 'dump_element' is NULL, only the list structure will be dumped.
- * @note If 'dump_element' is specified, the list data will be handled to the
+ * @note If 'dump_element' is specified, the list data will be handed to the
  * given function during the dump for data-specific dumping.
  */
 biglist_t* biglist_dump(biglist_t* bl, void (*dump_element)(biglist_t* el));

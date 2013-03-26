@@ -1,7 +1,16 @@
 ###############################################################################
 #
-#  /README
+#  BigList
 #
-#  BigList README
+#  Doubly-linked list
 #
 ###############################################################################
+
+The BigList module implements a doubly linked list. Various operations such as
+appending, sorting, and finding elements are supported. The list elements are
+dynamically allocated by the BigList module and store an opaque pointer given
+by the user.
+
+Many functions in this module return a pointer to the head of the new list,
+however the returned list is constructed from elements of the passed in lists
+and is not newly allocated.

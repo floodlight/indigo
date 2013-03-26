@@ -280,6 +280,10 @@ int utest_BigList(void)
     if(ble == NULL || ble->data != IP(4)) {
         FAIL(bl, "find_custom failed ble=%p data=%p", (void*)ble, (ble) ? (void*)ble->data : NULL);
     }
+    ble = biglist_find_custom(bl, (biglist_compare_f)__find, IP(10));
+    if (ble != NULL) {
+        FAIL(bl, "expected biglist_find_custom to fail ble=%p", ble);
+    }
     BLFREE(bl, 10);
 
     /* biglist_remove_link */

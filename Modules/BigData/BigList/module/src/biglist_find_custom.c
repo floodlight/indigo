@@ -30,7 +30,7 @@ biglist_find_custom(biglist_t* bl, biglist_compare_f cmp, void* cookie)
 {
     if(bl && cmp) {
         biglist_t* ble;
-        for(ble = bl; cmp(ble->data, cookie) != 0; ble = ble->next);
+        for(ble = bl; ble && (cmp(ble->data, cookie) != 0); ble = ble->next);
         return ble;
     }
     return bl;

@@ -17,18 +17,20 @@
  *
  ****************************************************************/
 
-/******************************************************************************
+/**
+ * @file
  *
- *  /module/inc/ofstatemanager.h
+ * @addtogroup OFStateManager
+ * @{
  *
- *  OFStateManager Public Interface
- *
- *****************************************************************************/
+ * This file defines the implementation-specific interfaces exposed by
+ * OFStateManager. Most functions provided by this module are defined
+ * in the Indigo @ref indigo-OFStateManager headers.
+ */
 
 
 #ifndef __OFSTATEMANAGER_H__
 #define __OFSTATEMANAGER_H__
-
 
 #include "ofstatemanager_config.h"
 #include <indigo/types.h>
@@ -126,3 +128,4 @@ void ind_core_ft_show(aim_pvs_t* pvs);
 void ind_core_ft_stats(aim_pvs_t* pvs);
 
 #endif /* __OFSTATEMANAGER_H__ */
+/** @} */

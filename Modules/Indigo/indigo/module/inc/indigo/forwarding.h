@@ -20,6 +20,7 @@
 /**
  * @file
  * @brief Forwarding module function prototypes
+ * @addtogroup indigo-Forwarding
  *
  * This defines the API for all functions provided by the forwarding
  * module. This includes configuration as well as fi (forwarding interface)
@@ -27,6 +28,8 @@
  *
  * Unless otherwise noted, calls in this file are asynchronous.  This is
  * indicated by a void return type.
+ *
+ * @{
  */
 
 #ifndef _INDIGO_FORWARDING_H_
@@ -208,3 +211,4 @@ extern indigo_error_t indigo_fwd_packet_receive(
 #endif
 
 #endif /* _INDIGO_FORWARDING_H_ */
+/* @} */

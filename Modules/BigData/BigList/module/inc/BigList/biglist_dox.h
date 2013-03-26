@@ -29,7 +29,6 @@ Simple doubly-linked list implementation.
  * @defgroup biglist-biglist Linked List Interface
  * @defgroup biglist-locked  Locked Linked List Interface
  * @defgroup biglist-config Compile-Time Configuration
- * @defgroup biglist-porting Porting Macros
  *
  * @}
  *

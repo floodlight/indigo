@@ -21,7 +21,8 @@
 #define __SOCKETMANAGER_DOX_H__
 
 /**
- * \mainpage
+ * \defgroup SocketManager
+ * \brief An event loop implementation
  *
  * This module implements an event loop. Other modules can register file
  * descriptors and callback functions that will be invoked when the associated
@@ -29,7 +30,6 @@
  * supported.
  *
  * This module uses the select system call.
- *
  */
 
 #endif /* __SOCKETMANAGER_DOX_H__ */

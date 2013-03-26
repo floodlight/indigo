@@ -30,6 +30,7 @@ allow the unit tests to compile and run.
 * make (GNU make version 3.81)
 * gcc (version 4.7)
 * libcap2-bin (for setcap)
+* doxygen (version 1.7.6.1) (optional)
 
 Building Unit Tests
 -------------------
@@ -37,6 +38,12 @@ Building Unit Tests
 Run `make check`.  This will build and run each module's unit test.  In
 general, you will see a lot of output and occasionally even error messages
 for tests that exercise error handling.
+
+Generating Documentation
+------------------------
+
+Run `make doc`. This requires Doxygen. The generated HTML output can be found
+at `doc/html/index.html`.
 
 Tracking Issues
 ===============

@@ -17,29 +17,11 @@
  *
  ****************************************************************/
 
-/**************************************************************************//**
- *
- * OFStateManager Doxygen Header
- *
- *****************************************************************************/
 #ifndef __OFSTATEMANAGER_DOX_H__
 #define __OFSTATEMANAGER_DOX_H__
 
 /**
- * @defgroup OFStateManager OFStateManager - OFStateManager Description
- *
-
-The documentation overview for this module should go here.
-
- *
- * @{
- *
- * @defgroup ofstatemanager-ofstatemanager Public Interface
- * @defgroup ofstatemanager-config Compile Time Configuration
- * @defgroup ofstatemanager-porting Porting Macros
- *
- * @}
- *
+ * @defgroup OFStateManager OFStateManager Implementation
  */
 
 #endif /* __OFSTATEMANAGER_DOX_H__ */

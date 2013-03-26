@@ -48,6 +48,7 @@ The AIM module cannot depend on any other module or any external package.
  * @{
  *  @defgroup aim-pvs-file File PVS
  *  @defgroup aim-pvs-buffer Buffered String PVS
+ *  @defgroup aim-pvs-syslog Syslog PVS
  * @}
  * @defgroup aim-datatypes Custom Datatype Handling
  * @defgroup aim-valist Variable Argument Processing

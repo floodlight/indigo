@@ -28,7 +28,7 @@
 biglist_t*
 biglist_insert_sorted(biglist_t* bl, void* data, biglist_compare_f cmp)
 {
-    /* Prepend then sort. Garbage. To be rewritten. */
+    /** @todo Use a linear time algorithm */
     bl = biglist_prepend(bl, data);
     return biglist_sort(bl, cmp);
 }
