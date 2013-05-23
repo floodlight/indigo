@@ -95,6 +95,9 @@ aim_error_types: &aim_error_types
 - not_found:
     value: -2
     desc: "The requested object was not found."
+- internal:
+    value: -3
+    desc: "An unexpected internal error occurred."
 
 
 aim_log_types: &aim_log_types

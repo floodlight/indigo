@@ -87,7 +87,7 @@ int aim_ratelimiter_limit(aim_ratelimiter_t* rl, uint64_t current_time);
 
 /**
  * @brief Returns the next time an event will be allowed.
- * @param rl Poniter to the AIM ratelimiter structure.
+ * @param rl Pointer to the AIM ratelimiter structure.
  * @returns The next allowable event time using this limiter.
  */
 uint64_t aim_ratelimiter_next_allowed_time(aim_ratelimiter_t* rl);

@@ -261,6 +261,14 @@ typedef void (*biglist_free_f)(void* data);
 int biglist_free_all(biglist_t* bl, biglist_free_f free_function);
 
 /**
+ * @brief Create a copy of an existing list.
+ * @param src The src list
+ * @returns A new list containing the same client data as the source list.
+ * @note The client data pointers are shared between the two lists.
+ */
+biglist_t* biglist_copy(biglist_t* src);
+
+/**
  * @brief Dump the contents of a list.
  * @param bl The list
  * @param dump_element The data element dumper function.

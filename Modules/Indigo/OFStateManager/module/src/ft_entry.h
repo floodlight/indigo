@@ -145,6 +145,7 @@ typedef struct ft_entry_s {
     } effects;
 
     /* Updated by implementation */
+    uint8_t table_id;
     biglist_t *output_ports;
     indigo_time_t insert_time;
     uint64_t packets;
@@ -223,6 +224,8 @@ typedef enum of_match_mode_e {
  * General meta match criteria
  *
  */
+#define TABLE_ID_ANY (0xff)
+
 typedef struct of_meta_match_s {
     of_match_t match;       /* The match object for the query */
     of_match_mode_t mode;   /* See above */
@@ -232,6 +235,7 @@ typedef struct of_meta_match_s {
     int check_priority;     /* Boolean; should priority be checked */
     int check_overlap;      /* Boolean, for adds */
     of_port_no_t out_port;  /* OFPP_ANY means do not match */
+    uint8_t table_id;       /* Set to TABLE_ID_ANY to wildcard */
 } of_meta_match_t;
 
 /**

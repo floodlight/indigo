@@ -81,17 +81,17 @@ typedef struct connection_s {
 
     /* Write queue */
     biglist_t *output_list; /* List of outgoing messages */
+    int output_head_offset; /* Bytes already sent out from head of output_list */
     int bytes_enqueued;     /* Total bytes queued */
     int pkts_enqueued;      /* Total pkts queued */
-    uint8_t *cur_out_buf;   /* Current message being sent */
-    int cur_out_buf_bytes;  /* Number of bytes in current message */
-    int cur_out_buf_offset; /* Bytes already sent out from current message */
 
     /* Additional debug info */
     uint64_t messages_in_by_type[OF_MESSAGE_OBJECT_COUNT];
     uint64_t messages_out_by_type[OF_MESSAGE_OBJECT_COUNT];
     uint64_t messages_in_unknown;
     uint64_t messages_out_unknown;
+
+    uint64_t packet_ins;
 
     biglist_t *outstanding_ops; /* Used only if OF_OBJECT_TRACKING is on */
     int outstanding_op_cnt; /* Number of outstanding operations */
@@ -117,7 +117,17 @@ typedef struct connection_s {
  * Should a packet in be dropped based on connection state?
  * @TODO This may need tuning
  */
-#define CXN_DROP_PACKET_IN(cxn) ((cxn)->pkts_enqueued > 2)
+#define PACKET_IN_DROP_QUEUE_MAX 64
+#define CXN_DROP_PACKET_IN(cxn, obj)                    \
+    ((cxn)->pkts_enqueued > PACKET_IN_DROP_QUEUE_MAX)
+
+/**
+ * Should a flow removed message be dropped based on connection state?
+ * @TODO This may need tuning
+ */
+#define FLOW_REMOVED_DROP_QUEUE_MAX 64
+#define CXN_DROP_FLOW_REMOVED(cxn, obj)                \
+    ((cxn)->pkts_enqueued > FLOW_REMOVED_DROP_QUEUE_MAX)
 
 /**
  * How many bytes in buffer are free
@@ -179,6 +189,8 @@ extern int ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len);
 extern int ind_cxn_send_hello(connection_t *cxn);
 
 extern int ind_cxn_try_to_connect(connection_t *cxn);
+
+extern void ind_cxn_connection_retry_timer(void *cookie);
 
 extern indigo_error_t ind_cxn_send_echo_request(connection_t *cxn);
 

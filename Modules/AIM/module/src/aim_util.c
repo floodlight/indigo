@@ -55,3 +55,11 @@ aim_memndup(void* src, int src_size, int alloc_size)
     AIM_MEMCPY(rv, src, src_size);
     return rv;
 }
+
+void
+aim_free(void* data)
+{
+    if(data) {
+        AIM_FREE(data);
+    }
+}

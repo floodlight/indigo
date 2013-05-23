@@ -29,9 +29,10 @@
 #include <SocketManager/socketmanager_config.h>
 #include <SocketManager/socketmanager.h>
 #include "socketmanager_int.h"
+#include "socketmanager_log.h"
 #include <stdlib.h>
-
-
+#include <cjson/cJSON.h>
+#include <Configuration/configuration.h>
 
 /* <auto.start.cdefs(SOCKETMANAGER_CONFIG_HEADER).source> */
 #define __socketmanager_config_STRINGIFY_NAME(_x) #_x
@@ -102,5 +103,43 @@ socketmanager_config_show(struct aim_pvs_s* pvs)
 
 /* <auto.end.cdefs(SOCKETMANAGER_CONFIG_HEADER).source> */
 
+static struct {
+    uint32_t log_flags;
+} staged_config;
 
+static indigo_error_t
+ind_soc_cfg_stage(cJSON *config)
+{
+    indigo_error_t err;
 
+    err = ind_cfg_parse_loglevel(config, "logging.connection",
+                                 SOCKETMANAGER_CONFIG_LOG_BITS_DEFAULT,
+                                 &staged_config.log_flags);
+    if (err != INDIGO_ERROR_NONE) {
+        return err;
+    }
+
+    /* Always remove tracing when logging set via this interface */
+    staged_config.log_flags &= ~AIM_LOG_BIT_TRACE;
+
+    /* Not supporting setting log options yet */
+
+    return INDIGO_ERROR_NONE;
+}
+
+static void
+ind_soc_cfg_commit(void)
+{
+    aim_log_t *lobj;
+
+    if ((lobj = aim_log_find("socketmanager")) == NULL) {
+        AIM_LOG_WARN("Could not find log module");
+    } else {
+        lobj->common_flags = staged_config.log_flags;
+    }
+}
+
+const struct ind_cfg_ops ind_soc_cfg_ops = {
+    .stage = ind_soc_cfg_stage,
+    .commit = ind_soc_cfg_commit,
+};

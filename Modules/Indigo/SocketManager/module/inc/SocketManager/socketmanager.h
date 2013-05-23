@@ -171,7 +171,7 @@ typedef void  (*ind_soc_timer_callback_f)(void *cookie);
  * NOTE: Timers registered with this timeout will only be invoked once.
  */
 
-#define IND_SOC_TIMER_IMMEDIATE 1
+#define IND_SOC_TIMER_IMMEDIATE 0
 
 /**
  * Register a timer event

@@ -67,32 +67,6 @@
 
 /****************************************************************
  *
- * Multiple controller connection algorithms
- *
- ****************************************************************/
-
-/**
- * Multiple controller connection algorithm
- *
- * These represent the different behaviors for connecting to
- * multiple controllers.
- *
- * @li INDIGO_CXN_ALGO_SINGLE Only support a single connection
- * @li INDIGO_CXN_ALGO_SERIAL Attempt connections to the controllers in the
- * order of priority (highest first).
- * @li INDIGO_CXN_ALGO_OVS OVS style multiple controller connection semantics
- * @li INDIGO_CXN_ALGO_OF_1_2 OpenFlow 1.2 multiple connection semantics
- */
-
-typedef enum indigo_cxn_algo_e {
-    INDIGO_CXN_ALGO_SINGLE              = 0,
-    INDIGO_CXN_ALGO_SERIAL              = 1,
-    INDIGO_CXN_ALGO_OVS                 = 2,
-    INDIGO_CXN_ALGO_OF_1_2              = 3
-} indigo_cxn_algo_t;
-
-/****************************************************************
- *
  * Controller connection definitions
  *
  ****************************************************************/
@@ -252,6 +226,7 @@ typedef struct indigo_cxn_status_s {
     uint64_t messages_in;
     uint64_t messages_out;
     uint64_t packet_in_drop;
+    uint64_t flow_removed_drop;
 } indigo_cxn_status_t;
 
 /****************************************************************
@@ -327,22 +302,6 @@ extern indigo_error_t indigo_cxn_status_change_register(
 extern indigo_error_t indigo_cxn_status_change_unregister(
     indigo_cxn_status_change_f handler, void *cookie);
 
-/**
- * Set the controller multi-connection algorithm
- * @param algorithm Algorithm to use for handling multiple connections
- * @param returns indigo_error_t
- */
-
-extern indigo_error_t indigo_cxn_algo_set(indigo_cxn_algo_t algorithm);
-
-/**
- * Get the controller multi-connection algorithm
- * @param algorithm Pointer to where to store the algorithm
- * @param returns indigo_error_t
- */
-
-extern indigo_error_t indigo_cxn_algo_get(indigo_cxn_algo_t *algorithm);
-
 extern void indigo_cxn_outstanding_op_incr(indigo_cxn_id_t cxn_id, int incr);
 
 /****************************************************************
@@ -416,7 +375,6 @@ extern indigo_error_t indigo_cxn_list(indigo_cxn_info_t** list);
  * @param list The list.
  */
 void indigo_cxn_list_destroy(indigo_cxn_info_t* list);
-
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */

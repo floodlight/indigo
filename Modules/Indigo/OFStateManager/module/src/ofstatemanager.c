@@ -28,12 +28,14 @@
 
 #include <OFStateManager/ofstatemanager_config.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
+#include <Configuration/configuration.h>
 #include <indigo/forwarding.h>
 #include <indigo/indigo.h>
 #include <indigo/of_state_manager.h>
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
 #include "ofstatemanager_int.h"
+#include "ofstatemanager_log.h"
 #include "ofstatemanager_decs.h"
 #include "handlers.h"
 #include "ft.h"
@@ -90,7 +92,11 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
 {
     int rv;
 
-    ENABLED_CHECK;
+    if (!ind_core_module_enabled) {
+        LOG_TRACE("Packet in called when not enabled");
+        of_object_delete(packet_in);
+        return INDIGO_ERROR_INIT;
+    }
 
     LOG_TRACE("Packet in rcvd");
 
@@ -300,8 +306,16 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
-    case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
-        rv = ind_core_nicira_controller_role_request_handler(obj, cxn);
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        rv = ind_core_experimenter_handler(obj, cxn);
+        break;
+
+    case OF_BSN_SET_L2_TABLE:
+        rv = ind_core_experimenter_handler(obj, cxn);
+        break;
+
+    case OF_BSN_GET_L2_TABLE_REQUEST:
+        rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
     /****************************************************************
@@ -324,10 +338,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 
     case OF_GROUP_FEATURES_STATS_REQUEST:
         rv = ind_core_group_features_stats_request_handler(obj, cxn);
-        break;
-
-    case OF_ROLE_REQUEST:
-        rv = ind_core_role_request_handler(obj, cxn);
         break;
 #endif
 
@@ -375,8 +385,13 @@ static of_dpid_t ind_core_dpid = OFSTATEMANAGER_CONFIG_DPID_DEFAULT;
 indigo_error_t
 indigo_core_dpid_set(of_dpid_t dpid)
 {
-    LOG_TRACE("Setting switch DPID\n");
-    INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
+    if (ind_core_dpid != dpid) {
+        LOG_INFO("Changing switch DPID\n");
+        INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
+        ind_cxn_reset(IND_CXN_RESET_ALL);
+    } else {
+        LOG_VERBOSE("Switch DPID set called but unchanged\n");
+    }
 
     return INDIGO_ERROR_NONE;
 }
@@ -408,6 +423,8 @@ ind_core_init(ind_core_config_t *config)
         return INDIGO_ERROR_NONE;
     }
 
+    ind_cfg_register(&ind_core_cfg_ops);
+
     /* Give some values to desc stats members */
     INIT_STR(ind_core_of_config.desc_stats.sw_desc,
              IND_CORE_SW_DESC_DEFAULT);
@@ -421,11 +438,14 @@ ind_core_init(ind_core_config_t *config)
              IND_CORE_SERIAL_NUM_DEFAULT);
 
     /* Create flow table */
-    /* @fixme Make these module parameters */
-    ft_config.max_entries = IND_CORE_FT_MAX_ENTRIES;
-    ft_config.prio_bucket_count = IND_CORE_FT_MAX_ENTRIES;
-    ft_config.match_bucket_count = IND_CORE_FT_MAX_ENTRIES;
-    ft_config.flow_id_bucket_count = IND_CORE_FT_MAX_ENTRIES;
+    if (config->max_flowtable_entries == 0) {
+        /* Default value */
+        config->max_flowtable_entries = 16384;
+    }
+    ft_config.max_entries = config->max_flowtable_entries;
+    ft_config.prio_bucket_count = config->max_flowtable_entries;
+    ft_config.match_bucket_count = config->max_flowtable_entries;
+    ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
     ft_config.entry_deleted_cb = NULL;
     ft_config.deleted_cookie = NULL;

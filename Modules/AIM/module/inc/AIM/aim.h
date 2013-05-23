@@ -42,6 +42,7 @@
 #include <AIM/aim_valgrind.h>
 #include <AIM/aim_datatypes.h>
 #include <AIM/aim_printf.h>
+#include <AIM/aim_sparse.h>
 #include <AIM/aim_error.h>
 #include <AIM/aim_bitmap.h>
 #include <AIM/aim_daemon.h>

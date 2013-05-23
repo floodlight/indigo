@@ -32,6 +32,10 @@ aim_map_si_s(int* rv, const char* s, aim_map_si_t* maps, unsigned int count)
     unsigned int idx;
     aim_map_si_t* p;
 
+    if(s == NULL) {
+        return 0;
+    }
+
     for(p = maps, idx = 0; (count && (idx < count)) || p->s; idx++, p++) {
         if(!AIM_STRCMP(p->s, s)) {
             if(rv) {

@@ -59,7 +59,7 @@ _COUNT_BITS(unsigned int val)
 }
 
 /* Indexed by version number */
-uint64_t of_match_incompat[4] = {
+const uint64_t of_match_incompat[4] = {
     -1,
     OF_MATCH_V1_INCOMPAT,
     OF_MATCH_V2_INCOMPAT,

@@ -35,6 +35,7 @@ typedef enum aim_error_e {
     AIM_ERROR_NONE,
     AIM_ERROR_PARAM = -1,
     AIM_ERROR_NOT_FOUND = -2,
+    AIM_ERROR_INTERNAL = -3,
 } aim_error_t;
 
 /** Enum names. */

@@ -122,7 +122,6 @@ aim_datatype_register_struct(aim_datatype_t* dt)
 
     ndt = aim_zmalloc(sizeof(*ndt));
     ndt->dt = *dt;
-
     list_push(&aim_datatype_list__, &ndt->links);
     return 0;
 }
@@ -401,6 +400,51 @@ aim_datatype_fs__map__(aim_datatype_context_t* dtc, const char* arg,
 
 /**************************************************************************//**
  *
+ * Choice Argument Parser
+ *
+ * Validate a given argument against a set of possible values.
+ * Returns the index of the matching value.
+ *
+ * varargs: (int* rv, char* description, int count, char* choice1, ...)
+ *
+ *****************************************************************************/
+static int
+aim_datatype_fs__choice__(aim_datatype_context_t* dtc, const char* arg,
+                          aim_va_list_t* vargs)
+{
+    int* rv = va_arg(vargs->val, int*);
+    const char* desc = va_arg(vargs->val, const char*);
+    int count = va_arg(vargs->val, int);
+    int i;
+    char** choices = aim_zmalloc(sizeof(char*)*count);
+
+    *rv = -1;
+    for(i = 0; i < count; i++) {
+        /* Note -- we must pull all the arguments regardless of
+         * which one matched. */
+        choices[i] = va_arg(vargs->val, char*);
+        if(*rv == -1 && AIM_STRCMP(choices[i], arg) == 0) {
+            *rv = i;
+        }
+    }
+    if(*rv == -1) {
+        aim_pvs_printf(dtc->epvs, "%s is not a valid %s. Choices are: ", arg, desc);
+        for(i = 0; i < count; i++) {
+            aim_pvs_printf(dtc->epvs, "%s%s ", choices[i], i != (count-1) ? "," : "");
+        }
+        aim_pvs_printf(dtc->epvs, "\n");
+        aim_free(choices);
+        return AIM_STATUS_E_ARG;
+    }
+    else {
+        aim_free(choices);
+        return AIM_STATUS_OK;
+    }
+}
+
+
+/**************************************************************************//**
+ *
  * Boolean Argument Parser
  *
  * Expects "1,0,true,True,False,false"
@@ -451,7 +495,6 @@ aim_datatype_ts__bool__(aim_datatype_context_t* dtc, aim_va_list_t* vargs,
  *
  *
  *****************************************************************************/
-
 static int
 aim_datatype_fs__ipv4a__(aim_datatype_context_t* dtc, const char* arg,
                           aim_va_list_t* vargs)
@@ -593,6 +636,67 @@ aim_datatype_ts__aim_bitmap__(aim_datatype_context_t* dtc, aim_va_list_t* vargs,
     return AIM_STATUS_OK;
 }
 
+static int
+aim_datatype_fs__mac__(aim_datatype_context_t* dtc, const char* arg,
+                       aim_va_list_t* vargs)
+{
+    uint8_t* dst = va_arg(vargs->val, uint8_t*);
+    unsigned int data[8];
+    if(AIM_SSCANF(arg, "%x:%x:%x:%x:%x:%x",
+                  data, data+1, data+2, data+3, data+4, data+5) == 6) {
+        int i;
+        for(i = 0; i < 6; i++) {
+            if(data[i] > 255) {
+                return AIM_DATATYPE_ERROR;
+            }
+            dst[i] = data[i];
+        }
+        return AIM_DATATYPE_OK;
+    }
+    else {
+        return AIM_DATATYPE_ERROR;
+    }
+    AIM_REFERENCE(dtc);
+}
+
+static int
+aim_datatype_ts__mac__(aim_datatype_context_t* dtc, aim_va_list_t* vargs,
+                       const char** rv)
+{
+    uint8_t* mac = va_arg(vargs->val, uint8_t*);
+    *rv = aim_zmalloc(18);
+    AIM_SNPRINTF((char*)*rv, 18, "%.2x:%.2x:%.2x:%.2x:%.2x:%.2x",
+                 mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    AIM_REFERENCE(dtc);
+    return AIM_STATUS_OK;
+}
+
+static int
+aim_datatype_fs__vlan__(aim_datatype_context_t* dtc, const char* arg,
+                       aim_va_list_t* vargs)
+{
+    int* rv = va_arg(vargs->val, int*);
+    if(aim_datatype_fs_int(arg, rv) != 0) {
+        return AIM_STATUS_E_ARG;
+    }
+    if(*rv < 0 || *rv > 0xFFF) {
+        return AIM_STATUS_E_ARG;
+    }
+    AIM_REFERENCE(dtc);
+    return AIM_DATATYPE_OK;
+}
+
+
+static int
+aim_datatype_ts__vlan__(aim_datatype_context_t* dtc, aim_va_list_t* vargs,
+                       const char** rv)
+{
+    int vid = va_arg(vargs->val, int);
+    *rv = aim_zmalloc(6);
+    AIM_SNPRINTF((char*)rv, 6, "%d", vid);
+    AIM_REFERENCE(dtc);
+    return AIM_STATUS_OK;
+}
 
 int
 aim_datatypes_init()
@@ -605,6 +709,8 @@ aim_datatypes_init()
                            NULL, NULL);
     aim_datatype_register('m', "map", NULL, aim_datatype_fs__map__,
                            NULL, NULL);
+    aim_datatype_register('c', "choice", NULL, aim_datatype_fs__choice__,
+                          NULL, NULL);
     aim_datatype_register('b', "bool", "boolean",
                           aim_datatype_fs__bool__, aim_datatype_ts__bool__,
                           NULL);
@@ -633,6 +739,15 @@ aim_datatypes_init()
                           NULL,
                           aim_datatype_ts__aim_bitmap__,
                           NULL);
+    aim_datatype_register(0, "mac", "MAC address",
+                          aim_datatype_fs__mac__,
+                          aim_datatype_ts__mac__,
+                          NULL);
+    aim_datatype_register(0, "vlan", "VLAN Id",
+                          aim_datatype_fs__vlan__,
+                          aim_datatype_ts__vlan__,
+                          NULL);
+
    return 0;
 }
 
