@@ -28,33 +28,27 @@
 
 #include <SocketManager/socketmanager_config.h>
 
-/*
- * Very simple test code for socket manager
- *
- * To complete the test, you need to start a TCP server on port 12345 of
- * localhost which will send some data and can accept data.  OFTest
- * works nicely...:)
- */
-
 #include <SocketManager/socketmanager.h>
 #include <stdio.h>
 #include <indigo/assert.h>
+#include <indigo/time.h>
 #include <unistd.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
 #include "socketmanager_log.h"
 
-/* Indigo globals */
+static int sigalrm_write_fd = -1;
 
-static int socket_called = 0;
-static int timer_called = 0;
-static int sock_write_seen = 0;
-static int sock_read_seen = 0;
-
+struct sock_counters {
+    int read;
+    int write;
+};
 
 static void
 socket_callback(
@@ -64,87 +58,358 @@ socket_callback(
     int write_ready,
     int error_seen)
 {
-    char buf[2048];
-    int bytes_read;
-
+    struct sock_counters *counters = cookie;
     printf("Socket callback called: id %d. rd %d. wr %d. er %d\n",
            socket_id, read_ready, write_ready, error_seen);
-    socket_called = 1;
+    INDIGO_ASSERT(!error_seen);
+
     if (write_ready) {
-        sock_write_seen = 1;
-        send(socket_id, "x", 1, MSG_DONTWAIT);
+        counters->write++;
+        if (write(socket_id, "x", 1) != 1) {
+            perror("write");
+            abort();
+        }
         ind_soc_data_out_clear(socket_id);
     }
+
     if (read_ready) {
-        printf("Reading from socket %d\n", socket_id);
-        bytes_read = read(socket_id, buf, 2048);
-        printf("Read in %d bytes\n", bytes_read);
-        sock_read_seen = 1;
-        ind_soc_data_out_ready(socket_id);
+        char buf;
+        counters->read++;
+        if (read(socket_id, &buf, 1) != 1) {
+            perror("read");
+            abort();
+        }
+        INDIGO_ASSERT(buf == 'x');
     }
-    INDIGO_ASSERT(!error_seen);
-}
-
-
-static void
-timer_callback(void *cookie)
-{
-    printf("Timer callback called: cookie %p\n", cookie);
-    timer_called = 1;
-
-    ind_soc_timer_event_unregister(timer_callback, NULL);
 }
 
 static void
-timer_callback_repeat(void *cookie)
+sigalrm(int signum)
 {
-    printf("%d: Timer repeat callback called: cookie %p.\n",
-           timer_called, cookie);
-    timer_called += 1;
+    if (write(sigalrm_write_fd, "x", 1) != 1) {
+        perror("write");
+        abort();
+    }
 }
 
-int
-main(int argc, char* argv[])
+static void
+test_socket(void)
 {
-    ind_soc_config_t config = {0};
     int fds[2];
+    struct sock_counters counters[2];
+    indigo_time_t start_time, end_time;
+    struct itimerval itv;
 
-    printf("Init returned %d\n", ind_soc_init(&config));
-
-    /* Should be called once */
-    ind_soc_timer_event_register(timer_callback, NULL,
-                                 IND_SOC_TIMER_IMMEDIATE);
-    ind_soc_select_and_run(10);
-    INDIGO_ASSERT(timer_called);
-    timer_called = 0;
-    ind_soc_select_and_run(1000);
-    INDIGO_ASSERT(!timer_called);
-
-    ind_soc_timer_event_register(timer_callback, NULL, 100);
-    ind_soc_select_and_run(1000);
-    INDIGO_ASSERT(timer_called);
-
-    timer_called = 0;
-    ind_soc_timer_event_register(timer_callback_repeat, NULL, 100);
-    ind_soc_select_and_run(1000);
-    INDIGO_ASSERT(timer_called >= 9);
-    ind_soc_timer_event_unregister(timer_callback_repeat, NULL);
+    signal(SIGALRM, sigalrm);
 
     if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) < 0) {
         perror("socketpair");
         abort();
     }
 
-    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, NULL) == 0);
-    INDIGO_ASSERT(ind_soc_socket_register(fds[1], socket_callback, NULL) == 0);
+    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, &counters[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_register(fds[1], socket_callback, &counters[1]) == 0);
+
+    /* No events ready */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Write one byte to fds[0] */
+    ind_soc_data_out_ready(fds[0]);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 1);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Read one byte from fds[1] */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 1);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Write one byte to each of fds[0] and fds[1] */
     ind_soc_data_out_ready(fds[0]);
     ind_soc_data_out_ready(fds[1]);
-    /* Do stuff for 3 seconds */
-    ind_soc_select_and_run(3000);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 1);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 1);
 
-    INDIGO_ASSERT(socket_called > 0);
-    INDIGO_ASSERT(sock_read_seen > 0);
-    INDIGO_ASSERT(sock_write_seen > 0);
+    /* Read one byte from each of fds[0] and fds[1] */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 1);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 1);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Write one byte to fds[0] */
+    ind_soc_data_out_ready(fds[0]);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 1);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Pause data in from fds[1], expect no reads */
+    ind_soc_data_in_pause(fds[1]);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Resume data in from fds[1] */
+    ind_soc_data_in_resume(fds[1]);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 1);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Block for some time with no events */
+    memset(counters, 0, sizeof(counters));
+    start_time = INDIGO_CURRENT_TIME;
+    ind_soc_select_and_run(100);
+    end_time = INDIGO_CURRENT_TIME;
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+    INDIGO_ASSERT((end_time - start_time) >= 100 &&
+                  (end_time - start_time) < 200);
+
+    /* Block for some time until SIGALRM, which causes read ready on fd[1] */
+    memset(counters, 0, sizeof(counters));
+    memset(&itv, 0, sizeof(itv));
+    sigalrm_write_fd = fds[0];
+    itv.it_value.tv_usec = 100*1000;
+    setitimer(ITIMER_REAL, &itv, NULL);
+    ind_soc_select_and_run(200);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 1);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[1]) == 0);
+
+    close(fds[0]);
+    close(fds[1]);
+}
+
+/* Test add/remove of sockets */
+static void
+test_socket_mgmt(void)
+{
+    int fds[2];
+    struct sock_counters counters[2];
+
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) < 0) {
+        perror("socketpair");
+        abort();
+    }
+
+    /* Unregistering a not-registered socket should fail */
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) < 0);
+
+    /* Adding and then unregistering a socket should succeed */
+    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, &counters[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) == 0);
+
+    /* Trying to unregister twice should fail */
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) < 0);
+
+    /* Trying to register twice should fail */
+    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, &counters[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, &counters[0]) < 0);
+
+    /* Add another socket, then remove the first */
+    INDIGO_ASSERT(ind_soc_socket_register(fds[1], socket_callback, &counters[1]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) == 0);
+
+    /* Write one byte to fds[1] */
+    ind_soc_data_out_ready(fds[1]);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 1);
+
+    /* Expect no events from the not-registered fds[0] */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    /* Register fds[0] and expect a read event */
+    INDIGO_ASSERT(ind_soc_socket_register(fds[0], socket_callback, &counters[0]) == 0);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 1);
+    INDIGO_ASSERT(counters[0].write == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[1].write == 0);
+
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(fds[1]) == 0);
+
+    close(fds[0]);
+    close(fds[1]);
+}
+
+
+static void
+timer_callback(void *cookie)
+{
+    int *count_ptr = cookie;
+    (*count_ptr)++;
+    printf("Timer callback called count=%d\n", *count_ptr);
+}
+
+static void
+timer_callback_reregister(void *cookie)
+{
+    int *count_ptr = cookie;
+    (*count_ptr)++;
+    printf("Timer reregister callback called count=%d\n", *count_ptr);
+    ind_soc_timer_event_register(timer_callback_reregister, cookie, 10);
+}
+
+static void
+timer_callback_unregister(void *cookie)
+{
+    int *count_ptr = cookie;
+    (*count_ptr)++;
+    printf("Timer unregister callback called count=%d\n", *count_ptr);
+    ind_soc_timer_event_unregister(timer_callback_unregister, cookie);
+}
+
+static void
+test_periodic_timer(void)
+{
+    int count;
+
+    /* Should fire every 'repeat_time_ms' */
+    count = 0;
+    ind_soc_timer_event_register(timer_callback, &count, 100);
+    ind_soc_select_and_run(1000);
+    INDIGO_ASSERT(count >= 9 && count <= 11);
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback, &count) == 0);
+
+    /* A timer may re-register itself with a different period during its callback */
+    count = 0;
+    ind_soc_timer_event_register(timer_callback_reregister, &count, 100);
+    ind_soc_select_and_run(1000);
+    INDIGO_ASSERT(count > 50 && count < 100);
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback_reregister, &count) == 0);
+
+    /* A timer may unregister itself during its callback */
+    count = 0;
+    ind_soc_timer_event_register(timer_callback_unregister, &count, 100);
+    ind_soc_select_and_run(1000);
+    INDIGO_ASSERT(count == 1);
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback_unregister, &count) < 0);
+}
+
+static void
+test_immediate_timer(void)
+{
+    int count = 0;
+    INDIGO_ASSERT(ind_soc_timer_event_register(
+        timer_callback, &count, IND_SOC_TIMER_IMMEDIATE) == 0);
+
+    /* Should run immediately */
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(count == 1);
+
+    /* Should be unregistered after firing */
+    count = 0;
+    ind_soc_select_and_run(100);
+    INDIGO_ASSERT(count == 0);
+
+    /* Should be unregistered after firing */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback, &count) < 0);
+}
+
+static void
+test_timer_mgmt(void)
+{
+    /* Should be able to register a timer */
+    INDIGO_ASSERT(ind_soc_timer_event_register(
+        timer_callback, (void*)1, 10) == 0);
+
+    /* Should be able to re-register a timer */
+    INDIGO_ASSERT(ind_soc_timer_event_register(
+        timer_callback, (void*)1, 100) == 0);
+
+    /* Should be able to unregister a timer */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        timer_callback, (void*)1) == 0);
+
+    /* Should not be able to unregister a timer twice */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        timer_callback, (void*)1) < 0);
+
+    /* Should not be able to unregister a NULL callback */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        NULL, (void*)1) < 0);
+
+    /* Should be able to register and unregister a bunch of timers */
+    {
+        int i, j;
+
+        for (i = 0; 1; i++) {
+            indigo_error_t err = ind_soc_timer_event_register(
+                timer_callback, (void *)(uintptr_t)i, 100);
+            if (err < 0) {
+                INDIGO_ASSERT(err == INDIGO_ERROR_RESOURCE);
+                break;
+            }
+        }
+
+        for (j = 0; 1; j++) {
+            indigo_error_t err = ind_soc_timer_event_unregister(
+                timer_callback, (void *)(uintptr_t)j);
+            if (err < 0) {
+                INDIGO_ASSERT(err == INDIGO_ERROR_NOT_FOUND);
+                break;
+            }
+        }
+
+        INDIGO_ASSERT(i == j);
+        INDIGO_ASSERT(i >= 16);
+    }
+}
+
+int
+main(int argc, char* argv[])
+{
+    ind_soc_config_t config = {0};
+
+    printf("Init returned %d\n", ind_soc_init(&config));
+
+    test_timer_mgmt();
+    test_periodic_timer();
+    test_immediate_timer();
+    test_socket();
+    test_socket_mgmt();
 
     return 0;
 }

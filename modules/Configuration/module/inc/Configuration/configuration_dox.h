@@ -17,23 +17,29 @@
  *
  ****************************************************************/
 
-/******************************************************************************
+/**************************************************************************//**
  *
- *  /module/src/socketmanager_int.h
- *
- *  SocketManager Internal Header
+ * Configuration Doxygen Header
  *
  *****************************************************************************/
+#ifndef __CONFIGURATION_DOX_H__
+#define __CONFIGURATION_DOX_H__
 
+/**
+ * @defgroup Configuration Configuration - Configuration Description
+ *
 
-#ifndef __SOCKETMANAGER_INT_H__
-#define __SOCKETMANAGER_INT_H__
+The documentation overview for this module should go here.
 
+ *
+ * @{
+ *
+ * @defgroup configuration-configuration Public Interface
+ * @defgroup configuration-config Compile Time Configuration
+ * @defgroup configuration-porting Porting Macros
+ *
+ * @}
+ *
+ */
 
-#include <SocketManager/socketmanager_config.h>
-#include <SocketManager/socketmanager.h>
-#include <cjson/cJSON.h>
-
-extern const struct ind_cfg_ops ind_soc_cfg_ops;
-
-#endif /* __SOCKETMANAGER_INT_H__ */
+#endif /* __CONFIGURATION_DOX_H__ */

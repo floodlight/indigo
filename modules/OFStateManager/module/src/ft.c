@@ -72,6 +72,12 @@ ft_flow_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         }
     }
 
+    if (query->table_id != TABLE_ID_ANY) {
+        if (query->table_id != entry->table_id) {
+            return rv;
+        }
+    }
+
     if (query->check_priority) {
         if (entry->priority != query->priority) {
             return rv;

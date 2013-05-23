@@ -19,21 +19,17 @@
 
 /******************************************************************************
  *
- *  /module/src/socketmanager_int.h
+ *  /module/src/configuration_int.h
  *
- *  SocketManager Internal Header
+ *  Configuration Internal Header
  *
  *****************************************************************************/
 
 
-#ifndef __SOCKETMANAGER_INT_H__
-#define __SOCKETMANAGER_INT_H__
+#ifndef __CONFIGURATION_INT_H__
+#define __CONFIGURATION_INT_H__
 
+#include "Configuration/configuration_config.h"
+#include "Configuration/configuration.h"
 
-#include <SocketManager/socketmanager_config.h>
-#include <SocketManager/socketmanager.h>
-#include <cjson/cJSON.h>
-
-extern const struct ind_cfg_ops ind_soc_cfg_ops;
-
-#endif /* __SOCKETMANAGER_INT_H__ */
+#endif /* __CONFIGURATION_INT_H__ */

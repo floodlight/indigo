@@ -75,14 +75,23 @@ typedef uint64_t indigo_time_t;
  ****************************************************************/
 
 /* Function that actually gets the current time */
-
+#ifdef INDIGO_LINUX_TIME_MONOTONIC
+/* This is the correct behavior for current usage */
+static inline indigo_time_t
+indigo_current_time(void) {
+    struct timespec tp;
+    clock_gettime(CLOCK_MONOTONIC, &tp);
+    return (uint64_t)(tp.tv_sec) * 1000 + (uint64_t)(tp.tv_nsec / (1000*1000));
+}
+#else
+/* This was the previous behavior -- still supported until verified on other platforms */
 static inline indigo_time_t
 indigo_current_time(void) {
     struct timeval timeval;
     gettimeofday(&timeval, NULL);
     return (uint64_t)(timeval.tv_sec) * 1000 + (uint64_t)(timeval.tv_usec) / 1000;
 }
-
+#endif
 
 /* Printing time to a string */
 #define INDIGO_TIME_FORMAT "%b %d %T"

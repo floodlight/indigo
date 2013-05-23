@@ -111,7 +111,23 @@ ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj);
  * cxn_id may be -1 which will apply to all active connections.  Copies the
  * pointer to the pvs object; not a deep copy.
  */
-indigo_error_t ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs);
+extern indigo_error_t
+ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs);
+
+/**
+ * Value to indicate to cxn_reset to reset all active connections
+ */
+#define IND_CXN_RESET_ALL ((indigo_cxn_id_t)-1)
+
+/**
+ * Reset an existing connection
+ * @param cxn_id The connection ID to reset
+ *
+ * If cxn_id is invalid (< 0), then all active connections are reset
+ */
+extern void
+ind_cxn_reset(indigo_cxn_id_t cxn_id);
+
 
 #endif /* __OFCONNECTIONMANAGER_H__ */
 /** @} */

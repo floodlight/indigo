@@ -19,21 +19,17 @@
 
 /******************************************************************************
  *
- *  /module/src/socketmanager_int.h
+ *  /module/src/configuration_log.h
  *
- *  SocketManager Internal Header
+ *  Configuration Log Header
  *
  *****************************************************************************/
+#ifndef __CONFIGURATION_LOG_H__
+#define __CONFIGURATION_LOG_H__
 
 
-#ifndef __SOCKETMANAGER_INT_H__
-#define __SOCKETMANAGER_INT_H__
+#include <Configuration/configuration_config.h>
 
-
-#include <SocketManager/socketmanager_config.h>
-#include <SocketManager/socketmanager.h>
-#include <cjson/cJSON.h>
-
-extern const struct ind_cfg_ops ind_soc_cfg_ops;
-
-#endif /* __SOCKETMANAGER_INT_H__ */
+#define AIM_LOG_MODULE_NAME configuration
+#include <AIM/aim_log.h>
+#endif /* __CONFIGURATION_LOG_H__ */

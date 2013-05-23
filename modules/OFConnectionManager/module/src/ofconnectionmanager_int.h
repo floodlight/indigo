@@ -30,6 +30,7 @@
 #include <OFConnectionManager/ofconnectionmanager_config.h>
 #include "ofconnectionmanager_log.h"
 #include "cxn_instance.h"
+#include <cjson/cJSON.h>
 
 /* Very verbose for debugging */
 /* #define OF_CXN_DUMP_ALL_OBJECTS 1 */
@@ -80,6 +81,8 @@ extern indigo_error_t ind_cxn_send_controller_message(indigo_cxn_id_t cxn_id,
 
 extern void cxn_message_track_setup(connection_t *cxn, of_object_t *obj);
 
+void ind_cxn_change_master(indigo_cxn_id_t master_id);
+
 /**
  * The OF message callback vector from state manager
  */
@@ -112,44 +115,15 @@ extern void ind_cxn_state_timeout(void *cookie);
  * Logging/debug helpers
  ****************************************************************/
 
+extern void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
+
 /**
- * Dump data buffer
+ * @brief Update the configuration of the connection manager
+ * @param config Pointer to the implementation specific configuration
+ * structure
  */
-#define HEX_LEN 80
-#define PER_LINE 16
-static inline void
-cxn_data_hexdump(unsigned char *buf, int bytes)
-{
-    int idx;
-    char display[HEX_LEN];
-    int disp_offset = 0;
-    int buf_offset = 0;
 
-    while (bytes > 0) {
-        disp_offset = 0;
-        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
-            disp_offset += sprintf(&display[disp_offset],
-                                   "%02x", buf[buf_offset + idx]);
-        }
-
-        for (idx = bytes; idx < PER_LINE; ++idx) {
-            disp_offset += sprintf(&display[disp_offset], "  ");
-        }
-        disp_offset += sprintf(&display[disp_offset], " :");
-
-        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
-            if (buf[idx] < 32) {
-                disp_offset += sprintf(&display[disp_offset], ".");
-            } else {
-                disp_offset += sprintf(&display[disp_offset], "%c",
-                                       buf[buf_offset + idx]);
-            }
-        }
-        AIM_LOG_TRACE("%s", display);
-        bytes -= PER_LINE;
-        buf_offset += PER_LINE;
-	}
-}
+extern const struct ind_cfg_ops ind_cxn_cfg_ops;
 
 #include <OFConnectionManager/ofconnectionmanager.h>
 

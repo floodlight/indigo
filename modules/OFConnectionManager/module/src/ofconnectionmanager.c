@@ -28,6 +28,7 @@
 #include <SocketManager/socketmanager.h>
 #include "cxn_instance.h"
 #include <OFConnectionManager/ofconnectionmanager.h>
+#include <Configuration/configuration.h>
 
 #include <indigo/of_state_manager.h>
 #include <indigo/memory.h>
@@ -35,6 +36,8 @@
 
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
+
+#include <cjson/cJSON.h>
 
 #include <sys/socket.h>
 #include <fcntl.h>
@@ -63,26 +66,26 @@ static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
 
+static indigo_error_t
+ind_cxn_send_async_controller_message(of_object_t *obj);
+
 /****************************************************************
  * Connection Manager Data shared within module
  ****************************************************************/
 
 int have_local_connection;
 int remote_connection_count;
+int successful_handshakes; /* Number of times handshake completes */
 
 uint32_t ind_cxn_internal_errors;
 
 /****************************************************************
  * Connection Manager Private Data
  ****************************************************************/
-static indigo_cxn_algo_t cxn_algorithm = INDIGO_CXN_ALGO_SINGLE;
 static ind_cxn_config_t cxn_config;
 
 /* @fixme Make this a module parameter */
 #define MAX_CONTROLLER_CONNECTIONS 32
-
-/* Time we started attempting to connect. Used for backoff. */
-indigo_time_t cxn_retry_start_time;
 
 /**
  * Connection control blocks, indexed by connection index
@@ -153,58 +156,6 @@ cxn_id_ip_string(indigo_cxn_id_t cxn_id)
 }
 
 /**
- * @brief Calculate timeout between connection attempts.
- *
- * Starts at 10ms and increases to 1s after 5s of failed attempts.
- */
-
-static int
-connection_retry_ms(void)
-{
-    if (INDIGO_CURRENT_TIME > cxn_retry_start_time + 5000) {
-        return 1000;
-    } else {
-        return 10;
-    }
-}
-
-/**
- * @brief Invoke connection attempts if needed
- *
- * @param cookie Ignored
- */
-
-static void
-invoke_connections(void *cookie)
-{
-    indigo_cxn_id_t cxn_id;
-    connection_t *cxn;
-    int is_any_active = 0;
-
-    LOG_TRACE("Invoke cxns, count %d", remote_connection_count);
-    if (remote_connection_count > 0) {
-        /* Already have connection started */
-        return;
-    }
-
-    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
-        is_any_active = 1;
-        INDIGO_ASSERT(CONNECTION_STATE(cxn) == INDIGO_CXN_S_DISCONNECTED);
-        if (ind_cxn_try_to_connect(cxn) == 0) { /* Connecting */
-            break;
-        }
-    }
-
-    /* If no connection, re-invoke this routine */
-    if (is_any_active && remote_connection_count == 0) {
-        ind_soc_timer_event_register(invoke_connections, NULL,
-                                     connection_retry_ms());
-    } else {
-        ind_soc_timer_event_unregister(invoke_connections, NULL);
-    }
-}
-
-/**
  * @brief Callback to process "socket ready"
  *
  * @param socket_id The socket that is ready
@@ -255,17 +206,17 @@ indigo_cxn_socket_ready_callback(
         ++ind_cxn_internal_errors;
     }
 
-    if (write_ready) {
-        if ((rv = ind_cxn_process_write_buffer(cxn)) < 0) {
-            LOG_ERROR("Error processing write buffer, resetting");
-            ind_cxn_disconnect(cxn);
+    if (read_ready) {
+        if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
+            LOG_INFO("Error %d processing read buffer", rv);
             ++ind_cxn_internal_errors;
         }
     }
 
-    if (read_ready) {
-        if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
-            LOG_INFO("Error %d processing read buffer", rv);
+    if (write_ready) {
+        if ((rv = ind_cxn_process_write_buffer(cxn)) < 0) {
+            LOG_ERROR("Error processing write buffer, resetting");
+            ind_cxn_disconnect(cxn);
             ++ind_cxn_internal_errors;
         }
     }
@@ -365,16 +316,8 @@ ind_cxn_status_change(connection_t *cxn)
             if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
                 LOG_INFO("Clearing preferred connection");
                 preferred_cxn_id = -1;
-                cxn_retry_start_time = INDIGO_CURRENT_TIME;
             }
         }
-    }
-
-    /* @fixme Consider doing this for _CLOSING */
-    if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_DISCONNECTED) {
-        /* Force immediate connection check event */
-        ind_soc_timer_event_register(invoke_connections, NULL,
-                                     IND_SOC_TIMER_IMMEDIATE);
     }
 
     LOG_TRACE("Cxn status change, rmt count %d", remote_connection_count);
@@ -400,6 +343,8 @@ module_init(void)
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
         connection[idx].cxn_id = (indigo_cxn_id_t)idx;
     }
+
+    ind_cfg_register(&ind_cxn_cfg_ops);
 
     return INDIGO_ERROR_NONE;
 }
@@ -506,15 +451,6 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
 
     ind_cxn_disconnected_init(cxn);
 
-    /* Don't support multiple remote connections yet */
-    if (!CXN_LOCAL(cxn) && remote_connection_count > 0) {
-        cxn->active = 1;
-        cxn->sd = sd;
-        LOG_VERBOSE("Added backup controller %s, without attempting to connect",
-                    cxn_id_ip_string(*cxn_id));
-        return cxn;
-    }
-
     if (sd < 0) {
         /* Attempt to create the socket */
         cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
@@ -550,7 +486,7 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
         ind_cxn_state_set(cxn, INDIGO_CXN_S_CONNECTING);
     } else if (!CXN_LISTEN(cxn)) {
         /* Force immediate connection check event */
-        ind_soc_timer_event_register(invoke_connections, NULL,
+        ind_soc_timer_event_register(ind_cxn_connection_retry_timer, cxn,
                                      IND_SOC_TIMER_IMMEDIATE);
     }
 
@@ -634,6 +570,8 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
         connection[cxn_id].flags |= CXN_TO_BE_REMOVED;
         ind_cxn_disconnect(&connection[cxn_id]);
     } else {
+        ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer,
+                                       &connection[cxn_id]);
         connection[cxn_id].active = 0;
     }
 
@@ -658,24 +596,27 @@ indigo_cxn_connection_status_get(
     return INDIGO_ERROR_NONE;
 }
 
-/* Set the controller multi-connection algorithm */
-indigo_error_t
-indigo_cxn_algo_set(indigo_cxn_algo_t algorithm)
+/**
+ * Change the master connection
+ *
+ * @param master_id The connection id of the new master
+ *
+ * Downgrades the current master, if any, to a slave.
+ */
+void
+ind_cxn_change_master(indigo_cxn_id_t master_id)
 {
-    LOG_INFO("Connection algo set: %d", algorithm);
-    /* @fixme verify parameter */
-    cxn_algorithm = algorithm;
-
-    return INDIGO_ERROR_NONE;
-}
-
-/* Get the controller multi-connection algorithm */
-indigo_error_t
-indigo_cxn_algo_get(indigo_cxn_algo_t *algorithm)
-{
-    *algorithm = cxn_algorithm;
-
-    return INDIGO_ERROR_NONE;
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
+        if (cxn->cxn_id == master_id) {
+            LOG_INFO("Upgrading cxn %d to master", cxn_id);
+            cxn->status.role = INDIGO_CXN_R_MASTER;
+        } else if (cxn->status.role == INDIGO_CXN_R_MASTER) {
+            LOG_INFO("Downgrading cxn %d to slave", cxn_id);
+            cxn->status.role = INDIGO_CXN_R_SLAVE;
+        }
+    }
 }
 
 /**
@@ -705,13 +646,11 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     LOG_TRACE("Send msg type %d to cxn %d", obj->object_id, cxn_id);
 
+    /* TODO create a new public API for this? */
     if (INDIGO_CXN_UNSPECIFIED(cxn_id)) {
-        cxn_id = preferred_cxn_id;
-        if (INDIGO_CXN_INVALID(cxn_id)) {
-            rv = INDIGO_ERROR_NOT_READY;
-            goto done;
-        }
+        return ind_cxn_send_async_controller_message(obj);
     }
+
     if (INDIGO_CXN_INVALID(cxn_id)) {
         LOG_INFO("Invalid or no active connection: %d", cxn_id);
         rv = INDIGO_ERROR_NOT_FOUND;
@@ -735,6 +674,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     if (obj->object_id == OF_FEATURES_REPLY) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
+            ++successful_handshakes;
             ind_cxn_state_set(cxn, INDIGO_CXN_S_HANDSHAKE_COMPLETE);
         }
     }
@@ -748,13 +688,20 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         }
     }
 
-    /* packetIn throttling */
+    /* async message throttling */
     if (obj->object_id == OF_PACKET_IN) {
-        /* check queue depth and drop packetIn if necessary */
-        /* @todo also check object can actually fit into write buffer? */
-        if (CXN_DROP_PACKET_IN(cxn)) {
+        cxn->packet_ins++;
+        if (CXN_DROP_PACKET_IN(cxn, obj)) {
             LOG_TRACE("Dropping packetIn");
             cxn->status.packet_in_drop++;
+            /* @todo is this the right error code? */
+            rv = INDIGO_ERROR_RESOURCE;
+            goto done;
+        }
+    } else if (obj->object_id == OF_FLOW_REMOVED) {
+        if (CXN_DROP_FLOW_REMOVED(cxn, obj)) {
+            LOG_TRACE("Dropping flowRemoved");
+            cxn->status.flow_removed_drop++;
             /* @todo is this the right error code? */
             rv = INDIGO_ERROR_RESOURCE;
             goto done;
@@ -786,6 +733,70 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
  done:
     of_object_delete(obj);
     return rv;
+}
+
+/**
+ * Check whether the given connection is interested in the message.
+ */
+int
+ind_cxn_accepts_async_message(const connection_t *cxn, const of_object_t *obj)
+{
+    if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
+        return 0;
+    }
+
+    if (cxn->config_params.local) {
+        return 0;
+    }
+
+    if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
+        if ((obj->object_id == OF_PACKET_IN) ||
+            (obj->object_id == OF_FLOW_REMOVED)) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+/**
+ * Send an async message to all interested connections.
+ */
+static indigo_error_t
+ind_cxn_send_async_controller_message(of_object_t *obj)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+
+    /*
+     * The connection that will end up sending the original 'obj',
+     * rather than a duplicate. indigo_cxn_send_controller_message
+     * consumes the LOCI object so we need to call it on the
+     * original last.
+     */
+    indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
+
+    FOREACH_ACTIVE_CXN(cxn_id, cxn) {
+        if (ind_cxn_accepts_async_message(cxn, obj)) {
+            if (first_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
+                first_cxn_id = cxn->cxn_id;
+            } else {
+                of_object_t *dup = of_object_dup(obj);
+                if (dup != NULL) {
+                    indigo_cxn_send_controller_message(cxn->cxn_id, dup);
+                }
+            }
+        }
+    }
+
+    if (first_cxn_id != INDIGO_CXN_ID_UNSPECIFIED) {
+        indigo_cxn_send_controller_message(first_cxn_id, obj);
+    } else {
+        /* No interested connections */
+        of_object_delete(obj);
+    }
+
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -925,12 +936,13 @@ ind_cxn_enable_set(int enable)
 {
     LOG_TRACE("OF connection mgr enable called");
 
-    /* INIT_CHECK; */
+    if (!init_done) {
+        return INDIGO_ERROR_INIT;
+    }
 
     if (enable && !module_enabled) {
         module_init();
         LOG_INFO("Enabling OF connection mgr");
-        cxn_retry_start_time = INDIGO_CURRENT_TIME;
         module_enabled = 1;
     } else if (!enable && module_enabled) {
         int cxn_id;
@@ -940,7 +952,6 @@ ind_cxn_enable_set(int enable)
         FOREACH_ACTIVE_CXN(cxn_id, cxn) {
             ind_cxn_disconnect(cxn);
         }
-        ind_soc_timer_event_unregister(invoke_connections, NULL);
         module_enabled = 0;
         /* @todo Anything need to be done here? */
     } else {
@@ -1180,3 +1191,108 @@ indigo_cxn_list_destroy(indigo_cxn_info_t* list)
     }
 }
 
+void
+ind_cxn_reset(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn;
+
+    if (!module_enabled) {
+        return;
+    }
+
+    LOG_VERBOSE("Connection reset for id %d\n", cxn_id);
+    if (cxn_id == IND_CXN_RESET_ALL) {
+        /* Iterate thru active connections */
+        FOREACH_ACTIVE_CXN(cxn_id, cxn) {
+            ind_cxn_disconnect(cxn);
+        }
+    } else if (!INDIGO_CXN_INVALID(cxn_id)) {
+        cxn = CXN_ID_TO_CONNECTION(cxn_id);
+        ind_cxn_disconnect(cxn);
+    }
+}
+
+/**
+ * Show the stats for each connection.  If details
+ * is true, show per-message data
+ */
+
+void
+ind_cxn_stats_show(aim_pvs_t *pvs, int details)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+    int idx;
+    int cxn_count = 0;
+    uint64_t counter;
+
+    aim_printf(pvs, "Connection statistics report\n");
+    aim_printf(pvs, "    Number of successful connections: %d\n",
+               successful_handshakes);
+    aim_printf(pvs, "    Current remote connection count: %d\n",
+               remote_connection_count);
+    if (ind_cxn_internal_errors) {
+        aim_printf(pvs, "    Socket disconnects: %u\n",
+                   ind_cxn_internal_errors);
+    }
+
+    FOREACH_ACTIVE_CXN(cxn_id, cxn) {
+        cxn_count++;
+        aim_printf(pvs, "Stats for%s%s connection %s:\n",
+                   CXN_LOCAL(cxn) ? " local" : "",
+                   CXN_LISTEN(cxn) ? " listening" : "",
+                   cxn_ip_string(cxn));
+        aim_printf(pvs, "    Id: %d.\n", cxn_id);
+        aim_printf(pvs, "    State: %s.\n", CXN_HANDSHAKE_COMPLETE(cxn) ?
+                   "Connected" : "Not connected");
+        aim_printf(pvs, "    Packet ins: %"PRIu64"\n",
+                   cxn->packet_ins);
+        aim_printf(pvs, "    Packet in drops: %"PRIu64"\n",
+                   cxn->status.packet_in_drop);
+
+        aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
+                   cxn->status.messages_in);
+        counter = 0;
+        for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
+            counter += cxn->messages_in_by_type[idx];
+        }
+        aim_printf(pvs, "    Cumulative messages in: %"PRIu64"\n", counter);
+        if (details) {
+            for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
+                if (cxn->messages_in_by_type[idx]) {
+                    aim_printf(pvs, "        %s: %"PRIu64"\n",
+                               of_object_id_str[idx],
+                               cxn->messages_in_by_type[idx]);
+                }
+            }
+        }
+        if (cxn->messages_in_unknown) {
+            aim_printf(pvs, "        Unknown type: %"PRIu64"\n",
+                       cxn->messages_in_unknown);
+        }
+
+        aim_printf(pvs, "    Messages out, current connection: %"PRIu64"\n",
+                   cxn->status.messages_out);
+        counter = 0;
+        for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
+            counter += cxn->messages_out_by_type[idx];
+        }
+        aim_printf(pvs, "    Cumulative messages out: %"PRIu64"\n", counter);
+        if (details) {
+            for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
+                if (cxn->messages_out_by_type[idx]) {
+                    aim_printf(pvs, "        %s: %"PRIu64"\n",
+                               of_object_id_str[idx],
+                               cxn->messages_out_by_type[idx]);
+                }
+            }
+        }
+        if (cxn->messages_out_unknown) {
+            aim_printf(pvs, "        Unknown type: %"PRIu64"\n",
+                       cxn->messages_out_unknown);
+        }
+    }
+    if (!cxn_count) {
+        aim_printf(pvs, "No active connections\n");
+    }
+}

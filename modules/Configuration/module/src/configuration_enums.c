@@ -17,23 +17,14 @@
  *
  ****************************************************************/
 
-/******************************************************************************
+/**************************************************************************//**
  *
- *  /module/src/socketmanager_int.h
  *
- *  SocketManager Internal Header
  *
  *****************************************************************************/
+#include <Configuration/configuration_config.h>
 
 
-#ifndef __SOCKETMANAGER_INT_H__
-#define __SOCKETMANAGER_INT_H__
+/* <--auto.start.enum(ALL).source> */
+/* <auto.end.enum(ALL).source> */
 
-
-#include <SocketManager/socketmanager_config.h>
-#include <SocketManager/socketmanager.h>
-#include <cjson/cJSON.h>
-
-extern const struct ind_cfg_ops ind_soc_cfg_ops;
-
-#endif /* __SOCKETMANAGER_INT_H__ */
