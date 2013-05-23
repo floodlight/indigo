@@ -154,10 +154,14 @@ typedef of_object_t of_bsn_get_interfaces_reply_t;
 typedef of_object_t of_bsn_get_interfaces_request_t;
 typedef of_object_t of_bsn_get_ip_mask_reply_t;
 typedef of_object_t of_bsn_get_ip_mask_request_t;
+typedef of_object_t of_bsn_get_l2_table_reply_t;
+typedef of_object_t of_bsn_get_l2_table_request_t;
 typedef of_object_t of_bsn_get_mirroring_reply_t;
 typedef of_object_t of_bsn_get_mirroring_request_t;
 typedef of_object_t of_bsn_set_ip_mask_t;
+typedef of_object_t of_bsn_set_l2_table_t;
 typedef of_object_t of_bsn_set_mirroring_t;
+typedef of_object_t of_bsn_set_pktin_suppression_t;
 typedef of_object_t of_bsn_shell_command_t;
 typedef of_object_t of_bsn_shell_output_t;
 typedef of_object_t of_bsn_shell_status_t;
@@ -631,6 +635,32 @@ extern of_bsn_get_ip_mask_request_t *
     of_bsn_get_ip_mask_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bsn_get_l2_table_reply_t *
+    of_bsn_get_l2_table_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_get_l2_table_reply_new(version) \
+    of_bsn_get_l2_table_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_get_l2_table_reply_t *
+    of_bsn_get_l2_table_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_get_l2_table_reply_new_from_message(msg) \
+    of_bsn_get_l2_table_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_get_l2_table_request_t *
+    of_bsn_get_l2_table_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_get_l2_table_request_new(version) \
+    of_bsn_get_l2_table_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_get_l2_table_request_t *
+    of_bsn_get_l2_table_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_get_l2_table_request_new_from_message(msg) \
+    of_bsn_get_l2_table_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_bsn_get_mirroring_reply_t *
     of_bsn_get_mirroring_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -670,6 +700,19 @@ extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bsn_set_l2_table_t *
+    of_bsn_set_l2_table_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_set_l2_table_new(version) \
+    of_bsn_set_l2_table_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_set_l2_table_t *
+    of_bsn_set_l2_table_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_set_l2_table_new_from_message(msg) \
+    of_bsn_set_l2_table_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_tracking(of_version_t version,
         const char *file, int line);
@@ -681,6 +724,19 @@ extern of_bsn_set_mirroring_t *
         const char *file, int line);
 #define of_bsn_set_mirroring_new_from_message(msg) \
     of_bsn_set_mirroring_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_set_pktin_suppression_t *
+    of_bsn_set_pktin_suppression_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_set_pktin_suppression_new(version) \
+    of_bsn_set_pktin_suppression_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_set_pktin_suppression_t *
+    of_bsn_set_pktin_suppression_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_set_pktin_suppression_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_shell_command_t *
@@ -3053,6 +3109,16 @@ extern of_list_uint8_t *
 #define of_bsn_get_ip_mask_request_new_from_message(msg) \
     of_bsn_get_ip_mask_request_new_from_message_(msg)
 
+#define of_bsn_get_l2_table_reply_new(version) \
+    of_bsn_get_l2_table_reply_new_(version)
+#define of_bsn_get_l2_table_reply_new_from_message(msg) \
+    of_bsn_get_l2_table_reply_new_from_message_(msg)
+
+#define of_bsn_get_l2_table_request_new(version) \
+    of_bsn_get_l2_table_request_new_(version)
+#define of_bsn_get_l2_table_request_new_from_message(msg) \
+    of_bsn_get_l2_table_request_new_from_message_(msg)
+
 #define of_bsn_get_mirroring_reply_new(version) \
     of_bsn_get_mirroring_reply_new_(version)
 #define of_bsn_get_mirroring_reply_new_from_message(msg) \
@@ -3068,10 +3134,20 @@ extern of_list_uint8_t *
 #define of_bsn_set_ip_mask_new_from_message(msg) \
     of_bsn_set_ip_mask_new_from_message_(msg)
 
+#define of_bsn_set_l2_table_new(version) \
+    of_bsn_set_l2_table_new_(version)
+#define of_bsn_set_l2_table_new_from_message(msg) \
+    of_bsn_set_l2_table_new_from_message_(msg)
+
 #define of_bsn_set_mirroring_new(version) \
     of_bsn_set_mirroring_new_(version)
 #define of_bsn_set_mirroring_new_from_message(msg) \
     of_bsn_set_mirroring_new_from_message_(msg)
+
+#define of_bsn_set_pktin_suppression_new(version) \
+    of_bsn_set_pktin_suppression_new_(version)
+#define of_bsn_set_pktin_suppression_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_new_from_message_(msg)
 
 #define of_bsn_shell_command_new(version) \
     of_bsn_shell_command_new_(version)
@@ -4109,6 +4185,20 @@ extern of_bsn_get_ip_mask_request_t *
 extern void of_bsn_get_ip_mask_request_init(
     of_bsn_get_ip_mask_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_get_l2_table_reply_t *
+    of_bsn_get_l2_table_reply_new_(of_version_t version);
+extern of_bsn_get_l2_table_reply_t *
+    of_bsn_get_l2_table_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_get_l2_table_reply_init(
+    of_bsn_get_l2_table_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_get_l2_table_request_t *
+    of_bsn_get_l2_table_request_new_(of_version_t version);
+extern of_bsn_get_l2_table_request_t *
+    of_bsn_get_l2_table_request_new_from_message_(of_message_t msg);
+extern void of_bsn_get_l2_table_request_init(
+    of_bsn_get_l2_table_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_get_mirroring_reply_t *
     of_bsn_get_mirroring_reply_new_(of_version_t version);
 extern of_bsn_get_mirroring_reply_t *
@@ -4130,12 +4220,26 @@ extern of_bsn_set_ip_mask_t *
 extern void of_bsn_set_ip_mask_init(
     of_bsn_set_ip_mask_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_set_l2_table_t *
+    of_bsn_set_l2_table_new_(of_version_t version);
+extern of_bsn_set_l2_table_t *
+    of_bsn_set_l2_table_new_from_message_(of_message_t msg);
+extern void of_bsn_set_l2_table_init(
+    of_bsn_set_l2_table_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_(of_version_t version);
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_from_message_(of_message_t msg);
 extern void of_bsn_set_mirroring_init(
     of_bsn_set_mirroring_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_set_pktin_suppression_t *
+    of_bsn_set_pktin_suppression_new_(of_version_t version);
+extern of_bsn_set_pktin_suppression_t *
+    of_bsn_set_pktin_suppression_new_from_message_(of_message_t msg);
+extern void of_bsn_set_pktin_suppression_init(
+    of_bsn_set_pktin_suppression_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_shell_command_t *
     of_bsn_shell_command_new_(of_version_t version);
@@ -5781,6 +5885,28 @@ of_bsn_get_ip_mask_request_delete(of_bsn_get_ip_mask_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bsn_get_l2_table_reply_t
+ * @param obj An instance of type of_bsn_get_l2_table_reply_t
+ *
+ * \ingroup of_bsn_get_l2_table_reply
+ */
+static inline void
+of_bsn_get_l2_table_reply_delete(of_bsn_get_l2_table_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_get_l2_table_request_t
+ * @param obj An instance of type of_bsn_get_l2_table_request_t
+ *
+ * \ingroup of_bsn_get_l2_table_request
+ */
+static inline void
+of_bsn_get_l2_table_request_delete(of_bsn_get_l2_table_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_bsn_get_mirroring_reply_t
  * @param obj An instance of type of_bsn_get_mirroring_reply_t
  *
@@ -5814,6 +5940,17 @@ of_bsn_set_ip_mask_delete(of_bsn_set_ip_mask_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bsn_set_l2_table_t
+ * @param obj An instance of type of_bsn_set_l2_table_t
+ *
+ * \ingroup of_bsn_set_l2_table
+ */
+static inline void
+of_bsn_set_l2_table_delete(of_bsn_set_l2_table_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_bsn_set_mirroring_t
  * @param obj An instance of type of_bsn_set_mirroring_t
  *
@@ -5821,6 +5958,17 @@ of_bsn_set_ip_mask_delete(of_bsn_set_ip_mask_t *obj) {
  */
 static inline void
 of_bsn_set_mirroring_delete(of_bsn_set_mirroring_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_set_pktin_suppression_t
+ * @param obj An instance of type of_bsn_set_pktin_suppression_t
+ *
+ * \ingroup of_bsn_set_pktin_suppression
+ */
+static inline void
+of_bsn_set_pktin_suppression_delete(of_bsn_set_pktin_suppression_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -8895,7 +9043,7 @@ of_list_uint8_delete(of_list_uint8_t *obj) {
 
 typedef void (*of_object_init_f)(of_object_t *obj, of_version_t version,
     int bytes, int clean_wire);
-extern of_object_init_f of_object_init_map[];
+extern const of_object_init_f of_object_init_map[];
 
 /****************************************************************
  *
@@ -9298,6 +9446,66 @@ extern void of_bsn_get_ip_mask_request_index_get(
     of_bsn_get_ip_mask_request_t *obj,
     uint8_t *index);
 
+/* Unified accessor functions for of_bsn_get_l2_table_reply */
+
+extern void of_bsn_get_l2_table_reply_xid_set(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_get_l2_table_reply_xid_get(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_get_l2_table_reply_experimenter_set(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_get_l2_table_reply_experimenter_get(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_get_l2_table_reply_subtype_set(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_get_l2_table_reply_subtype_get(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_get_l2_table_reply_l2_table_enable_set(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint8_t l2_table_enable);
+extern void of_bsn_get_l2_table_reply_l2_table_enable_get(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint8_t *l2_table_enable);
+
+extern void of_bsn_get_l2_table_reply_l2_table_priority_set(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint16_t l2_table_priority);
+extern void of_bsn_get_l2_table_reply_l2_table_priority_get(
+    of_bsn_get_l2_table_reply_t *obj,
+    uint16_t *l2_table_priority);
+
+/* Unified accessor functions for of_bsn_get_l2_table_request */
+
+extern void of_bsn_get_l2_table_request_xid_set(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_get_l2_table_request_xid_get(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_get_l2_table_request_experimenter_set(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_get_l2_table_request_experimenter_get(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_get_l2_table_request_subtype_set(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_get_l2_table_request_subtype_get(
+    of_bsn_get_l2_table_request_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_bsn_get_mirroring_reply */
 
 extern void of_bsn_get_mirroring_reply_xid_set(
@@ -9395,6 +9603,43 @@ extern void of_bsn_set_ip_mask_mask_get(
     of_bsn_set_ip_mask_t *obj,
     uint32_t *mask);
 
+/* Unified accessor functions for of_bsn_set_l2_table */
+
+extern void of_bsn_set_l2_table_xid_set(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t xid);
+extern void of_bsn_set_l2_table_xid_get(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_set_l2_table_experimenter_set(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_set_l2_table_experimenter_get(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_set_l2_table_subtype_set(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t subtype);
+extern void of_bsn_set_l2_table_subtype_get(
+    of_bsn_set_l2_table_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_set_l2_table_l2_table_enable_set(
+    of_bsn_set_l2_table_t *obj,
+    uint8_t l2_table_enable);
+extern void of_bsn_set_l2_table_l2_table_enable_get(
+    of_bsn_set_l2_table_t *obj,
+    uint8_t *l2_table_enable);
+
+extern void of_bsn_set_l2_table_l2_table_priority_set(
+    of_bsn_set_l2_table_t *obj,
+    uint16_t l2_table_priority);
+extern void of_bsn_set_l2_table_l2_table_priority_get(
+    of_bsn_set_l2_table_t *obj,
+    uint16_t *l2_table_priority);
+
 /* Unified accessor functions for of_bsn_set_mirroring */
 
 extern void of_bsn_set_mirroring_xid_set(
@@ -9424,6 +9669,64 @@ extern void of_bsn_set_mirroring_report_mirror_ports_set(
 extern void of_bsn_set_mirroring_report_mirror_ports_get(
     of_bsn_set_mirroring_t *obj,
     uint8_t *report_mirror_ports);
+
+/* Unified accessor functions for of_bsn_set_pktin_suppression */
+
+extern void of_bsn_set_pktin_suppression_xid_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t xid);
+extern void of_bsn_set_pktin_suppression_xid_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_set_pktin_suppression_experimenter_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_set_pktin_suppression_experimenter_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_set_pktin_suppression_subtype_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t subtype);
+extern void of_bsn_set_pktin_suppression_subtype_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_set_pktin_suppression_enabled_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint8_t enabled);
+extern void of_bsn_set_pktin_suppression_enabled_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint8_t *enabled);
+
+extern void of_bsn_set_pktin_suppression_idle_timeout_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t idle_timeout);
+extern void of_bsn_set_pktin_suppression_idle_timeout_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t *idle_timeout);
+
+extern void of_bsn_set_pktin_suppression_hard_timeout_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t hard_timeout);
+extern void of_bsn_set_pktin_suppression_hard_timeout_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t *hard_timeout);
+
+extern void of_bsn_set_pktin_suppression_priority_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t priority);
+extern void of_bsn_set_pktin_suppression_priority_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint16_t *priority);
+
+extern void of_bsn_set_pktin_suppression_cookie_set(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint64_t cookie);
+extern void of_bsn_set_pktin_suppression_cookie_get(
+    of_bsn_set_pktin_suppression_t *obj,
+    uint64_t *cookie);
 
 /* Unified accessor functions for of_bsn_shell_command */
 
@@ -15068,10 +15371,14 @@ union of_generic_u {
     of_bsn_get_interfaces_request_t of_bsn_get_interfaces_request;
     of_bsn_get_ip_mask_reply_t of_bsn_get_ip_mask_reply;
     of_bsn_get_ip_mask_request_t of_bsn_get_ip_mask_request;
+    of_bsn_get_l2_table_reply_t of_bsn_get_l2_table_reply;
+    of_bsn_get_l2_table_request_t of_bsn_get_l2_table_request;
     of_bsn_get_mirroring_reply_t of_bsn_get_mirroring_reply;
     of_bsn_get_mirroring_request_t of_bsn_get_mirroring_request;
     of_bsn_set_ip_mask_t of_bsn_set_ip_mask;
+    of_bsn_set_l2_table_t of_bsn_set_l2_table;
     of_bsn_set_mirroring_t of_bsn_set_mirroring;
+    of_bsn_set_pktin_suppression_t of_bsn_set_pktin_suppression;
     of_bsn_shell_command_t of_bsn_shell_command;
     of_bsn_shell_output_t of_bsn_shell_output;
     of_bsn_shell_status_t of_bsn_shell_status;
@@ -15615,8 +15922,10 @@ union of_oxm_u {
 static inline void
 of_object_parent_length_update(of_object_t *obj, int delta)
 {
+#ifndef NDEBUG
     int count = 0;
     of_wire_buffer_t *wbuf;  /* For debug asserts only */
+#endif
 
     while (obj != NULL) {
         ASSERT(count++ < _MAX_PARENT_ITERATIONS);
@@ -15624,7 +15933,9 @@ of_object_parent_length_update(of_object_t *obj, int delta)
         if (obj->wire_length_set != NULL) {
             obj->wire_length_set(obj, obj->length);
         }
+#ifndef NDEBUG
         wbuf = obj->wire_object.wbuf;
+#endif
 
         /* Asserts for wire length checking */
         ASSERT(obj->length + obj->wire_object.obj_offset <=
@@ -15655,7 +15966,7 @@ of_object_parent_length_update(of_object_t *obj, int delta)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_action_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_action_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_ACTION_ITEM_COUNT 28
 
@@ -15689,7 +16000,7 @@ of_action_to_object_id(int action, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_action_id_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_action_id_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_ACTION_ID_ITEM_COUNT 28
 
@@ -15723,7 +16034,7 @@ of_action_id_to_object_id(int action_id, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_instruction_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_instruction_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_INSTRUCTION_ITEM_COUNT 7
 
@@ -15757,7 +16068,7 @@ of_instruction_to_object_id(int instruction, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_queue_prop_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_queue_prop_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_QUEUE_PROP_ITEM_COUNT 3
 
@@ -15791,7 +16102,7 @@ of_queue_prop_to_object_id(int queue_prop, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_table_feature_prop_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_table_feature_prop_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_TABLE_FEATURE_PROP_ITEM_COUNT 16
 
@@ -15825,7 +16136,7 @@ of_table_feature_prop_to_object_id(int table_feature_prop, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_meter_band_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_meter_band_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_METER_BAND_ITEM_COUNT 3
 
@@ -15859,7 +16170,7 @@ of_meter_band_to_object_id(int meter_band, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_hello_elem_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_hello_elem_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_HELLO_ELEM_ITEM_COUNT 2
 
@@ -15890,7 +16201,7 @@ of_hello_elem_to_object_id(int hello_elem, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_stats_reply_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_stats_reply_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_STATS_REPLY_ITEM_COUNT 14
 
@@ -15924,7 +16235,7 @@ of_stats_reply_to_object_id(int stats_reply, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_stats_request_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_stats_request_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_STATS_REQUEST_ITEM_COUNT 14
 
@@ -15958,7 +16269,7 @@ of_stats_request_to_object_id(int stats_request, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_flow_mod_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_flow_mod_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_FLOW_MOD_ITEM_COUNT 5
 
@@ -15991,7 +16302,7 @@ of_flow_mod_to_object_id(int flow_mod, of_version_t version)
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_OXM_ITEM_COUNT 72
 
@@ -16069,6 +16380,14 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_IP_MASK;
         }
 
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION;
+        }
+
+        if (subtype == 14) {
+            return OF_BSN_GET_L2_TABLE_REPLY;
+        }
+
         if (subtype == 7) {
             return OF_BSN_SHELL_OUTPUT;
         }
@@ -16081,8 +16400,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_GET_MIRRORING_REPLY;
         }
 
+        if (subtype == 13) {
+            return OF_BSN_GET_L2_TABLE_REQUEST;
+        }
+
         if (subtype == 2) {
             return OF_BSN_GET_IP_MASK_REPLY;
+        }
+
+        if (subtype == 12) {
+            return OF_BSN_SET_L2_TABLE;
         }
 
         if (subtype == 8) {
@@ -16106,24 +16433,28 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_1)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 4) {
-            return OF_BSN_GET_MIRRORING_REQUEST;
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
+        }
+
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 4) {
+            return OF_BSN_GET_MIRRORING_REQUEST;
         }
 
     }
@@ -16131,24 +16462,28 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_2)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 4) {
-            return OF_BSN_GET_MIRRORING_REQUEST;
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
+        }
+
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 4) {
+            return OF_BSN_GET_MIRRORING_REQUEST;
         }
 
     }
@@ -16156,24 +16491,28 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_3)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 4) {
-            return OF_BSN_GET_MIRRORING_REQUEST;
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
+        }
+
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 4) {
+            return OF_BSN_GET_MIRRORING_REQUEST;
         }
 
     }
@@ -16186,7 +16525,7 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
  * Treat as private; use function accessor below
  */
 
-extern of_object_id_t *of_message_type_to_id[OF_VERSION_ARRAY_MAX];
+extern const of_object_id_t *const of_message_type_to_id[OF_VERSION_ARRAY_MAX];
 
 #define OF_MESSAGE_ITEM_COUNT 30
 
@@ -16253,7 +16592,7 @@ of_message_to_object_id(of_message_t msg, int length) {
     return obj_id;
 }
 
-extern int *of_object_to_type_map[OF_VERSION_ARRAY_MAX];
+extern const int *const of_object_to_type_map[OF_VERSION_ARRAY_MAX];
 
 /**
  * Map an object ID to its primary wire type value
@@ -16293,7 +16632,7 @@ typedef struct of_experimenter_data_s {
 } of_experimenter_data_t;
 
 
-extern of_experimenter_data_t *of_object_to_extension_data[OF_VERSION_ARRAY_MAX];
+extern const of_experimenter_data_t *const of_object_to_extension_data[OF_VERSION_ARRAY_MAX];
 
 /**
  * Map from the object ID of an extension to the experimenter ID
@@ -16459,7 +16798,7 @@ of_object_to_flow_mod_command(of_object_id_t id, of_version_t version)
     return -1; /* Not recognized as flow mod type object for this version */
 }
 
-extern int *of_object_fixed_len[OF_VERSION_ARRAY_MAX];
+extern const int *const of_object_fixed_len[OF_VERSION_ARRAY_MAX];
 
 /**
  * Map a message in a wire buffer object to its OF object id.

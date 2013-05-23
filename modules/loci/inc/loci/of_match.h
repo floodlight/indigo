@@ -88,7 +88,7 @@
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV4_TYPE))
 
 /* Indexed by version number */
-extern uint64_t of_match_incompat[4];
+extern const uint64_t of_match_incompat[4];
 /* Unified, flat OpenFlow match structure based on OF 1.2 */
 typedef struct of_match_fields_s {
     /* Version 1.2 is used for field names */
