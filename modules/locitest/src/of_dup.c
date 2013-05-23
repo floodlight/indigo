@@ -324,6 +324,76 @@ of_bsn_get_ip_mask_request_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_get_l2_table_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_get_l2_table_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_get_l2_table_reply_t *
+of_bsn_get_l2_table_reply_OF_VERSION_1_0_dup(
+    of_bsn_get_l2_table_reply_t *src)
+{
+    of_bsn_get_l2_table_reply_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+
+    if ((dst = of_bsn_get_l2_table_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_get_l2_table_reply_xid_get(src, &val32);
+    of_bsn_get_l2_table_reply_xid_set(dst, val32);
+
+    of_bsn_get_l2_table_reply_experimenter_get(src, &val32);
+    of_bsn_get_l2_table_reply_experimenter_set(dst, val32);
+
+    of_bsn_get_l2_table_reply_subtype_get(src, &val32);
+    of_bsn_get_l2_table_reply_subtype_set(dst, val32);
+
+    of_bsn_get_l2_table_reply_l2_table_enable_get(src, &val8);
+    of_bsn_get_l2_table_reply_l2_table_enable_set(dst, val8);
+
+    of_bsn_get_l2_table_reply_l2_table_priority_get(src, &val16);
+    of_bsn_get_l2_table_reply_l2_table_priority_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_get_l2_table_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_get_l2_table_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_get_l2_table_request_t *
+of_bsn_get_l2_table_request_OF_VERSION_1_0_dup(
+    of_bsn_get_l2_table_request_t *src)
+{
+    of_bsn_get_l2_table_request_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_get_l2_table_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_get_l2_table_request_xid_get(src, &val32);
+    of_bsn_get_l2_table_request_xid_set(dst, val32);
+
+    of_bsn_get_l2_table_request_experimenter_get(src, &val32);
+    of_bsn_get_l2_table_request_experimenter_set(dst, val32);
+
+    of_bsn_get_l2_table_request_subtype_get(src, &val32);
+    of_bsn_get_l2_table_request_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_get_mirroring_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -432,6 +502,45 @@ of_bsn_set_ip_mask_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_set_l2_table
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_set_l2_table.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_set_l2_table_t *
+of_bsn_set_l2_table_OF_VERSION_1_0_dup(
+    of_bsn_set_l2_table_t *src)
+{
+    of_bsn_set_l2_table_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+
+    if ((dst = of_bsn_set_l2_table_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_set_l2_table_xid_get(src, &val32);
+    of_bsn_set_l2_table_xid_set(dst, val32);
+
+    of_bsn_set_l2_table_experimenter_get(src, &val32);
+    of_bsn_set_l2_table_experimenter_set(dst, val32);
+
+    of_bsn_set_l2_table_subtype_get(src, &val32);
+    of_bsn_set_l2_table_subtype_set(dst, val32);
+
+    of_bsn_set_l2_table_l2_table_enable_get(src, &val8);
+    of_bsn_set_l2_table_l2_table_enable_set(dst, val8);
+
+    of_bsn_set_l2_table_l2_table_priority_get(src, &val16);
+    of_bsn_set_l2_table_l2_table_priority_set(dst, val16);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -462,6 +571,55 @@ of_bsn_set_mirroring_OF_VERSION_1_0_dup(
 
     of_bsn_set_mirroring_report_mirror_ports_get(src, &val8);
     of_bsn_set_mirroring_report_mirror_ports_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_set_pktin_suppression
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_set_pktin_suppression.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_set_pktin_suppression_t *
+of_bsn_set_pktin_suppression_OF_VERSION_1_0_dup(
+    of_bsn_set_pktin_suppression_t *src)
+{
+    of_bsn_set_pktin_suppression_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+    uint64_t val64;
+
+    if ((dst = of_bsn_set_pktin_suppression_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_set_pktin_suppression_xid_get(src, &val32);
+    of_bsn_set_pktin_suppression_xid_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_experimenter_get(src, &val32);
+    of_bsn_set_pktin_suppression_experimenter_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_subtype_get(src, &val32);
+    of_bsn_set_pktin_suppression_subtype_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_enabled_get(src, &val8);
+    of_bsn_set_pktin_suppression_enabled_set(dst, val8);
+
+    of_bsn_set_pktin_suppression_idle_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_idle_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_hard_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_hard_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_priority_get(src, &val16);
+    of_bsn_set_pktin_suppression_priority_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_cookie_get(src, &val64);
+    of_bsn_set_pktin_suppression_cookie_set(dst, val64);
 
     return dst;
 }
@@ -3753,6 +3911,55 @@ of_bsn_set_mirroring_OF_VERSION_1_1_dup(
 
     of_bsn_set_mirroring_report_mirror_ports_get(src, &val8);
     of_bsn_set_mirroring_report_mirror_ports_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_set_pktin_suppression
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_set_pktin_suppression.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_set_pktin_suppression_t *
+of_bsn_set_pktin_suppression_OF_VERSION_1_1_dup(
+    of_bsn_set_pktin_suppression_t *src)
+{
+    of_bsn_set_pktin_suppression_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+    uint64_t val64;
+
+    if ((dst = of_bsn_set_pktin_suppression_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_set_pktin_suppression_xid_get(src, &val32);
+    of_bsn_set_pktin_suppression_xid_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_experimenter_get(src, &val32);
+    of_bsn_set_pktin_suppression_experimenter_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_subtype_get(src, &val32);
+    of_bsn_set_pktin_suppression_subtype_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_enabled_get(src, &val8);
+    of_bsn_set_pktin_suppression_enabled_set(dst, val8);
+
+    of_bsn_set_pktin_suppression_idle_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_idle_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_hard_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_hard_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_priority_get(src, &val16);
+    of_bsn_set_pktin_suppression_priority_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_cookie_get(src, &val64);
+    of_bsn_set_pktin_suppression_cookie_set(dst, val64);
 
     return dst;
 }
@@ -8116,6 +8323,55 @@ of_bsn_set_mirroring_OF_VERSION_1_2_dup(
 
     of_bsn_set_mirroring_report_mirror_ports_get(src, &val8);
     of_bsn_set_mirroring_report_mirror_ports_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_set_pktin_suppression
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_set_pktin_suppression.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_set_pktin_suppression_t *
+of_bsn_set_pktin_suppression_OF_VERSION_1_2_dup(
+    of_bsn_set_pktin_suppression_t *src)
+{
+    of_bsn_set_pktin_suppression_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+    uint64_t val64;
+
+    if ((dst = of_bsn_set_pktin_suppression_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_set_pktin_suppression_xid_get(src, &val32);
+    of_bsn_set_pktin_suppression_xid_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_experimenter_get(src, &val32);
+    of_bsn_set_pktin_suppression_experimenter_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_subtype_get(src, &val32);
+    of_bsn_set_pktin_suppression_subtype_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_enabled_get(src, &val8);
+    of_bsn_set_pktin_suppression_enabled_set(dst, val8);
+
+    of_bsn_set_pktin_suppression_idle_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_idle_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_hard_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_hard_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_priority_get(src, &val16);
+    of_bsn_set_pktin_suppression_priority_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_cookie_get(src, &val64);
+    of_bsn_set_pktin_suppression_cookie_set(dst, val64);
 
     return dst;
 }
@@ -14831,6 +15087,55 @@ of_bsn_set_mirroring_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_set_pktin_suppression
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_set_pktin_suppression.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_set_pktin_suppression_t *
+of_bsn_set_pktin_suppression_OF_VERSION_1_3_dup(
+    of_bsn_set_pktin_suppression_t *src)
+{
+    of_bsn_set_pktin_suppression_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+    uint64_t val64;
+
+    if ((dst = of_bsn_set_pktin_suppression_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_set_pktin_suppression_xid_get(src, &val32);
+    of_bsn_set_pktin_suppression_xid_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_experimenter_get(src, &val32);
+    of_bsn_set_pktin_suppression_experimenter_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_subtype_get(src, &val32);
+    of_bsn_set_pktin_suppression_subtype_set(dst, val32);
+
+    of_bsn_set_pktin_suppression_enabled_get(src, &val8);
+    of_bsn_set_pktin_suppression_enabled_set(dst, val8);
+
+    of_bsn_set_pktin_suppression_idle_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_idle_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_hard_timeout_get(src, &val16);
+    of_bsn_set_pktin_suppression_hard_timeout_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_priority_get(src, &val16);
+    of_bsn_set_pktin_suppression_priority_set(dst, val16);
+
+    of_bsn_set_pktin_suppression_cookie_get(src, &val64);
+    of_bsn_set_pktin_suppression_cookie_set(dst, val64);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_desc_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -16967,6 +17272,77 @@ of_table_mod_OF_VERSION_1_3_dup(
 
     of_table_mod_config_get(src, &val32);
     of_table_mod_config_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_stats_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_stats_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_stats_reply_t *
+of_table_stats_reply_OF_VERSION_1_3_dup(
+    of_table_stats_reply_t *src)
+{
+    of_table_stats_reply_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    of_list_table_stats_entry_t src_list;
+    of_list_table_stats_entry_t *dst_list;
+
+    if ((dst = of_table_stats_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_stats_reply_xid_get(src, &val32);
+    of_table_stats_reply_xid_set(dst, val32);
+
+    of_table_stats_reply_flags_get(src, &val16);
+    of_table_stats_reply_flags_set(dst, val16);
+
+    of_table_stats_reply_entries_bind(
+        src, &src_list);
+    dst_list = of_list_table_stats_entry_OF_VERSION_1_3_dup(&src_list);
+    if (dst_list == NULL) {
+        of_table_stats_reply_delete(dst);
+        return NULL;
+    }
+    of_table_stats_reply_entries_set(dst, dst_list);
+    of_list_table_stats_entry_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_stats_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_stats_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_stats_request_t *
+of_table_stats_request_OF_VERSION_1_3_dup(
+    of_table_stats_request_t *src)
+{
+    of_table_stats_request_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_table_stats_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_stats_request_xid_get(src, &val32);
+    of_table_stats_request_xid_set(dst, val32);
+
+    of_table_stats_request_flags_get(src, &val16);
+    of_table_stats_request_flags_set(dst, val16);
 
     return dst;
 }
@@ -23352,6 +23728,40 @@ of_list_table_features_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate a list of type of_list_table_stats_entry
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_list_table_stats_entry.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_list_table_stats_entry_t *
+of_list_table_stats_entry_OF_VERSION_1_3_dup(
+    of_list_table_stats_entry_t *src)
+{
+    of_table_stats_entry_t src_elt;
+    of_table_stats_entry_t *dst_elt;
+    int rv;
+    of_list_table_stats_entry_t *dst;
+
+    if ((dst = of_list_table_stats_entry_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    OF_LIST_TABLE_STATS_ENTRY_ITER(src, &src_elt, rv) {
+        if ((dst_elt = of_table_stats_entry_OF_VERSION_1_3_dup(&src_elt)) == NULL) {
+            of_object_delete((of_object_t *)dst);
+            return NULL;
+        }
+        _TRY_FREE(of_list_table_stats_entry_append(dst, dst_elt),
+            dst, NULL);
+        of_object_delete((of_object_t *)dst_elt);
+    }
+
+    return dst;
+}
+
+/**
  * Duplicate a list of type of_list_uint32
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -23634,6 +24044,32 @@ of_bsn_get_ip_mask_request_dup(
     return NULL;
 }
 
+of_bsn_get_l2_table_reply_t *
+of_bsn_get_l2_table_reply_dup(
+    of_bsn_get_l2_table_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_get_l2_table_reply_OF_VERSION_1_0_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_get_l2_table_request_t *
+of_bsn_get_l2_table_request_dup(
+    of_bsn_get_l2_table_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_get_l2_table_request_OF_VERSION_1_0_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_bsn_get_mirroring_reply_t *
 of_bsn_get_mirroring_reply_dup(
     of_bsn_get_mirroring_reply_t *src)
@@ -23697,6 +24133,19 @@ of_bsn_set_ip_mask_dup(
     return NULL;
 }
 
+of_bsn_set_l2_table_t *
+of_bsn_set_l2_table_dup(
+    of_bsn_set_l2_table_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_set_l2_table_OF_VERSION_1_0_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_bsn_set_mirroring_t *
 of_bsn_set_mirroring_dup(
     of_bsn_set_mirroring_t *src)
@@ -23716,6 +24165,31 @@ of_bsn_set_mirroring_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_bsn_set_mirroring_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_set_pktin_suppression_t *
+of_bsn_set_pktin_suppression_dup(
+    of_bsn_set_pktin_suppression_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -24937,6 +25411,10 @@ of_table_stats_reply_dup(
         return of_table_stats_reply_OF_VERSION_1_2_dup(src);
     }
 
+    if (src->version == OF_VERSION_1_3) {
+        return of_table_stats_reply_OF_VERSION_1_3_dup(src);
+    }
+
     /* Class not supported in given version */
     return NULL;
 }
@@ -24956,6 +25434,10 @@ of_table_stats_request_dup(
 
     if (src->version == OF_VERSION_1_2) {
         return of_table_stats_request_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_table_stats_request_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -28685,6 +29167,10 @@ of_list_table_stats_entry_dup(
 
     if (src->version == OF_VERSION_1_2) {
         return of_list_table_stats_entry_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_list_table_stats_entry_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */

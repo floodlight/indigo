@@ -284,6 +284,68 @@ test_of_bsn_get_ip_mask_request_OF_VERSION_1_0_scalar(void)
 }
 
 static int
+test_of_bsn_get_l2_table_reply_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_get_l2_table_reply_t *obj;
+
+    obj = of_bsn_get_l2_table_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_GET_L2_TABLE_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_get_l2_table_reply_OF_VERSION_1_0_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_get_l2_table_reply_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
+
+    of_bsn_get_l2_table_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_get_l2_table_request_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_get_l2_table_request_t *obj;
+
+    obj = of_bsn_get_l2_table_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_GET_L2_TABLE_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_get_l2_table_request_OF_VERSION_1_0_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_get_l2_table_request_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
+
+    of_bsn_get_l2_table_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_get_mirroring_reply_OF_VERSION_1_0_scalar(void)
 {
     of_bsn_get_mirroring_reply_t *obj;
@@ -377,6 +439,37 @@ test_of_bsn_set_ip_mask_OF_VERSION_1_0_scalar(void)
 }
 
 static int
+test_of_bsn_set_l2_table_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_set_l2_table_t *obj;
+
+    obj = of_bsn_set_l2_table_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_L2_TABLE);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_l2_table_OF_VERSION_1_0_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_l2_table_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_l2_table_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_0_scalar(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -402,6 +495,37 @@ test_of_bsn_set_mirroring_OF_VERSION_1_0_scalar(void)
     TEST_ASSERT(of_bsn_set_mirroring_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
 
     of_bsn_set_mirroring_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_set_pktin_suppression_t *obj;
+
+    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 32);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_pktin_suppression_OF_VERSION_1_0_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -2916,6 +3040,37 @@ test_of_bsn_set_mirroring_OF_VERSION_1_1_scalar(void)
     TEST_ASSERT(of_bsn_set_mirroring_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
 
     of_bsn_set_mirroring_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_OF_VERSION_1_1_scalar(void)
+{
+    of_bsn_set_pktin_suppression_t *obj;
+
+    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 32);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_pktin_suppression_OF_VERSION_1_1_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -6251,6 +6406,37 @@ test_of_bsn_set_mirroring_OF_VERSION_1_2_scalar(void)
     TEST_ASSERT(of_bsn_set_mirroring_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
 
     of_bsn_set_mirroring_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_OF_VERSION_1_2_scalar(void)
+{
+    of_bsn_set_pktin_suppression_t *obj;
+
+    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 32);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_pktin_suppression_OF_VERSION_1_2_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -11816,6 +12002,37 @@ test_of_bsn_set_mirroring_OF_VERSION_1_3_scalar(void)
 }
 
 static int
+test_of_bsn_set_pktin_suppression_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_set_pktin_suppression_t *obj;
+
+    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 32);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_pktin_suppression_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_desc_stats_reply_OF_VERSION_1_3_scalar(void)
 {
     of_desc_stats_reply_t *obj;
@@ -13391,6 +13608,68 @@ test_of_table_mod_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(of_table_mod_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_table_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_stats_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_table_stats_reply_t *obj;
+
+    obj = of_table_stats_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_STATS_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_table_stats_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_stats_reply_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_table_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_stats_request_OF_VERSION_1_3_scalar(void)
+{
+    of_table_stats_request_t *obj;
+
+    obj = of_table_stats_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_STATS_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_table_stats_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_stats_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_table_stats_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -18933,6 +19212,24 @@ test_of_list_table_features_OF_VERSION_1_3_scalar(void)
 }
 
 static int
+test_of_list_table_stats_entry_OF_VERSION_1_3_scalar(void)
+{
+    of_list_table_stats_entry_t *obj;
+
+    obj = of_list_table_stats_entry_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 0);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_LIST_TABLE_STATS_ENTRY);
+
+    of_list_table_stats_entry_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_list_uint32_OF_VERSION_1_3_scalar(void)
 {
     of_list_uint32_t *obj;
@@ -18979,10 +19276,14 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_get_interfaces_request_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_get_ip_mask_reply_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_get_ip_mask_request_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_get_l2_table_reply_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_get_l2_table_request_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_set_ip_mask_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_set_l2_table_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_shell_command_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_shell_output_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_shell_status_OF_VERSION_1_0_scalar);
@@ -19069,6 +19370,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_1_scalar);
+    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_1_scalar);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_1_scalar);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_1_scalar);
     RUN_TEST(of_echo_reply_OF_VERSION_1_1_scalar);
@@ -19184,6 +19486,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_2_scalar);
+    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_2_scalar);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_2_scalar);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_2_scalar);
     RUN_TEST(of_echo_reply_OF_VERSION_1_2_scalar);
@@ -19372,6 +19675,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_3_scalar);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_echo_reply_OF_VERSION_1_3_scalar);
@@ -19423,6 +19727,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_table_features_stats_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_table_features_stats_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_table_mod_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_table_stats_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_table_stats_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_action_bsn_mirror_OF_VERSION_1_3_scalar);
     RUN_TEST(of_action_bsn_set_tunnel_dst_OF_VERSION_1_3_scalar);
     RUN_TEST(of_action_copy_ttl_in_OF_VERSION_1_3_scalar);
@@ -19615,6 +19921,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_list_queue_stats_entry_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_table_feature_prop_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_table_features_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_list_table_stats_entry_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_uint32_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_uint8_OF_VERSION_1_3_scalar);
     return TEST_PASS;
