@@ -310,7 +310,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
-    case OF_BSN_SET_L2_TABLE:
+    case OF_BSN_SET_L2_TABLE_REQUEST:
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
@@ -666,8 +666,9 @@ ind_core_enable_set(int enable)
     if (enable && !ind_core_module_enabled) {
         LOG_INFO("Enabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
-            ind_soc_timer_event_register(flow_expiration_timer, NULL,
-                                         ind_core_config.stats_check_ms);
+            ind_soc_timer_event_register_with_priority(
+                flow_expiration_timer, NULL,
+                ind_core_config.stats_check_ms, -10);
         }
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {

@@ -30,7 +30,9 @@
 #define __CONFIGURATION_H__
 
 #include "configuration_config.h"
+
 #include <indigo/error.h>
+#include <loci/loci.h>
 #include <cjson/cJSON.h>
 
 /**
@@ -119,6 +121,9 @@ extern indigo_error_t ind_cfg_lookup_string(cJSON *root, const char *path, char 
 extern indigo_error_t ind_cfg_lookup_int(cJSON *root, const char *path, int *result);
 extern indigo_error_t ind_cfg_lookup_double(cJSON *root, const char *path, double *result);
 extern indigo_error_t ind_cfg_lookup_bool(cJSON *root, const char *path, int *result);
+
+extern indigo_error_t ind_cfg_parse_mac_addr(cJSON *root, const char *path,
+                                             of_mac_addr_t *mac_addr);
 
 /*
  * Convenience function for parsing a log level

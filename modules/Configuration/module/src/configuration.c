@@ -388,3 +388,56 @@ ind_cfg_parse_loglevel(cJSON *root, const char *path,
 
     return err;
 }
+
+static int
+str2mac(const char *str, of_mac_addr_t *mac)
+{
+    unsigned int imac[6];
+    int p;
+    int i;
+
+    p = sscanf(str,"%2x:%2x:%2x:%2x:%2x:%2x",
+               &imac[0], &imac[1], &imac[2], &imac[3], &imac[4], &imac[5]);
+    if (p == 6) {
+        for (i = 0; i < 6; i++) {
+            mac->addr[i] = imac[i];
+        }
+
+        return 0;
+    }
+
+    return -1;
+}
+
+/**
+ * Parse a mac addr entry from the configuration
+ */
+
+indigo_error_t
+ind_cfg_parse_mac_addr(cJSON *root, const char *path,
+                       of_mac_addr_t *mac_addr)
+{
+    cJSON *node;
+    indigo_error_t err;
+
+    if (root == NULL) {
+        return INDIGO_ERROR_PARAM;
+    }
+
+    err = ind_cfg_lookup(root, path, &node);
+    if (err < 0) {
+        return err;
+    }
+
+    if (node->type != cJSON_String) {
+        AIM_LOG_ERROR("Config: mac_addr must be a string");
+        return INDIGO_ERROR_PARAM;
+    }
+
+    if (str2mac(node->valuestring, mac_addr)) {
+        AIM_LOG_ERROR("Config: mac_addr must be a colon sep MAC str");
+        return INDIGO_ERROR_PARAM;
+    }
+
+    return INDIGO_ERROR_NONE;
+}

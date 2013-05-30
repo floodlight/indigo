@@ -43,6 +43,11 @@
  * Socket register functions
  ****************************************************************/
 
+/*
+ * Priorities are signed integers. Higher priority events are handled first.
+ */
+#define IND_SOC_DEFAULT_PRIORITY 0
+
 /**
  * Run status.
  *
@@ -84,6 +89,26 @@ typedef void (*ind_soc_socket_ready_callback_f)(
  * @param socket_id The socket on which to select
  * @param callback The function to call on socket event
  * @param cookie Data to pass to the callback
+ * @param priority Priority when handling events
+ *
+ * Provided by socket manager, required by various
+ */
+
+indigo_error_t ind_soc_socket_register_with_priority(
+    int socket_id,
+    ind_soc_socket_ready_callback_f callback,
+    void *cookie,
+    int priority);
+
+/**
+ * Register a socket for processing by the socket manager
+ *
+ * @param socket_id The socket on which to select
+ * @param callback The function to call on socket event
+ * @param cookie Data to pass to the callback
+ *
+ * This is a wrapper around ind_soc_socket_register_with_priority which
+ * passes IND_SOC_DEFAULT_PRIORITY for the priority.
  *
  * Provided by socket manager, required by various
  */
@@ -187,6 +212,24 @@ typedef void  (*ind_soc_timer_callback_f)(void *cookie);
  *
  * If no timer exists with the given callback and cookie then it will
  * be created.
+ */
+
+indigo_error_t ind_soc_timer_event_register_with_priority(
+    ind_soc_timer_callback_f callback,
+    void *cookie,
+    int repeat_time_ms,
+    int priority);
+
+/**
+ * Register a timer event
+ *
+ * @param callback Timer callback function
+ * @param cookie Opaque data passed to callback
+ * @param repeat_time_ms Minimum time (ms) between timer callbacks,
+ *                       or IND_SOC_TIMER_IMMEDIATE
+ *
+ * This function is a wrapper around ind_soc_timer_event_register which passes
+ * IND_SOC_DEFAULT_PRIORITY for the priority.
  */
 
 indigo_error_t ind_soc_timer_event_register(

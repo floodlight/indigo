@@ -62,6 +62,11 @@ extern int have_local_connection;
  */
 extern int remote_connection_count;
 
+/*
+ * Priority for sockets and timers registered with SocketManager.
+ */
+#define IND_CXN_EVENT_PRIORITY 10
+
 extern void indigo_cxn_socket_ready_callback(int socket_id,
                                              void *cookie,
                                              int read_ready,

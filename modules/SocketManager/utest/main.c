@@ -398,6 +398,113 @@ test_timer_mgmt(void)
     }
 }
 
+static void
+test_priority(void)
+{
+    int read_fds[3], write_fds[3];
+    struct sock_counters counters[3];
+    int timer_counters[3];
+    int i;
+
+    for (i = 0; i < 3; i++) {
+        int fds[2];
+        if (pipe(fds) < 0) {
+            perror("pipe");
+            abort();
+        }
+        read_fds[i] = fds[0];
+        write_fds[i] = fds[1];
+    }
+
+    /* High priority */
+    INDIGO_ASSERT(ind_soc_socket_register_with_priority(
+        read_fds[0], socket_callback, &counters[0], 1) == 0);
+
+    INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
+        timer_callback, &timer_counters[0], IND_SOC_TIMER_IMMEDIATE, 1) == 0);
+
+    /* Medium priority */
+    INDIGO_ASSERT(ind_soc_socket_register_with_priority(
+        read_fds[1], socket_callback, &counters[1], 0) == 0);
+
+    INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
+        timer_callback, &timer_counters[1], IND_SOC_TIMER_IMMEDIATE, 0) == 0);
+
+    /* Low priority */
+    INDIGO_ASSERT(ind_soc_socket_register_with_priority(
+        read_fds[2], socket_callback, &counters[2], -1) == 0);
+
+    INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
+        timer_callback, &timer_counters[2], IND_SOC_TIMER_IMMEDIATE, -1) == 0);
+
+    /* Make all sockets ready */
+    for (i = 0; i < 3; i++) {
+        write(write_fds[i], "x", 1);
+    }
+
+    /* Higher priority events should run first */
+    memset(counters, 0, sizeof(counters));
+    memset(timer_counters, 0, sizeof(timer_counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 1);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[2].read == 0);
+    INDIGO_ASSERT(timer_counters[0] == 1);
+    INDIGO_ASSERT(timer_counters[1] == 0);
+    INDIGO_ASSERT(timer_counters[2] == 0);
+
+    /* Medium priority events should run next */
+    memset(counters, 0, sizeof(counters));
+    memset(timer_counters, 0, sizeof(timer_counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[1].read == 1);
+    INDIGO_ASSERT(counters[2].read == 0);
+    INDIGO_ASSERT(timer_counters[0] == 0);
+    INDIGO_ASSERT(timer_counters[1] == 1);
+    INDIGO_ASSERT(timer_counters[2] == 0);
+
+    /* New high priority events should run next */
+    write(write_fds[0], "x", 1);
+    memset(counters, 0, sizeof(counters));
+    memset(timer_counters, 0, sizeof(timer_counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 1);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[2].read == 0);
+    INDIGO_ASSERT(timer_counters[0] == 0);
+    INDIGO_ASSERT(timer_counters[1] == 0);
+    INDIGO_ASSERT(timer_counters[2] == 0);
+
+    /* Low priority events should run last */
+    memset(counters, 0, sizeof(counters));
+    memset(timer_counters, 0, sizeof(timer_counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0].read == 0);
+    INDIGO_ASSERT(counters[1].read == 0);
+    INDIGO_ASSERT(counters[2].read == 1);
+    INDIGO_ASSERT(timer_counters[0] == 0);
+    INDIGO_ASSERT(timer_counters[1] == 0);
+    INDIGO_ASSERT(timer_counters[2] == 1);
+
+    INDIGO_ASSERT(ind_soc_socket_unregister(read_fds[0]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(read_fds[1]) == 0);
+    INDIGO_ASSERT(ind_soc_socket_unregister(read_fds[2]) == 0);
+
+    /* One-shot timers, already unregistered */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        timer_callback, &timer_counters[0]) < 0);
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        timer_callback, &timer_counters[1]) < 0);
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(
+        timer_callback, &timer_counters[3]) < 0);
+
+    for (i = 0; i < 3; i++) {
+        close(read_fds[i]);
+        close(write_fds[i]);
+    }
+}
+
 int
 main(int argc, char* argv[])
 {
@@ -410,6 +517,7 @@ main(int argc, char* argv[])
     test_immediate_timer();
     test_socket();
     test_socket_mgmt();
+    test_priority();
 
     return 0;
 }
