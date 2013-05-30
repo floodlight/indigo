@@ -45,7 +45,8 @@ static const char *sample_json =
     "    \"int\": 5,\n"
     "    \"double\": 3.14,\n"
     "    \"true\": true,\n"
-    "    \"false\": false\n"
+    "    \"false\": false,\n"
+    "    \"mac\": \"00:01:02:03:04:05\"\n"
     "}\n";
 
 static void
@@ -56,6 +57,8 @@ test_lookup(void)
     int intval;
     double doubleval;
     cJSON *root = cJSON_Parse(sample_json);
+    of_mac_addr_t mac_check = {{0, 1, 2, 3, 4, 5}};
+    of_mac_addr_t mac;
 
     INDIGO_ASSERT(ind_cfg_lookup(root, "", &node) == INDIGO_ERROR_NONE);
     INDIGO_ASSERT(node == root);
@@ -129,6 +132,8 @@ test_lookup(void)
     INDIGO_ASSERT(ind_cfg_lookup_bool(root, "logging.dataplane", &intval) == INDIGO_ERROR_PARAM);
     INDIGO_ASSERT(ind_cfg_lookup_bool(root, "int", &intval) == INDIGO_ERROR_PARAM);
     INDIGO_ASSERT(ind_cfg_lookup_bool(root, "double", &intval) == INDIGO_ERROR_PARAM);
+    INDIGO_ASSERT(ind_cfg_parse_mac_addr(root, "mac", &mac) == INDIGO_ERROR_NONE);
+    INDIGO_ASSERT(memcmp(&mac, &mac_check, 6) == 0);
 
     cJSON_Delete(root);
 }

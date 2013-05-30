@@ -23,6 +23,12 @@
  *
  * Uses the socket ID as an index.
  *
+ * SocketManager implements a fixed priority scheduler. Higher priority events
+ * (timer or socket) are processed before lower priority events. Events with
+ * the same priority are processed round-robin. Each iteration of the event
+ * loop processes one priority level before polling for potential new high
+ * priority events.
+ *
  * @todo Make the max socket ID supported a parameter to the module
  * @todo Make the max timer events supported a parameter to the module
  *
@@ -52,6 +58,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <limits.h>
 
 static int init_done = 0;
 static int module_enabled = 0;
@@ -68,8 +75,9 @@ static int module_enabled = 0;
 /* Maximum simultaneous sockets to support */
 #define SOCKET_COUNT_MAX 1024
 typedef struct soc_map_s {
-    int socket_id;
+    short socket_id;
     uint16_t pollfd_index;
+    int priority;
     ind_soc_socket_ready_callback_f callback;
     void *cookie;
 } soc_map_t;
@@ -93,6 +101,7 @@ typedef struct timer_event_s {
     ind_soc_timer_callback_f callback;
     void *cookie;
     int repeat_time_ms;
+    int priority;
     indigo_time_t last_call;
 } timer_event_t;
 
@@ -151,9 +160,10 @@ soc_mgr_init(void)
 
 
 indigo_error_t
-ind_soc_socket_register(int socket_id,
-                        ind_soc_socket_ready_callback_f callback,
-                        void *cookie)
+ind_soc_socket_register_with_priority(int socket_id,
+                                      ind_soc_socket_ready_callback_f callback,
+                                      void *cookie,
+                                      int priority)
 {
     struct pollfd *pfd;
 
@@ -178,6 +188,7 @@ ind_soc_socket_register(int socket_id,
     soc_map[socket_id].pollfd_index = num_pollfds;
     soc_map[socket_id].callback = callback;
     soc_map[socket_id].cookie = cookie;
+    soc_map[socket_id].priority = priority;
 
     INDIGO_ASSERT(num_pollfds < SOCKET_COUNT_MAX);
     pfd = &pollfds[num_pollfds++];
@@ -187,6 +198,14 @@ ind_soc_socket_register(int socket_id,
     return INDIGO_ERROR_NONE;
 }
 
+indigo_error_t
+ind_soc_socket_register(int socket_id,
+                        ind_soc_socket_ready_callback_f callback,
+                        void *cookie)
+{
+    return ind_soc_socket_register_with_priority(
+        socket_id, callback, cookie, IND_SOC_DEFAULT_PRIORITY);
+}
 
 indigo_error_t
 ind_soc_data_out_ready(int socket_id)
@@ -337,7 +356,7 @@ find_next_timer_expiration(indigo_time_t now)
  * Run callbacks for timer events.
  */
 static void
-process_timers(void)
+process_timers(int priority)
 {
     int idx;
     indigo_time_t now;
@@ -349,6 +368,10 @@ process_timers(void)
     FOREACH_TIMER_EVENT(idx) {
         if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             break;
+        }
+
+        if (timer_event[idx].priority != priority) {
+            continue;
         }
 
         elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
@@ -372,8 +395,9 @@ process_timers(void)
 }
 
 indigo_error_t
-ind_soc_timer_event_register(ind_soc_timer_callback_f callback, void *cookie,
-                             int repeat_time_ms)
+ind_soc_timer_event_register_with_priority(
+    ind_soc_timer_callback_f callback, void *cookie,
+    int repeat_time_ms, int priority)
 {
     int idx;
 
@@ -401,8 +425,18 @@ ind_soc_timer_event_register(ind_soc_timer_callback_f callback, void *cookie,
     timer_event[idx].callback = callback;
     timer_event[idx].cookie = cookie;
     timer_event[idx].last_call = INDIGO_CURRENT_TIME;
+    timer_event[idx].priority = priority;
 
     return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
+ind_soc_timer_event_register(
+    ind_soc_timer_callback_f callback, void *cookie,
+    int repeat_time_ms)
+{
+    return ind_soc_timer_event_register_with_priority(
+        callback, cookie, repeat_time_ms, IND_SOC_DEFAULT_PRIORITY);
 }
 
 indigo_error_t
@@ -524,7 +558,7 @@ ind_soc_finish(void)
  * Run callbacks for each ready socket.
  */
 static void
-process_sockets(void)
+process_sockets(int priority)
 {
     int i;
     for (i = 0; i < num_pollfds; i++) {
@@ -533,6 +567,10 @@ process_sockets(void)
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             break;
+        }
+
+        if (soc_map[pfd->fd].priority != priority) {
+            continue;
         }
 
         read_ready = (pfd->revents & POLLIN) != 0;
@@ -544,6 +582,46 @@ process_sockets(void)
 
         }
     }
+}
+
+/*
+ * This function returns the priority level the event loop should process
+ * on the current iteration. It assumes poll() has been called on the global
+ * pollfds array.
+ */
+static int
+find_highest_ready_priority(void)
+{
+    int idx;
+    indigo_time_t now;
+    int elapsed, tmp_ms;
+    int priority = INT_MIN;
+
+    now = INDIGO_CURRENT_TIME;
+
+    for (idx = 0; idx < num_pollfds; idx++) {
+        struct pollfd *pfd = &pollfds[idx];
+
+        if (pfd->revents == 0) {
+            continue;
+        }
+
+        priority = aim_imax(priority, soc_map[pfd->fd].priority);
+    }
+
+    FOREACH_TIMER_EVENT(idx) {
+        if (timer_event[idx].priority <= priority) {
+            continue;
+        }
+
+        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
+        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
+        if (tmp_ms <= 0) {
+            priority = timer_event[idx].priority;
+        }
+    }
+
+    return priority;
 }
 
 /*
@@ -559,6 +637,7 @@ ind_soc_select_and_run(int run_for_ms)
     indigo_time_t start, current;
     int elapsed;
     int next_timer_ms, timeout_ms;
+    int priority;
 
     ind_soc_run_status_set(IND_SOC_RUN_STATUS_OK);
 
@@ -579,8 +658,11 @@ ind_soc_select_and_run(int run_for_ms)
             return INDIGO_ERROR_UNKNOWN;
         }
 
-        process_sockets();
-        process_timers();
+        priority = find_highest_ready_priority();
+        LOG_TRACE("processing priority %d", priority);
+
+        process_sockets(priority);
+        process_timers(priority);
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             return INDIGO_ERROR_NONE;

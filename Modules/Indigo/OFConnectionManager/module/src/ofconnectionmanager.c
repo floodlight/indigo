@@ -395,9 +395,9 @@ listen_cxn_init(connection_t *cxn)
     }
 
     /* Register the socket */
-    rv = ind_soc_socket_register(cxn->sd,
-                                 ind_cxn_listen_socket_ready,
-                                 cxn);
+    rv = ind_soc_socket_register_with_priority(
+            cxn->sd, ind_cxn_listen_socket_ready,
+            cxn, IND_CXN_EVENT_PRIORITY);
     if (rv < 0) {
         LOG_ERROR("Could not register with soc man");
         return INDIGO_ERROR_UNKNOWN;
@@ -486,8 +486,9 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
         ind_cxn_state_set(cxn, INDIGO_CXN_S_CONNECTING);
     } else if (!CXN_LISTEN(cxn)) {
         /* Force immediate connection check event */
-        ind_soc_timer_event_register(ind_cxn_connection_retry_timer, cxn,
-                                     IND_SOC_TIMER_IMMEDIATE);
+        ind_soc_timer_event_register_with_priority(
+            ind_cxn_connection_retry_timer, cxn,
+            IND_SOC_TIMER_IMMEDIATE, IND_CXN_EVENT_PRIORITY);
     }
 
     return cxn;

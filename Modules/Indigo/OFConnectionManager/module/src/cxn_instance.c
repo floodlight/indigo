@@ -359,23 +359,26 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
             cxn->active = 0;
         } else {
             /* Disconnected but still active - start connecting again */
-            ind_soc_timer_event_register(ind_cxn_connection_retry_timer, cxn,
-                                         IND_SOC_TIMER_IMMEDIATE);
+            ind_soc_timer_event_register_with_priority(
+                ind_cxn_connection_retry_timer, cxn,
+                IND_SOC_TIMER_IMMEDIATE, IND_CXN_EVENT_PRIORITY);
         }
         ind_cxn_disconnected_init(cxn);
         break;
 
     case INDIGO_CXN_S_CONNECTING:
         /* Register with socket manager */
-        ind_soc_socket_register(cxn->sd, indigo_cxn_socket_ready_callback,
-                                cxn);
+        ind_soc_socket_register_with_priority(
+            cxn->sd, indigo_cxn_socket_ready_callback,
+            cxn, IND_CXN_EVENT_PRIORITY);
         ind_cxn_send_hello(cxn);
         if (CXN_LOCAL(cxn)) {
             /* Recursive call; transition to connected */
             cxn_state_set(cxn, INDIGO_CXN_S_HANDSHAKE_COMPLETE);
         } else {
-            ind_soc_timer_event_register(cxn_connecting_timeout, (void *)cxn,
-                                         CXN_STATE_TIMEOUT(new_state));
+            ind_soc_timer_event_register_with_priority(
+                cxn_connecting_timeout, (void *)cxn,
+                CXN_STATE_TIMEOUT(new_state), IND_CXN_EVENT_PRIORITY);
         }
         break;
 
@@ -394,15 +397,17 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         }
 #endif
         ind_soc_timer_event_unregister(periodic_keepalive, (void *)cxn);
-        ind_soc_timer_event_register(cxn_closing_timeout, (void *)cxn,
-                                     CXN_STATE_TIMEOUT(new_state));
+        ind_soc_timer_event_register_with_priority(
+            cxn_closing_timeout, (void *)cxn,
+            CXN_STATE_TIMEOUT(new_state), IND_CXN_EVENT_PRIORITY);
         cleanup_disconnect(cxn);
         break;
     case INDIGO_CXN_S_HANDSHAKE_COMPLETE:
         if (cxn->keepalive.period_ms > 0) {
             /* Set up periodic echo request */
-            ind_soc_timer_event_register(periodic_keepalive, (void *)cxn,
-                                         cxn->keepalive.period_ms);
+            ind_soc_timer_event_register_with_priority(
+                periodic_keepalive, (void *)cxn,
+                cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
 
         break;
@@ -1075,8 +1080,9 @@ process_message(connection_t *cxn)
         /* We have a message from the controller.  Reset keepalive timeout */
         cxn->keepalive.outstanding_echo_cnt = 0;
         if (cxn->keepalive.period_ms > 0) {
-            ind_soc_timer_event_register(periodic_keepalive, (void *)cxn,
-                                         cxn->keepalive.period_ms);
+            ind_soc_timer_event_register_with_priority(
+                periodic_keepalive, (void *)cxn,
+                cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
     }
 
@@ -1129,8 +1135,7 @@ ind_cxn_process_read_buffer(connection_t *cxn)
 {
     int rv = INDIGO_ERROR_NONE;
 
-    /* @FIXME This should be in a loop? */
-    while ((rv = read_message(cxn)) == INDIGO_ERROR_NONE) {
+    if ((rv = read_message(cxn)) == INDIGO_ERROR_NONE) {
         process_message(cxn);
     }
 
@@ -1494,7 +1499,8 @@ ind_cxn_connection_retry_timer(void *cookie)
     if (ind_cxn_try_to_connect(cxn) == 0) {
         ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer, cxn);
     } else {
-        ind_soc_timer_event_register(ind_cxn_connection_retry_timer, cxn,
-                                     connection_retry_ms(cxn));
+        ind_soc_timer_event_register_with_priority(
+            ind_cxn_connection_retry_timer, cxn,
+            connection_retry_ms(cxn), IND_CXN_EVENT_PRIORITY);
     }
 }
