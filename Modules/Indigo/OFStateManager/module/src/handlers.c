@@ -793,7 +793,7 @@ indigo_core_flow_create_callback(indigo_error_t result,
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
-       LOG_ERROR("Forwarding flow add returned %d", result);
+       LOG_VERBOSE("Error from forwarding while inserting flow");
        ind_core_ft->status.forwarding_add_errors += 1;
 
        of_flow_add_xid_get(flow_add, &xid);
@@ -1745,7 +1745,7 @@ ind_core_experimenter_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (rv < 0) {
-        LOG_ERROR();
+        LOG_VERBOSE("Error handling experimenter message in port or fwding");
     }
 
     of_experimenter_delete(fwd_obj);
