@@ -26,14 +26,13 @@
 ###############################################################################
 
 ifndef BIGCODE
-BIGCODE=$(shell pwd)/../../../../
+BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))/../../../..
 endif
 
-MODULE := OFConnectionManager_utest
-TEST_MODULE := OFConnectionManager
+MODULE := Configuration_utest
+TEST_MODULE := Configuration
 NOMODULEMAKE=1
-
-DEPENDMODULES := AIM SocketManager indigo loci BigList
+DEPENDMODULES := AIM SocketManager indigo loci BigList cjson
 
 # These indicate Linux specific implementations to be used for
 # various features
@@ -42,8 +41,10 @@ GLOBAL_CFLAGS += -DINDIGO_LINUX_TIME
 GLOBAL_CFLAGS += -DINDIGO_FAULT_ON_ASSERT
 GLOBAL_CFLAGS += -DINDIGO_MEM_STDLIB
 GLOBAL_CFLAGS += -DOF_OBJECT_TRACKING
-
-GLOBAL_CFLAGS += -DOFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI=0
+GLOBAL_CFLAGS += -g
+GLOBAL_CFLAGS += -DCONFIGURATION_CONFIG_INCLUDE_UCLI=0
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
+
+GLOBAL_LINK_LIBS += -lpthread -lpcap -lm
 
 include ../../make/utestmodule.mk

@@ -44,6 +44,7 @@ The AIM module cannot depend on any other module or any external package.
  * @defgroup aim-config Compile-Time Configuration
  * @defgroup aim-porting Porting Macros
  * @defgroup aim-printf Printf with Custom Datatypes
+ * @defgroup aim-sparse Custom Datatype Parsing
  * @defgroup aim-pvs Virtualized Print Vectors
  * @{
  *  @defgroup aim-pvs-file File PVS

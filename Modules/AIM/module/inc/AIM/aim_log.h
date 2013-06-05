@@ -984,5 +984,21 @@ extern aim_log_t AIM_LOG_STRUCT;
 
 #endif /* AIM_LOG_MODULE_NAME */
 
+/**
+ * @brief Map a syslog level string to a set of flags and options
+ * @param syslog_str The string being mapped
+ * @param flags Pointer for storing flags
+ *
+ * Valid input strings include:
+ * emergencies alerts critical errors warnings notifications
+ * informational debugging
+ *
+ * Also support the non-standard strings verbose == informational and
+ * trace == debugging.  Strings must be lower case and complete
+ */
+
+extern int aim_log_syslog_level_map(const char *syslog_str,
+                                    uint32_t *flags);
+
 #endif /* __AIM_LOG_H__ */
 /* @}*/

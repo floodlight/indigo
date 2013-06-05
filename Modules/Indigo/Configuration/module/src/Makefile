@@ -19,29 +19,10 @@
 
 ###############################################################################
 #
-#  /utest/Makefile
-#
-#  BigData Unit Testing Makefile
+# Local source generation targets.
 #
 ###############################################################################
 
-ifndef BIGCODE
-BIGCODE=$(shell pwd)/../../../../
-endif
+ucli:
+	$(BIGCODE)/Tools/uclihandlers.py configuration_ucli.c
 
-MODULE := SocketManager_utest
-TEST_MODULE := SocketManager
-NOMODULEMAKE=1
-
-DEPENDMODULES := AIM loci indigo BigList
-
-# These indicate Linux specific implementations to be used for
-# various features
-GLOBAL_CFLAGS += -DINDIGO_LINUX_LOGGING
-GLOBAL_CFLAGS += -DINDIGO_LINUX_TIME
-GLOBAL_CFLAGS += -DINDIGO_FAULT_ON_ASSERT
-GLOBAL_CFLAGS += -DOF_OBJECT_TRACKING
-
-GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
-
-include ../../make/utestmodule.mk

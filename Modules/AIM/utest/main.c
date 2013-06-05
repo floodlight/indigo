@@ -63,6 +63,15 @@ int aim_main(int argc, char* argv[])
         aim_printf(&aim_pvs_stdout, "data is %{data}", data, sizeof(data));
     }
 
+    {
+        char* sdata = "DEADBEEFCAFE";
+        char* data;
+        int size;
+        aim_sparse(&sdata, &aim_pvs_stdout, "{data}", &data, &size);
+        aim_printf(&aim_pvs_stdout, "data is %{data}\n", data, size);
+        aim_free(data);
+    }
+
     utest_list();
 
     AIM_LOG_MSG("Should print 1-27");

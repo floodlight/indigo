@@ -305,6 +305,25 @@ int utest_BigList(void)
     }
     BLFREE(bl, 9);
 
+    /* biglist_copy */
+    {
+        bl = __makeList(0, 10, 1);
+        biglist_t* copy = biglist_copy(bl);
+        biglist_t* src;
+        biglist_t* dst;
+        if((i=biglist_length(copy))!=10) {
+            FAIL(copy, "biglist_length of copy failed, is %d, should be 10", i);
+        }
+        for(i = 0, src=bl, dst=copy; src && dst;
+            src=src->next, dst=dst->next, i++) {
+            if(src->data != dst->data) {
+                FAIL(copy, "Element %d in srclist (%p) does not match copied list (%p)",
+                     i, src->data, dst->data);
+            }
+        }
+        BLFREE(bl, 10);
+        BLFREE(copy, 10);
+    }
     return 0;
 }
 

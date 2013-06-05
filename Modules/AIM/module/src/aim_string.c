@@ -268,3 +268,58 @@ aim_strjoin(const char* string, const char** strings, int count)
 
     return rv;
 }
+
+
+aim_tokens_t*
+aim_strsplit(const char* string, const char* delim)
+{
+    const char** tokens;
+    char* tok;
+    int count;
+    char* saveptr;
+    char* s;
+    aim_tokens_t* rv;
+
+    /*
+     * Determine how many tokens we'll have
+     */
+    s = aim_strdup(string);
+
+    count = 0;
+    tok = aim_strtok_r(s, delim, &saveptr);
+    while(tok) {
+        count++;
+        tok = aim_strtok_r(NULL, delim, &saveptr);
+    }
+
+    tokens = aim_zmalloc((sizeof(char*)*(count+2)));
+    /* reset string */
+    AIM_STRCPY(s, string);
+    tok = aim_strtok_r(s, delim, &saveptr);
+    count = 0;
+    while(tok) {
+        tokens[count++] = tok;
+        tok = aim_strtok_r(NULL, delim, &saveptr);
+    }
+
+    rv = aim_zmalloc(sizeof(*rv));
+    rv->count = count;
+    rv->tokens = tokens;
+    rv->_string = s;
+
+    return rv;
+}
+
+void
+aim_tokens_free(aim_tokens_t* tokens)
+{
+    AIM_FREE(tokens->_string);
+
+    /*
+     * The tokens array contains pointers into tokens->_string, so
+     * we shouldn't free them, just the array containing them.
+     */
+    AIM_FREE(tokens->tokens);
+
+    AIM_FREE(tokens);
+}

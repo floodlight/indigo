@@ -123,5 +123,32 @@ uint8_t* aim_bytes_from_string(const char* src, int* size);
  */
 char* aim_strjoin(const char* string, const char** strings, int count);
 
+/**
+ * Tokenizer
+ */
+typedef struct aim_tokens_s {
+    /** total token count */
+    int count;
+    /** tokens */
+    const char** tokens;
+
+    /** Internal */
+    char* _string;
+} aim_tokens_t;
+
+/**
+ * @brief Split a string.
+ * @param string The input string.
+ * @param delim The token delimiters.
+ * @note Call aim_tokens_free() when done.
+ */
+aim_tokens_t* aim_strsplit(const char* string, const char* delim);
+
+/**
+ * @brief Free an AIM tokens structure.
+ * @param tokens The structure to free.
+ */
+void aim_tokens_free(aim_tokens_t* tokens);
+
 #endif /* __AIM_STRING_H__ */
 /*@}*/

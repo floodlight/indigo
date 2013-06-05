@@ -1,4 +1,5 @@
 build/
 *.mk
-!bigcode-utests/make/*.mk
+!utests/make/*.mk
 dependmodules.x
+*.log

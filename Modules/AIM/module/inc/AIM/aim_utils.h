@@ -174,6 +174,12 @@ extern int aim_modules_init(void);
  */
 void* aim_zmalloc(int size);
 
+/**
+ * Free memory allocated by aim_zmalloc()
+ * @param data The memory to free.
+ */
+void aim_free(void* data);
+
 
 /**
  * @brief Duplicate memory.
@@ -215,6 +221,17 @@ void* aim_memndup(void* src, int src_size, int alloc_size);
             AIM_DIE("assertion failed: '" #_expr "': " __VA_ARGS__);     \
         }                                                               \
     } while(0)
+
+
+/**
+ * Min/Max
+ */
+static inline int aim_imax(int a, int b) {
+    return a > b ? a : b;
+}
+static inline int aim_imin(int a, int b) {
+    return a > b ? b : a;
+}
 
 #endif /* __AIM_UTILS_H__ */
 /*@}*/

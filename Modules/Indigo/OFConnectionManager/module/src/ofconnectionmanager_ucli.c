@@ -33,6 +33,7 @@
 #include <uCli/ucli_argparse.h>
 #include <uCli/ucli_handler_macros.h>
 
+#include "ofconnectionmanager_int.h"
 
 
 static ucli_status_t
@@ -47,12 +48,26 @@ ofconnectionmanager_ucli_ucli__config__(ucli_context_t* uc)
 }
 
 static ucli_status_t
-ofconnectionmanager_ucli_ucli__foo__(ucli_context_t* uc)
+ofconnectionmanager_ucli_ucli__stats__(ucli_context_t *uc)
 {
+    char *str;
+    int details = 0;
+
     UCLI_COMMAND_INFO(uc,
-                      "foo", 0,
-                      "$summary#test command.");
-    ucli_printf(uc, "foo command issued\n");
+                      "stats", -1,
+                      "$summary#Show connection stats.");
+    if (uc->pargs->count == 1) {
+        UCLI_ARGPARSE_OR_RETURN(uc, "s", &str);
+        if (!strncmp(str, "detail", 6)) { /* Allow detail or details */
+            details = 1;
+        } else {
+            return UCLI_STATUS_E_ARG;
+        }
+    } else if (uc->pargs->count > 1) {
+        return UCLI_STATUS_E_ARG;
+    }
+
+    ind_cxn_stats_show(&uc->pvs, details);
 
     return UCLI_STATUS_OK;
 }
@@ -68,7 +83,7 @@ ofconnectionmanager_ucli_ucli__foo__(ucli_context_t* uc)
 static ucli_command_handler_f ofconnectionmanager_ucli_ucli_handlers__[] =
 {
     ofconnectionmanager_ucli_ucli__config__,
-    ofconnectionmanager_ucli_ucli__foo__,
+    ofconnectionmanager_ucli_ucli__stats__,
     NULL
 };
 /******************************************************************************/

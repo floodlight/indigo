@@ -113,9 +113,6 @@ extern indigo_error_t ind_core_group_desc_stats_request_handler(
 extern indigo_error_t ind_core_group_features_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_role_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
 extern indigo_error_t ind_core_bsn_get_ip_mask_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
@@ -128,10 +125,5 @@ extern indigo_error_t ind_core_bsn_get_get_mirroring_request_handler(
 extern indigo_error_t ind_core_bsn_get_set_mirroring_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_nicira_controller_role_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn_id);
-
-
 
 #endif /* _OF_STATE_HANDLERS_H_ */

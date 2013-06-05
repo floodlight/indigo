@@ -24,7 +24,7 @@
 .default: check
 
 check tests:
-	make -C targets/bigcode-utests
+	make -C targets/utests
 
 doc:
 	doxygen

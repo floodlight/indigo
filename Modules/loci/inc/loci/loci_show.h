@@ -100,6 +100,15 @@ typedef int (*loci_obj_show_f)(loci_writer_f writer,
 #define LOCI_SHOW_u16_tcp_dst(writer, cookie, val)         LOCI_SHOW_u16(writer, cookie, val)
 #define LOCI_SHOW_u8_ip_proto(writer, cookie, val)         LOCI_SHOW_u8(writer, cookie, val)
 #define LOCI_SHOW_u64_metadata(writer, cookie, val)        LOCI_SHOW_x64(writer, cookie, val)
+#define LOCI_SHOW_u8_enabled(writer, cookie, val)          LOCI_SHOW_u8(writer, cookie, val)
+#define LOCI_SHOW_u32_vport_no(writer, cookie, val)        LOCI_SHOW_u32(writer, cookie, val)
+#define LOCI_SHOW_u32_port_no(writer, cookie, val)         LOCI_SHOW_u32(writer, cookie, val)
+#define LOCI_SHOW_u16_ingress_tpid(writer, cookie, val)    LOCI_SHOW_x16(writer, cookie, val)
+#define LOCI_SHOW_u16_egress_tpid(writer, cookie, val)     LOCI_SHOW_x16(writer, cookie, val)
+#define LOCI_SHOW_u16_ingress_vlan_id(writer, cookie, val) LOCI_SHOW_u16(writer, cookie, val)
+#define LOCI_SHOW_u16_egress_vlan_id(writer, cookie, val)  LOCI_SHOW_u16(writer, cookie, val)
+#define LOCI_SHOW_u32_enabled(writer, cookie, val)         LOCI_SHOW_u32(writer, cookie, val)
+#define LOCI_SHOW_u32_enable(writer, cookie, val)          LOCI_SHOW_u32(writer, cookie, val)
 
 
 
@@ -313,7 +322,8 @@ int of_object_show(loci_writer_f writer, void *cookie, of_object_t *obj);
 #define LOCI_SHOW_u16_subtype(writer, cookie, val) LOCI_SHOW_u16(writer, cookie, val)
 #define LOCI_SHOW_u32_ipv4_addr(writer, cookie, val) LOCI_SHOW_ipv4(writer, cookie, val)
 #define LOCI_SHOW_u32_ipv4_netmask(writer, cookie, val) LOCI_SHOW_ipv4(writer, cookie, val)
-
+#define LOCI_SHOW_u8_l2_table_enable(writer, cookie, val) LOCI_SHOW_u8(writer, cookie, val)
+#define LOCI_SHOW_u16_l2_table_priority(writer, cookie, val) LOCI_SHOW_u16(writer, cookie, val)
 
 
 

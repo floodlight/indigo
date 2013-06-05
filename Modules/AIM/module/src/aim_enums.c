@@ -252,6 +252,7 @@ aim_map_si_t aim_error_map[] =
     { "none", AIM_ERROR_NONE },
     { "param", AIM_ERROR_PARAM },
     { "not_found", AIM_ERROR_NOT_FOUND },
+    { "internal", AIM_ERROR_INTERNAL },
     { NULL, 0 }
 };
 
@@ -260,6 +261,7 @@ aim_map_si_t aim_error_desc_map[] =
     { "No error.", AIM_ERROR_NONE },
     { "One of the function parameters was invalid.", AIM_ERROR_PARAM },
     { "The requested object was not found.", AIM_ERROR_NOT_FOUND },
+    { "An unexpected internal error occurred.", AIM_ERROR_INTERNAL },
     { NULL, 0 }
 };
 

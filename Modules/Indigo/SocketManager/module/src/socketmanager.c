@@ -23,9 +23,14 @@
  *
  * Uses the socket ID as an index.
  *
+ * SocketManager implements a fixed priority scheduler. Higher priority events
+ * (timer or socket) are processed before lower priority events. Events with
+ * the same priority are processed round-robin. Each iteration of the event
+ * loop processes one priority level before polling for potential new high
+ * priority events.
+ *
  * @todo Make the max socket ID supported a parameter to the module
  * @todo Make the max timer events supported a parameter to the module
- * @todo "current_socket_id_max" never decreases now.  Fix that
  *
  * @todo Consider supporting both periodic and single events.  Currently
  * periodic events are supported with a special one-shot, immediate
@@ -41,16 +46,19 @@
  *****************************************************************************/
 
 #include "socketmanager_log.h"
+#include "socketmanager_int.h"
 
 #include <SocketManager/socketmanager.h>
+#include <Configuration/configuration.h>
 
 #include <indigo/assert.h>
 #include <indigo/time.h>
 
-#include <sys/select.h>
+#include <poll.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <limits.h>
 
 static int init_done = 0;
 static int module_enabled = 0;
@@ -67,25 +75,23 @@ static int module_enabled = 0;
 /* Maximum simultaneous sockets to support */
 #define SOCKET_COUNT_MAX 1024
 typedef struct soc_map_s {
-    int socket_id;
-    int data_out_ready;
-    int data_in_paused;
+    short socket_id;
+    uint16_t pollfd_index;
+    int priority;
     ind_soc_socket_ready_callback_f callback;
     void *cookie;
 } soc_map_t;
 
 /* Indexed by socket descriptor */
 static soc_map_t soc_map[SOCKET_COUNT_MAX];
-static int current_socket_id_max = 0; /* Highest index to check */
+
+/* Dense array passed to poll(2) */
+static struct pollfd pollfds[SOCKET_COUNT_MAX];
+static int num_pollfds = 0;
 
 #define IS_ACTIVE_SOCKET_ID(_id) (soc_map[_id].socket_id == (_id))
 #define IS_LEGAL_SOCKET_ID(_id) (((_id) >= 0) && ((_id) < SOCKET_COUNT_MAX))
-#define DATA_OUT_READY(_id) (soc_map[_id].data_out_ready)
-#define DATA_IN_PAUSED(_id) (soc_map[_id].data_in_paused)
-
-#define FOREACH_ACTIVE_SOCKET_ID(_id)                       \
-    for ((_id) = 0; (_id) < current_socket_id_max; (_id)++)     \
-        if (IS_ACTIVE_SOCKET_ID(_id))
+#define POLLFD_INDEX(_id) soc_map[(_id)].pollfd_index
 
 /*
  * Timer event structure
@@ -95,6 +101,7 @@ typedef struct timer_event_s {
     ind_soc_timer_callback_f callback;
     void *cookie;
     int repeat_time_ms;
+    int priority;
     indigo_time_t last_call;
 } timer_event_t;
 
@@ -102,7 +109,6 @@ typedef struct timer_event_s {
 static timer_event_t timer_event[TIMER_EVENT_MAX];
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
-#define TIMER_LAST(idx)
 
 #define FOREACH_TIMER_EVENT(idx)                        \
     for ((idx) = 0; (idx) < TIMER_EVENT_MAX; (idx)++)   \
@@ -146,7 +152,6 @@ soc_mgr_init(void)
     for (idx = 0; idx < SOCKET_COUNT_MAX; idx++) {
         soc_map[idx].socket_id = INVALID_SOCKET_ID;
     }
-    current_socket_id_max = 0;
 
     for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
         timer_event[idx].callback = NULL;
@@ -155,10 +160,13 @@ soc_mgr_init(void)
 
 
 indigo_error_t
-ind_soc_socket_register(int socket_id,
-                        ind_soc_socket_ready_callback_f callback,
-                        void *cookie)
+ind_soc_socket_register_with_priority(int socket_id,
+                                      ind_soc_socket_ready_callback_f callback,
+                                      void *cookie,
+                                      int priority)
 {
+    struct pollfd *pfd;
+
     LOG_VERBOSE("Register socket %d", socket_id);
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
         LOG_ERROR("Socket ID out of range: id %d", socket_id);
@@ -177,16 +185,27 @@ ind_soc_socket_register(int socket_id,
 
     INDIGO_ASSERT(soc_map[socket_id].socket_id == INVALID_SOCKET_ID);
     soc_map[socket_id].socket_id = socket_id;
+    soc_map[socket_id].pollfd_index = num_pollfds;
     soc_map[socket_id].callback = callback;
     soc_map[socket_id].cookie = cookie;
+    soc_map[socket_id].priority = priority;
 
-    if (current_socket_id_max <= socket_id) {
-        current_socket_id_max = socket_id + 1;
-    }
+    INDIGO_ASSERT(num_pollfds < SOCKET_COUNT_MAX);
+    pfd = &pollfds[num_pollfds++];
+    pfd->fd = socket_id;
+    pfd->events = POLLIN;
 
     return INDIGO_ERROR_NONE;
 }
 
+indigo_error_t
+ind_soc_socket_register(int socket_id,
+                        ind_soc_socket_ready_callback_f callback,
+                        void *cookie)
+{
+    return ind_soc_socket_register_with_priority(
+        socket_id, callback, cookie, IND_SOC_DEFAULT_PRIORITY);
+}
 
 indigo_error_t
 ind_soc_data_out_ready(int socket_id)
@@ -201,7 +220,7 @@ ind_soc_data_out_ready(int socket_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    soc_map[socket_id].data_out_ready = 1;
+    pollfds[POLLFD_INDEX(socket_id)].events |= POLLOUT;
 
     return INDIGO_ERROR_NONE;
 }
@@ -219,7 +238,7 @@ ind_soc_data_out_clear(int socket_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    soc_map[socket_id].data_out_ready = 0;
+    pollfds[POLLFD_INDEX(socket_id)].events &= ~POLLOUT;
 
     return INDIGO_ERROR_NONE;
 }
@@ -237,7 +256,7 @@ ind_soc_data_in_pause(int socket_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    soc_map[socket_id].data_in_paused = 1;
+    pollfds[POLLFD_INDEX(socket_id)].events &= ~POLLIN;
 
     return INDIGO_ERROR_NONE;
 }
@@ -255,7 +274,7 @@ ind_soc_data_in_resume(int socket_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    soc_map[socket_id].data_in_paused = 0;
+    pollfds[POLLFD_INDEX(socket_id)].events |= POLLIN;
 
     return INDIGO_ERROR_NONE;
 }
@@ -274,6 +293,29 @@ ind_soc_socket_unregister(int socket_id)
         return INDIGO_ERROR_PARAM;
     }
 
+    if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
+        LOG_INFO("socket_unregister: Socket %d not registered", socket_id);
+        return INDIGO_ERROR_PARAM;
+    }
+
+    /*
+     * Need to maintain the dense property of the pollfds array.
+     * Move the element at the end to the index being freed.
+     */
+    INDIGO_ASSERT(num_pollfds > 0);
+    if (num_pollfds > 1) {
+        int dst_index = POLLFD_INDEX(socket_id);
+        struct pollfd *src_pfd = &pollfds[num_pollfds-1];
+        struct pollfd *dst_pfd = &pollfds[dst_index];
+        if (src_pfd != dst_pfd) {
+            soc_map[src_pfd->fd].pollfd_index = dst_index;
+            *dst_pfd = *src_pfd;
+        }
+    }
+
+    num_pollfds--;
+
+    memset(&soc_map[socket_id], 0, sizeof(soc_map_t));
     soc_map[socket_id].socket_id = INVALID_SOCKET_ID;
 
     return INDIGO_ERROR_NONE;
@@ -291,29 +333,45 @@ ind_soc_run_status_set(ind_soc_run_status_t s)
 }
 
 
-
-
 /*
- * Check timer events.  Return number of ms until next event or -1 if none.
- *
- * Returns ms to next event if any; -1 if no events.
+ * Return the time in ms until the next timer fires, or -1 if no timers
+ * are active.
  */
 static int
-check_timer_events(void)
+find_next_timer_expiration(indigo_time_t now)
 {
     int idx;
-    int next_ms = -1;
+    int next_ms = -1, elapsed, tmp_ms;
+    FOREACH_TIMER_EVENT(idx) {
+        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
+        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
+        if (next_ms == -1 || tmp_ms < next_ms) {
+            next_ms = tmp_ms > 0 ? tmp_ms : 0;
+        }
+    }
+    return next_ms;
+}
+
+/*
+ * Run callbacks for timer events.
+ */
+static void
+process_timers(int priority)
+{
+    int idx;
     indigo_time_t now;
-    int elapsed;
-    int tmp_ms;
+    int elapsed, tmp_ms;
     ind_soc_timer_callback_f callback;
 
     now = INDIGO_CURRENT_TIME;
 
     FOREACH_TIMER_EVENT(idx) {
-
         if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
-            return 0;
+            break;
+        }
+
+        if (timer_event[idx].priority != priority) {
+            continue;
         }
 
         elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
@@ -332,24 +390,14 @@ check_timer_events(void)
             }
 
             callback(timer_event[idx].cookie);
-            /* If not de-registered by callback or one-shot, reschedule */
-            if (timer_event[idx].callback != NULL) {
-                tmp_ms = timer_event[idx].repeat_time_ms;
-            } else {
-                tmp_ms = -1;
-            }
-        }
-        if ((next_ms == -1) || ((tmp_ms > 0) && (tmp_ms < next_ms))) {
-            next_ms = tmp_ms;
         }
     }
-
-    return next_ms;
 }
 
 indigo_error_t
-ind_soc_timer_event_register(ind_soc_timer_callback_f callback, void *cookie,
-                             int repeat_time_ms)
+ind_soc_timer_event_register_with_priority(
+    ind_soc_timer_callback_f callback, void *cookie,
+    int repeat_time_ms, int priority)
 {
     int idx;
 
@@ -357,7 +405,7 @@ ind_soc_timer_event_register(ind_soc_timer_callback_f callback, void *cookie,
         LOG_ERROR("Null callback for timer register");
         return INDIGO_ERROR_PARAM;
     }
-    if (repeat_time_ms <= 0) {
+    if (repeat_time_ms < 0) {
         LOG_ERROR("Invalid repeat time for timer register: %d", repeat_time_ms);
         return INDIGO_ERROR_PARAM;
     }
@@ -377,8 +425,18 @@ ind_soc_timer_event_register(ind_soc_timer_callback_f callback, void *cookie,
     timer_event[idx].callback = callback;
     timer_event[idx].cookie = cookie;
     timer_event[idx].last_call = INDIGO_CURRENT_TIME;
+    timer_event[idx].priority = priority;
 
     return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
+ind_soc_timer_event_register(
+    ind_soc_timer_callback_f callback, void *cookie,
+    int repeat_time_ms)
+{
+    return ind_soc_timer_event_register_with_priority(
+        callback, cookie, repeat_time_ms, IND_SOC_DEFAULT_PRIORITY);
 }
 
 indigo_error_t
@@ -400,27 +458,25 @@ ind_soc_timer_event_unregister(ind_soc_timer_callback_f callback, void *cookie)
 /*
  * Find the next timeout based on the next timer event and the timeout passed
  * to the original run call
- * @param timeout (out) Structure to fill out
  * @param start The time when select_and_run was called
  * @param current The current time
  * @param passed_ms The run_for_ms passed to select_and_run
  * @param next_event_ms The ms until the next timer event
- * @returns pointer to timeout parameter if timeout applies
- * @returns NULL if no timeout
+ * @returns timeout in milliseconds, or -1 if no timeout
  */
 
-static struct timeval *
-calculate_next_timeout(struct timeval *timeout, indigo_time_t start,
-                       indigo_time_t current, int run_for_ms, int next_event_ms)
+static int
+calculate_next_timeout(indigo_time_t start, indigo_time_t current,
+                       int run_for_ms, int next_event_ms)
 {
     int min_val;
     int remaining_ms;
 
     /* Take min of positive values of next_event_ms and run_for_ms */
 
-    /* If neither is positive, return NULL (no timeout) */
+    /* If neither is positive, return -1 (no timeout) */
     if ((run_for_ms < 0) && (next_event_ms < 0)) {
-        return NULL;
+        return -1;
     }
 
     if (run_for_ms >= 0) {
@@ -437,10 +493,7 @@ calculate_next_timeout(struct timeval *timeout, indigo_time_t start,
         min_val = next_event_ms;
     }
 
-    timeout->tv_sec = min_val / 1000;
-    timeout->tv_usec = (min_val % 1000) * 1000;
-
-    return timeout;
+    return min_val;
 }
 
 
@@ -448,6 +501,8 @@ indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
     LOG_INFO("Initializing socket manager");
+
+    ind_cfg_register(&ind_soc_cfg_ops);
 
     soc_mgr_init();
     init_done = 1;
@@ -499,6 +554,75 @@ ind_soc_finish(void)
     return INDIGO_ERROR_NONE;
 }
 
+/*
+ * Run callbacks for each ready socket.
+ */
+static void
+process_sockets(int priority)
+{
+    int i;
+    for (i = 0; i < num_pollfds; i++) {
+        struct pollfd *pfd = &pollfds[i];
+        int read_ready, write_ready, error_seen;
+
+        if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
+            break;
+        }
+
+        if (soc_map[pfd->fd].priority != priority) {
+            continue;
+        }
+
+        read_ready = (pfd->revents & POLLIN) != 0;
+        write_ready = (pfd->revents & POLLOUT) != 0;
+        error_seen = (pfd->revents & POLLERR) != 0;
+        if (read_ready || write_ready || error_seen) {
+            soc_map[pfd->fd].callback(pfd->fd, soc_map[pfd->fd].cookie,
+                    read_ready, write_ready, error_seen);
+
+        }
+    }
+}
+
+/*
+ * This function returns the priority level the event loop should process
+ * on the current iteration. It assumes poll() has been called on the global
+ * pollfds array.
+ */
+static int
+find_highest_ready_priority(void)
+{
+    int idx;
+    indigo_time_t now;
+    int elapsed, tmp_ms;
+    int priority = INT_MIN;
+
+    now = INDIGO_CURRENT_TIME;
+
+    for (idx = 0; idx < num_pollfds; idx++) {
+        struct pollfd *pfd = &pollfds[idx];
+
+        if (pfd->revents == 0) {
+            continue;
+        }
+
+        priority = aim_imax(priority, soc_map[pfd->fd].priority);
+    }
+
+    FOREACH_TIMER_EVENT(idx) {
+        if (timer_event[idx].priority <= priority) {
+            continue;
+        }
+
+        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
+        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
+        if (tmp_ms <= 0) {
+            priority = timer_event[idx].priority;
+        }
+    }
+
+    return priority;
+}
 
 /*
  * Run timer events, select and make callbacks for sockets marked ready
@@ -509,94 +633,44 @@ ind_soc_finish(void)
 int
 ind_soc_select_and_run(int run_for_ms)
 {
-    fd_set read_sds;
-    fd_set write_sds;
-    fd_set error_sds;
-    int num_sds = 0;
-    struct timeval timeout = {0, 0};
-    struct timeval *timeout_p = NULL;
     int rv;
-    int sd;
-    int read_ready, write_ready, error_seen;
     indigo_time_t start, current;
     int elapsed;
-    int next_event_ms;
+    int next_timer_ms, timeout_ms;
+    int priority;
 
     ind_soc_run_status_set(IND_SOC_RUN_STATUS_OK);
 
-    start = INDIGO_CURRENT_TIME;
+    current = start = INDIGO_CURRENT_TIME;
 
     do {
-        next_event_ms = check_timer_events();
+        next_timer_ms = find_next_timer_expiration(current);
 
-        if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
+        timeout_ms = calculate_next_timeout(start, current,
+                                            run_for_ms, next_timer_ms);
+
+        LOG_TRACE("polling %d fds, timeout %d ms", num_pollfds, timeout_ms);
+        rv = poll(pollfds, num_pollfds, timeout_ms);
+        LOG_TRACE("poll returned %d", rv);
+
+        if (rv < 0 && errno != EINTR) {
+            LOG_ERROR("Error in poll: %s", strerror(errno));
+            return INDIGO_ERROR_UNKNOWN;
+        }
+
+        priority = find_highest_ready_priority();
+        LOG_TRACE("processing priority %d", priority);
+
+        process_sockets(priority);
+        process_timers(priority);
+
+        if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             return INDIGO_ERROR_NONE;
         }
 
-        current = INDIGO_CURRENT_TIME;
-        timeout_p = calculate_next_timeout(&timeout, start, current,
-                                           run_for_ms, next_event_ms);
-
-        /* Form the select sets */
-        FD_ZERO(&read_sds);
-        FD_ZERO(&write_sds);
-        FD_ZERO(&error_sds);
-
-        num_sds = 0;
-        FOREACH_ACTIVE_SOCKET_ID(sd) {
-            if (!DATA_IN_PAUSED(sd)) {
-                FD_SET(sd, &read_sds);
-            }
-            FD_SET(sd, &error_sds);
-            if (DATA_OUT_READY(sd)) {
-                FD_SET(sd, &write_sds);
-            }
-            if (sd >= num_sds) {
-                num_sds = sd + 1;
-            }
-        }
-
-        if (num_sds == 0) {
-            if (next_event_ms < 0) {
-                LOG_VERBOSE("No sockets, no next event");
-                return INDIGO_ERROR_NOT_FOUND;
-            }
-            LOG_TRACE("Sleeping for %d ms", next_event_ms);
-            usleep(next_event_ms * 1000);
-        } else {
-            LOG_TRACE("Calling select: timeout %d s %d us",
-                      (int)(timeout_p ? timeout_p->tv_sec : -1),
-                      (int)(timeout_p ? timeout_p->tv_usec : -1));
-            rv = select(num_sds, &read_sds, &write_sds, &error_sds, timeout_p);
-            LOG_TRACE("Select returned %d", rv);
-
-            if (rv < 0 && errno != EINTR) {
-                LOG_ERROR("Error in select: %s", strerror(errno));
-                return INDIGO_ERROR_UNKNOWN;
-            }
-
-            if (rv > 0) {
-                FOREACH_ACTIVE_SOCKET_ID(sd) {
-
-                    if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
-                        return INDIGO_ERROR_NONE;
-                    }
-
-                    read_ready = FD_ISSET(sd, &read_sds);
-                    write_ready = FD_ISSET(sd, &write_sds);
-                    error_seen = FD_ISSET(sd, &error_sds);
-                    if (read_ready || write_ready || error_seen) {
-                        soc_map[sd].callback(sd, soc_map[sd].cookie,
-                                             read_ready, write_ready, error_seen);
-
-                    }
-                }
-            }
-        }
         current = INDIGO_CURRENT_TIME;
         elapsed = INDIGO_TIME_DIFF_ms(start, current);
     } while ((run_for_ms < 0) || ((run_for_ms > 0) && (elapsed < run_for_ms)));
 
     return INDIGO_ERROR_NONE;
 }
-

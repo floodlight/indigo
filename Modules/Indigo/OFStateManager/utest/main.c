@@ -111,7 +111,7 @@ indigo_fwd_flow_create(indigo_cookie_t flow_id,
                        indigo_cookie_t cookie)
 {
     AIM_LOG_VERBOSE("flow create called\n");
-    indigo_core_flow_create_callback(create_error, flow_id, cookie);
+    indigo_core_flow_create_callback(create_error, flow_id, 0, cookie);
 }
 
 
@@ -167,6 +167,14 @@ indigo_fwd_forwarding_features_get(of_features_reply_t *features)
 {
     AIM_LOG_VERBOSE("forwarding features get called\n");
     return INDIGO_ERROR_NONE;
+}
+
+
+void
+ind_cxn_reset(indigo_cxn_id_t cxn_id)
+{
+    AIM_LOG_VERBOSE("cxn reset called %d", cxn_id);
+    return;
 }
 
 int
@@ -932,8 +940,11 @@ aim_main(int argc, char* argv[])
     RUN_TEST(ft_hash);
 
     /* Init Core */
+    MEMSET(&core, 0, sizeof(core));
     core.expire_flows = 1;
     core.stats_check_ms = 1000;
+    core.max_flowtable_entries = 1024;
+
     TRY(ind_core_init(&core));
     TRY(ind_core_enable_set(1));
 

@@ -35,6 +35,7 @@
 #include <indigo/of_connection_manager.h>
 #include <SocketManager/socketmanager.h>
 #include <OFStateManager/ofstatemanager_config.h>
+#include <cjson/cJSON.h>
 
 /* Short hand logging macros */
 #define LOG_ERROR AIM_LOG_ERROR
@@ -126,6 +127,8 @@ calc_duration(indigo_time_t current_time, indigo_time_t entry_time,
     *secs = ms_time / 1000;
     *nsecs = ((ms_time % 1000) * 1000000);
 }
+
+extern const struct ind_cfg_ops ind_core_cfg_ops;
 
 #include <OFStateManager/ofstatemanager.h>
 

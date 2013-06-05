@@ -540,7 +540,7 @@ class GModulePortingHeader(ModuleCPublicHeaderFile):
     def finit(self):
         self.fname = "%(MODULE_INC_FBASE)s_porting.h"
         self.BRIEF="%(MODULE_NAME)s Porting Macros."
-        self.DOXYGROUP="%(MODULE_NAME_LOWER)s_porting" % self.__dict__
+        self.DOXYGROUP="%(MODULE_NAME_LOWER)s-porting" % self.__dict__
         self.body=(
 """
 /* <auto.start.portingmacro(ALL).define> */

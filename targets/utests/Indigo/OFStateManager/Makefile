@@ -51,6 +51,9 @@ GLOBAL_CFLAGS += -I${BIGCODE}/Modules/Indigo/OFConnectionManager/module/inc
 GLOBAL_CFLAGS += -DOFSTATEMANAGER_CONFIG_INCLUDE_UCLI=0
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
 
-DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur
+DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration
+
+GLOBAL_LINK_LIBS += -lm
+
 
 include ../../make/utestmodule.mk

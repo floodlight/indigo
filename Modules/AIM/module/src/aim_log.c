@@ -565,6 +565,18 @@ aim_log_env_init__(aim_log_t* l)
                 AIM_BITS_SET(l->custom_flags, (1<<i)-1, 1);
             }
         }
+        AIM_SNPRINTF(envname, sizeof(envname), "%s_log_options", l->name);
+        if((env=getenv(envname))) {
+            int i;
+            for(i = 0; aim_log_option_map[i].s; i++) {
+                if(AIM_STRSTR(env, aim_log_option_map[i].s)) {
+                    AIM_BIT_SET(l->options, i, 1);
+                }
+            }
+            if(AIM_STRSTR(env, "all")) {
+                AIM_BITS_SET(l->options, (1<<i)-1, 1);
+            }
+        }
         l->env = 1;
     }
 }
@@ -618,7 +630,7 @@ aim_log_vcommon(aim_log_t* l, aim_log_flag_t flag,
        aim_log_enabled(l, flag)) {
         if(rl == NULL || aim_ratelimiter_limit(rl, time) == 0) {
 
-            if(aim_pvs_isatty(l->pvs)) {
+            if(aim_pvs_isatty(l->pvs) == 1) {
                 if((color = aim_log_flag_color__(flag))) {
                     aim_printf(l->pvs, color);
                 }
@@ -657,6 +669,53 @@ aim_log_vcustom(aim_log_t* l, int fid,
             aim_log_output__(l, fname, file, line, fmt, vargs);
         }
     }
+}
+
+
+int
+aim_log_syslog_level_map(const char *syslog_str, uint32_t *flags)
+{
+    if (flags == NULL) {
+        return -1;
+    }
+
+    /* Map string to level */
+    *flags = AIM_LOG_BIT_FATAL;
+    *flags += AIM_LOG_BIT_MSG;
+    if (strcmp("emergencies", syslog_str) == 0) {
+        return 0;
+    }
+
+    *flags += AIM_LOG_BIT_ERROR;
+    if ((strcmp("alerts", syslog_str) == 0) ||
+        (strcmp("critical", syslog_str) == 0) ||
+        (strcmp("errors", syslog_str) == 0)) {
+        return 0;
+    }
+
+    *flags += AIM_LOG_BIT_WARN;
+    if (strcmp("warnings", syslog_str) == 0) {
+        return 0;
+    }
+
+    *flags += AIM_LOG_BIT_INFO;
+    if (strcmp("notifications", syslog_str) == 0) {
+        return 0;
+    }
+
+    *flags += AIM_LOG_BIT_VERBOSE;
+    if ((strcmp("informational", syslog_str) == 0) ||
+        (strcmp("verbose", syslog_str) == 0)) {
+        return 0;
+    }
+
+    *flags += AIM_LOG_BIT_TRACE;
+    if ((strcmp("debugging", syslog_str) == 0) ||
+        (strcmp("trace", syslog_str) == 0)) {
+        return 0;
+    }
+
+    return -1;
 }
 
 /**************************************************************************//**

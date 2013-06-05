@@ -30,6 +30,9 @@
 ###############################################################################
 ifdef DEPENDMODULES
 
+# Process any explicit requested module removals
+DEPENDMODULES := $(filter-out $(DEPENDMODULES_REMOVE),$(DEPENDMODULES))
+
 #
 # You can specify a set of module directories and the manifest will be
 # generated automatically.
@@ -66,6 +69,10 @@ include $(foreach mod,$(DEPENDMODULES),$($(mod)_BASEDIR)/$(mod).mk)
 #
 # $GLOBAL_INCLUDES is referenced by the toolchain directly
 GLOBAL_INCLUDES += $(foreach mod,$(DEPENDMODULES), $($(mod)_INCLUDES))
+
+#
+# Add all $(MODULE)_GLOBAL_LINK_LIBS to $(GLOBAL_LINK_LIBS)
+GLOBAL_LINK_LIBS += $(foreach mod,$(DEPENDMODULES),$($(mod)_GLOBAL_LINK_LIBS))
 
 #
 # Provide uppercase versions of DEPENDMODULES for optional config processing

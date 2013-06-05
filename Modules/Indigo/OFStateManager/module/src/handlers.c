@@ -555,6 +555,7 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
                      int force_wildcard_port)
 {
     INDIGO_MEM_SET(query, 0, sizeof(*query));
+    query->table_id = TABLE_ID_ANY;
     _TRY(of_flow_modify_match_get(obj, &(query->match)));
     query->mode = query_mode;
     if ((query_mode == OF_MATCH_STRICT) || (query_mode == OF_MATCH_OVERLAP)) {
@@ -764,6 +765,7 @@ flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
 void
 indigo_core_flow_create_callback(indigo_error_t result,
                                  indigo_cookie_t flow_id,
+                                 uint8_t table_id,
                                  indigo_cookie_t cookie)
 {
     ptr_cxn_wrapper_t *ptr_cxn;
@@ -786,6 +788,7 @@ indigo_core_flow_create_callback(indigo_error_t result,
     if (result == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow table now has %d entries",
                   FT_STATUS(ind_core_ft)->current_count);
+        entry->table_id = table_id;
         queued_req_service(entry);
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
@@ -1237,7 +1240,7 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
             LOG_ERROR("failed to setup flow stats entry during flow_stats callback");
             return;
         }
-        of_flow_stats_entry_table_id_set(&stats_entry, 0);
+        of_flow_stats_entry_table_id_set(&stats_entry, entry->table_id);
         of_flow_stats_entry_duration_sec_set(&stats_entry, secs);
         of_flow_stats_entry_duration_nsec_set(&stats_entry, nsecs);
         of_flow_stats_entry_packet_count_set(&stats_entry, flow_stats->packets);
@@ -1276,6 +1279,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
+    of_flow_stats_request_table_id_get(obj, &(query.table_id));
 
     /* Non strict; do not check priority, cookie or overlap */
     query.mode = OF_MATCH_NON_STRICT;
@@ -1536,9 +1540,6 @@ indigo_core_table_stats_get_callback(indigo_error_t result,
     ptr_cxn_wrapper_t *ptr_cxn;
     indigo_cxn_id_t cxn_id;
     int rv = OF_ERROR_UNKNOWN;
-    of_list_table_stats_entry_t of_list_table_stats_entry[1];
-    of_table_stats_entry_t      of_table_stats_entry[1];
-
     if (!ind_core_init_done) {
         return;
     }
@@ -1552,23 +1553,6 @@ indigo_core_table_stats_get_callback(indigo_error_t result,
        LOG_ERROR("Table stats returned error");
        goto done;
     }
-
-    /*
-     * Edit the response from forwarding manager, to deduct the number
-     * of flows being deleted from the number of flows reported.
-    */
-
-    of_table_stats_reply_entries_bind(reply, of_list_table_stats_entry);
-
-    if (of_list_table_stats_entry_first(of_list_table_stats_entry,
-                                        of_table_stats_entry
-                                        ) != OF_ERROR_NONE
-        ) {
-        LOG_ERROR("of_list_table_stats_entry_first() failed");
-        goto done;
-    }
-    of_table_stats_entry_active_count_set(of_table_stats_entry,
-        ind_core_ft->status.current_count);
 
     rv = IND_CORE_MSG_SEND(cxn_id, reply);
     if (rv < 0) {
@@ -1840,27 +1824,6 @@ ind_core_group_features_stats_request_handler(of_object_t *_obj,
     return INDIGO_ERROR_NONE;
 }
 
-/**
- * Handle a role_request message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-indigo_error_t
-ind_core_role_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
-{
-    of_role_request_t *obj;
-
-    obj = (of_role_request_t *)_obj;
-    LOG_TRACE("Handling of_role_request message: %p.", obj);
-
-    /* Handle object of type of_role_request_t */
-    ind_core_unhandled_message(_obj, cxn_id);
-
-    return INDIGO_ERROR_NONE;
-}
-
 /****************************************************************
  *
  * Extension message handling
@@ -1959,28 +1922,5 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
         LOG_ERROR("Error sending features response to %d", cxn_id);
         return rv;
     }
-    return INDIGO_ERROR_NONE;
-}
-
-
-indigo_error_t
-ind_core_nicira_controller_role_request_handler(of_object_t *_obj,
-                                                indigo_cxn_id_t cxn_id)
-{
-    of_nicira_controller_role_request_t *obj;
-    uint32_t xid = 0;
-
-    obj = (of_nicira_controller_role_request_t *)_obj;
-    of_nicira_controller_role_request_xid_get(obj, &xid);
-
-    LOG_TRACE("Received Nicira controller role message from %d, xid = 0x%x", cxn_id, xid);
-
-    /* @fixme complete */
-    indigo_cxn_send_error_msg(_obj->version, cxn_id, xid,
-                              OF_ERROR_TYPE_BAD_REQUEST,
-                              OF_REQUEST_FAILED_BAD_VENDOR, NULL);
-
-    of_object_delete(_obj);
-
     return INDIGO_ERROR_NONE;
 }

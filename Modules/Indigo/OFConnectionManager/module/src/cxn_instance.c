@@ -42,6 +42,7 @@
 #include <loci/loci_show.h>
 
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
 
@@ -63,6 +64,50 @@ state_info_t state_info[INDIGO_CXN_S_COUNT] = {
     STATE_INFO_INIT(HANDSHAKE_COMPLETE, 0),
     STATE_INFO_INIT(CLOSING, 5000)
 };
+
+
+/* Maximum number of messages to send per write callback */
+#define MAX_WRITE_MSGS 32
+
+
+/**
+ * Dump data buffer
+ */
+#define HEX_LEN 80
+#define PER_LINE 16
+static inline void
+cxn_data_hexdump(unsigned char *buf, int bytes)
+{
+    int idx;
+    char display[HEX_LEN];
+    int disp_offset = 0;
+    int buf_offset = 0;
+
+    while (bytes > 0) {
+        disp_offset = 0;
+        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
+            disp_offset += sprintf(&display[disp_offset],
+                                   "%02x", buf[buf_offset + idx]);
+        }
+
+        for (idx = bytes; idx < PER_LINE; ++idx) {
+            disp_offset += sprintf(&display[disp_offset], "  ");
+        }
+        disp_offset += sprintf(&display[disp_offset], " :");
+
+        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
+            if (buf[idx] < 32) {
+                disp_offset += sprintf(&display[disp_offset], ".");
+            } else {
+                disp_offset += sprintf(&display[disp_offset], "%c",
+                                       buf[buf_offset + idx]);
+            }
+        }
+        AIM_LOG_TRACE("%s", display);
+        bytes -= PER_LINE;
+        buf_offset += PER_LINE;
+	}
+}
 
 /****************************************************************
  *
@@ -105,16 +150,10 @@ cleanup_disconnect(connection_t *cxn)
     }
     biglist_free(cxn->output_list);
     cxn->output_list = NULL;
-    if (cxn->cur_out_buf) {
-        LOG_TRACE(cxn, "Freeing outgoing msg %p", cxn->cur_out_buf);
-        INDIGO_MEM_FREE(cxn->cur_out_buf);
-    }
 
-    cxn->cur_out_buf = NULL;
     cxn->bytes_enqueued = 0;
     cxn->pkts_enqueued = 0;
-    cxn->cur_out_buf_bytes = 0;
-    cxn->cur_out_buf_offset = 0;
+    cxn->output_head_offset = 0;
 }
 
 
@@ -318,21 +357,28 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
             cxn->active = 0;
         } else if (CXN_LOCAL(cxn)) {
             cxn->active = 0;
+        } else {
+            /* Disconnected but still active - start connecting again */
+            ind_soc_timer_event_register_with_priority(
+                ind_cxn_connection_retry_timer, cxn,
+                IND_SOC_TIMER_IMMEDIATE, IND_CXN_EVENT_PRIORITY);
         }
         ind_cxn_disconnected_init(cxn);
         break;
 
     case INDIGO_CXN_S_CONNECTING:
         /* Register with socket manager */
-        ind_soc_socket_register(cxn->sd, indigo_cxn_socket_ready_callback,
-                                cxn);
+        ind_soc_socket_register_with_priority(
+            cxn->sd, indigo_cxn_socket_ready_callback,
+            cxn, IND_CXN_EVENT_PRIORITY);
         ind_cxn_send_hello(cxn);
         if (CXN_LOCAL(cxn)) {
             /* Recursive call; transition to connected */
             cxn_state_set(cxn, INDIGO_CXN_S_HANDSHAKE_COMPLETE);
         } else {
-            ind_soc_timer_event_register(cxn_connecting_timeout, (void *)cxn,
-                                         CXN_STATE_TIMEOUT(new_state));
+            ind_soc_timer_event_register_with_priority(
+                cxn_connecting_timeout, (void *)cxn,
+                CXN_STATE_TIMEOUT(new_state), IND_CXN_EVENT_PRIORITY);
         }
         break;
 
@@ -351,15 +397,17 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         }
 #endif
         ind_soc_timer_event_unregister(periodic_keepalive, (void *)cxn);
-        ind_soc_timer_event_register(cxn_closing_timeout, (void *)cxn,
-                                     CXN_STATE_TIMEOUT(new_state));
+        ind_soc_timer_event_register_with_priority(
+            cxn_closing_timeout, (void *)cxn,
+            CXN_STATE_TIMEOUT(new_state), IND_CXN_EVENT_PRIORITY);
         cleanup_disconnect(cxn);
         break;
     case INDIGO_CXN_S_HANDSHAKE_COMPLETE:
         if (cxn->keepalive.period_ms > 0) {
             /* Set up periodic echo request */
-            ind_soc_timer_event_register(periodic_keepalive, (void *)cxn,
-                                         cxn->keepalive.period_ms);
+            ind_soc_timer_event_register_with_priority(
+                periodic_keepalive, (void *)cxn,
+                cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
 
         break;
@@ -602,6 +650,71 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
     return (INDIGO_ERROR_NONE);
 }
 
+static indigo_cxn_role_t
+translate_from_nicira_role(uint32_t wire_role)
+{
+    switch (wire_role) {
+    case 0: return INDIGO_CXN_R_EQUAL;
+    case 1: return INDIGO_CXN_R_MASTER;
+    case 2: return INDIGO_CXN_R_SLAVE;
+    default: return INDIGO_CXN_R_UNKNOWN;
+    }
+}
+
+static uint32_t
+translate_to_nicira_role(indigo_cxn_role_t role)
+{
+    switch (role) {
+    case INDIGO_CXN_R_MASTER: return 1;
+    case INDIGO_CXN_R_SLAVE: return 2;
+    case INDIGO_CXN_R_EQUAL: return 0;
+    default: ASSERT(0); return 0;
+    }
+}
+
+/**
+ * Handle a Nicira role request
+ */
+
+static indigo_error_t
+nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_nicira_controller_role_request_t *request;
+    of_nicira_controller_role_reply_t *reply = NULL;
+    uint32_t xid;
+    uint32_t wire_role;
+    indigo_cxn_role_t role;
+
+    if ((reply = of_nicira_controller_role_reply_new(_obj->version)) == NULL) {
+        of_object_delete(_obj);
+        return INDIGO_ERROR_RESOURCE;
+    }
+
+    request = (of_nicira_controller_role_request_t *)_obj;
+    of_nicira_controller_role_request_xid_get(request, &xid);
+    of_nicira_controller_role_request_role_get(request, &wire_role);
+    of_object_delete(_obj);
+
+    role = translate_from_nicira_role(wire_role);
+    LOG_VERBOSE(cxn, "Cxn role request: %s", role == INDIGO_CXN_R_MASTER ?
+                "master" : role == INDIGO_CXN_R_SLAVE ? "slave" : "equal");
+    if (role != cxn->status.role) {
+        if (role == INDIGO_CXN_R_MASTER) {
+            ind_cxn_change_master(cxn->cxn_id);
+        } else {
+            LOG_INFO(cxn, "Setting role to %s",
+                     role == INDIGO_CXN_R_SLAVE ? "slave" : "equal");
+            cxn->status.role = role;
+        }
+    }
+
+    of_nicira_controller_role_reply_xid_set(reply, xid);
+    of_nicira_controller_role_reply_role_set(reply,
+        translate_to_nicira_role(cxn->status.role));
+
+    return indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+}
+
 /**
  * Callback routine for message object delete
  *
@@ -673,6 +786,26 @@ cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
 }
 
 
+/**
+ * Send a BAD_REQUEST/EPERM error to the controller.
+ *
+ * @param cxn Connection from which message arrived
+ * @param obj The message object
+ */
+static void
+cxn_send_permission_error(connection_t *cxn, of_object_t *obj)
+{
+    of_octets_t octets;
+    uint32_t xid;
+    octets.data = OF_OBJECT_BUFFER_INDEX(obj, 0);
+    octets.bytes = obj->length;
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(octets.data));
+    (void) indigo_cxn_send_error_msg(obj->version, cxn->cxn_id, xid,
+                                     OF_ERROR_TYPE_BAD_REQUEST,
+                                     OF_REQUEST_FAILED_EPERM,
+                                     &octets);
+}
+
 
 /**
  * Process an object pulled off a connection.
@@ -695,6 +828,29 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 
     case OF_BARRIER_REQUEST:
         return (barrier_request_handle(cxn, obj));
+
+    case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
+        return nicira_controller_role_request_handle(cxn, obj);
+
+    /* Check permissions and fall through */
+    case OF_FLOW_ADD:
+    case OF_FLOW_DELETE:
+    case OF_FLOW_DELETE_STRICT:
+    case OF_FLOW_MODIFY:
+    case OF_FLOW_MODIFY_STRICT:
+    case OF_PACKET_OUT:
+    case OF_PORT_MOD:
+    case OF_SET_CONFIG:
+    case OF_BSN_SET_IP_MASK:
+    case OF_BSN_SET_MIRRORING:
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
+            LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
+                        of_object_id_str[obj->object_id]);
+            cxn_send_permission_error(cxn, obj);
+            of_object_delete(obj);
+            return INDIGO_ERROR_NONE;
+        }
 
     default:
         break;
@@ -924,8 +1080,9 @@ process_message(connection_t *cxn)
         /* We have a message from the controller.  Reset keepalive timeout */
         cxn->keepalive.outstanding_echo_cnt = 0;
         if (cxn->keepalive.period_ms > 0) {
-            ind_soc_timer_event_register(periodic_keepalive, (void *)cxn,
-                                         cxn->keepalive.period_ms);
+            ind_soc_timer_event_register_with_priority(
+                periodic_keepalive, (void *)cxn,
+                cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
     }
 
@@ -998,6 +1155,8 @@ ind_cxn_process_read_buffer(connection_t *cxn)
 
 void ind_cxn_disconnect(connection_t *cxn)
 {
+    LOG_INFO(cxn, "Forcing disconnection");
+
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
             cxn->status.forced_disconnect_count++;
@@ -1052,63 +1211,78 @@ write_chunk(connection_t *cxn, uint8_t *start, ssize_t bytes)
 int
 ind_cxn_process_write_buffer(connection_t *cxn)
 {
-    ssize_t tot_bytes_out = 0;
-    ssize_t bytes_out = 0;
-    uint8_t *outbuf_start;
-    ssize_t to_write;
+    int written, left;
+    int num_iovecs = 0;
+    struct iovec iovecs[MAX_WRITE_MSGS];
+    biglist_t *cur_node;
+    struct iovec *iov;
 
-    while (1) {
-        if (cxn->cur_out_buf == NULL) { /* Start a new message? */
-            if (cxn->output_list == NULL) { /* Nothing (more) to send */
-                LOG_TRACE(cxn, "No more data to write");
-                INDIGO_ASSERT(cxn->bytes_enqueued == 0);
-                INDIGO_ASSERT(cxn->pkts_enqueued == 0);
-                CXN_WRITE_CLEAR(cxn->sd);
-                break;
-            }
-            /* Dequeue data from front of list */
-            cxn->cur_out_buf = cxn->output_list->data;
-            cxn->output_list = biglist_remove(cxn->output_list,
-                                              cxn->cur_out_buf);
-            cxn->cur_out_buf_bytes =
-                of_message_length_get((of_message_t)cxn->cur_out_buf);
-            cxn->bytes_enqueued -= cxn->cur_out_buf_bytes;
-            cxn->pkts_enqueued -= 1;
-            LOG_TRACE(cxn, "Start write %p, len %d", cxn->cur_out_buf,
-                      cxn->cur_out_buf_bytes);
-            cxn->cur_out_buf_offset = 0;
+    /* Iterate over cxn->output_list adding buffers to iovecs */
+    cur_node = cxn->output_list;
+    while (cur_node != NULL && num_iovecs < MAX_WRITE_MSGS) {
+        iov = &iovecs[num_iovecs];
+        iov->iov_base = BIGLIST_CAST(void *, cur_node);
+        iov->iov_len = of_message_length_get(iov->iov_base);
+        if (num_iovecs == 0) {
+            /* First buffer may be partially written */
+            iov->iov_base += cxn->output_head_offset;
+            iov->iov_len -= cxn->output_head_offset;
         }
-
-        to_write = cxn->cur_out_buf_bytes - cxn->cur_out_buf_offset;
-        outbuf_start = &cxn->cur_out_buf[cxn->cur_out_buf_offset];
-
-        /* Try to write out from offset to bytes */
-        bytes_out = write_chunk(cxn, outbuf_start, to_write);
-        if (bytes_out < 0) {
-            /* Error writing to connection socket */
-            LOG_ERROR(cxn, "Error writing to socket");
-            tot_bytes_out = bytes_out;
-            break;
-        }
-
-        if (bytes_out == to_write) { /* Completed this message */
-            LOG_TRACE(cxn, "Completed sending msg %p", cxn->cur_out_buf);
-            INDIGO_MEM_FREE(cxn->cur_out_buf);
-            cxn->cur_out_buf = NULL;
-            cxn->cur_out_buf_bytes = 0;
-            cxn->status.messages_out++;
-        } else if (bytes_out < to_write) {
-            cxn->cur_out_buf_offset += bytes_out;
-        } else {
-            LOG_ERROR(cxn, "Wrote %d, more than %d, requested",
-                      (int)bytes_out, (int)to_write);
-            tot_bytes_out = INDIGO_ERROR_UNKNOWN;
-            break;
-        }
-        tot_bytes_out += bytes_out;
+        num_iovecs++;
+        cur_node = biglist_next(cur_node);
     }
 
-    return tot_bytes_out;
+    written = writev(cxn->sd, iovecs, num_iovecs);
+
+    if (written < 0) {
+        /* Error writing to connection socket */
+        LOG_ERROR(cxn, "Error writing to socket");
+        return INDIGO_ERROR_UNKNOWN;
+    }
+
+    /*
+     * Iterate over cxn->output_list and iovecs together, freeing completely
+     * sent messages.
+     */
+    left = written;
+    iov = iovecs;
+    while (left > 0) {
+        int to_write, bytes_out;
+        cur_node = cxn->output_list;
+
+        /* Number of bytes we attempted to send in this message */
+        to_write = iov->iov_len;
+
+        /* Number of bytes we actually sent in this message */
+        bytes_out = aim_imin(left, to_write);
+        cxn->bytes_enqueued -= bytes_out;
+
+        if (bytes_out == to_write) { /* Completed this message */
+            INDIGO_MEM_FREE(BIGLIST_CAST(void *, cur_node));
+            cur_node = cxn->output_list =
+                biglist_remove_link_free(cxn->output_list, cur_node);
+            cxn->pkts_enqueued--;
+            cxn->status.messages_out++;
+            cxn->output_head_offset = 0;
+        } else {
+            /* Partial write */
+            INDIGO_ASSERT(bytes_out < to_write);
+            cxn->output_head_offset += bytes_out;
+            break;
+        }
+
+        left -= bytes_out;
+        iov++;
+    }
+
+    if (cxn->output_list == NULL) { /* Nothing (more) to send */
+        LOG_TRACE(cxn, "No more data to write");
+        INDIGO_ASSERT(cxn->bytes_enqueued == 0);
+        INDIGO_ASSERT(cxn->pkts_enqueued == 0);
+        CXN_WRITE_CLEAR(cxn->sd);
+    }
+
+    return written;
 }
 
 /**
@@ -1225,6 +1399,13 @@ ind_cxn_try_to_connect(connection_t *cxn)
             cxn->sd = -1;
             return -1;
         }
+
+        /* Disable Nagle's algorithm */
+        {
+            int flag = 1;
+            (void) setsockopt(cxn->sd, IPPROTO_TCP, TCP_NODELAY,
+                              (char *) &flag, sizeof(int));
+        }
     }
 
     LOG_TRACE(cxn, "Attempting to connect");
@@ -1284,5 +1465,42 @@ ind_cxn_disconnected_init(connection_t *cxn)
     cxn->status.bytes_out = 0;
     cxn->status.messages_in = 0;
     cxn->status.messages_out = 0;
+    cxn->fail_count = 0;
 }
 
+/**
+ * @brief Calculate timeout between connection attempts.
+ *
+ * Exponential backoff up to a limit of 1 second.
+ */
+
+static int
+connection_retry_ms(const connection_t *cxn)
+{
+    if (cxn->fail_count < 10) {
+        return 1 << cxn->fail_count;
+    } else {
+        return 1000;
+    }
+}
+
+/**
+ * @brief Attempt to connect and reschedule if failed or in progress.
+ *
+ * @param cookie The connection (connection_t *)
+ */
+
+void
+ind_cxn_connection_retry_timer(void *cookie)
+{
+    connection_t *cxn = cookie;
+    INDIGO_ASSERT(CXN_ACTIVE(cxn));
+    INDIGO_ASSERT(CONNECTION_STATE(cxn) == INDIGO_CXN_S_DISCONNECTED);
+    if (ind_cxn_try_to_connect(cxn) == 0) {
+        ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer, cxn);
+    } else {
+        ind_soc_timer_event_register_with_priority(
+            ind_cxn_connection_retry_timer, cxn,
+            connection_retry_ms(cxn), IND_CXN_EVENT_PRIORITY);
+    }
+}

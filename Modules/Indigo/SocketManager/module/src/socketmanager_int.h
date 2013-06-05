@@ -32,5 +32,8 @@
 
 #include <SocketManager/socketmanager_config.h>
 #include <SocketManager/socketmanager.h>
+#include <cjson/cJSON.h>
+
+extern const struct ind_cfg_ops ind_soc_cfg_ops;
 
 #endif /* __SOCKETMANAGER_INT_H__ */

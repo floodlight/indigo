@@ -56,6 +56,8 @@ static inline int of_packet_queue_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 static inline int of_match_v1_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_header_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_flow_stats_entry_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_q_in_q_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_header_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_interface_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_action_strip_vlan_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_action_set_vlan_vid_OF_VERSION_1_0_validate(uint8_t *buf, int len);
@@ -111,17 +113,31 @@ static inline int of_echo_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 static inline int of_echo_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_remove_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_shell_status_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_shell_output_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_shell_command_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_pktin_suppression_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_mirroring_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_l2_table_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_l2_table_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_ip_mask_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_get_l2_table_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_get_l2_table_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_ip_mask_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_ip_mask_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_barrier_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_barrier_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_aggregate_stats_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
@@ -161,6 +177,8 @@ static inline int of_group_desc_stats_entry_OF_VERSION_1_1_validate(uint8_t *buf
 static inline int of_flow_stats_entry_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bucket_counter_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bucket_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_q_in_q_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_header_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_interface_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_action_set_vlan_vid_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_action_set_vlan_pcp_OF_VERSION_1_1_validate(uint8_t *buf, int len);
@@ -232,11 +250,21 @@ static inline int of_echo_request_OF_VERSION_1_1_validate(uint8_t *buf, int len)
 static inline int of_echo_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_remove_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_pktin_suppression_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_mirroring_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_barrier_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_barrier_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len);
 static inline int of_aggregate_stats_request_OF_VERSION_1_1_validate(uint8_t *buf, int len);
@@ -322,7 +350,6 @@ static inline int of_oxm_icmpv4_type_OF_VERSION_1_2_validate(uint8_t *buf, int l
 static inline int of_oxm_icmpv4_code_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_icmpv4_code_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_header_OF_VERSION_1_2_validate(uint8_t *buf, int len);
-static inline int of_oxm_experimenter_header_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_type_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_type_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_src_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
@@ -353,6 +380,8 @@ static inline int of_group_desc_stats_entry_OF_VERSION_1_2_validate(uint8_t *buf
 static inline int of_flow_stats_entry_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bucket_counter_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bucket_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_q_in_q_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_header_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_interface_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_action_set_queue_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_action_set_nw_ttl_OF_VERSION_1_2_validate(uint8_t *buf, int len);
@@ -417,17 +446,28 @@ static inline int of_echo_request_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 static inline int of_echo_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_remove_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_pktin_suppression_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_mirroring_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_barrier_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_barrier_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_aggregate_stats_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_aggregate_stats_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_list_uint8_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_uint32_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_list_table_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_table_features_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_table_feature_prop_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_queue_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -534,7 +574,6 @@ static inline int of_oxm_icmpv4_type_OF_VERSION_1_3_validate(uint8_t *buf, int l
 static inline int of_oxm_icmpv4_code_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_icmpv4_code_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
-static inline int of_oxm_experimenter_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_type_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_type_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_src_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -577,6 +616,8 @@ static inline int of_flow_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int 
 static inline int of_experimenter_multipart_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bucket_counter_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bucket_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_q_in_q_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_vport_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_interface_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_action_set_queue_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_action_set_nw_ttl_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -620,6 +661,8 @@ static inline int of_action_copy_ttl_out_OF_VERSION_1_3_validate(uint8_t *buf, i
 static inline int of_action_copy_ttl_in_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_action_bsn_set_tunnel_dst_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_action_bsn_mirror_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_table_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_table_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_table_mod_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_table_features_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_table_features_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -671,11 +714,21 @@ static inline int of_echo_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 static inline int of_echo_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_remove_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_virtual_port_create_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_pktin_suppression_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_mirroring_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_set_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_enable_get_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_bw_clear_data_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_barrier_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_barrier_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_async_set_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -1004,6 +1057,28 @@ of_flow_stats_entry_OF_VERSION_1_0_validate(uint8_t *buf, int len)
         if (of_list_action_OF_VERSION_1_0_validate(buf + 88, actions_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_q_in_q_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_vport_q_in_q.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_header_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
+        return -1;
     }
 
     return 0;
@@ -1729,6 +1804,39 @@ of_desc_stats_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_virtual_port_remove_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_remove.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_request.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_shell_status_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
@@ -1762,10 +1870,43 @@ of_bsn_shell_command_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_set_pktin_suppression_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_set_pktin_suppression.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_set_mirroring_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
         VALIDATOR_LOG("Class of_bsn_set_mirroring.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_l2_table_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_set_l2_table_request.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_l2_table_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_set_l2_table_reply.  Len %d too small, < %d", len, 24);
         return -1;
     }
 
@@ -1799,6 +1940,28 @@ of_bsn_get_mirroring_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
         VALIDATOR_LOG("Class of_bsn_get_mirroring_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_get_l2_table_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_get_l2_table_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_get_l2_table_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_get_l2_table_reply.  Len %d too small, < %d", len, 24);
         return -1;
     }
 
@@ -1853,6 +2016,72 @@ of_bsn_get_interfaces_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
         if (of_list_bsn_interface_OF_VERSION_1_0_validate(buf + 16, interfaces_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_request.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_reply.  Len %d too small, < %d", len, 20);
+        return -1;
     }
 
     return 0;
@@ -1982,20 +2211,36 @@ of_validate_message_OF_VERSION_1_0(of_message_t msg, int len)
         return of_desc_stats_request_OF_VERSION_1_0_validate(buf, len);
     case OF_DESC_STATS_REPLY:
         return of_desc_stats_reply_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_REMOVE:
+        return of_bsn_virtual_port_remove_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REQUEST:
+        return of_bsn_virtual_port_create_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REPLY:
+        return of_bsn_virtual_port_create_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SHELL_STATUS:
         return of_bsn_shell_status_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SHELL_OUTPUT:
         return of_bsn_shell_output_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SHELL_COMMAND:
         return of_bsn_shell_command_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SET_MIRRORING:
         return of_bsn_set_mirroring_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_SET_L2_TABLE_REQUEST:
+        return of_bsn_set_l2_table_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_SET_L2_TABLE_REPLY:
+        return of_bsn_set_l2_table_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SET_IP_MASK:
         return of_bsn_set_ip_mask_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:
         return of_bsn_get_mirroring_request_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REPLY:
         return of_bsn_get_mirroring_reply_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_GET_L2_TABLE_REQUEST:
+        return of_bsn_get_l2_table_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_GET_L2_TABLE_REPLY:
+        return of_bsn_get_l2_table_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_IP_MASK_REQUEST:
         return of_bsn_get_ip_mask_request_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_IP_MASK_REPLY:
@@ -2004,6 +2249,18 @@ of_validate_message_OF_VERSION_1_0(of_message_t msg, int len)
         return of_bsn_get_interfaces_request_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_INTERFACES_REPLY:
         return of_bsn_get_interfaces_reply_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REQUEST:
+        return of_bsn_bw_enable_set_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REPLY:
+        return of_bsn_bw_enable_set_reply_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REQUEST:
+        return of_bsn_bw_enable_get_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REPLY:
+        return of_bsn_bw_enable_get_reply_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REQUEST:
+        return of_bsn_bw_clear_data_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REPLY:
+        return of_bsn_bw_clear_data_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BARRIER_REQUEST:
         return of_barrier_request_OF_VERSION_1_0_validate(buf, len);
     case OF_BARRIER_REPLY:
@@ -2656,6 +2913,28 @@ of_bucket_OF_VERSION_1_1_validate(uint8_t *buf, int len)
         if (of_list_action_OF_VERSION_1_1_validate(buf + 16, actions_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_q_in_q_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_vport_q_in_q.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_header_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
+        return -1;
     }
 
     return 0;
@@ -3584,6 +3863,50 @@ of_desc_stats_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_virtual_port_remove_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_remove.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_request_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_request.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_pktin_suppression_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_set_pktin_suppression.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_set_mirroring_OF_VERSION_1_1_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
@@ -3642,6 +3965,72 @@ of_bsn_get_interfaces_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
         if (of_list_bsn_interface_OF_VERSION_1_1_validate(buf + 16, interfaces_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_request_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_request.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_request_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_request_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_reply_OF_VERSION_1_1_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_reply.  Len %d too small, < %d", len, 20);
+        return -1;
     }
 
     return 0;
@@ -3777,6 +4166,14 @@ of_validate_message_OF_VERSION_1_1(of_message_t msg, int len)
         return of_desc_stats_request_OF_VERSION_1_1_validate(buf, len);
     case OF_DESC_STATS_REPLY:
         return of_desc_stats_reply_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_REMOVE:
+        return of_bsn_virtual_port_remove_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REQUEST:
+        return of_bsn_virtual_port_create_request_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REPLY:
+        return of_bsn_virtual_port_create_reply_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_1_validate(buf, len);
     case OF_BSN_SET_MIRRORING:
         return of_bsn_set_mirroring_OF_VERSION_1_1_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:
@@ -3787,6 +4184,18 @@ of_validate_message_OF_VERSION_1_1(of_message_t msg, int len)
         return of_bsn_get_interfaces_request_OF_VERSION_1_1_validate(buf, len);
     case OF_BSN_GET_INTERFACES_REPLY:
         return of_bsn_get_interfaces_reply_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REQUEST:
+        return of_bsn_bw_enable_set_request_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REPLY:
+        return of_bsn_bw_enable_set_reply_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REQUEST:
+        return of_bsn_bw_enable_get_request_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REPLY:
+        return of_bsn_bw_enable_get_reply_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REQUEST:
+        return of_bsn_bw_clear_data_request_OF_VERSION_1_1_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REPLY:
+        return of_bsn_bw_clear_data_reply_OF_VERSION_1_1_validate(buf, len);
     case OF_BARRIER_REQUEST:
         return of_barrier_request_OF_VERSION_1_1_validate(buf, len);
     case OF_BARRIER_REPLY:
@@ -4849,17 +5258,6 @@ of_oxm_header_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 }
 
 static inline int
-of_oxm_experimenter_header_OF_VERSION_1_2_validate(uint8_t *buf, int len)
-{
-    if (len < 8) {
-        VALIDATOR_LOG("Class of_oxm_experimenter_header.  Len %d too small, < %d", len, 8);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
 of_oxm_eth_type_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 {
     if (len < 8) {
@@ -5247,6 +5645,28 @@ of_bucket_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         if (of_list_action_OF_VERSION_1_2_validate(buf + 16, actions_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_q_in_q_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_vport_q_in_q.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_header_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
+        return -1;
     }
 
     return 0;
@@ -6098,6 +6518,50 @@ of_desc_stats_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_virtual_port_remove_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_remove.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_request_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_request.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_pktin_suppression_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_set_pktin_suppression.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_set_mirroring_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
@@ -6156,6 +6620,72 @@ of_bsn_get_interfaces_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         if (of_list_bsn_interface_OF_VERSION_1_2_validate(buf + 16, interfaces_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_request_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_request.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_request_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_request_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_reply.  Len %d too small, < %d", len, 20);
+        return -1;
     }
 
     return 0;
@@ -6299,6 +6829,14 @@ of_validate_message_OF_VERSION_1_2(of_message_t msg, int len)
         return of_desc_stats_request_OF_VERSION_1_2_validate(buf, len);
     case OF_DESC_STATS_REPLY:
         return of_desc_stats_reply_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_REMOVE:
+        return of_bsn_virtual_port_remove_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REQUEST:
+        return of_bsn_virtual_port_create_request_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REPLY:
+        return of_bsn_virtual_port_create_reply_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_2_validate(buf, len);
     case OF_BSN_SET_MIRRORING:
         return of_bsn_set_mirroring_OF_VERSION_1_2_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:
@@ -6309,6 +6847,18 @@ of_validate_message_OF_VERSION_1_2(of_message_t msg, int len)
         return of_bsn_get_interfaces_request_OF_VERSION_1_2_validate(buf, len);
     case OF_BSN_GET_INTERFACES_REPLY:
         return of_bsn_get_interfaces_reply_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REQUEST:
+        return of_bsn_bw_enable_set_request_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REPLY:
+        return of_bsn_bw_enable_set_reply_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REQUEST:
+        return of_bsn_bw_enable_get_request_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REPLY:
+        return of_bsn_bw_enable_get_reply_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REQUEST:
+        return of_bsn_bw_clear_data_request_OF_VERSION_1_2_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REPLY:
+        return of_bsn_bw_clear_data_reply_OF_VERSION_1_2_validate(buf, len);
     case OF_BARRIER_REQUEST:
         return of_barrier_request_OF_VERSION_1_2_validate(buf, len);
     case OF_BARRIER_REPLY:
@@ -6344,6 +6894,16 @@ of_list_uint32_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_list_table_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if ((len / 24) * 24 != len) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_list_table_features_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     /* TODO verify U16 len elements */
@@ -6361,13 +6921,13 @@ of_list_table_feature_prop_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         buf_u16_get(buf+2, &e_len);
         e_id = of_table_feature_prop_to_object_id(e_type, OF_VERSION_1_3);
         switch (e_id) {
-        case OF_TABLE_FEATURE_PROP_WILDCARDS:
-            if (of_table_feature_prop_wildcards_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+        case OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS:
+            if (of_table_feature_prop_next_tables_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
-        case OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS:
-            if (of_table_feature_prop_next_tables_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+        case OF_TABLE_FEATURE_PROP_WILDCARDS:
+            if (of_table_feature_prop_wildcards_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
@@ -6391,23 +6951,23 @@ of_list_table_feature_prop_OF_VERSION_1_3_validate(uint8_t *buf, int len)
                 return -1;
             }
             break;
-        case OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS:
-            if (of_table_feature_prop_apply_setfield_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
-                return -1;
-            }
-            break;
         case OF_TABLE_FEATURE_PROP_APPLY_ACTIONS:
             if (of_table_feature_prop_apply_actions_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
-        case OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS:
-            if (of_table_feature_prop_write_setfield_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+        case OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS:
+            if (of_table_feature_prop_apply_setfield_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
         case OF_TABLE_FEATURE_PROP_EXPERIMENTER:
             if (of_table_feature_prop_experimenter_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+                return -1;
+            }
+            break;
+        case OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS:
+            if (of_table_feature_prop_write_setfield_miss_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
@@ -6737,8 +7297,8 @@ of_list_action_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         buf_u16_get(buf+2, &e_len);
         e_id = of_action_id_to_object_id(e_type, OF_VERSION_1_3);
         switch (e_id) {
-        case OF_ACTION_ID_POP_PBB:
-            if (of_action_id_pop_pbb_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+        case OF_ACTION_ID_COPY_TTL_IN:
+            if (of_action_id_copy_ttl_in_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
@@ -6787,6 +7347,11 @@ of_list_action_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
                 return -1;
             }
             break;
+        case OF_ACTION_ID_BSN_SET_TUNNEL_DST:
+            if (of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+                return -1;
+            }
+            break;
         case OF_ACTION_ID_DEC_NW_TTL:
             if (of_action_id_dec_nw_ttl_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
@@ -6807,8 +7372,8 @@ of_list_action_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
                 return -1;
             }
             break;
-        case OF_ACTION_ID_BSN_SET_TUNNEL_DST:
-            if (of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+        case OF_ACTION_ID_SET_NW_TTL:
+            if (of_action_id_set_nw_ttl_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
@@ -6817,18 +7382,13 @@ of_list_action_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
                 return -1;
             }
             break;
-        case OF_ACTION_ID_SET_NW_TTL:
-            if (of_action_id_set_nw_ttl_OF_VERSION_1_3_validate(buf, e_len) < 0) {
-                return -1;
-            }
-            break;
-        case OF_ACTION_ID_COPY_TTL_IN:
-            if (of_action_id_copy_ttl_in_OF_VERSION_1_3_validate(buf, e_len) < 0) {
-                return -1;
-            }
-            break;
         case OF_ACTION_ID_NICIRA_DEC_TTL:
             if (of_action_id_nicira_dec_ttl_OF_VERSION_1_3_validate(buf, e_len) < 0) {
+                return -1;
+            }
+            break;
+        case OF_ACTION_ID_POP_PBB:
+            if (of_action_id_pop_pbb_OF_VERSION_1_3_validate(buf, e_len) < 0) {
                 return -1;
             }
             break;
@@ -8053,17 +8613,6 @@ of_oxm_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
-of_oxm_experimenter_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
-{
-    if (len < 8) {
-        VALIDATOR_LOG("Class of_oxm_experimenter_header.  Len %d too small, < %d", len, 8);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
 of_oxm_eth_type_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 8) {
@@ -8616,6 +9165,28 @@ of_bucket_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_vport_q_in_q_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_vport_q_in_q.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vport_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_interface_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 32) {
@@ -9083,6 +9654,37 @@ of_action_bsn_mirror_OF_VERSION_1_3_validate(uint8_t *buf, int len)
     if (len < 24) {
         VALIDATOR_LOG("Class of_action_bsn_mirror.  Len %d too small, < %d", len, 24);
         return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_table_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_table_stats_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_table_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_table_stats_reply.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+
+    {    int entries_len = len - 16;
+
+
+        if (of_list_table_stats_entry_OF_VERSION_1_3_validate(buf + 16, entries_len) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -9836,6 +10438,50 @@ of_desc_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_virtual_port_remove_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_remove.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_request.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_virtual_port_create_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_virtual_port_create_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_pktin_suppression_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 32) {
+        VALIDATOR_LOG("Class of_bsn_set_pktin_suppression.  Len %d too small, < %d", len, 32);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_set_mirroring_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
@@ -9894,6 +10540,72 @@ of_bsn_get_interfaces_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         if (of_list_bsn_interface_OF_VERSION_1_3_validate(buf + 16, interfaces_len) < 0) {
             return -1;
         }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_request.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_set_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_set_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_enable_get_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_enable_get_reply.  Len %d too small, < %d", len, 20);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_bw_clear_data_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_bw_clear_data_reply.  Len %d too small, < %d", len, 20);
+        return -1;
     }
 
     return 0;
@@ -9982,6 +10694,10 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
     of_object_id_t object_id = of_message_to_object_id(msg, len);
     uint8_t *buf = OF_MESSAGE_TO_BUFFER(msg);
     switch (object_id) {
+    case OF_TABLE_STATS_REQUEST:
+        return of_table_stats_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_TABLE_STATS_REPLY:
+        return of_table_stats_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_TABLE_MOD:
         return of_table_mod_OF_VERSION_1_3_validate(buf, len);
     case OF_TABLE_FEATURES_STATS_REQUEST:
@@ -10084,6 +10800,14 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_desc_stats_request_OF_VERSION_1_3_validate(buf, len);
     case OF_DESC_STATS_REPLY:
         return of_desc_stats_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_REMOVE:
+        return of_bsn_virtual_port_remove_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REQUEST:
+        return of_bsn_virtual_port_create_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_VIRTUAL_PORT_CREATE_REPLY:
+        return of_bsn_virtual_port_create_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_SET_PKTIN_SUPPRESSION:
+        return of_bsn_set_pktin_suppression_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_SET_MIRRORING:
         return of_bsn_set_mirroring_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:
@@ -10094,6 +10818,18 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_bsn_get_interfaces_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_GET_INTERFACES_REPLY:
         return of_bsn_get_interfaces_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REQUEST:
+        return of_bsn_bw_enable_set_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_ENABLE_SET_REPLY:
+        return of_bsn_bw_enable_set_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REQUEST:
+        return of_bsn_bw_enable_get_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_ENABLE_GET_REPLY:
+        return of_bsn_bw_enable_get_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REQUEST:
+        return of_bsn_bw_clear_data_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_BW_CLEAR_DATA_REPLY:
+        return of_bsn_bw_clear_data_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BARRIER_REQUEST:
         return of_barrier_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BARRIER_REPLY:
