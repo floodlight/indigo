@@ -17,23 +17,7 @@
 #
 ################################################################
 
-###############################################################################
-#
-#  Makefile
-#
-#  OFStateManager Makefile
-#
-###############################################################################
 MODULE :=  OFStateManager
 AUTOMODULE :=  OFStateManager
-
-ifndef BIGCODE
-BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))../../..
-endif
-
-# Necessary for our own settings and the Builder itself
-ifndef BUILDER
-BUILDER:=$(BIGCODE)/Builder/unix
-endif
 
 include $(BUILDER)/definemodule.mk

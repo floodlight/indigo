@@ -16,17 +16,7 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  Makefile
-#
-#  OFConnectionManager Makefile
-#
-###############################################################################
 MODULE :=  OFConnectionManager
 AUTOMODULE :=  OFConnectionManager
-ifndef BUILDER
-export BUILDER=../../../Builder/unix
-endif
+
 include $(BUILDER)/definemodule.mk

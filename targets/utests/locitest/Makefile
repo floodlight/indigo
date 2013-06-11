@@ -17,25 +17,13 @@
 #
 ################################################################
 
-###############################################################################
-#
-#  locitest Unit Testing Module Makefile
-#
-#
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))../../..
-endif
-
 MODULE := locitest_utest
 NOMODULEMAKE := 1
 TEST_MODULE :=  locitest
 
 DEPENDMODULES += loci BigList AIM
 
-LOCI_SRC_DIR = $(BIGCODE)/Modules/loci/src
+LOCI_SRC_DIR = $(loci_BASEDIR)/src
 
 # These indicate Linux specific implementations to be used for
 # various features

@@ -34,10 +34,10 @@ include $(BUILDER)/standardinit.mk
 
 # The Module we are building
 ifndef TEST_MODULE
-$(error $$(TEST_MODULE) is not defined. Please define relative to BigCode)
+$(error $$(TEST_MODULE) is not defined.)
 endif
 
-MODULEMANIFEST := $(BIGCODE)/Modules/Manifest.mk
+MODULEMANIFEST := $(UCODE_MAKE)../../../Modules/Manifest.mk
 
 # At the very least we need the test module
 DEPENDMODULES += $(TEST_MODULE)

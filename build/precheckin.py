@@ -35,7 +35,6 @@ if os.path.isdir(CCACHE_DIR):
 else:
     log("Install ccache for faster builds\n")
 
-os.environ['BIGCODE'] = os.path.join(os.getcwd())
 os.environ['BUILDER'] = os.path.join(os.getcwd(), 'Builder', 'unix')
 
 try:
