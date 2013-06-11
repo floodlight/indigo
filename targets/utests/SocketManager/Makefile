@@ -17,18 +17,6 @@
 #
 ################################################################
 
-###############################################################################
-#
-#  /utest/Makefile
-#
-#  BigData Unit Testing Makefile
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE=$(shell pwd)/../../../../
-endif
-
 MODULE := SocketManager_utest
 TEST_MODULE := SocketManager
 NOMODULEMAKE=1
