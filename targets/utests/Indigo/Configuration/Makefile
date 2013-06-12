@@ -17,18 +17,6 @@
 #
 ################################################################
 
-###############################################################################
-#
-#  /utest/Makefile
-#
-#  BigData Unit Testing Makefile
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))/../../../..
-endif
-
 MODULE := Configuration_utest
 TEST_MODULE := Configuration
 NOMODULEMAKE=1

@@ -16,24 +16,11 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  /utest/Makefile
-#
-#  BigData Unit Testing Makefile
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))/../../../..
-endif
-
 MODULE := OFStateManager_utest
 TEST_MODULE := OFStateManager
 NOMODULEMAKE=1
 
-LOCI_SOURCE_DIR := ${BIGCODE}/Modules/loci/src
+LOCI_SOURCE_DIR = $(loci_BASEDIR)/src
 
 # These indicate Linux specific implementations to be used for
 # various features
@@ -47,11 +34,11 @@ GLOBAL_CFLAGS += -I${LOCI_SOURCE_DIR}
 GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1
 GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
 
-GLOBAL_CFLAGS += -I${BIGCODE}/Modules/Indigo/OFConnectionManager/module/inc
 GLOBAL_CFLAGS += -DOFSTATEMANAGER_CONFIG_INCLUDE_UCLI=0
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
+GLOBAL_CFLAGS += -DOFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI=0
 
-DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration
+DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration OFConnectionManager
 
 GLOBAL_LINK_LIBS += -lm
 

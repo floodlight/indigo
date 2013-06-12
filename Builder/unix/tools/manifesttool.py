@@ -120,7 +120,7 @@ class EnvManifest(ManifestBase):
     desc = "Module Directory Location Variable Manifest."
 
     def module(self, modname, root):
-        return "%s=%s/module\n" % (modname.upper(), os.path.abspath(root))
+        return "%s=`dirname $BASH_SOURCE`/%s/module\n" % (modname.upper(), root)
 
 
 class DoxManifest(ManifestBase):

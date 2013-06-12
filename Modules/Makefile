@@ -17,16 +17,8 @@
 #
 ################################################################
 
-###############################################################################
-#
-# BigCode Modules Makefile
-#
-# Targets for managing the BigCode Module repository
-#
-###############################################################################
-
 ifndef BUILDER
-export BUILDER=../Builder/unix
+export BUILDER=$(dir $(lastword $(MAKEFILE_LIST)))../Builder/unix
 endif
 
 -include Manifest.mk
@@ -41,20 +33,7 @@ moduledir_show_targets::
 
 autogen:
 	$(MAKE) autogen -C AIM
-	$(MAKE) autogen -C ELS
-	$(MAKE) autogen -C FME
-	$(MAKE) autogen -C IOF
-	$(MAKE) autogen -C IVS
-	$(MAKE) autogen -C NPP
-	$(MAKE) autogen -C NSS
-	$(MAKE) autogen -C OS
-	$(MAKE) autogen -C PPE
-	$(MAKE) autogen -C uCli
-	$(MAKE) autogen -C VASIC
-	$(MAKE) autogen -C VPI
 	$(MAKE) autogen -C Indigo/OFStateManager
-	$(MAKE) autogen -C Indigo/Forwarding
-	$(MAKE) autogen -C Indigo/PortManager
 	$(MAKE) autogen -C Indigo/Configuration
 	$(MAKE) autogen -C Indigo/OFConnectionManager
 	$(MAKE) autogen -C Indigo/SocketManager

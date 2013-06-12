@@ -16,19 +16,6 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  /utest/Makefile
-#
-#  BigData Unit Testing Makefile
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE=$(shell pwd)/../../../../
-endif
-
 MODULE := OFConnectionManager_utest
 TEST_MODULE := OFConnectionManager
 NOMODULEMAKE=1
