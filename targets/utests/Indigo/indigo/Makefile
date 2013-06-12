@@ -17,18 +17,6 @@
 #
 ################################################################
 
-###############################################################################
-#
-#  indigo Unit Testing Module Makefile
-#
-#
-#
-###############################################################################
-
-ifndef BIGCODE
-BIGCODE:=$(dir $(lastword $(MAKEFILE_LIST)))../../../..
-endif
-
 MODULE := indigo_utest
 NOMODULEMAKE := 1
 TEST_MODULE :=  indigo

@@ -16,17 +16,6 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  /utest/_make.mk
-#
-#  OFStateManager Unit Testing Definitions
-#
-###############################################################################
-
-
-GLOBAL_INCLUDES += -I ${BIGCODE}/Modules/Indigo/OFStateManager/module/src
 UMODULE := OFStateManager
 UMODULE_SUBDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(BUILDER)/utest.mk

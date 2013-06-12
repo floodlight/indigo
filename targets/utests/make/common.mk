@@ -17,26 +17,15 @@
 #
 ################################################################
 
-###############################################################################
-#
-# BigCode Unit Tests
-#
-# Common Make and build settings for all unit tests.
-#
-###############################################################################
 ifndef MODULE
 $(error Need to define $$MODULE)
 endif
 
-ifndef BIGCODE
-BIGCODE:=$(abspath ../../..)
-endif
-
 #
-# Default to Builder in BigCode
+# Default to local Builder
 #
 ifndef BUILDER
-export BUILDER := $(BIGCODE)/Builder/unix
+export BUILDER := $(dir $(lastword $(MAKEFILE_LIST)))../../../Builder/unix
 endif
 
 #
