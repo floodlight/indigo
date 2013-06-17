@@ -1,25 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  * File: of_type_data.c
@@ -865,7 +847,179 @@ of_oxm_type_to_id_v1[OF_OXM_ITEM_COUNT] = {
     OF_OBJECT_INVALID,             /* 68 (Invalid) */
     OF_OBJECT_INVALID,             /* 69 (Invalid) */
     OF_OBJECT_INVALID,             /* 70 (Invalid) */
-    OF_OBJECT_INVALID              /* 71 (Invalid) */
+    OF_OBJECT_INVALID,             /* 71 (Invalid) */
+    OF_OBJECT_INVALID,             /* 72 (Invalid) */
+    OF_OBJECT_INVALID,             /* 73 (Invalid) */
+    OF_OBJECT_INVALID,             /* 74 (Invalid) */
+    OF_OBJECT_INVALID,             /* 75 (Invalid) */
+    OF_OBJECT_INVALID,             /* 76 (Invalid) */
+    OF_OBJECT_INVALID,             /* 77 (Invalid) */
+    OF_OBJECT_INVALID,             /* 78 (Invalid) */
+    OF_OBJECT_INVALID,             /* 79 (Invalid) */
+    OF_OBJECT_INVALID,             /* 80 (Invalid) */
+    OF_OBJECT_INVALID,             /* 81 (Invalid) */
+    OF_OBJECT_INVALID,             /* 82 (Invalid) */
+    OF_OBJECT_INVALID,             /* 83 (Invalid) */
+    OF_OBJECT_INVALID,             /* 84 (Invalid) */
+    OF_OBJECT_INVALID,             /* 85 (Invalid) */
+    OF_OBJECT_INVALID,             /* 86 (Invalid) */
+    OF_OBJECT_INVALID,             /* 87 (Invalid) */
+    OF_OBJECT_INVALID,             /* 88 (Invalid) */
+    OF_OBJECT_INVALID,             /* 89 (Invalid) */
+    OF_OBJECT_INVALID,             /* 90 (Invalid) */
+    OF_OBJECT_INVALID,             /* 91 (Invalid) */
+    OF_OBJECT_INVALID,             /* 92 (Invalid) */
+    OF_OBJECT_INVALID,             /* 93 (Invalid) */
+    OF_OBJECT_INVALID,             /* 94 (Invalid) */
+    OF_OBJECT_INVALID,             /* 95 (Invalid) */
+    OF_OBJECT_INVALID,             /* 96 (Invalid) */
+    OF_OBJECT_INVALID,             /* 97 (Invalid) */
+    OF_OBJECT_INVALID,             /* 98 (Invalid) */
+    OF_OBJECT_INVALID,             /* 99 (Invalid) */
+    OF_OBJECT_INVALID,             /* 100 (Invalid) */
+    OF_OBJECT_INVALID,             /* 101 (Invalid) */
+    OF_OBJECT_INVALID,             /* 102 (Invalid) */
+    OF_OBJECT_INVALID,             /* 103 (Invalid) */
+    OF_OBJECT_INVALID,             /* 104 (Invalid) */
+    OF_OBJECT_INVALID,             /* 105 (Invalid) */
+    OF_OBJECT_INVALID,             /* 106 (Invalid) */
+    OF_OBJECT_INVALID,             /* 107 (Invalid) */
+    OF_OBJECT_INVALID,             /* 108 (Invalid) */
+    OF_OBJECT_INVALID,             /* 109 (Invalid) */
+    OF_OBJECT_INVALID,             /* 110 (Invalid) */
+    OF_OBJECT_INVALID,             /* 111 (Invalid) */
+    OF_OBJECT_INVALID,             /* 112 (Invalid) */
+    OF_OBJECT_INVALID,             /* 113 (Invalid) */
+    OF_OBJECT_INVALID,             /* 114 (Invalid) */
+    OF_OBJECT_INVALID,             /* 115 (Invalid) */
+    OF_OBJECT_INVALID,             /* 116 (Invalid) */
+    OF_OBJECT_INVALID,             /* 117 (Invalid) */
+    OF_OBJECT_INVALID,             /* 118 (Invalid) */
+    OF_OBJECT_INVALID,             /* 119 (Invalid) */
+    OF_OBJECT_INVALID,             /* 120 (Invalid) */
+    OF_OBJECT_INVALID,             /* 121 (Invalid) */
+    OF_OBJECT_INVALID,             /* 122 (Invalid) */
+    OF_OBJECT_INVALID,             /* 123 (Invalid) */
+    OF_OBJECT_INVALID,             /* 124 (Invalid) */
+    OF_OBJECT_INVALID,             /* 125 (Invalid) */
+    OF_OBJECT_INVALID,             /* 126 (Invalid) */
+    OF_OBJECT_INVALID,             /* 127 (Invalid) */
+    OF_OBJECT_INVALID,             /* 128 (Invalid) */
+    OF_OBJECT_INVALID,             /* 129 (Invalid) */
+    OF_OBJECT_INVALID,             /* 130 (Invalid) */
+    OF_OBJECT_INVALID,             /* 131 (Invalid) */
+    OF_OBJECT_INVALID,             /* 132 (Invalid) */
+    OF_OBJECT_INVALID,             /* 133 (Invalid) */
+    OF_OBJECT_INVALID,             /* 134 (Invalid) */
+    OF_OBJECT_INVALID,             /* 135 (Invalid) */
+    OF_OBJECT_INVALID,             /* 136 (Invalid) */
+    OF_OBJECT_INVALID,             /* 137 (Invalid) */
+    OF_OBJECT_INVALID,             /* 138 (Invalid) */
+    OF_OBJECT_INVALID,             /* 139 (Invalid) */
+    OF_OBJECT_INVALID,             /* 140 (Invalid) */
+    OF_OBJECT_INVALID,             /* 141 (Invalid) */
+    OF_OBJECT_INVALID,             /* 142 (Invalid) */
+    OF_OBJECT_INVALID,             /* 143 (Invalid) */
+    OF_OBJECT_INVALID,             /* 144 (Invalid) */
+    OF_OBJECT_INVALID,             /* 145 (Invalid) */
+    OF_OBJECT_INVALID,             /* 146 (Invalid) */
+    OF_OBJECT_INVALID,             /* 147 (Invalid) */
+    OF_OBJECT_INVALID,             /* 148 (Invalid) */
+    OF_OBJECT_INVALID,             /* 149 (Invalid) */
+    OF_OBJECT_INVALID,             /* 150 (Invalid) */
+    OF_OBJECT_INVALID,             /* 151 (Invalid) */
+    OF_OBJECT_INVALID,             /* 152 (Invalid) */
+    OF_OBJECT_INVALID,             /* 153 (Invalid) */
+    OF_OBJECT_INVALID,             /* 154 (Invalid) */
+    OF_OBJECT_INVALID,             /* 155 (Invalid) */
+    OF_OBJECT_INVALID,             /* 156 (Invalid) */
+    OF_OBJECT_INVALID,             /* 157 (Invalid) */
+    OF_OBJECT_INVALID,             /* 158 (Invalid) */
+    OF_OBJECT_INVALID,             /* 159 (Invalid) */
+    OF_OBJECT_INVALID,             /* 160 (Invalid) */
+    OF_OBJECT_INVALID,             /* 161 (Invalid) */
+    OF_OBJECT_INVALID,             /* 162 (Invalid) */
+    OF_OBJECT_INVALID,             /* 163 (Invalid) */
+    OF_OBJECT_INVALID,             /* 164 (Invalid) */
+    OF_OBJECT_INVALID,             /* 165 (Invalid) */
+    OF_OBJECT_INVALID,             /* 166 (Invalid) */
+    OF_OBJECT_INVALID,             /* 167 (Invalid) */
+    OF_OBJECT_INVALID,             /* 168 (Invalid) */
+    OF_OBJECT_INVALID,             /* 169 (Invalid) */
+    OF_OBJECT_INVALID,             /* 170 (Invalid) */
+    OF_OBJECT_INVALID,             /* 171 (Invalid) */
+    OF_OBJECT_INVALID,             /* 172 (Invalid) */
+    OF_OBJECT_INVALID,             /* 173 (Invalid) */
+    OF_OBJECT_INVALID,             /* 174 (Invalid) */
+    OF_OBJECT_INVALID,             /* 175 (Invalid) */
+    OF_OBJECT_INVALID,             /* 176 (Invalid) */
+    OF_OBJECT_INVALID,             /* 177 (Invalid) */
+    OF_OBJECT_INVALID,             /* 178 (Invalid) */
+    OF_OBJECT_INVALID,             /* 179 (Invalid) */
+    OF_OBJECT_INVALID,             /* 180 (Invalid) */
+    OF_OBJECT_INVALID,             /* 181 (Invalid) */
+    OF_OBJECT_INVALID,             /* 182 (Invalid) */
+    OF_OBJECT_INVALID,             /* 183 (Invalid) */
+    OF_OBJECT_INVALID,             /* 184 (Invalid) */
+    OF_OBJECT_INVALID,             /* 185 (Invalid) */
+    OF_OBJECT_INVALID,             /* 186 (Invalid) */
+    OF_OBJECT_INVALID,             /* 187 (Invalid) */
+    OF_OBJECT_INVALID,             /* 188 (Invalid) */
+    OF_OBJECT_INVALID,             /* 189 (Invalid) */
+    OF_OBJECT_INVALID,             /* 190 (Invalid) */
+    OF_OBJECT_INVALID,             /* 191 (Invalid) */
+    OF_OBJECT_INVALID,             /* 192 (Invalid) */
+    OF_OBJECT_INVALID,             /* 193 (Invalid) */
+    OF_OBJECT_INVALID,             /* 194 (Invalid) */
+    OF_OBJECT_INVALID,             /* 195 (Invalid) */
+    OF_OBJECT_INVALID,             /* 196 (Invalid) */
+    OF_OBJECT_INVALID,             /* 197 (Invalid) */
+    OF_OBJECT_INVALID,             /* 198 (Invalid) */
+    OF_OBJECT_INVALID,             /* 199 (Invalid) */
+    OF_OBJECT_INVALID,             /* 200 (Invalid) */
+    OF_OBJECT_INVALID,             /* 201 (Invalid) */
+    OF_OBJECT_INVALID,             /* 202 (Invalid) */
+    OF_OBJECT_INVALID,             /* 203 (Invalid) */
+    OF_OBJECT_INVALID,             /* 204 (Invalid) */
+    OF_OBJECT_INVALID,             /* 205 (Invalid) */
+    OF_OBJECT_INVALID,             /* 206 (Invalid) */
+    OF_OBJECT_INVALID,             /* 207 (Invalid) */
+    OF_OBJECT_INVALID,             /* 208 (Invalid) */
+    OF_OBJECT_INVALID,             /* 209 (Invalid) */
+    OF_OBJECT_INVALID,             /* 210 (Invalid) */
+    OF_OBJECT_INVALID,             /* 211 (Invalid) */
+    OF_OBJECT_INVALID,             /* 212 (Invalid) */
+    OF_OBJECT_INVALID,             /* 213 (Invalid) */
+    OF_OBJECT_INVALID,             /* 214 (Invalid) */
+    OF_OBJECT_INVALID,             /* 215 (Invalid) */
+    OF_OBJECT_INVALID,             /* 216 (Invalid) */
+    OF_OBJECT_INVALID,             /* 217 (Invalid) */
+    OF_OBJECT_INVALID,             /* 218 (Invalid) */
+    OF_OBJECT_INVALID,             /* 219 (Invalid) */
+    OF_OBJECT_INVALID,             /* 220 (Invalid) */
+    OF_OBJECT_INVALID,             /* 221 (Invalid) */
+    OF_OBJECT_INVALID,             /* 222 (Invalid) */
+    OF_OBJECT_INVALID,             /* 223 (Invalid) */
+    OF_OBJECT_INVALID,             /* 224 (Invalid) */
+    OF_OBJECT_INVALID,             /* 225 (Invalid) */
+    OF_OBJECT_INVALID,             /* 226 (Invalid) */
+    OF_OBJECT_INVALID,             /* 227 (Invalid) */
+    OF_OBJECT_INVALID,             /* 228 (Invalid) */
+    OF_OBJECT_INVALID,             /* 229 (Invalid) */
+    OF_OBJECT_INVALID,             /* 230 (Invalid) */
+    OF_OBJECT_INVALID,             /* 231 (Invalid) */
+    OF_OBJECT_INVALID,             /* 232 (Invalid) */
+    OF_OBJECT_INVALID,             /* 233 (Invalid) */
+    OF_OBJECT_INVALID,             /* 234 (Invalid) */
+    OF_OBJECT_INVALID,             /* 235 (Invalid) */
+    OF_OBJECT_INVALID,             /* 236 (Invalid) */
+    OF_OBJECT_INVALID,             /* 237 (Invalid) */
+    OF_OBJECT_INVALID,             /* 238 (Invalid) */
+    OF_OBJECT_INVALID,             /* 239 (Invalid) */
+    OF_OBJECT_INVALID,             /* 240 (Invalid) */
+    OF_OBJECT_INVALID,             /* 241 (Invalid) */
+    OF_OBJECT_INVALID,             /* 242 (Invalid) */
+    OF_OBJECT_INVALID              /* 243 (Invalid) */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v2[OF_OXM_ITEM_COUNT] = {
@@ -940,7 +1094,179 @@ of_oxm_type_to_id_v2[OF_OXM_ITEM_COUNT] = {
     OF_OBJECT_INVALID,             /* 68 (Invalid) */
     OF_OBJECT_INVALID,             /* 69 (Invalid) */
     OF_OBJECT_INVALID,             /* 70 (Invalid) */
-    OF_OBJECT_INVALID              /* 71 (Invalid) */
+    OF_OBJECT_INVALID,             /* 71 (Invalid) */
+    OF_OBJECT_INVALID,             /* 72 (Invalid) */
+    OF_OBJECT_INVALID,             /* 73 (Invalid) */
+    OF_OBJECT_INVALID,             /* 74 (Invalid) */
+    OF_OBJECT_INVALID,             /* 75 (Invalid) */
+    OF_OBJECT_INVALID,             /* 76 (Invalid) */
+    OF_OBJECT_INVALID,             /* 77 (Invalid) */
+    OF_OBJECT_INVALID,             /* 78 (Invalid) */
+    OF_OBJECT_INVALID,             /* 79 (Invalid) */
+    OF_OBJECT_INVALID,             /* 80 (Invalid) */
+    OF_OBJECT_INVALID,             /* 81 (Invalid) */
+    OF_OBJECT_INVALID,             /* 82 (Invalid) */
+    OF_OBJECT_INVALID,             /* 83 (Invalid) */
+    OF_OBJECT_INVALID,             /* 84 (Invalid) */
+    OF_OBJECT_INVALID,             /* 85 (Invalid) */
+    OF_OBJECT_INVALID,             /* 86 (Invalid) */
+    OF_OBJECT_INVALID,             /* 87 (Invalid) */
+    OF_OBJECT_INVALID,             /* 88 (Invalid) */
+    OF_OBJECT_INVALID,             /* 89 (Invalid) */
+    OF_OBJECT_INVALID,             /* 90 (Invalid) */
+    OF_OBJECT_INVALID,             /* 91 (Invalid) */
+    OF_OBJECT_INVALID,             /* 92 (Invalid) */
+    OF_OBJECT_INVALID,             /* 93 (Invalid) */
+    OF_OBJECT_INVALID,             /* 94 (Invalid) */
+    OF_OBJECT_INVALID,             /* 95 (Invalid) */
+    OF_OBJECT_INVALID,             /* 96 (Invalid) */
+    OF_OBJECT_INVALID,             /* 97 (Invalid) */
+    OF_OBJECT_INVALID,             /* 98 (Invalid) */
+    OF_OBJECT_INVALID,             /* 99 (Invalid) */
+    OF_OBJECT_INVALID,             /* 100 (Invalid) */
+    OF_OBJECT_INVALID,             /* 101 (Invalid) */
+    OF_OBJECT_INVALID,             /* 102 (Invalid) */
+    OF_OBJECT_INVALID,             /* 103 (Invalid) */
+    OF_OBJECT_INVALID,             /* 104 (Invalid) */
+    OF_OBJECT_INVALID,             /* 105 (Invalid) */
+    OF_OBJECT_INVALID,             /* 106 (Invalid) */
+    OF_OBJECT_INVALID,             /* 107 (Invalid) */
+    OF_OBJECT_INVALID,             /* 108 (Invalid) */
+    OF_OBJECT_INVALID,             /* 109 (Invalid) */
+    OF_OBJECT_INVALID,             /* 110 (Invalid) */
+    OF_OBJECT_INVALID,             /* 111 (Invalid) */
+    OF_OBJECT_INVALID,             /* 112 (Invalid) */
+    OF_OBJECT_INVALID,             /* 113 (Invalid) */
+    OF_OBJECT_INVALID,             /* 114 (Invalid) */
+    OF_OBJECT_INVALID,             /* 115 (Invalid) */
+    OF_OBJECT_INVALID,             /* 116 (Invalid) */
+    OF_OBJECT_INVALID,             /* 117 (Invalid) */
+    OF_OBJECT_INVALID,             /* 118 (Invalid) */
+    OF_OBJECT_INVALID,             /* 119 (Invalid) */
+    OF_OBJECT_INVALID,             /* 120 (Invalid) */
+    OF_OBJECT_INVALID,             /* 121 (Invalid) */
+    OF_OBJECT_INVALID,             /* 122 (Invalid) */
+    OF_OBJECT_INVALID,             /* 123 (Invalid) */
+    OF_OBJECT_INVALID,             /* 124 (Invalid) */
+    OF_OBJECT_INVALID,             /* 125 (Invalid) */
+    OF_OBJECT_INVALID,             /* 126 (Invalid) */
+    OF_OBJECT_INVALID,             /* 127 (Invalid) */
+    OF_OBJECT_INVALID,             /* 128 (Invalid) */
+    OF_OBJECT_INVALID,             /* 129 (Invalid) */
+    OF_OBJECT_INVALID,             /* 130 (Invalid) */
+    OF_OBJECT_INVALID,             /* 131 (Invalid) */
+    OF_OBJECT_INVALID,             /* 132 (Invalid) */
+    OF_OBJECT_INVALID,             /* 133 (Invalid) */
+    OF_OBJECT_INVALID,             /* 134 (Invalid) */
+    OF_OBJECT_INVALID,             /* 135 (Invalid) */
+    OF_OBJECT_INVALID,             /* 136 (Invalid) */
+    OF_OBJECT_INVALID,             /* 137 (Invalid) */
+    OF_OBJECT_INVALID,             /* 138 (Invalid) */
+    OF_OBJECT_INVALID,             /* 139 (Invalid) */
+    OF_OBJECT_INVALID,             /* 140 (Invalid) */
+    OF_OBJECT_INVALID,             /* 141 (Invalid) */
+    OF_OBJECT_INVALID,             /* 142 (Invalid) */
+    OF_OBJECT_INVALID,             /* 143 (Invalid) */
+    OF_OBJECT_INVALID,             /* 144 (Invalid) */
+    OF_OBJECT_INVALID,             /* 145 (Invalid) */
+    OF_OBJECT_INVALID,             /* 146 (Invalid) */
+    OF_OBJECT_INVALID,             /* 147 (Invalid) */
+    OF_OBJECT_INVALID,             /* 148 (Invalid) */
+    OF_OBJECT_INVALID,             /* 149 (Invalid) */
+    OF_OBJECT_INVALID,             /* 150 (Invalid) */
+    OF_OBJECT_INVALID,             /* 151 (Invalid) */
+    OF_OBJECT_INVALID,             /* 152 (Invalid) */
+    OF_OBJECT_INVALID,             /* 153 (Invalid) */
+    OF_OBJECT_INVALID,             /* 154 (Invalid) */
+    OF_OBJECT_INVALID,             /* 155 (Invalid) */
+    OF_OBJECT_INVALID,             /* 156 (Invalid) */
+    OF_OBJECT_INVALID,             /* 157 (Invalid) */
+    OF_OBJECT_INVALID,             /* 158 (Invalid) */
+    OF_OBJECT_INVALID,             /* 159 (Invalid) */
+    OF_OBJECT_INVALID,             /* 160 (Invalid) */
+    OF_OBJECT_INVALID,             /* 161 (Invalid) */
+    OF_OBJECT_INVALID,             /* 162 (Invalid) */
+    OF_OBJECT_INVALID,             /* 163 (Invalid) */
+    OF_OBJECT_INVALID,             /* 164 (Invalid) */
+    OF_OBJECT_INVALID,             /* 165 (Invalid) */
+    OF_OBJECT_INVALID,             /* 166 (Invalid) */
+    OF_OBJECT_INVALID,             /* 167 (Invalid) */
+    OF_OBJECT_INVALID,             /* 168 (Invalid) */
+    OF_OBJECT_INVALID,             /* 169 (Invalid) */
+    OF_OBJECT_INVALID,             /* 170 (Invalid) */
+    OF_OBJECT_INVALID,             /* 171 (Invalid) */
+    OF_OBJECT_INVALID,             /* 172 (Invalid) */
+    OF_OBJECT_INVALID,             /* 173 (Invalid) */
+    OF_OBJECT_INVALID,             /* 174 (Invalid) */
+    OF_OBJECT_INVALID,             /* 175 (Invalid) */
+    OF_OBJECT_INVALID,             /* 176 (Invalid) */
+    OF_OBJECT_INVALID,             /* 177 (Invalid) */
+    OF_OBJECT_INVALID,             /* 178 (Invalid) */
+    OF_OBJECT_INVALID,             /* 179 (Invalid) */
+    OF_OBJECT_INVALID,             /* 180 (Invalid) */
+    OF_OBJECT_INVALID,             /* 181 (Invalid) */
+    OF_OBJECT_INVALID,             /* 182 (Invalid) */
+    OF_OBJECT_INVALID,             /* 183 (Invalid) */
+    OF_OBJECT_INVALID,             /* 184 (Invalid) */
+    OF_OBJECT_INVALID,             /* 185 (Invalid) */
+    OF_OBJECT_INVALID,             /* 186 (Invalid) */
+    OF_OBJECT_INVALID,             /* 187 (Invalid) */
+    OF_OBJECT_INVALID,             /* 188 (Invalid) */
+    OF_OBJECT_INVALID,             /* 189 (Invalid) */
+    OF_OBJECT_INVALID,             /* 190 (Invalid) */
+    OF_OBJECT_INVALID,             /* 191 (Invalid) */
+    OF_OBJECT_INVALID,             /* 192 (Invalid) */
+    OF_OBJECT_INVALID,             /* 193 (Invalid) */
+    OF_OBJECT_INVALID,             /* 194 (Invalid) */
+    OF_OBJECT_INVALID,             /* 195 (Invalid) */
+    OF_OBJECT_INVALID,             /* 196 (Invalid) */
+    OF_OBJECT_INVALID,             /* 197 (Invalid) */
+    OF_OBJECT_INVALID,             /* 198 (Invalid) */
+    OF_OBJECT_INVALID,             /* 199 (Invalid) */
+    OF_OBJECT_INVALID,             /* 200 (Invalid) */
+    OF_OBJECT_INVALID,             /* 201 (Invalid) */
+    OF_OBJECT_INVALID,             /* 202 (Invalid) */
+    OF_OBJECT_INVALID,             /* 203 (Invalid) */
+    OF_OBJECT_INVALID,             /* 204 (Invalid) */
+    OF_OBJECT_INVALID,             /* 205 (Invalid) */
+    OF_OBJECT_INVALID,             /* 206 (Invalid) */
+    OF_OBJECT_INVALID,             /* 207 (Invalid) */
+    OF_OBJECT_INVALID,             /* 208 (Invalid) */
+    OF_OBJECT_INVALID,             /* 209 (Invalid) */
+    OF_OBJECT_INVALID,             /* 210 (Invalid) */
+    OF_OBJECT_INVALID,             /* 211 (Invalid) */
+    OF_OBJECT_INVALID,             /* 212 (Invalid) */
+    OF_OBJECT_INVALID,             /* 213 (Invalid) */
+    OF_OBJECT_INVALID,             /* 214 (Invalid) */
+    OF_OBJECT_INVALID,             /* 215 (Invalid) */
+    OF_OBJECT_INVALID,             /* 216 (Invalid) */
+    OF_OBJECT_INVALID,             /* 217 (Invalid) */
+    OF_OBJECT_INVALID,             /* 218 (Invalid) */
+    OF_OBJECT_INVALID,             /* 219 (Invalid) */
+    OF_OBJECT_INVALID,             /* 220 (Invalid) */
+    OF_OBJECT_INVALID,             /* 221 (Invalid) */
+    OF_OBJECT_INVALID,             /* 222 (Invalid) */
+    OF_OBJECT_INVALID,             /* 223 (Invalid) */
+    OF_OBJECT_INVALID,             /* 224 (Invalid) */
+    OF_OBJECT_INVALID,             /* 225 (Invalid) */
+    OF_OBJECT_INVALID,             /* 226 (Invalid) */
+    OF_OBJECT_INVALID,             /* 227 (Invalid) */
+    OF_OBJECT_INVALID,             /* 228 (Invalid) */
+    OF_OBJECT_INVALID,             /* 229 (Invalid) */
+    OF_OBJECT_INVALID,             /* 230 (Invalid) */
+    OF_OBJECT_INVALID,             /* 231 (Invalid) */
+    OF_OBJECT_INVALID,             /* 232 (Invalid) */
+    OF_OBJECT_INVALID,             /* 233 (Invalid) */
+    OF_OBJECT_INVALID,             /* 234 (Invalid) */
+    OF_OBJECT_INVALID,             /* 235 (Invalid) */
+    OF_OBJECT_INVALID,             /* 236 (Invalid) */
+    OF_OBJECT_INVALID,             /* 237 (Invalid) */
+    OF_OBJECT_INVALID,             /* 238 (Invalid) */
+    OF_OBJECT_INVALID,             /* 239 (Invalid) */
+    OF_OBJECT_INVALID,             /* 240 (Invalid) */
+    OF_OBJECT_INVALID,             /* 241 (Invalid) */
+    OF_OBJECT_INVALID,             /* 242 (Invalid) */
+    OF_OBJECT_INVALID              /* 243 (Invalid) */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v3[OF_OXM_ITEM_COUNT] = {
@@ -1015,7 +1341,179 @@ of_oxm_type_to_id_v3[OF_OXM_ITEM_COUNT] = {
     OF_OXM_MPLS_LABEL,             /* 68 */
     OF_OXM_MPLS_LABEL_MASKED,      /* 69 */
     OF_OXM_MPLS_TC,                /* 70 */
-    OF_OXM_MPLS_TC_MASKED          /* 71 */
+    OF_OXM_MPLS_TC_MASKED,         /* 71 */
+    OF_OBJECT_INVALID,             /* 72 (Invalid) */
+    OF_OBJECT_INVALID,             /* 73 (Invalid) */
+    OF_OBJECT_INVALID,             /* 74 (Invalid) */
+    OF_OBJECT_INVALID,             /* 75 (Invalid) */
+    OF_OBJECT_INVALID,             /* 76 (Invalid) */
+    OF_OBJECT_INVALID,             /* 77 (Invalid) */
+    OF_OBJECT_INVALID,             /* 78 (Invalid) */
+    OF_OBJECT_INVALID,             /* 79 (Invalid) */
+    OF_OBJECT_INVALID,             /* 80 (Invalid) */
+    OF_OBJECT_INVALID,             /* 81 (Invalid) */
+    OF_OBJECT_INVALID,             /* 82 (Invalid) */
+    OF_OBJECT_INVALID,             /* 83 (Invalid) */
+    OF_OBJECT_INVALID,             /* 84 (Invalid) */
+    OF_OBJECT_INVALID,             /* 85 (Invalid) */
+    OF_OBJECT_INVALID,             /* 86 (Invalid) */
+    OF_OBJECT_INVALID,             /* 87 (Invalid) */
+    OF_OBJECT_INVALID,             /* 88 (Invalid) */
+    OF_OBJECT_INVALID,             /* 89 (Invalid) */
+    OF_OBJECT_INVALID,             /* 90 (Invalid) */
+    OF_OBJECT_INVALID,             /* 91 (Invalid) */
+    OF_OBJECT_INVALID,             /* 92 (Invalid) */
+    OF_OBJECT_INVALID,             /* 93 (Invalid) */
+    OF_OBJECT_INVALID,             /* 94 (Invalid) */
+    OF_OBJECT_INVALID,             /* 95 (Invalid) */
+    OF_OBJECT_INVALID,             /* 96 (Invalid) */
+    OF_OBJECT_INVALID,             /* 97 (Invalid) */
+    OF_OBJECT_INVALID,             /* 98 (Invalid) */
+    OF_OBJECT_INVALID,             /* 99 (Invalid) */
+    OF_OBJECT_INVALID,             /* 100 (Invalid) */
+    OF_OBJECT_INVALID,             /* 101 (Invalid) */
+    OF_OBJECT_INVALID,             /* 102 (Invalid) */
+    OF_OBJECT_INVALID,             /* 103 (Invalid) */
+    OF_OBJECT_INVALID,             /* 104 (Invalid) */
+    OF_OBJECT_INVALID,             /* 105 (Invalid) */
+    OF_OBJECT_INVALID,             /* 106 (Invalid) */
+    OF_OBJECT_INVALID,             /* 107 (Invalid) */
+    OF_OBJECT_INVALID,             /* 108 (Invalid) */
+    OF_OBJECT_INVALID,             /* 109 (Invalid) */
+    OF_OBJECT_INVALID,             /* 110 (Invalid) */
+    OF_OBJECT_INVALID,             /* 111 (Invalid) */
+    OF_OBJECT_INVALID,             /* 112 (Invalid) */
+    OF_OBJECT_INVALID,             /* 113 (Invalid) */
+    OF_OBJECT_INVALID,             /* 114 (Invalid) */
+    OF_OBJECT_INVALID,             /* 115 (Invalid) */
+    OF_OBJECT_INVALID,             /* 116 (Invalid) */
+    OF_OBJECT_INVALID,             /* 117 (Invalid) */
+    OF_OBJECT_INVALID,             /* 118 (Invalid) */
+    OF_OBJECT_INVALID,             /* 119 (Invalid) */
+    OF_OBJECT_INVALID,             /* 120 (Invalid) */
+    OF_OBJECT_INVALID,             /* 121 (Invalid) */
+    OF_OBJECT_INVALID,             /* 122 (Invalid) */
+    OF_OBJECT_INVALID,             /* 123 (Invalid) */
+    OF_OBJECT_INVALID,             /* 124 (Invalid) */
+    OF_OBJECT_INVALID,             /* 125 (Invalid) */
+    OF_OBJECT_INVALID,             /* 126 (Invalid) */
+    OF_OBJECT_INVALID,             /* 127 (Invalid) */
+    OF_OBJECT_INVALID,             /* 128 (Invalid) */
+    OF_OBJECT_INVALID,             /* 129 (Invalid) */
+    OF_OBJECT_INVALID,             /* 130 (Invalid) */
+    OF_OBJECT_INVALID,             /* 131 (Invalid) */
+    OF_OBJECT_INVALID,             /* 132 (Invalid) */
+    OF_OBJECT_INVALID,             /* 133 (Invalid) */
+    OF_OBJECT_INVALID,             /* 134 (Invalid) */
+    OF_OBJECT_INVALID,             /* 135 (Invalid) */
+    OF_OBJECT_INVALID,             /* 136 (Invalid) */
+    OF_OBJECT_INVALID,             /* 137 (Invalid) */
+    OF_OBJECT_INVALID,             /* 138 (Invalid) */
+    OF_OBJECT_INVALID,             /* 139 (Invalid) */
+    OF_OBJECT_INVALID,             /* 140 (Invalid) */
+    OF_OBJECT_INVALID,             /* 141 (Invalid) */
+    OF_OBJECT_INVALID,             /* 142 (Invalid) */
+    OF_OBJECT_INVALID,             /* 143 (Invalid) */
+    OF_OBJECT_INVALID,             /* 144 (Invalid) */
+    OF_OBJECT_INVALID,             /* 145 (Invalid) */
+    OF_OBJECT_INVALID,             /* 146 (Invalid) */
+    OF_OBJECT_INVALID,             /* 147 (Invalid) */
+    OF_OBJECT_INVALID,             /* 148 (Invalid) */
+    OF_OBJECT_INVALID,             /* 149 (Invalid) */
+    OF_OBJECT_INVALID,             /* 150 (Invalid) */
+    OF_OBJECT_INVALID,             /* 151 (Invalid) */
+    OF_OBJECT_INVALID,             /* 152 (Invalid) */
+    OF_OBJECT_INVALID,             /* 153 (Invalid) */
+    OF_OBJECT_INVALID,             /* 154 (Invalid) */
+    OF_OBJECT_INVALID,             /* 155 (Invalid) */
+    OF_OBJECT_INVALID,             /* 156 (Invalid) */
+    OF_OBJECT_INVALID,             /* 157 (Invalid) */
+    OF_OBJECT_INVALID,             /* 158 (Invalid) */
+    OF_OBJECT_INVALID,             /* 159 (Invalid) */
+    OF_OBJECT_INVALID,             /* 160 (Invalid) */
+    OF_OBJECT_INVALID,             /* 161 (Invalid) */
+    OF_OBJECT_INVALID,             /* 162 (Invalid) */
+    OF_OBJECT_INVALID,             /* 163 (Invalid) */
+    OF_OBJECT_INVALID,             /* 164 (Invalid) */
+    OF_OBJECT_INVALID,             /* 165 (Invalid) */
+    OF_OBJECT_INVALID,             /* 166 (Invalid) */
+    OF_OBJECT_INVALID,             /* 167 (Invalid) */
+    OF_OBJECT_INVALID,             /* 168 (Invalid) */
+    OF_OBJECT_INVALID,             /* 169 (Invalid) */
+    OF_OBJECT_INVALID,             /* 170 (Invalid) */
+    OF_OBJECT_INVALID,             /* 171 (Invalid) */
+    OF_OBJECT_INVALID,             /* 172 (Invalid) */
+    OF_OBJECT_INVALID,             /* 173 (Invalid) */
+    OF_OBJECT_INVALID,             /* 174 (Invalid) */
+    OF_OBJECT_INVALID,             /* 175 (Invalid) */
+    OF_OBJECT_INVALID,             /* 176 (Invalid) */
+    OF_OBJECT_INVALID,             /* 177 (Invalid) */
+    OF_OBJECT_INVALID,             /* 178 (Invalid) */
+    OF_OBJECT_INVALID,             /* 179 (Invalid) */
+    OF_OBJECT_INVALID,             /* 180 (Invalid) */
+    OF_OBJECT_INVALID,             /* 181 (Invalid) */
+    OF_OBJECT_INVALID,             /* 182 (Invalid) */
+    OF_OBJECT_INVALID,             /* 183 (Invalid) */
+    OF_OBJECT_INVALID,             /* 184 (Invalid) */
+    OF_OBJECT_INVALID,             /* 185 (Invalid) */
+    OF_OBJECT_INVALID,             /* 186 (Invalid) */
+    OF_OBJECT_INVALID,             /* 187 (Invalid) */
+    OF_OBJECT_INVALID,             /* 188 (Invalid) */
+    OF_OBJECT_INVALID,             /* 189 (Invalid) */
+    OF_OBJECT_INVALID,             /* 190 (Invalid) */
+    OF_OBJECT_INVALID,             /* 191 (Invalid) */
+    OF_OBJECT_INVALID,             /* 192 (Invalid) */
+    OF_OBJECT_INVALID,             /* 193 (Invalid) */
+    OF_OBJECT_INVALID,             /* 194 (Invalid) */
+    OF_OBJECT_INVALID,             /* 195 (Invalid) */
+    OF_OBJECT_INVALID,             /* 196 (Invalid) */
+    OF_OBJECT_INVALID,             /* 197 (Invalid) */
+    OF_OBJECT_INVALID,             /* 198 (Invalid) */
+    OF_OBJECT_INVALID,             /* 199 (Invalid) */
+    OF_OBJECT_INVALID,             /* 200 (Invalid) */
+    OF_OBJECT_INVALID,             /* 201 (Invalid) */
+    OF_OBJECT_INVALID,             /* 202 (Invalid) */
+    OF_OBJECT_INVALID,             /* 203 (Invalid) */
+    OF_OBJECT_INVALID,             /* 204 (Invalid) */
+    OF_OBJECT_INVALID,             /* 205 (Invalid) */
+    OF_OBJECT_INVALID,             /* 206 (Invalid) */
+    OF_OBJECT_INVALID,             /* 207 (Invalid) */
+    OF_OBJECT_INVALID,             /* 208 (Invalid) */
+    OF_OBJECT_INVALID,             /* 209 (Invalid) */
+    OF_OBJECT_INVALID,             /* 210 (Invalid) */
+    OF_OBJECT_INVALID,             /* 211 (Invalid) */
+    OF_OBJECT_INVALID,             /* 212 (Invalid) */
+    OF_OBJECT_INVALID,             /* 213 (Invalid) */
+    OF_OBJECT_INVALID,             /* 214 (Invalid) */
+    OF_OBJECT_INVALID,             /* 215 (Invalid) */
+    OF_OBJECT_INVALID,             /* 216 (Invalid) */
+    OF_OBJECT_INVALID,             /* 217 (Invalid) */
+    OF_OBJECT_INVALID,             /* 218 (Invalid) */
+    OF_OBJECT_INVALID,             /* 219 (Invalid) */
+    OF_OBJECT_INVALID,             /* 220 (Invalid) */
+    OF_OBJECT_INVALID,             /* 221 (Invalid) */
+    OF_OBJECT_INVALID,             /* 222 (Invalid) */
+    OF_OBJECT_INVALID,             /* 223 (Invalid) */
+    OF_OBJECT_INVALID,             /* 224 (Invalid) */
+    OF_OBJECT_INVALID,             /* 225 (Invalid) */
+    OF_OBJECT_INVALID,             /* 226 (Invalid) */
+    OF_OBJECT_INVALID,             /* 227 (Invalid) */
+    OF_OBJECT_INVALID,             /* 228 (Invalid) */
+    OF_OBJECT_INVALID,             /* 229 (Invalid) */
+    OF_OBJECT_INVALID,             /* 230 (Invalid) */
+    OF_OBJECT_INVALID,             /* 231 (Invalid) */
+    OF_OBJECT_INVALID,             /* 232 (Invalid) */
+    OF_OBJECT_INVALID,             /* 233 (Invalid) */
+    OF_OBJECT_INVALID,             /* 234 (Invalid) */
+    OF_OBJECT_INVALID,             /* 235 (Invalid) */
+    OF_OBJECT_INVALID,             /* 236 (Invalid) */
+    OF_OBJECT_INVALID,             /* 237 (Invalid) */
+    OF_OBJECT_INVALID,             /* 238 (Invalid) */
+    OF_OBJECT_INVALID,             /* 239 (Invalid) */
+    OF_OXM_SRC_META_ID,            /* 240 */
+    OF_OXM_SRC_META_ID_MASKED,     /* 241 */
+    OF_OXM_DST_META_ID,            /* 242 */
+    OF_OXM_DST_META_ID_MASKED      /* 243 */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v4[OF_OXM_ITEM_COUNT] = {
@@ -1090,7 +1588,179 @@ of_oxm_type_to_id_v4[OF_OXM_ITEM_COUNT] = {
     OF_OXM_MPLS_LABEL,             /* 68 */
     OF_OXM_MPLS_LABEL_MASKED,      /* 69 */
     OF_OXM_MPLS_TC,                /* 70 */
-    OF_OXM_MPLS_TC_MASKED          /* 71 */
+    OF_OXM_MPLS_TC_MASKED,         /* 71 */
+    OF_OBJECT_INVALID,             /* 72 (Invalid) */
+    OF_OBJECT_INVALID,             /* 73 (Invalid) */
+    OF_OBJECT_INVALID,             /* 74 (Invalid) */
+    OF_OBJECT_INVALID,             /* 75 (Invalid) */
+    OF_OBJECT_INVALID,             /* 76 (Invalid) */
+    OF_OBJECT_INVALID,             /* 77 (Invalid) */
+    OF_OBJECT_INVALID,             /* 78 (Invalid) */
+    OF_OBJECT_INVALID,             /* 79 (Invalid) */
+    OF_OBJECT_INVALID,             /* 80 (Invalid) */
+    OF_OBJECT_INVALID,             /* 81 (Invalid) */
+    OF_OBJECT_INVALID,             /* 82 (Invalid) */
+    OF_OBJECT_INVALID,             /* 83 (Invalid) */
+    OF_OBJECT_INVALID,             /* 84 (Invalid) */
+    OF_OBJECT_INVALID,             /* 85 (Invalid) */
+    OF_OBJECT_INVALID,             /* 86 (Invalid) */
+    OF_OBJECT_INVALID,             /* 87 (Invalid) */
+    OF_OBJECT_INVALID,             /* 88 (Invalid) */
+    OF_OBJECT_INVALID,             /* 89 (Invalid) */
+    OF_OBJECT_INVALID,             /* 90 (Invalid) */
+    OF_OBJECT_INVALID,             /* 91 (Invalid) */
+    OF_OBJECT_INVALID,             /* 92 (Invalid) */
+    OF_OBJECT_INVALID,             /* 93 (Invalid) */
+    OF_OBJECT_INVALID,             /* 94 (Invalid) */
+    OF_OBJECT_INVALID,             /* 95 (Invalid) */
+    OF_OBJECT_INVALID,             /* 96 (Invalid) */
+    OF_OBJECT_INVALID,             /* 97 (Invalid) */
+    OF_OBJECT_INVALID,             /* 98 (Invalid) */
+    OF_OBJECT_INVALID,             /* 99 (Invalid) */
+    OF_OBJECT_INVALID,             /* 100 (Invalid) */
+    OF_OBJECT_INVALID,             /* 101 (Invalid) */
+    OF_OBJECT_INVALID,             /* 102 (Invalid) */
+    OF_OBJECT_INVALID,             /* 103 (Invalid) */
+    OF_OBJECT_INVALID,             /* 104 (Invalid) */
+    OF_OBJECT_INVALID,             /* 105 (Invalid) */
+    OF_OBJECT_INVALID,             /* 106 (Invalid) */
+    OF_OBJECT_INVALID,             /* 107 (Invalid) */
+    OF_OBJECT_INVALID,             /* 108 (Invalid) */
+    OF_OBJECT_INVALID,             /* 109 (Invalid) */
+    OF_OBJECT_INVALID,             /* 110 (Invalid) */
+    OF_OBJECT_INVALID,             /* 111 (Invalid) */
+    OF_OBJECT_INVALID,             /* 112 (Invalid) */
+    OF_OBJECT_INVALID,             /* 113 (Invalid) */
+    OF_OBJECT_INVALID,             /* 114 (Invalid) */
+    OF_OBJECT_INVALID,             /* 115 (Invalid) */
+    OF_OBJECT_INVALID,             /* 116 (Invalid) */
+    OF_OBJECT_INVALID,             /* 117 (Invalid) */
+    OF_OBJECT_INVALID,             /* 118 (Invalid) */
+    OF_OBJECT_INVALID,             /* 119 (Invalid) */
+    OF_OBJECT_INVALID,             /* 120 (Invalid) */
+    OF_OBJECT_INVALID,             /* 121 (Invalid) */
+    OF_OBJECT_INVALID,             /* 122 (Invalid) */
+    OF_OBJECT_INVALID,             /* 123 (Invalid) */
+    OF_OBJECT_INVALID,             /* 124 (Invalid) */
+    OF_OBJECT_INVALID,             /* 125 (Invalid) */
+    OF_OBJECT_INVALID,             /* 126 (Invalid) */
+    OF_OBJECT_INVALID,             /* 127 (Invalid) */
+    OF_OBJECT_INVALID,             /* 128 (Invalid) */
+    OF_OBJECT_INVALID,             /* 129 (Invalid) */
+    OF_OBJECT_INVALID,             /* 130 (Invalid) */
+    OF_OBJECT_INVALID,             /* 131 (Invalid) */
+    OF_OBJECT_INVALID,             /* 132 (Invalid) */
+    OF_OBJECT_INVALID,             /* 133 (Invalid) */
+    OF_OBJECT_INVALID,             /* 134 (Invalid) */
+    OF_OBJECT_INVALID,             /* 135 (Invalid) */
+    OF_OBJECT_INVALID,             /* 136 (Invalid) */
+    OF_OBJECT_INVALID,             /* 137 (Invalid) */
+    OF_OBJECT_INVALID,             /* 138 (Invalid) */
+    OF_OBJECT_INVALID,             /* 139 (Invalid) */
+    OF_OBJECT_INVALID,             /* 140 (Invalid) */
+    OF_OBJECT_INVALID,             /* 141 (Invalid) */
+    OF_OBJECT_INVALID,             /* 142 (Invalid) */
+    OF_OBJECT_INVALID,             /* 143 (Invalid) */
+    OF_OBJECT_INVALID,             /* 144 (Invalid) */
+    OF_OBJECT_INVALID,             /* 145 (Invalid) */
+    OF_OBJECT_INVALID,             /* 146 (Invalid) */
+    OF_OBJECT_INVALID,             /* 147 (Invalid) */
+    OF_OBJECT_INVALID,             /* 148 (Invalid) */
+    OF_OBJECT_INVALID,             /* 149 (Invalid) */
+    OF_OBJECT_INVALID,             /* 150 (Invalid) */
+    OF_OBJECT_INVALID,             /* 151 (Invalid) */
+    OF_OBJECT_INVALID,             /* 152 (Invalid) */
+    OF_OBJECT_INVALID,             /* 153 (Invalid) */
+    OF_OBJECT_INVALID,             /* 154 (Invalid) */
+    OF_OBJECT_INVALID,             /* 155 (Invalid) */
+    OF_OBJECT_INVALID,             /* 156 (Invalid) */
+    OF_OBJECT_INVALID,             /* 157 (Invalid) */
+    OF_OBJECT_INVALID,             /* 158 (Invalid) */
+    OF_OBJECT_INVALID,             /* 159 (Invalid) */
+    OF_OBJECT_INVALID,             /* 160 (Invalid) */
+    OF_OBJECT_INVALID,             /* 161 (Invalid) */
+    OF_OBJECT_INVALID,             /* 162 (Invalid) */
+    OF_OBJECT_INVALID,             /* 163 (Invalid) */
+    OF_OBJECT_INVALID,             /* 164 (Invalid) */
+    OF_OBJECT_INVALID,             /* 165 (Invalid) */
+    OF_OBJECT_INVALID,             /* 166 (Invalid) */
+    OF_OBJECT_INVALID,             /* 167 (Invalid) */
+    OF_OBJECT_INVALID,             /* 168 (Invalid) */
+    OF_OBJECT_INVALID,             /* 169 (Invalid) */
+    OF_OBJECT_INVALID,             /* 170 (Invalid) */
+    OF_OBJECT_INVALID,             /* 171 (Invalid) */
+    OF_OBJECT_INVALID,             /* 172 (Invalid) */
+    OF_OBJECT_INVALID,             /* 173 (Invalid) */
+    OF_OBJECT_INVALID,             /* 174 (Invalid) */
+    OF_OBJECT_INVALID,             /* 175 (Invalid) */
+    OF_OBJECT_INVALID,             /* 176 (Invalid) */
+    OF_OBJECT_INVALID,             /* 177 (Invalid) */
+    OF_OBJECT_INVALID,             /* 178 (Invalid) */
+    OF_OBJECT_INVALID,             /* 179 (Invalid) */
+    OF_OBJECT_INVALID,             /* 180 (Invalid) */
+    OF_OBJECT_INVALID,             /* 181 (Invalid) */
+    OF_OBJECT_INVALID,             /* 182 (Invalid) */
+    OF_OBJECT_INVALID,             /* 183 (Invalid) */
+    OF_OBJECT_INVALID,             /* 184 (Invalid) */
+    OF_OBJECT_INVALID,             /* 185 (Invalid) */
+    OF_OBJECT_INVALID,             /* 186 (Invalid) */
+    OF_OBJECT_INVALID,             /* 187 (Invalid) */
+    OF_OBJECT_INVALID,             /* 188 (Invalid) */
+    OF_OBJECT_INVALID,             /* 189 (Invalid) */
+    OF_OBJECT_INVALID,             /* 190 (Invalid) */
+    OF_OBJECT_INVALID,             /* 191 (Invalid) */
+    OF_OBJECT_INVALID,             /* 192 (Invalid) */
+    OF_OBJECT_INVALID,             /* 193 (Invalid) */
+    OF_OBJECT_INVALID,             /* 194 (Invalid) */
+    OF_OBJECT_INVALID,             /* 195 (Invalid) */
+    OF_OBJECT_INVALID,             /* 196 (Invalid) */
+    OF_OBJECT_INVALID,             /* 197 (Invalid) */
+    OF_OBJECT_INVALID,             /* 198 (Invalid) */
+    OF_OBJECT_INVALID,             /* 199 (Invalid) */
+    OF_OBJECT_INVALID,             /* 200 (Invalid) */
+    OF_OBJECT_INVALID,             /* 201 (Invalid) */
+    OF_OBJECT_INVALID,             /* 202 (Invalid) */
+    OF_OBJECT_INVALID,             /* 203 (Invalid) */
+    OF_OBJECT_INVALID,             /* 204 (Invalid) */
+    OF_OBJECT_INVALID,             /* 205 (Invalid) */
+    OF_OBJECT_INVALID,             /* 206 (Invalid) */
+    OF_OBJECT_INVALID,             /* 207 (Invalid) */
+    OF_OBJECT_INVALID,             /* 208 (Invalid) */
+    OF_OBJECT_INVALID,             /* 209 (Invalid) */
+    OF_OBJECT_INVALID,             /* 210 (Invalid) */
+    OF_OBJECT_INVALID,             /* 211 (Invalid) */
+    OF_OBJECT_INVALID,             /* 212 (Invalid) */
+    OF_OBJECT_INVALID,             /* 213 (Invalid) */
+    OF_OBJECT_INVALID,             /* 214 (Invalid) */
+    OF_OBJECT_INVALID,             /* 215 (Invalid) */
+    OF_OBJECT_INVALID,             /* 216 (Invalid) */
+    OF_OBJECT_INVALID,             /* 217 (Invalid) */
+    OF_OBJECT_INVALID,             /* 218 (Invalid) */
+    OF_OBJECT_INVALID,             /* 219 (Invalid) */
+    OF_OBJECT_INVALID,             /* 220 (Invalid) */
+    OF_OBJECT_INVALID,             /* 221 (Invalid) */
+    OF_OBJECT_INVALID,             /* 222 (Invalid) */
+    OF_OBJECT_INVALID,             /* 223 (Invalid) */
+    OF_OBJECT_INVALID,             /* 224 (Invalid) */
+    OF_OBJECT_INVALID,             /* 225 (Invalid) */
+    OF_OBJECT_INVALID,             /* 226 (Invalid) */
+    OF_OBJECT_INVALID,             /* 227 (Invalid) */
+    OF_OBJECT_INVALID,             /* 228 (Invalid) */
+    OF_OBJECT_INVALID,             /* 229 (Invalid) */
+    OF_OBJECT_INVALID,             /* 230 (Invalid) */
+    OF_OBJECT_INVALID,             /* 231 (Invalid) */
+    OF_OBJECT_INVALID,             /* 232 (Invalid) */
+    OF_OBJECT_INVALID,             /* 233 (Invalid) */
+    OF_OBJECT_INVALID,             /* 234 (Invalid) */
+    OF_OBJECT_INVALID,             /* 235 (Invalid) */
+    OF_OBJECT_INVALID,             /* 236 (Invalid) */
+    OF_OBJECT_INVALID,             /* 237 (Invalid) */
+    OF_OBJECT_INVALID,             /* 238 (Invalid) */
+    OF_OBJECT_INVALID,             /* 239 (Invalid) */
+    OF_OXM_SRC_META_ID,            /* 240 */
+    OF_OXM_SRC_META_ID_MASKED,     /* 241 */
+    OF_OXM_DST_META_ID,            /* 242 */
+    OF_OXM_DST_META_ID_MASKED      /* 243 */
 };
 
 /**
@@ -1293,13 +1963,15 @@ of_object_to_type_map_v1[OF_OBJECT_COUNT] = {
     4, /* of_bsn_set_l2_table_reply */
     4, /* of_bsn_set_l2_table_request */
     4, /* of_bsn_set_mirroring */
-    4, /* of_bsn_set_pktin_suppression */
+    4, /* of_bsn_set_pktin_suppression_reply */
+    4, /* of_bsn_set_pktin_suppression_request */
     4, /* of_bsn_shell_command */
     4, /* of_bsn_shell_output */
     4, /* of_bsn_shell_status */
     4, /* of_bsn_virtual_port_create_reply */
     4, /* of_bsn_virtual_port_create_request */
-    4, /* of_bsn_virtual_port_remove */
+    4, /* of_bsn_virtual_port_remove_reply */
+    4, /* of_bsn_virtual_port_remove_request */
     17, /* of_desc_stats_reply */
     16, /* of_desc_stats_request */
     3, /* of_echo_reply */
@@ -1461,6 +2133,8 @@ of_object_to_type_map_v1[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_arp_tha_masked (invalid) */
     -1, /* of_oxm_arp_tpa (invalid) */
     -1, /* of_oxm_arp_tpa_masked (invalid) */
+    -1, /* of_oxm_dst_meta_id (invalid) */
+    -1, /* of_oxm_dst_meta_id_masked (invalid) */
     -1, /* of_oxm_eth_dst (invalid) */
     -1, /* of_oxm_eth_dst_masked (invalid) */
     -1, /* of_oxm_eth_src (invalid) */
@@ -1512,6 +2186,8 @@ of_object_to_type_map_v1[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_sctp_dst_masked (invalid) */
     -1, /* of_oxm_sctp_src (invalid) */
     -1, /* of_oxm_sctp_src_masked (invalid) */
+    -1, /* of_oxm_src_meta_id (invalid) */
+    -1, /* of_oxm_src_meta_id_masked (invalid) */
     -1, /* of_oxm_tcp_dst (invalid) */
     -1, /* of_oxm_tcp_dst_masked (invalid) */
     -1, /* of_oxm_tcp_src (invalid) */
@@ -1611,13 +2287,15 @@ of_object_to_type_map_v2[OF_OBJECT_COUNT] = {
     -1, /* of_bsn_set_l2_table_reply (invalid) */
     -1, /* of_bsn_set_l2_table_request (invalid) */
     4, /* of_bsn_set_mirroring */
-    4, /* of_bsn_set_pktin_suppression */
+    4, /* of_bsn_set_pktin_suppression_reply */
+    4, /* of_bsn_set_pktin_suppression_request */
     -1, /* of_bsn_shell_command (invalid) */
     -1, /* of_bsn_shell_output (invalid) */
     -1, /* of_bsn_shell_status (invalid) */
     4, /* of_bsn_virtual_port_create_reply */
     4, /* of_bsn_virtual_port_create_request */
-    4, /* of_bsn_virtual_port_remove */
+    4, /* of_bsn_virtual_port_remove_reply */
+    4, /* of_bsn_virtual_port_remove_request */
     19, /* of_desc_stats_reply */
     18, /* of_desc_stats_request */
     3, /* of_echo_reply */
@@ -1779,6 +2457,8 @@ of_object_to_type_map_v2[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_arp_tha_masked (invalid) */
     -1, /* of_oxm_arp_tpa (invalid) */
     -1, /* of_oxm_arp_tpa_masked (invalid) */
+    -1, /* of_oxm_dst_meta_id (invalid) */
+    -1, /* of_oxm_dst_meta_id_masked (invalid) */
     -1, /* of_oxm_eth_dst (invalid) */
     -1, /* of_oxm_eth_dst_masked (invalid) */
     -1, /* of_oxm_eth_src (invalid) */
@@ -1830,6 +2510,8 @@ of_object_to_type_map_v2[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_sctp_dst_masked (invalid) */
     -1, /* of_oxm_sctp_src (invalid) */
     -1, /* of_oxm_sctp_src_masked (invalid) */
+    -1, /* of_oxm_src_meta_id (invalid) */
+    -1, /* of_oxm_src_meta_id_masked (invalid) */
     -1, /* of_oxm_tcp_dst (invalid) */
     -1, /* of_oxm_tcp_dst_masked (invalid) */
     -1, /* of_oxm_tcp_src (invalid) */
@@ -1929,13 +2611,15 @@ of_object_to_type_map_v3[OF_OBJECT_COUNT] = {
     -1, /* of_bsn_set_l2_table_reply (invalid) */
     -1, /* of_bsn_set_l2_table_request (invalid) */
     4, /* of_bsn_set_mirroring */
-    4, /* of_bsn_set_pktin_suppression */
+    4, /* of_bsn_set_pktin_suppression_reply */
+    4, /* of_bsn_set_pktin_suppression_request */
     -1, /* of_bsn_shell_command (invalid) */
     -1, /* of_bsn_shell_output (invalid) */
     -1, /* of_bsn_shell_status (invalid) */
     4, /* of_bsn_virtual_port_create_reply */
     4, /* of_bsn_virtual_port_create_request */
-    4, /* of_bsn_virtual_port_remove */
+    4, /* of_bsn_virtual_port_remove_reply */
+    4, /* of_bsn_virtual_port_remove_request */
     19, /* of_desc_stats_reply */
     18, /* of_desc_stats_request */
     3, /* of_echo_reply */
@@ -2097,6 +2781,8 @@ of_object_to_type_map_v3[OF_OBJECT_COUNT] = {
     51, /* of_oxm_arp_tha_masked */
     46, /* of_oxm_arp_tpa */
     47, /* of_oxm_arp_tpa_masked */
+    242, /* of_oxm_dst_meta_id */
+    243, /* of_oxm_dst_meta_id_masked */
     6, /* of_oxm_eth_dst */
     7, /* of_oxm_eth_dst_masked */
     8, /* of_oxm_eth_src */
@@ -2148,6 +2834,8 @@ of_object_to_type_map_v3[OF_OBJECT_COUNT] = {
     37, /* of_oxm_sctp_dst_masked */
     34, /* of_oxm_sctp_src */
     35, /* of_oxm_sctp_src_masked */
+    240, /* of_oxm_src_meta_id */
+    241, /* of_oxm_src_meta_id_masked */
     28, /* of_oxm_tcp_dst */
     29, /* of_oxm_tcp_dst_masked */
     26, /* of_oxm_tcp_src */
@@ -2247,13 +2935,15 @@ of_object_to_type_map_v4[OF_OBJECT_COUNT] = {
     -1, /* of_bsn_set_l2_table_reply (invalid) */
     -1, /* of_bsn_set_l2_table_request (invalid) */
     4, /* of_bsn_set_mirroring */
-    4, /* of_bsn_set_pktin_suppression */
+    4, /* of_bsn_set_pktin_suppression_reply */
+    4, /* of_bsn_set_pktin_suppression_request */
     -1, /* of_bsn_shell_command (invalid) */
     -1, /* of_bsn_shell_output (invalid) */
     -1, /* of_bsn_shell_status (invalid) */
     4, /* of_bsn_virtual_port_create_reply */
     4, /* of_bsn_virtual_port_create_request */
-    4, /* of_bsn_virtual_port_remove */
+    4, /* of_bsn_virtual_port_remove_reply */
+    4, /* of_bsn_virtual_port_remove_request */
     19, /* of_desc_stats_reply */
     18, /* of_desc_stats_request */
     3, /* of_echo_reply */
@@ -2415,6 +3105,8 @@ of_object_to_type_map_v4[OF_OBJECT_COUNT] = {
     51, /* of_oxm_arp_tha_masked */
     46, /* of_oxm_arp_tpa */
     47, /* of_oxm_arp_tpa_masked */
+    242, /* of_oxm_dst_meta_id */
+    243, /* of_oxm_dst_meta_id_masked */
     6, /* of_oxm_eth_dst */
     7, /* of_oxm_eth_dst_masked */
     8, /* of_oxm_eth_src */
@@ -2466,6 +3158,8 @@ of_object_to_type_map_v4[OF_OBJECT_COUNT] = {
     37, /* of_oxm_sctp_dst_masked */
     34, /* of_oxm_sctp_src */
     35, /* of_oxm_sctp_src_masked */
+    240, /* of_oxm_src_meta_id */
+    241, /* of_oxm_src_meta_id_masked */
     28, /* of_oxm_tcp_dst */
     29, /* of_oxm_tcp_dst_masked */
     26, /* of_oxm_tcp_src */
@@ -2583,13 +3277,15 @@ of_object_to_extension_data_v1[OF_OBJECT_COUNT] = {
     {1, OF_EXPERIMENTER_ID_BSN, 24}, /* of_bsn_set_l2_table_reply */
     {1, OF_EXPERIMENTER_ID_BSN, 12}, /* of_bsn_set_l2_table_request */
     {1, OF_EXPERIMENTER_ID_BSN, 3}, /* of_bsn_set_mirroring */
-    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression */
+    {1, OF_EXPERIMENTER_ID_BSN, 25}, /* of_bsn_set_pktin_suppression_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression_request */
     {1, OF_EXPERIMENTER_ID_BSN, 6}, /* of_bsn_shell_command */
     {1, OF_EXPERIMENTER_ID_BSN, 7}, /* of_bsn_shell_output */
     {1, OF_EXPERIMENTER_ID_BSN, 8}, /* of_bsn_shell_status */
     {1, OF_EXPERIMENTER_ID_BSN, 16}, /* of_bsn_virtual_port_create_reply */
     {1, OF_EXPERIMENTER_ID_BSN, 15}, /* of_bsn_virtual_port_create_request */
-    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove */
+    {1, OF_EXPERIMENTER_ID_BSN, 26}, /* of_bsn_virtual_port_remove_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove_request */
     {0, 0, 0}, /* of_desc_stats_reply (non-extension) */
     {0, 0, 0}, /* of_desc_stats_request (non-extension) */
     {0, 0, 0}, /* of_echo_reply (non-extension) */
@@ -2751,6 +3447,8 @@ of_object_to_extension_data_v1[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -2802,6 +3500,8 @@ of_object_to_extension_data_v1[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -2902,13 +3602,15 @@ of_object_to_extension_data_v2[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_bsn_set_l2_table_reply (non-extension) */
     {0, 0, 0}, /* of_bsn_set_l2_table_request (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 3}, /* of_bsn_set_mirroring */
-    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression */
+    {1, OF_EXPERIMENTER_ID_BSN, 25}, /* of_bsn_set_pktin_suppression_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression_request */
     {0, 0, 0}, /* of_bsn_shell_command (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_output (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_status (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 16}, /* of_bsn_virtual_port_create_reply */
     {1, OF_EXPERIMENTER_ID_BSN, 15}, /* of_bsn_virtual_port_create_request */
-    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove */
+    {1, OF_EXPERIMENTER_ID_BSN, 26}, /* of_bsn_virtual_port_remove_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove_request */
     {0, 0, 0}, /* of_desc_stats_reply (non-extension) */
     {0, 0, 0}, /* of_desc_stats_request (non-extension) */
     {0, 0, 0}, /* of_echo_reply (non-extension) */
@@ -3070,6 +3772,8 @@ of_object_to_extension_data_v2[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -3121,6 +3825,8 @@ of_object_to_extension_data_v2[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -3221,13 +3927,15 @@ of_object_to_extension_data_v3[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_bsn_set_l2_table_reply (non-extension) */
     {0, 0, 0}, /* of_bsn_set_l2_table_request (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 3}, /* of_bsn_set_mirroring */
-    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression */
+    {1, OF_EXPERIMENTER_ID_BSN, 25}, /* of_bsn_set_pktin_suppression_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression_request */
     {0, 0, 0}, /* of_bsn_shell_command (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_output (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_status (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 16}, /* of_bsn_virtual_port_create_reply */
     {1, OF_EXPERIMENTER_ID_BSN, 15}, /* of_bsn_virtual_port_create_request */
-    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove */
+    {1, OF_EXPERIMENTER_ID_BSN, 26}, /* of_bsn_virtual_port_remove_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove_request */
     {0, 0, 0}, /* of_desc_stats_reply (non-extension) */
     {0, 0, 0}, /* of_desc_stats_request (non-extension) */
     {0, 0, 0}, /* of_echo_reply (non-extension) */
@@ -3389,6 +4097,8 @@ of_object_to_extension_data_v3[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -3440,6 +4150,8 @@ of_object_to_extension_data_v3[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -3540,13 +4252,15 @@ of_object_to_extension_data_v4[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_bsn_set_l2_table_reply (non-extension) */
     {0, 0, 0}, /* of_bsn_set_l2_table_request (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 3}, /* of_bsn_set_mirroring */
-    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression */
+    {1, OF_EXPERIMENTER_ID_BSN, 25}, /* of_bsn_set_pktin_suppression_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 11}, /* of_bsn_set_pktin_suppression_request */
     {0, 0, 0}, /* of_bsn_shell_command (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_output (non-extension) */
     {0, 0, 0}, /* of_bsn_shell_status (non-extension) */
     {1, OF_EXPERIMENTER_ID_BSN, 16}, /* of_bsn_virtual_port_create_reply */
     {1, OF_EXPERIMENTER_ID_BSN, 15}, /* of_bsn_virtual_port_create_request */
-    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove */
+    {1, OF_EXPERIMENTER_ID_BSN, 26}, /* of_bsn_virtual_port_remove_reply */
+    {1, OF_EXPERIMENTER_ID_BSN, 17}, /* of_bsn_virtual_port_remove_request */
     {0, 0, 0}, /* of_desc_stats_reply (non-extension) */
     {0, 0, 0}, /* of_desc_stats_request (non-extension) */
     {0, 0, 0}, /* of_echo_reply (non-extension) */
@@ -3708,6 +4422,8 @@ of_object_to_extension_data_v4[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -3759,6 +4475,8 @@ of_object_to_extension_data_v4[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
+    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -3876,294 +4594,300 @@ of_object_fixed_len_v1[OF_OBJECT_COUNT] = {
     24,   /* 23: of_bsn_set_l2_table_reply */
     24,   /* 24: of_bsn_set_l2_table_request */
     20,   /* 25: of_bsn_set_mirroring */
-    32,   /* 26: of_bsn_set_pktin_suppression */
-    20,   /* 27: of_bsn_shell_command */
-    16,   /* 28: of_bsn_shell_output */
-    20,   /* 29: of_bsn_shell_status */
-    20,   /* 30: of_bsn_virtual_port_create_reply */
-    32,   /* 31: of_bsn_virtual_port_create_request */
-    20,   /* 32: of_bsn_virtual_port_remove */
-    1068, /* 33: of_desc_stats_reply */
-    12,   /* 34: of_desc_stats_request */
-    8,    /* 35: of_echo_reply */
-    8,    /* 36: of_echo_request */
-    12,   /* 37: of_error_msg */
-    16,   /* 38: of_experimenter */
-    16,   /* 39: of_experimenter_stats_reply */
-    16,   /* 40: of_experimenter_stats_request */
-    32,   /* 41: of_features_reply */
-    8,    /* 42: of_features_request */
-    72,   /* 43: of_flow_add */
-    72,   /* 44: of_flow_delete */
-    72,   /* 45: of_flow_delete_strict */
-    72,   /* 46: of_flow_modify */
-    72,   /* 47: of_flow_modify_strict */
-    88,   /* 48: of_flow_removed */
-    12,   /* 49: of_flow_stats_reply */
-    56,   /* 50: of_flow_stats_request */
-    12,   /* 51: of_get_config_reply */
-    8,    /* 52: of_get_config_request */
-    -1,   /* 53: of_group_desc_stats_reply */
-    -1,   /* 54: of_group_desc_stats_request */
-    -1,   /* 55: of_group_features_stats_reply */
-    -1,   /* 56: of_group_features_stats_request */
-    -1,   /* 57: of_group_mod */
-    -1,   /* 58: of_group_stats_reply */
-    -1,   /* 59: of_group_stats_request */
-    8,    /* 60: of_hello */
-    -1,   /* 61: of_meter_config_stats_reply */
-    -1,   /* 62: of_meter_config_stats_request */
-    -1,   /* 63: of_meter_features_stats_reply */
-    -1,   /* 64: of_meter_features_stats_request */
-    -1,   /* 65: of_meter_mod */
-    -1,   /* 66: of_meter_stats_reply */
-    -1,   /* 67: of_meter_stats_request */
-    20,   /* 68: of_nicira_controller_role_reply */
-    20,   /* 69: of_nicira_controller_role_request */
-    18,   /* 70: of_packet_in */
-    16,   /* 71: of_packet_out */
-    -1,   /* 72: of_port_desc_stats_reply */
-    -1,   /* 73: of_port_desc_stats_request */
-    32,   /* 74: of_port_mod */
-    12,   /* 75: of_port_stats_reply */
-    20,   /* 76: of_port_stats_request */
-    64,   /* 77: of_port_status */
-    16,   /* 78: of_queue_get_config_reply */
-    12,   /* 79: of_queue_get_config_request */
-    12,   /* 80: of_queue_stats_reply */
-    20,   /* 81: of_queue_stats_request */
-    -1,   /* 82: of_role_reply */
-    -1,   /* 83: of_role_request */
-    12,   /* 84: of_set_config */
-    -1,   /* 85: of_table_features_stats_reply */
-    -1,   /* 86: of_table_features_stats_request */
-    16,   /* 87: of_table_mod */
-    12,   /* 88: of_table_stats_reply */
-    12,   /* 89: of_table_stats_request */
-    8,    /* 90: of_action */
-    24,   /* 91: of_action_bsn_mirror */
-    16,   /* 92: of_action_bsn_set_tunnel_dst */
-    -1,   /* 93: of_action_copy_ttl_in */
-    -1,   /* 94: of_action_copy_ttl_out */
-    -1,   /* 95: of_action_dec_mpls_ttl */
-    -1,   /* 96: of_action_dec_nw_ttl */
-    16,   /* 97: of_action_enqueue */
-    8,    /* 98: of_action_experimenter */
-    -1,   /* 99: of_action_group */
-    8,    /* 100: of_action_header */
-    -1,   /* 101: of_action_id */
-    -1,   /* 102: of_action_id_bsn_mirror */
-    -1,   /* 103: of_action_id_bsn_set_tunnel_dst */
-    -1,   /* 104: of_action_id_copy_ttl_in */
-    -1,   /* 105: of_action_id_copy_ttl_out */
-    -1,   /* 106: of_action_id_dec_mpls_ttl */
-    -1,   /* 107: of_action_id_dec_nw_ttl */
-    -1,   /* 108: of_action_id_experimenter */
-    -1,   /* 109: of_action_id_group */
-    -1,   /* 110: of_action_id_header */
-    -1,   /* 111: of_action_id_nicira_dec_ttl */
-    -1,   /* 112: of_action_id_output */
-    -1,   /* 113: of_action_id_pop_mpls */
-    -1,   /* 114: of_action_id_pop_pbb */
-    -1,   /* 115: of_action_id_pop_vlan */
-    -1,   /* 116: of_action_id_push_mpls */
-    -1,   /* 117: of_action_id_push_pbb */
-    -1,   /* 118: of_action_id_push_vlan */
-    -1,   /* 119: of_action_id_set_field */
-    -1,   /* 120: of_action_id_set_mpls_ttl */
-    -1,   /* 121: of_action_id_set_nw_ttl */
-    -1,   /* 122: of_action_id_set_queue */
-    16,   /* 123: of_action_nicira_dec_ttl */
-    8,    /* 124: of_action_output */
-    -1,   /* 125: of_action_pop_mpls */
-    -1,   /* 126: of_action_pop_pbb */
-    -1,   /* 127: of_action_pop_vlan */
-    -1,   /* 128: of_action_push_mpls */
-    -1,   /* 129: of_action_push_pbb */
-    -1,   /* 130: of_action_push_vlan */
-    16,   /* 131: of_action_set_dl_dst */
-    16,   /* 132: of_action_set_dl_src */
-    -1,   /* 133: of_action_set_field */
-    -1,   /* 134: of_action_set_mpls_label */
-    -1,   /* 135: of_action_set_mpls_tc */
-    -1,   /* 136: of_action_set_mpls_ttl */
-    8,    /* 137: of_action_set_nw_dst */
-    -1,   /* 138: of_action_set_nw_ecn */
-    8,    /* 139: of_action_set_nw_src */
-    8,    /* 140: of_action_set_nw_tos */
-    -1,   /* 141: of_action_set_nw_ttl */
-    -1,   /* 142: of_action_set_queue */
-    8,    /* 143: of_action_set_tp_dst */
-    8,    /* 144: of_action_set_tp_src */
-    8,    /* 145: of_action_set_vlan_pcp */
-    8,    /* 146: of_action_set_vlan_vid */
-    8,    /* 147: of_action_strip_vlan */
-    32,   /* 148: of_bsn_interface */
-    4,    /* 149: of_bsn_vport */
-    4,    /* 150: of_bsn_vport_header */
-    16,   /* 151: of_bsn_vport_q_in_q */
-    -1,   /* 152: of_bucket */
-    -1,   /* 153: of_bucket_counter */
-    -1,   /* 154: of_experimenter_multipart_header */
-    88,   /* 155: of_flow_stats_entry */
-    -1,   /* 156: of_group_desc_stats_entry */
-    -1,   /* 157: of_group_stats_entry */
-    8,    /* 158: of_header */
-    -1,   /* 159: of_hello_elem */
-    -1,   /* 160: of_hello_elem_header */
-    -1,   /* 161: of_hello_elem_versionbitmap */
-    -1,   /* 162: of_instruction */
-    -1,   /* 163: of_instruction_apply_actions */
-    -1,   /* 164: of_instruction_clear_actions */
-    -1,   /* 165: of_instruction_experimenter */
-    -1,   /* 166: of_instruction_goto_table */
-    -1,   /* 167: of_instruction_header */
-    -1,   /* 168: of_instruction_meter */
-    -1,   /* 169: of_instruction_write_actions */
-    -1,   /* 170: of_instruction_write_metadata */
-    40,   /* 171: of_match_v1 */
-    -1,   /* 172: of_match_v2 */
-    -1,   /* 173: of_match_v3 */
-    -1,   /* 174: of_meter_band */
-    -1,   /* 175: of_meter_band_drop */
-    -1,   /* 176: of_meter_band_dscp_remark */
-    -1,   /* 177: of_meter_band_experimenter */
-    -1,   /* 178: of_meter_band_header */
-    -1,   /* 179: of_meter_band_stats */
-    -1,   /* 180: of_meter_config */
-    -1,   /* 181: of_meter_features */
-    -1,   /* 182: of_meter_stats */
-    -1,   /* 183: of_oxm */
-    -1,   /* 184: of_oxm_arp_op */
-    -1,   /* 185: of_oxm_arp_op_masked */
-    -1,   /* 186: of_oxm_arp_sha */
-    -1,   /* 187: of_oxm_arp_sha_masked */
-    -1,   /* 188: of_oxm_arp_spa */
-    -1,   /* 189: of_oxm_arp_spa_masked */
-    -1,   /* 190: of_oxm_arp_tha */
-    -1,   /* 191: of_oxm_arp_tha_masked */
-    -1,   /* 192: of_oxm_arp_tpa */
-    -1,   /* 193: of_oxm_arp_tpa_masked */
-    -1,   /* 194: of_oxm_eth_dst */
-    -1,   /* 195: of_oxm_eth_dst_masked */
-    -1,   /* 196: of_oxm_eth_src */
-    -1,   /* 197: of_oxm_eth_src_masked */
-    -1,   /* 198: of_oxm_eth_type */
-    -1,   /* 199: of_oxm_eth_type_masked */
-    -1,   /* 200: of_oxm_header */
-    -1,   /* 201: of_oxm_icmpv4_code */
-    -1,   /* 202: of_oxm_icmpv4_code_masked */
-    -1,   /* 203: of_oxm_icmpv4_type */
-    -1,   /* 204: of_oxm_icmpv4_type_masked */
-    -1,   /* 205: of_oxm_icmpv6_code */
-    -1,   /* 206: of_oxm_icmpv6_code_masked */
-    -1,   /* 207: of_oxm_icmpv6_type */
-    -1,   /* 208: of_oxm_icmpv6_type_masked */
-    -1,   /* 209: of_oxm_in_phy_port */
-    -1,   /* 210: of_oxm_in_phy_port_masked */
-    -1,   /* 211: of_oxm_in_port */
-    -1,   /* 212: of_oxm_in_port_masked */
-    -1,   /* 213: of_oxm_ip_dscp */
-    -1,   /* 214: of_oxm_ip_dscp_masked */
-    -1,   /* 215: of_oxm_ip_ecn */
-    -1,   /* 216: of_oxm_ip_ecn_masked */
-    -1,   /* 217: of_oxm_ip_proto */
-    -1,   /* 218: of_oxm_ip_proto_masked */
-    -1,   /* 219: of_oxm_ipv4_dst */
-    -1,   /* 220: of_oxm_ipv4_dst_masked */
-    -1,   /* 221: of_oxm_ipv4_src */
-    -1,   /* 222: of_oxm_ipv4_src_masked */
-    -1,   /* 223: of_oxm_ipv6_dst */
-    -1,   /* 224: of_oxm_ipv6_dst_masked */
-    -1,   /* 225: of_oxm_ipv6_flabel */
-    -1,   /* 226: of_oxm_ipv6_flabel_masked */
-    -1,   /* 227: of_oxm_ipv6_nd_sll */
-    -1,   /* 228: of_oxm_ipv6_nd_sll_masked */
-    -1,   /* 229: of_oxm_ipv6_nd_target */
-    -1,   /* 230: of_oxm_ipv6_nd_target_masked */
-    -1,   /* 231: of_oxm_ipv6_nd_tll */
-    -1,   /* 232: of_oxm_ipv6_nd_tll_masked */
-    -1,   /* 233: of_oxm_ipv6_src */
-    -1,   /* 234: of_oxm_ipv6_src_masked */
-    -1,   /* 235: of_oxm_metadata */
-    -1,   /* 236: of_oxm_metadata_masked */
-    -1,   /* 237: of_oxm_mpls_label */
-    -1,   /* 238: of_oxm_mpls_label_masked */
-    -1,   /* 239: of_oxm_mpls_tc */
-    -1,   /* 240: of_oxm_mpls_tc_masked */
-    -1,   /* 241: of_oxm_sctp_dst */
-    -1,   /* 242: of_oxm_sctp_dst_masked */
-    -1,   /* 243: of_oxm_sctp_src */
-    -1,   /* 244: of_oxm_sctp_src_masked */
-    -1,   /* 245: of_oxm_tcp_dst */
-    -1,   /* 246: of_oxm_tcp_dst_masked */
-    -1,   /* 247: of_oxm_tcp_src */
-    -1,   /* 248: of_oxm_tcp_src_masked */
-    -1,   /* 249: of_oxm_udp_dst */
-    -1,   /* 250: of_oxm_udp_dst_masked */
-    -1,   /* 251: of_oxm_udp_src */
-    -1,   /* 252: of_oxm_udp_src_masked */
-    -1,   /* 253: of_oxm_vlan_pcp */
-    -1,   /* 254: of_oxm_vlan_pcp_masked */
-    -1,   /* 255: of_oxm_vlan_vid */
-    -1,   /* 256: of_oxm_vlan_vid_masked */
-    8,    /* 257: of_packet_queue */
-    48,   /* 258: of_port_desc */
-    104,  /* 259: of_port_stats_entry */
-    8,    /* 260: of_queue_prop */
-    -1,   /* 261: of_queue_prop_experimenter */
-    8,    /* 262: of_queue_prop_header */
-    -1,   /* 263: of_queue_prop_max_rate */
-    16,   /* 264: of_queue_prop_min_rate */
-    32,   /* 265: of_queue_stats_entry */
-    -1,   /* 266: of_table_feature_prop */
-    -1,   /* 267: of_table_feature_prop_apply_actions */
-    -1,   /* 268: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 269: of_table_feature_prop_apply_setfield */
-    -1,   /* 270: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 271: of_table_feature_prop_experimenter */
-    -1,   /* 272: of_table_feature_prop_header */
-    -1,   /* 273: of_table_feature_prop_instructions */
-    -1,   /* 274: of_table_feature_prop_instructions_miss */
-    -1,   /* 275: of_table_feature_prop_match */
-    -1,   /* 276: of_table_feature_prop_next_tables */
-    -1,   /* 277: of_table_feature_prop_next_tables_miss */
-    -1,   /* 278: of_table_feature_prop_wildcards */
-    -1,   /* 279: of_table_feature_prop_write_actions */
-    -1,   /* 280: of_table_feature_prop_write_actions_miss */
-    -1,   /* 281: of_table_feature_prop_write_setfield */
-    -1,   /* 282: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 283: of_table_features */
-    64,   /* 284: of_table_stats_entry */
-    -1,   /* 285: of_uint32 */
-    -1,   /* 286: of_uint8 */
-    0,    /* 287: of_list_action */
-    -1,   /* 288: of_list_action_id */
-    0,    /* 289: of_list_bsn_interface */
-    -1,   /* 290: of_list_bucket */
-    -1,   /* 291: of_list_bucket_counter */
-    0,    /* 292: of_list_flow_stats_entry */
-    -1,   /* 293: of_list_group_desc_stats_entry */
-    -1,   /* 294: of_list_group_stats_entry */
-    -1,   /* 295: of_list_hello_elem */
-    -1,   /* 296: of_list_instruction */
-    -1,   /* 297: of_list_meter_band */
-    -1,   /* 298: of_list_meter_band_stats */
-    -1,   /* 299: of_list_meter_stats */
-    -1,   /* 300: of_list_oxm */
-    0,    /* 301: of_list_packet_queue */
-    0,    /* 302: of_list_port_desc */
-    0,    /* 303: of_list_port_stats_entry */
-    0,    /* 304: of_list_queue_prop */
-    0,    /* 305: of_list_queue_stats_entry */
-    -1,   /* 306: of_list_table_feature_prop */
-    -1,   /* 307: of_list_table_features */
-    0,    /* 308: of_list_table_stats_entry */
-    -1,   /* 309: of_list_uint32 */
-    -1,   /* 310: of_list_uint8 */
-    -1,   /* 311: of_flow_mod */
-    -1,   /* 312: of_stats_reply */
-    -1    /* 313: of_stats_request */
+    20,   /* 26: of_bsn_set_pktin_suppression_reply */
+    32,   /* 27: of_bsn_set_pktin_suppression_request */
+    20,   /* 28: of_bsn_shell_command */
+    16,   /* 29: of_bsn_shell_output */
+    20,   /* 30: of_bsn_shell_status */
+    24,   /* 31: of_bsn_virtual_port_create_reply */
+    32,   /* 32: of_bsn_virtual_port_create_request */
+    20,   /* 33: of_bsn_virtual_port_remove_reply */
+    20,   /* 34: of_bsn_virtual_port_remove_request */
+    1068, /* 35: of_desc_stats_reply */
+    12,   /* 36: of_desc_stats_request */
+    8,    /* 37: of_echo_reply */
+    8,    /* 38: of_echo_request */
+    12,   /* 39: of_error_msg */
+    16,   /* 40: of_experimenter */
+    16,   /* 41: of_experimenter_stats_reply */
+    16,   /* 42: of_experimenter_stats_request */
+    32,   /* 43: of_features_reply */
+    8,    /* 44: of_features_request */
+    72,   /* 45: of_flow_add */
+    72,   /* 46: of_flow_delete */
+    72,   /* 47: of_flow_delete_strict */
+    72,   /* 48: of_flow_modify */
+    72,   /* 49: of_flow_modify_strict */
+    88,   /* 50: of_flow_removed */
+    12,   /* 51: of_flow_stats_reply */
+    56,   /* 52: of_flow_stats_request */
+    12,   /* 53: of_get_config_reply */
+    8,    /* 54: of_get_config_request */
+    -1,   /* 55: of_group_desc_stats_reply */
+    -1,   /* 56: of_group_desc_stats_request */
+    -1,   /* 57: of_group_features_stats_reply */
+    -1,   /* 58: of_group_features_stats_request */
+    -1,   /* 59: of_group_mod */
+    -1,   /* 60: of_group_stats_reply */
+    -1,   /* 61: of_group_stats_request */
+    8,    /* 62: of_hello */
+    -1,   /* 63: of_meter_config_stats_reply */
+    -1,   /* 64: of_meter_config_stats_request */
+    -1,   /* 65: of_meter_features_stats_reply */
+    -1,   /* 66: of_meter_features_stats_request */
+    -1,   /* 67: of_meter_mod */
+    -1,   /* 68: of_meter_stats_reply */
+    -1,   /* 69: of_meter_stats_request */
+    20,   /* 70: of_nicira_controller_role_reply */
+    20,   /* 71: of_nicira_controller_role_request */
+    18,   /* 72: of_packet_in */
+    16,   /* 73: of_packet_out */
+    -1,   /* 74: of_port_desc_stats_reply */
+    -1,   /* 75: of_port_desc_stats_request */
+    32,   /* 76: of_port_mod */
+    12,   /* 77: of_port_stats_reply */
+    20,   /* 78: of_port_stats_request */
+    64,   /* 79: of_port_status */
+    16,   /* 80: of_queue_get_config_reply */
+    12,   /* 81: of_queue_get_config_request */
+    12,   /* 82: of_queue_stats_reply */
+    20,   /* 83: of_queue_stats_request */
+    -1,   /* 84: of_role_reply */
+    -1,   /* 85: of_role_request */
+    12,   /* 86: of_set_config */
+    -1,   /* 87: of_table_features_stats_reply */
+    -1,   /* 88: of_table_features_stats_request */
+    16,   /* 89: of_table_mod */
+    12,   /* 90: of_table_stats_reply */
+    12,   /* 91: of_table_stats_request */
+    8,    /* 92: of_action */
+    24,   /* 93: of_action_bsn_mirror */
+    16,   /* 94: of_action_bsn_set_tunnel_dst */
+    -1,   /* 95: of_action_copy_ttl_in */
+    -1,   /* 96: of_action_copy_ttl_out */
+    -1,   /* 97: of_action_dec_mpls_ttl */
+    -1,   /* 98: of_action_dec_nw_ttl */
+    16,   /* 99: of_action_enqueue */
+    8,    /* 100: of_action_experimenter */
+    -1,   /* 101: of_action_group */
+    8,    /* 102: of_action_header */
+    -1,   /* 103: of_action_id */
+    -1,   /* 104: of_action_id_bsn_mirror */
+    -1,   /* 105: of_action_id_bsn_set_tunnel_dst */
+    -1,   /* 106: of_action_id_copy_ttl_in */
+    -1,   /* 107: of_action_id_copy_ttl_out */
+    -1,   /* 108: of_action_id_dec_mpls_ttl */
+    -1,   /* 109: of_action_id_dec_nw_ttl */
+    -1,   /* 110: of_action_id_experimenter */
+    -1,   /* 111: of_action_id_group */
+    -1,   /* 112: of_action_id_header */
+    -1,   /* 113: of_action_id_nicira_dec_ttl */
+    -1,   /* 114: of_action_id_output */
+    -1,   /* 115: of_action_id_pop_mpls */
+    -1,   /* 116: of_action_id_pop_pbb */
+    -1,   /* 117: of_action_id_pop_vlan */
+    -1,   /* 118: of_action_id_push_mpls */
+    -1,   /* 119: of_action_id_push_pbb */
+    -1,   /* 120: of_action_id_push_vlan */
+    -1,   /* 121: of_action_id_set_field */
+    -1,   /* 122: of_action_id_set_mpls_ttl */
+    -1,   /* 123: of_action_id_set_nw_ttl */
+    -1,   /* 124: of_action_id_set_queue */
+    16,   /* 125: of_action_nicira_dec_ttl */
+    8,    /* 126: of_action_output */
+    -1,   /* 127: of_action_pop_mpls */
+    -1,   /* 128: of_action_pop_pbb */
+    -1,   /* 129: of_action_pop_vlan */
+    -1,   /* 130: of_action_push_mpls */
+    -1,   /* 131: of_action_push_pbb */
+    -1,   /* 132: of_action_push_vlan */
+    16,   /* 133: of_action_set_dl_dst */
+    16,   /* 134: of_action_set_dl_src */
+    -1,   /* 135: of_action_set_field */
+    -1,   /* 136: of_action_set_mpls_label */
+    -1,   /* 137: of_action_set_mpls_tc */
+    -1,   /* 138: of_action_set_mpls_ttl */
+    8,    /* 139: of_action_set_nw_dst */
+    -1,   /* 140: of_action_set_nw_ecn */
+    8,    /* 141: of_action_set_nw_src */
+    8,    /* 142: of_action_set_nw_tos */
+    -1,   /* 143: of_action_set_nw_ttl */
+    -1,   /* 144: of_action_set_queue */
+    8,    /* 145: of_action_set_tp_dst */
+    8,    /* 146: of_action_set_tp_src */
+    8,    /* 147: of_action_set_vlan_pcp */
+    8,    /* 148: of_action_set_vlan_vid */
+    8,    /* 149: of_action_strip_vlan */
+    32,   /* 150: of_bsn_interface */
+    4,    /* 151: of_bsn_vport */
+    4,    /* 152: of_bsn_vport_header */
+    16,   /* 153: of_bsn_vport_q_in_q */
+    -1,   /* 154: of_bucket */
+    -1,   /* 155: of_bucket_counter */
+    -1,   /* 156: of_experimenter_multipart_header */
+    88,   /* 157: of_flow_stats_entry */
+    -1,   /* 158: of_group_desc_stats_entry */
+    -1,   /* 159: of_group_stats_entry */
+    8,    /* 160: of_header */
+    -1,   /* 161: of_hello_elem */
+    -1,   /* 162: of_hello_elem_header */
+    -1,   /* 163: of_hello_elem_versionbitmap */
+    -1,   /* 164: of_instruction */
+    -1,   /* 165: of_instruction_apply_actions */
+    -1,   /* 166: of_instruction_clear_actions */
+    -1,   /* 167: of_instruction_experimenter */
+    -1,   /* 168: of_instruction_goto_table */
+    -1,   /* 169: of_instruction_header */
+    -1,   /* 170: of_instruction_meter */
+    -1,   /* 171: of_instruction_write_actions */
+    -1,   /* 172: of_instruction_write_metadata */
+    40,   /* 173: of_match_v1 */
+    -1,   /* 174: of_match_v2 */
+    -1,   /* 175: of_match_v3 */
+    -1,   /* 176: of_meter_band */
+    -1,   /* 177: of_meter_band_drop */
+    -1,   /* 178: of_meter_band_dscp_remark */
+    -1,   /* 179: of_meter_band_experimenter */
+    -1,   /* 180: of_meter_band_header */
+    -1,   /* 181: of_meter_band_stats */
+    -1,   /* 182: of_meter_config */
+    -1,   /* 183: of_meter_features */
+    -1,   /* 184: of_meter_stats */
+    -1,   /* 185: of_oxm */
+    -1,   /* 186: of_oxm_arp_op */
+    -1,   /* 187: of_oxm_arp_op_masked */
+    -1,   /* 188: of_oxm_arp_sha */
+    -1,   /* 189: of_oxm_arp_sha_masked */
+    -1,   /* 190: of_oxm_arp_spa */
+    -1,   /* 191: of_oxm_arp_spa_masked */
+    -1,   /* 192: of_oxm_arp_tha */
+    -1,   /* 193: of_oxm_arp_tha_masked */
+    -1,   /* 194: of_oxm_arp_tpa */
+    -1,   /* 195: of_oxm_arp_tpa_masked */
+    -1,   /* 196: of_oxm_dst_meta_id */
+    -1,   /* 197: of_oxm_dst_meta_id_masked */
+    -1,   /* 198: of_oxm_eth_dst */
+    -1,   /* 199: of_oxm_eth_dst_masked */
+    -1,   /* 200: of_oxm_eth_src */
+    -1,   /* 201: of_oxm_eth_src_masked */
+    -1,   /* 202: of_oxm_eth_type */
+    -1,   /* 203: of_oxm_eth_type_masked */
+    -1,   /* 204: of_oxm_header */
+    -1,   /* 205: of_oxm_icmpv4_code */
+    -1,   /* 206: of_oxm_icmpv4_code_masked */
+    -1,   /* 207: of_oxm_icmpv4_type */
+    -1,   /* 208: of_oxm_icmpv4_type_masked */
+    -1,   /* 209: of_oxm_icmpv6_code */
+    -1,   /* 210: of_oxm_icmpv6_code_masked */
+    -1,   /* 211: of_oxm_icmpv6_type */
+    -1,   /* 212: of_oxm_icmpv6_type_masked */
+    -1,   /* 213: of_oxm_in_phy_port */
+    -1,   /* 214: of_oxm_in_phy_port_masked */
+    -1,   /* 215: of_oxm_in_port */
+    -1,   /* 216: of_oxm_in_port_masked */
+    -1,   /* 217: of_oxm_ip_dscp */
+    -1,   /* 218: of_oxm_ip_dscp_masked */
+    -1,   /* 219: of_oxm_ip_ecn */
+    -1,   /* 220: of_oxm_ip_ecn_masked */
+    -1,   /* 221: of_oxm_ip_proto */
+    -1,   /* 222: of_oxm_ip_proto_masked */
+    -1,   /* 223: of_oxm_ipv4_dst */
+    -1,   /* 224: of_oxm_ipv4_dst_masked */
+    -1,   /* 225: of_oxm_ipv4_src */
+    -1,   /* 226: of_oxm_ipv4_src_masked */
+    -1,   /* 227: of_oxm_ipv6_dst */
+    -1,   /* 228: of_oxm_ipv6_dst_masked */
+    -1,   /* 229: of_oxm_ipv6_flabel */
+    -1,   /* 230: of_oxm_ipv6_flabel_masked */
+    -1,   /* 231: of_oxm_ipv6_nd_sll */
+    -1,   /* 232: of_oxm_ipv6_nd_sll_masked */
+    -1,   /* 233: of_oxm_ipv6_nd_target */
+    -1,   /* 234: of_oxm_ipv6_nd_target_masked */
+    -1,   /* 235: of_oxm_ipv6_nd_tll */
+    -1,   /* 236: of_oxm_ipv6_nd_tll_masked */
+    -1,   /* 237: of_oxm_ipv6_src */
+    -1,   /* 238: of_oxm_ipv6_src_masked */
+    -1,   /* 239: of_oxm_metadata */
+    -1,   /* 240: of_oxm_metadata_masked */
+    -1,   /* 241: of_oxm_mpls_label */
+    -1,   /* 242: of_oxm_mpls_label_masked */
+    -1,   /* 243: of_oxm_mpls_tc */
+    -1,   /* 244: of_oxm_mpls_tc_masked */
+    -1,   /* 245: of_oxm_sctp_dst */
+    -1,   /* 246: of_oxm_sctp_dst_masked */
+    -1,   /* 247: of_oxm_sctp_src */
+    -1,   /* 248: of_oxm_sctp_src_masked */
+    -1,   /* 249: of_oxm_src_meta_id */
+    -1,   /* 250: of_oxm_src_meta_id_masked */
+    -1,   /* 251: of_oxm_tcp_dst */
+    -1,   /* 252: of_oxm_tcp_dst_masked */
+    -1,   /* 253: of_oxm_tcp_src */
+    -1,   /* 254: of_oxm_tcp_src_masked */
+    -1,   /* 255: of_oxm_udp_dst */
+    -1,   /* 256: of_oxm_udp_dst_masked */
+    -1,   /* 257: of_oxm_udp_src */
+    -1,   /* 258: of_oxm_udp_src_masked */
+    -1,   /* 259: of_oxm_vlan_pcp */
+    -1,   /* 260: of_oxm_vlan_pcp_masked */
+    -1,   /* 261: of_oxm_vlan_vid */
+    -1,   /* 262: of_oxm_vlan_vid_masked */
+    8,    /* 263: of_packet_queue */
+    48,   /* 264: of_port_desc */
+    104,  /* 265: of_port_stats_entry */
+    8,    /* 266: of_queue_prop */
+    -1,   /* 267: of_queue_prop_experimenter */
+    8,    /* 268: of_queue_prop_header */
+    -1,   /* 269: of_queue_prop_max_rate */
+    16,   /* 270: of_queue_prop_min_rate */
+    32,   /* 271: of_queue_stats_entry */
+    -1,   /* 272: of_table_feature_prop */
+    -1,   /* 273: of_table_feature_prop_apply_actions */
+    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 275: of_table_feature_prop_apply_setfield */
+    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 277: of_table_feature_prop_experimenter */
+    -1,   /* 278: of_table_feature_prop_header */
+    -1,   /* 279: of_table_feature_prop_instructions */
+    -1,   /* 280: of_table_feature_prop_instructions_miss */
+    -1,   /* 281: of_table_feature_prop_match */
+    -1,   /* 282: of_table_feature_prop_next_tables */
+    -1,   /* 283: of_table_feature_prop_next_tables_miss */
+    -1,   /* 284: of_table_feature_prop_wildcards */
+    -1,   /* 285: of_table_feature_prop_write_actions */
+    -1,   /* 286: of_table_feature_prop_write_actions_miss */
+    -1,   /* 287: of_table_feature_prop_write_setfield */
+    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 289: of_table_features */
+    64,   /* 290: of_table_stats_entry */
+    -1,   /* 291: of_uint32 */
+    -1,   /* 292: of_uint8 */
+    0,    /* 293: of_list_action */
+    -1,   /* 294: of_list_action_id */
+    0,    /* 295: of_list_bsn_interface */
+    -1,   /* 296: of_list_bucket */
+    -1,   /* 297: of_list_bucket_counter */
+    0,    /* 298: of_list_flow_stats_entry */
+    -1,   /* 299: of_list_group_desc_stats_entry */
+    -1,   /* 300: of_list_group_stats_entry */
+    -1,   /* 301: of_list_hello_elem */
+    -1,   /* 302: of_list_instruction */
+    -1,   /* 303: of_list_meter_band */
+    -1,   /* 304: of_list_meter_band_stats */
+    -1,   /* 305: of_list_meter_stats */
+    -1,   /* 306: of_list_oxm */
+    0,    /* 307: of_list_packet_queue */
+    0,    /* 308: of_list_port_desc */
+    0,    /* 309: of_list_port_stats_entry */
+    0,    /* 310: of_list_queue_prop */
+    0,    /* 311: of_list_queue_stats_entry */
+    -1,   /* 312: of_list_table_feature_prop */
+    -1,   /* 313: of_list_table_features */
+    0,    /* 314: of_list_table_stats_entry */
+    -1,   /* 315: of_list_uint32 */
+    -1,   /* 316: of_list_uint8 */
+    -1,   /* 317: of_flow_mod */
+    -1,   /* 318: of_stats_reply */
+    -1    /* 319: of_stats_request */
 };
 
 static const int
@@ -4194,294 +4918,300 @@ of_object_fixed_len_v2[OF_OBJECT_COUNT] = {
     -1,   /* 23: of_bsn_set_l2_table_reply */
     -1,   /* 24: of_bsn_set_l2_table_request */
     20,   /* 25: of_bsn_set_mirroring */
-    32,   /* 26: of_bsn_set_pktin_suppression */
-    -1,   /* 27: of_bsn_shell_command */
-    -1,   /* 28: of_bsn_shell_output */
-    -1,   /* 29: of_bsn_shell_status */
-    20,   /* 30: of_bsn_virtual_port_create_reply */
-    32,   /* 31: of_bsn_virtual_port_create_request */
-    20,   /* 32: of_bsn_virtual_port_remove */
-    1072, /* 33: of_desc_stats_reply */
-    16,   /* 34: of_desc_stats_request */
-    8,    /* 35: of_echo_reply */
-    8,    /* 36: of_echo_request */
-    12,   /* 37: of_error_msg */
-    16,   /* 38: of_experimenter */
-    24,   /* 39: of_experimenter_stats_reply */
-    24,   /* 40: of_experimenter_stats_request */
-    32,   /* 41: of_features_reply */
-    8,    /* 42: of_features_request */
-    136,  /* 43: of_flow_add */
-    136,  /* 44: of_flow_delete */
-    136,  /* 45: of_flow_delete_strict */
-    136,  /* 46: of_flow_modify */
-    136,  /* 47: of_flow_modify_strict */
-    136,  /* 48: of_flow_removed */
-    16,   /* 49: of_flow_stats_reply */
-    136,  /* 50: of_flow_stats_request */
-    12,   /* 51: of_get_config_reply */
-    8,    /* 52: of_get_config_request */
-    16,   /* 53: of_group_desc_stats_reply */
-    16,   /* 54: of_group_desc_stats_request */
-    -1,   /* 55: of_group_features_stats_reply */
-    -1,   /* 56: of_group_features_stats_request */
-    16,   /* 57: of_group_mod */
-    16,   /* 58: of_group_stats_reply */
-    24,   /* 59: of_group_stats_request */
-    8,    /* 60: of_hello */
-    -1,   /* 61: of_meter_config_stats_reply */
-    -1,   /* 62: of_meter_config_stats_request */
-    -1,   /* 63: of_meter_features_stats_reply */
-    -1,   /* 64: of_meter_features_stats_request */
-    -1,   /* 65: of_meter_mod */
-    -1,   /* 66: of_meter_stats_reply */
-    -1,   /* 67: of_meter_stats_request */
-    -1,   /* 68: of_nicira_controller_role_reply */
-    -1,   /* 69: of_nicira_controller_role_request */
-    24,   /* 70: of_packet_in */
-    24,   /* 71: of_packet_out */
-    -1,   /* 72: of_port_desc_stats_reply */
-    -1,   /* 73: of_port_desc_stats_request */
-    40,   /* 74: of_port_mod */
-    16,   /* 75: of_port_stats_reply */
-    24,   /* 76: of_port_stats_request */
-    80,   /* 77: of_port_status */
-    16,   /* 78: of_queue_get_config_reply */
-    16,   /* 79: of_queue_get_config_request */
-    16,   /* 80: of_queue_stats_reply */
-    24,   /* 81: of_queue_stats_request */
-    -1,   /* 82: of_role_reply */
-    -1,   /* 83: of_role_request */
-    12,   /* 84: of_set_config */
-    -1,   /* 85: of_table_features_stats_reply */
-    -1,   /* 86: of_table_features_stats_request */
-    16,   /* 87: of_table_mod */
-    16,   /* 88: of_table_stats_reply */
-    16,   /* 89: of_table_stats_request */
-    8,    /* 90: of_action */
-    24,   /* 91: of_action_bsn_mirror */
-    16,   /* 92: of_action_bsn_set_tunnel_dst */
-    8,    /* 93: of_action_copy_ttl_in */
-    8,    /* 94: of_action_copy_ttl_out */
-    8,    /* 95: of_action_dec_mpls_ttl */
-    8,    /* 96: of_action_dec_nw_ttl */
-    -1,   /* 97: of_action_enqueue */
-    8,    /* 98: of_action_experimenter */
-    8,    /* 99: of_action_group */
-    8,    /* 100: of_action_header */
-    -1,   /* 101: of_action_id */
-    -1,   /* 102: of_action_id_bsn_mirror */
-    -1,   /* 103: of_action_id_bsn_set_tunnel_dst */
-    -1,   /* 104: of_action_id_copy_ttl_in */
-    -1,   /* 105: of_action_id_copy_ttl_out */
-    -1,   /* 106: of_action_id_dec_mpls_ttl */
-    -1,   /* 107: of_action_id_dec_nw_ttl */
-    -1,   /* 108: of_action_id_experimenter */
-    -1,   /* 109: of_action_id_group */
-    -1,   /* 110: of_action_id_header */
-    -1,   /* 111: of_action_id_nicira_dec_ttl */
-    -1,   /* 112: of_action_id_output */
-    -1,   /* 113: of_action_id_pop_mpls */
-    -1,   /* 114: of_action_id_pop_pbb */
-    -1,   /* 115: of_action_id_pop_vlan */
-    -1,   /* 116: of_action_id_push_mpls */
-    -1,   /* 117: of_action_id_push_pbb */
-    -1,   /* 118: of_action_id_push_vlan */
-    -1,   /* 119: of_action_id_set_field */
-    -1,   /* 120: of_action_id_set_mpls_ttl */
-    -1,   /* 121: of_action_id_set_nw_ttl */
-    -1,   /* 122: of_action_id_set_queue */
-    16,   /* 123: of_action_nicira_dec_ttl */
-    16,   /* 124: of_action_output */
-    8,    /* 125: of_action_pop_mpls */
-    -1,   /* 126: of_action_pop_pbb */
-    8,    /* 127: of_action_pop_vlan */
-    8,    /* 128: of_action_push_mpls */
-    -1,   /* 129: of_action_push_pbb */
-    8,    /* 130: of_action_push_vlan */
-    16,   /* 131: of_action_set_dl_dst */
-    16,   /* 132: of_action_set_dl_src */
-    -1,   /* 133: of_action_set_field */
-    8,    /* 134: of_action_set_mpls_label */
-    8,    /* 135: of_action_set_mpls_tc */
-    8,    /* 136: of_action_set_mpls_ttl */
-    8,    /* 137: of_action_set_nw_dst */
-    8,    /* 138: of_action_set_nw_ecn */
-    8,    /* 139: of_action_set_nw_src */
-    8,    /* 140: of_action_set_nw_tos */
-    8,    /* 141: of_action_set_nw_ttl */
-    8,    /* 142: of_action_set_queue */
-    8,    /* 143: of_action_set_tp_dst */
-    8,    /* 144: of_action_set_tp_src */
-    8,    /* 145: of_action_set_vlan_pcp */
-    8,    /* 146: of_action_set_vlan_vid */
-    -1,   /* 147: of_action_strip_vlan */
-    32,   /* 148: of_bsn_interface */
-    4,    /* 149: of_bsn_vport */
-    4,    /* 150: of_bsn_vport_header */
-    16,   /* 151: of_bsn_vport_q_in_q */
-    16,   /* 152: of_bucket */
-    16,   /* 153: of_bucket_counter */
-    -1,   /* 154: of_experimenter_multipart_header */
-    136,  /* 155: of_flow_stats_entry */
-    8,    /* 156: of_group_desc_stats_entry */
-    32,   /* 157: of_group_stats_entry */
-    8,    /* 158: of_header */
-    -1,   /* 159: of_hello_elem */
-    -1,   /* 160: of_hello_elem_header */
-    -1,   /* 161: of_hello_elem_versionbitmap */
-    8,    /* 162: of_instruction */
-    8,    /* 163: of_instruction_apply_actions */
-    8,    /* 164: of_instruction_clear_actions */
-    8,    /* 165: of_instruction_experimenter */
-    8,    /* 166: of_instruction_goto_table */
-    8,    /* 167: of_instruction_header */
-    -1,   /* 168: of_instruction_meter */
-    8,    /* 169: of_instruction_write_actions */
-    24,   /* 170: of_instruction_write_metadata */
-    -1,   /* 171: of_match_v1 */
-    88,   /* 172: of_match_v2 */
-    -1,   /* 173: of_match_v3 */
-    -1,   /* 174: of_meter_band */
-    -1,   /* 175: of_meter_band_drop */
-    -1,   /* 176: of_meter_band_dscp_remark */
-    -1,   /* 177: of_meter_band_experimenter */
-    -1,   /* 178: of_meter_band_header */
-    -1,   /* 179: of_meter_band_stats */
-    -1,   /* 180: of_meter_config */
-    -1,   /* 181: of_meter_features */
-    -1,   /* 182: of_meter_stats */
-    -1,   /* 183: of_oxm */
-    -1,   /* 184: of_oxm_arp_op */
-    -1,   /* 185: of_oxm_arp_op_masked */
-    -1,   /* 186: of_oxm_arp_sha */
-    -1,   /* 187: of_oxm_arp_sha_masked */
-    -1,   /* 188: of_oxm_arp_spa */
-    -1,   /* 189: of_oxm_arp_spa_masked */
-    -1,   /* 190: of_oxm_arp_tha */
-    -1,   /* 191: of_oxm_arp_tha_masked */
-    -1,   /* 192: of_oxm_arp_tpa */
-    -1,   /* 193: of_oxm_arp_tpa_masked */
-    -1,   /* 194: of_oxm_eth_dst */
-    -1,   /* 195: of_oxm_eth_dst_masked */
-    -1,   /* 196: of_oxm_eth_src */
-    -1,   /* 197: of_oxm_eth_src_masked */
-    -1,   /* 198: of_oxm_eth_type */
-    -1,   /* 199: of_oxm_eth_type_masked */
-    -1,   /* 200: of_oxm_header */
-    -1,   /* 201: of_oxm_icmpv4_code */
-    -1,   /* 202: of_oxm_icmpv4_code_masked */
-    -1,   /* 203: of_oxm_icmpv4_type */
-    -1,   /* 204: of_oxm_icmpv4_type_masked */
-    -1,   /* 205: of_oxm_icmpv6_code */
-    -1,   /* 206: of_oxm_icmpv6_code_masked */
-    -1,   /* 207: of_oxm_icmpv6_type */
-    -1,   /* 208: of_oxm_icmpv6_type_masked */
-    -1,   /* 209: of_oxm_in_phy_port */
-    -1,   /* 210: of_oxm_in_phy_port_masked */
-    -1,   /* 211: of_oxm_in_port */
-    -1,   /* 212: of_oxm_in_port_masked */
-    -1,   /* 213: of_oxm_ip_dscp */
-    -1,   /* 214: of_oxm_ip_dscp_masked */
-    -1,   /* 215: of_oxm_ip_ecn */
-    -1,   /* 216: of_oxm_ip_ecn_masked */
-    -1,   /* 217: of_oxm_ip_proto */
-    -1,   /* 218: of_oxm_ip_proto_masked */
-    -1,   /* 219: of_oxm_ipv4_dst */
-    -1,   /* 220: of_oxm_ipv4_dst_masked */
-    -1,   /* 221: of_oxm_ipv4_src */
-    -1,   /* 222: of_oxm_ipv4_src_masked */
-    -1,   /* 223: of_oxm_ipv6_dst */
-    -1,   /* 224: of_oxm_ipv6_dst_masked */
-    -1,   /* 225: of_oxm_ipv6_flabel */
-    -1,   /* 226: of_oxm_ipv6_flabel_masked */
-    -1,   /* 227: of_oxm_ipv6_nd_sll */
-    -1,   /* 228: of_oxm_ipv6_nd_sll_masked */
-    -1,   /* 229: of_oxm_ipv6_nd_target */
-    -1,   /* 230: of_oxm_ipv6_nd_target_masked */
-    -1,   /* 231: of_oxm_ipv6_nd_tll */
-    -1,   /* 232: of_oxm_ipv6_nd_tll_masked */
-    -1,   /* 233: of_oxm_ipv6_src */
-    -1,   /* 234: of_oxm_ipv6_src_masked */
-    -1,   /* 235: of_oxm_metadata */
-    -1,   /* 236: of_oxm_metadata_masked */
-    -1,   /* 237: of_oxm_mpls_label */
-    -1,   /* 238: of_oxm_mpls_label_masked */
-    -1,   /* 239: of_oxm_mpls_tc */
-    -1,   /* 240: of_oxm_mpls_tc_masked */
-    -1,   /* 241: of_oxm_sctp_dst */
-    -1,   /* 242: of_oxm_sctp_dst_masked */
-    -1,   /* 243: of_oxm_sctp_src */
-    -1,   /* 244: of_oxm_sctp_src_masked */
-    -1,   /* 245: of_oxm_tcp_dst */
-    -1,   /* 246: of_oxm_tcp_dst_masked */
-    -1,   /* 247: of_oxm_tcp_src */
-    -1,   /* 248: of_oxm_tcp_src_masked */
-    -1,   /* 249: of_oxm_udp_dst */
-    -1,   /* 250: of_oxm_udp_dst_masked */
-    -1,   /* 251: of_oxm_udp_src */
-    -1,   /* 252: of_oxm_udp_src_masked */
-    -1,   /* 253: of_oxm_vlan_pcp */
-    -1,   /* 254: of_oxm_vlan_pcp_masked */
-    -1,   /* 255: of_oxm_vlan_vid */
-    -1,   /* 256: of_oxm_vlan_vid_masked */
-    8,    /* 257: of_packet_queue */
-    64,   /* 258: of_port_desc */
-    104,  /* 259: of_port_stats_entry */
-    8,    /* 260: of_queue_prop */
-    -1,   /* 261: of_queue_prop_experimenter */
-    8,    /* 262: of_queue_prop_header */
-    -1,   /* 263: of_queue_prop_max_rate */
-    16,   /* 264: of_queue_prop_min_rate */
-    32,   /* 265: of_queue_stats_entry */
-    -1,   /* 266: of_table_feature_prop */
-    -1,   /* 267: of_table_feature_prop_apply_actions */
-    -1,   /* 268: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 269: of_table_feature_prop_apply_setfield */
-    -1,   /* 270: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 271: of_table_feature_prop_experimenter */
-    -1,   /* 272: of_table_feature_prop_header */
-    -1,   /* 273: of_table_feature_prop_instructions */
-    -1,   /* 274: of_table_feature_prop_instructions_miss */
-    -1,   /* 275: of_table_feature_prop_match */
-    -1,   /* 276: of_table_feature_prop_next_tables */
-    -1,   /* 277: of_table_feature_prop_next_tables_miss */
-    -1,   /* 278: of_table_feature_prop_wildcards */
-    -1,   /* 279: of_table_feature_prop_write_actions */
-    -1,   /* 280: of_table_feature_prop_write_actions_miss */
-    -1,   /* 281: of_table_feature_prop_write_setfield */
-    -1,   /* 282: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 283: of_table_features */
-    88,   /* 284: of_table_stats_entry */
-    -1,   /* 285: of_uint32 */
-    -1,   /* 286: of_uint8 */
-    0,    /* 287: of_list_action */
-    -1,   /* 288: of_list_action_id */
-    0,    /* 289: of_list_bsn_interface */
-    0,    /* 290: of_list_bucket */
-    0,    /* 291: of_list_bucket_counter */
-    0,    /* 292: of_list_flow_stats_entry */
-    0,    /* 293: of_list_group_desc_stats_entry */
-    0,    /* 294: of_list_group_stats_entry */
-    -1,   /* 295: of_list_hello_elem */
-    0,    /* 296: of_list_instruction */
-    -1,   /* 297: of_list_meter_band */
-    -1,   /* 298: of_list_meter_band_stats */
-    -1,   /* 299: of_list_meter_stats */
-    -1,   /* 300: of_list_oxm */
-    0,    /* 301: of_list_packet_queue */
-    0,    /* 302: of_list_port_desc */
-    0,    /* 303: of_list_port_stats_entry */
-    0,    /* 304: of_list_queue_prop */
-    0,    /* 305: of_list_queue_stats_entry */
-    -1,   /* 306: of_list_table_feature_prop */
-    -1,   /* 307: of_list_table_features */
-    0,    /* 308: of_list_table_stats_entry */
-    -1,   /* 309: of_list_uint32 */
-    -1,   /* 310: of_list_uint8 */
-    -1,   /* 311: of_flow_mod */
-    -1,   /* 312: of_stats_reply */
-    -1    /* 313: of_stats_request */
+    20,   /* 26: of_bsn_set_pktin_suppression_reply */
+    32,   /* 27: of_bsn_set_pktin_suppression_request */
+    -1,   /* 28: of_bsn_shell_command */
+    -1,   /* 29: of_bsn_shell_output */
+    -1,   /* 30: of_bsn_shell_status */
+    24,   /* 31: of_bsn_virtual_port_create_reply */
+    32,   /* 32: of_bsn_virtual_port_create_request */
+    20,   /* 33: of_bsn_virtual_port_remove_reply */
+    20,   /* 34: of_bsn_virtual_port_remove_request */
+    1072, /* 35: of_desc_stats_reply */
+    16,   /* 36: of_desc_stats_request */
+    8,    /* 37: of_echo_reply */
+    8,    /* 38: of_echo_request */
+    12,   /* 39: of_error_msg */
+    16,   /* 40: of_experimenter */
+    24,   /* 41: of_experimenter_stats_reply */
+    24,   /* 42: of_experimenter_stats_request */
+    32,   /* 43: of_features_reply */
+    8,    /* 44: of_features_request */
+    136,  /* 45: of_flow_add */
+    136,  /* 46: of_flow_delete */
+    136,  /* 47: of_flow_delete_strict */
+    136,  /* 48: of_flow_modify */
+    136,  /* 49: of_flow_modify_strict */
+    136,  /* 50: of_flow_removed */
+    16,   /* 51: of_flow_stats_reply */
+    136,  /* 52: of_flow_stats_request */
+    12,   /* 53: of_get_config_reply */
+    8,    /* 54: of_get_config_request */
+    16,   /* 55: of_group_desc_stats_reply */
+    16,   /* 56: of_group_desc_stats_request */
+    -1,   /* 57: of_group_features_stats_reply */
+    -1,   /* 58: of_group_features_stats_request */
+    16,   /* 59: of_group_mod */
+    16,   /* 60: of_group_stats_reply */
+    24,   /* 61: of_group_stats_request */
+    8,    /* 62: of_hello */
+    -1,   /* 63: of_meter_config_stats_reply */
+    -1,   /* 64: of_meter_config_stats_request */
+    -1,   /* 65: of_meter_features_stats_reply */
+    -1,   /* 66: of_meter_features_stats_request */
+    -1,   /* 67: of_meter_mod */
+    -1,   /* 68: of_meter_stats_reply */
+    -1,   /* 69: of_meter_stats_request */
+    -1,   /* 70: of_nicira_controller_role_reply */
+    -1,   /* 71: of_nicira_controller_role_request */
+    24,   /* 72: of_packet_in */
+    24,   /* 73: of_packet_out */
+    -1,   /* 74: of_port_desc_stats_reply */
+    -1,   /* 75: of_port_desc_stats_request */
+    40,   /* 76: of_port_mod */
+    16,   /* 77: of_port_stats_reply */
+    24,   /* 78: of_port_stats_request */
+    80,   /* 79: of_port_status */
+    16,   /* 80: of_queue_get_config_reply */
+    16,   /* 81: of_queue_get_config_request */
+    16,   /* 82: of_queue_stats_reply */
+    24,   /* 83: of_queue_stats_request */
+    -1,   /* 84: of_role_reply */
+    -1,   /* 85: of_role_request */
+    12,   /* 86: of_set_config */
+    -1,   /* 87: of_table_features_stats_reply */
+    -1,   /* 88: of_table_features_stats_request */
+    16,   /* 89: of_table_mod */
+    16,   /* 90: of_table_stats_reply */
+    16,   /* 91: of_table_stats_request */
+    8,    /* 92: of_action */
+    24,   /* 93: of_action_bsn_mirror */
+    16,   /* 94: of_action_bsn_set_tunnel_dst */
+    8,    /* 95: of_action_copy_ttl_in */
+    8,    /* 96: of_action_copy_ttl_out */
+    8,    /* 97: of_action_dec_mpls_ttl */
+    8,    /* 98: of_action_dec_nw_ttl */
+    -1,   /* 99: of_action_enqueue */
+    8,    /* 100: of_action_experimenter */
+    8,    /* 101: of_action_group */
+    8,    /* 102: of_action_header */
+    -1,   /* 103: of_action_id */
+    -1,   /* 104: of_action_id_bsn_mirror */
+    -1,   /* 105: of_action_id_bsn_set_tunnel_dst */
+    -1,   /* 106: of_action_id_copy_ttl_in */
+    -1,   /* 107: of_action_id_copy_ttl_out */
+    -1,   /* 108: of_action_id_dec_mpls_ttl */
+    -1,   /* 109: of_action_id_dec_nw_ttl */
+    -1,   /* 110: of_action_id_experimenter */
+    -1,   /* 111: of_action_id_group */
+    -1,   /* 112: of_action_id_header */
+    -1,   /* 113: of_action_id_nicira_dec_ttl */
+    -1,   /* 114: of_action_id_output */
+    -1,   /* 115: of_action_id_pop_mpls */
+    -1,   /* 116: of_action_id_pop_pbb */
+    -1,   /* 117: of_action_id_pop_vlan */
+    -1,   /* 118: of_action_id_push_mpls */
+    -1,   /* 119: of_action_id_push_pbb */
+    -1,   /* 120: of_action_id_push_vlan */
+    -1,   /* 121: of_action_id_set_field */
+    -1,   /* 122: of_action_id_set_mpls_ttl */
+    -1,   /* 123: of_action_id_set_nw_ttl */
+    -1,   /* 124: of_action_id_set_queue */
+    16,   /* 125: of_action_nicira_dec_ttl */
+    16,   /* 126: of_action_output */
+    8,    /* 127: of_action_pop_mpls */
+    -1,   /* 128: of_action_pop_pbb */
+    8,    /* 129: of_action_pop_vlan */
+    8,    /* 130: of_action_push_mpls */
+    -1,   /* 131: of_action_push_pbb */
+    8,    /* 132: of_action_push_vlan */
+    16,   /* 133: of_action_set_dl_dst */
+    16,   /* 134: of_action_set_dl_src */
+    -1,   /* 135: of_action_set_field */
+    8,    /* 136: of_action_set_mpls_label */
+    8,    /* 137: of_action_set_mpls_tc */
+    8,    /* 138: of_action_set_mpls_ttl */
+    8,    /* 139: of_action_set_nw_dst */
+    8,    /* 140: of_action_set_nw_ecn */
+    8,    /* 141: of_action_set_nw_src */
+    8,    /* 142: of_action_set_nw_tos */
+    8,    /* 143: of_action_set_nw_ttl */
+    8,    /* 144: of_action_set_queue */
+    8,    /* 145: of_action_set_tp_dst */
+    8,    /* 146: of_action_set_tp_src */
+    8,    /* 147: of_action_set_vlan_pcp */
+    8,    /* 148: of_action_set_vlan_vid */
+    -1,   /* 149: of_action_strip_vlan */
+    32,   /* 150: of_bsn_interface */
+    4,    /* 151: of_bsn_vport */
+    4,    /* 152: of_bsn_vport_header */
+    16,   /* 153: of_bsn_vport_q_in_q */
+    16,   /* 154: of_bucket */
+    16,   /* 155: of_bucket_counter */
+    -1,   /* 156: of_experimenter_multipart_header */
+    136,  /* 157: of_flow_stats_entry */
+    8,    /* 158: of_group_desc_stats_entry */
+    32,   /* 159: of_group_stats_entry */
+    8,    /* 160: of_header */
+    -1,   /* 161: of_hello_elem */
+    -1,   /* 162: of_hello_elem_header */
+    -1,   /* 163: of_hello_elem_versionbitmap */
+    8,    /* 164: of_instruction */
+    8,    /* 165: of_instruction_apply_actions */
+    8,    /* 166: of_instruction_clear_actions */
+    8,    /* 167: of_instruction_experimenter */
+    8,    /* 168: of_instruction_goto_table */
+    8,    /* 169: of_instruction_header */
+    -1,   /* 170: of_instruction_meter */
+    8,    /* 171: of_instruction_write_actions */
+    24,   /* 172: of_instruction_write_metadata */
+    -1,   /* 173: of_match_v1 */
+    88,   /* 174: of_match_v2 */
+    -1,   /* 175: of_match_v3 */
+    -1,   /* 176: of_meter_band */
+    -1,   /* 177: of_meter_band_drop */
+    -1,   /* 178: of_meter_band_dscp_remark */
+    -1,   /* 179: of_meter_band_experimenter */
+    -1,   /* 180: of_meter_band_header */
+    -1,   /* 181: of_meter_band_stats */
+    -1,   /* 182: of_meter_config */
+    -1,   /* 183: of_meter_features */
+    -1,   /* 184: of_meter_stats */
+    -1,   /* 185: of_oxm */
+    -1,   /* 186: of_oxm_arp_op */
+    -1,   /* 187: of_oxm_arp_op_masked */
+    -1,   /* 188: of_oxm_arp_sha */
+    -1,   /* 189: of_oxm_arp_sha_masked */
+    -1,   /* 190: of_oxm_arp_spa */
+    -1,   /* 191: of_oxm_arp_spa_masked */
+    -1,   /* 192: of_oxm_arp_tha */
+    -1,   /* 193: of_oxm_arp_tha_masked */
+    -1,   /* 194: of_oxm_arp_tpa */
+    -1,   /* 195: of_oxm_arp_tpa_masked */
+    -1,   /* 196: of_oxm_dst_meta_id */
+    -1,   /* 197: of_oxm_dst_meta_id_masked */
+    -1,   /* 198: of_oxm_eth_dst */
+    -1,   /* 199: of_oxm_eth_dst_masked */
+    -1,   /* 200: of_oxm_eth_src */
+    -1,   /* 201: of_oxm_eth_src_masked */
+    -1,   /* 202: of_oxm_eth_type */
+    -1,   /* 203: of_oxm_eth_type_masked */
+    -1,   /* 204: of_oxm_header */
+    -1,   /* 205: of_oxm_icmpv4_code */
+    -1,   /* 206: of_oxm_icmpv4_code_masked */
+    -1,   /* 207: of_oxm_icmpv4_type */
+    -1,   /* 208: of_oxm_icmpv4_type_masked */
+    -1,   /* 209: of_oxm_icmpv6_code */
+    -1,   /* 210: of_oxm_icmpv6_code_masked */
+    -1,   /* 211: of_oxm_icmpv6_type */
+    -1,   /* 212: of_oxm_icmpv6_type_masked */
+    -1,   /* 213: of_oxm_in_phy_port */
+    -1,   /* 214: of_oxm_in_phy_port_masked */
+    -1,   /* 215: of_oxm_in_port */
+    -1,   /* 216: of_oxm_in_port_masked */
+    -1,   /* 217: of_oxm_ip_dscp */
+    -1,   /* 218: of_oxm_ip_dscp_masked */
+    -1,   /* 219: of_oxm_ip_ecn */
+    -1,   /* 220: of_oxm_ip_ecn_masked */
+    -1,   /* 221: of_oxm_ip_proto */
+    -1,   /* 222: of_oxm_ip_proto_masked */
+    -1,   /* 223: of_oxm_ipv4_dst */
+    -1,   /* 224: of_oxm_ipv4_dst_masked */
+    -1,   /* 225: of_oxm_ipv4_src */
+    -1,   /* 226: of_oxm_ipv4_src_masked */
+    -1,   /* 227: of_oxm_ipv6_dst */
+    -1,   /* 228: of_oxm_ipv6_dst_masked */
+    -1,   /* 229: of_oxm_ipv6_flabel */
+    -1,   /* 230: of_oxm_ipv6_flabel_masked */
+    -1,   /* 231: of_oxm_ipv6_nd_sll */
+    -1,   /* 232: of_oxm_ipv6_nd_sll_masked */
+    -1,   /* 233: of_oxm_ipv6_nd_target */
+    -1,   /* 234: of_oxm_ipv6_nd_target_masked */
+    -1,   /* 235: of_oxm_ipv6_nd_tll */
+    -1,   /* 236: of_oxm_ipv6_nd_tll_masked */
+    -1,   /* 237: of_oxm_ipv6_src */
+    -1,   /* 238: of_oxm_ipv6_src_masked */
+    -1,   /* 239: of_oxm_metadata */
+    -1,   /* 240: of_oxm_metadata_masked */
+    -1,   /* 241: of_oxm_mpls_label */
+    -1,   /* 242: of_oxm_mpls_label_masked */
+    -1,   /* 243: of_oxm_mpls_tc */
+    -1,   /* 244: of_oxm_mpls_tc_masked */
+    -1,   /* 245: of_oxm_sctp_dst */
+    -1,   /* 246: of_oxm_sctp_dst_masked */
+    -1,   /* 247: of_oxm_sctp_src */
+    -1,   /* 248: of_oxm_sctp_src_masked */
+    -1,   /* 249: of_oxm_src_meta_id */
+    -1,   /* 250: of_oxm_src_meta_id_masked */
+    -1,   /* 251: of_oxm_tcp_dst */
+    -1,   /* 252: of_oxm_tcp_dst_masked */
+    -1,   /* 253: of_oxm_tcp_src */
+    -1,   /* 254: of_oxm_tcp_src_masked */
+    -1,   /* 255: of_oxm_udp_dst */
+    -1,   /* 256: of_oxm_udp_dst_masked */
+    -1,   /* 257: of_oxm_udp_src */
+    -1,   /* 258: of_oxm_udp_src_masked */
+    -1,   /* 259: of_oxm_vlan_pcp */
+    -1,   /* 260: of_oxm_vlan_pcp_masked */
+    -1,   /* 261: of_oxm_vlan_vid */
+    -1,   /* 262: of_oxm_vlan_vid_masked */
+    8,    /* 263: of_packet_queue */
+    64,   /* 264: of_port_desc */
+    104,  /* 265: of_port_stats_entry */
+    8,    /* 266: of_queue_prop */
+    -1,   /* 267: of_queue_prop_experimenter */
+    8,    /* 268: of_queue_prop_header */
+    -1,   /* 269: of_queue_prop_max_rate */
+    16,   /* 270: of_queue_prop_min_rate */
+    32,   /* 271: of_queue_stats_entry */
+    -1,   /* 272: of_table_feature_prop */
+    -1,   /* 273: of_table_feature_prop_apply_actions */
+    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 275: of_table_feature_prop_apply_setfield */
+    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 277: of_table_feature_prop_experimenter */
+    -1,   /* 278: of_table_feature_prop_header */
+    -1,   /* 279: of_table_feature_prop_instructions */
+    -1,   /* 280: of_table_feature_prop_instructions_miss */
+    -1,   /* 281: of_table_feature_prop_match */
+    -1,   /* 282: of_table_feature_prop_next_tables */
+    -1,   /* 283: of_table_feature_prop_next_tables_miss */
+    -1,   /* 284: of_table_feature_prop_wildcards */
+    -1,   /* 285: of_table_feature_prop_write_actions */
+    -1,   /* 286: of_table_feature_prop_write_actions_miss */
+    -1,   /* 287: of_table_feature_prop_write_setfield */
+    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 289: of_table_features */
+    88,   /* 290: of_table_stats_entry */
+    -1,   /* 291: of_uint32 */
+    -1,   /* 292: of_uint8 */
+    0,    /* 293: of_list_action */
+    -1,   /* 294: of_list_action_id */
+    0,    /* 295: of_list_bsn_interface */
+    0,    /* 296: of_list_bucket */
+    0,    /* 297: of_list_bucket_counter */
+    0,    /* 298: of_list_flow_stats_entry */
+    0,    /* 299: of_list_group_desc_stats_entry */
+    0,    /* 300: of_list_group_stats_entry */
+    -1,   /* 301: of_list_hello_elem */
+    0,    /* 302: of_list_instruction */
+    -1,   /* 303: of_list_meter_band */
+    -1,   /* 304: of_list_meter_band_stats */
+    -1,   /* 305: of_list_meter_stats */
+    -1,   /* 306: of_list_oxm */
+    0,    /* 307: of_list_packet_queue */
+    0,    /* 308: of_list_port_desc */
+    0,    /* 309: of_list_port_stats_entry */
+    0,    /* 310: of_list_queue_prop */
+    0,    /* 311: of_list_queue_stats_entry */
+    -1,   /* 312: of_list_table_feature_prop */
+    -1,   /* 313: of_list_table_features */
+    0,    /* 314: of_list_table_stats_entry */
+    -1,   /* 315: of_list_uint32 */
+    -1,   /* 316: of_list_uint8 */
+    -1,   /* 317: of_flow_mod */
+    -1,   /* 318: of_stats_reply */
+    -1    /* 319: of_stats_request */
 };
 
 static const int
@@ -4512,294 +5242,300 @@ of_object_fixed_len_v3[OF_OBJECT_COUNT] = {
     -1,   /* 23: of_bsn_set_l2_table_reply */
     -1,   /* 24: of_bsn_set_l2_table_request */
     20,   /* 25: of_bsn_set_mirroring */
-    32,   /* 26: of_bsn_set_pktin_suppression */
-    -1,   /* 27: of_bsn_shell_command */
-    -1,   /* 28: of_bsn_shell_output */
-    -1,   /* 29: of_bsn_shell_status */
-    20,   /* 30: of_bsn_virtual_port_create_reply */
-    32,   /* 31: of_bsn_virtual_port_create_request */
-    20,   /* 32: of_bsn_virtual_port_remove */
-    1072, /* 33: of_desc_stats_reply */
-    16,   /* 34: of_desc_stats_request */
-    8,    /* 35: of_echo_reply */
-    8,    /* 36: of_echo_request */
-    12,   /* 37: of_error_msg */
-    16,   /* 38: of_experimenter */
-    24,   /* 39: of_experimenter_stats_reply */
-    24,   /* 40: of_experimenter_stats_request */
-    32,   /* 41: of_features_reply */
-    8,    /* 42: of_features_request */
-    56,   /* 43: of_flow_add */
-    56,   /* 44: of_flow_delete */
-    56,   /* 45: of_flow_delete_strict */
-    56,   /* 46: of_flow_modify */
-    56,   /* 47: of_flow_modify_strict */
-    56,   /* 48: of_flow_removed */
-    16,   /* 49: of_flow_stats_reply */
-    56,   /* 50: of_flow_stats_request */
-    12,   /* 51: of_get_config_reply */
-    8,    /* 52: of_get_config_request */
-    16,   /* 53: of_group_desc_stats_reply */
-    16,   /* 54: of_group_desc_stats_request */
-    56,   /* 55: of_group_features_stats_reply */
-    16,   /* 56: of_group_features_stats_request */
-    16,   /* 57: of_group_mod */
-    16,   /* 58: of_group_stats_reply */
-    24,   /* 59: of_group_stats_request */
-    8,    /* 60: of_hello */
-    -1,   /* 61: of_meter_config_stats_reply */
-    -1,   /* 62: of_meter_config_stats_request */
-    -1,   /* 63: of_meter_features_stats_reply */
-    -1,   /* 64: of_meter_features_stats_request */
-    -1,   /* 65: of_meter_mod */
-    -1,   /* 66: of_meter_stats_reply */
-    -1,   /* 67: of_meter_stats_request */
-    -1,   /* 68: of_nicira_controller_role_reply */
-    -1,   /* 69: of_nicira_controller_role_request */
-    24,   /* 70: of_packet_in */
-    24,   /* 71: of_packet_out */
-    -1,   /* 72: of_port_desc_stats_reply */
-    -1,   /* 73: of_port_desc_stats_request */
-    40,   /* 74: of_port_mod */
-    16,   /* 75: of_port_stats_reply */
-    24,   /* 76: of_port_stats_request */
-    80,   /* 77: of_port_status */
-    16,   /* 78: of_queue_get_config_reply */
-    16,   /* 79: of_queue_get_config_request */
-    16,   /* 80: of_queue_stats_reply */
-    24,   /* 81: of_queue_stats_request */
-    8,    /* 82: of_role_reply */
-    24,   /* 83: of_role_request */
-    12,   /* 84: of_set_config */
-    -1,   /* 85: of_table_features_stats_reply */
-    -1,   /* 86: of_table_features_stats_request */
-    16,   /* 87: of_table_mod */
-    16,   /* 88: of_table_stats_reply */
-    16,   /* 89: of_table_stats_request */
-    8,    /* 90: of_action */
-    24,   /* 91: of_action_bsn_mirror */
-    16,   /* 92: of_action_bsn_set_tunnel_dst */
-    8,    /* 93: of_action_copy_ttl_in */
-    8,    /* 94: of_action_copy_ttl_out */
-    8,    /* 95: of_action_dec_mpls_ttl */
-    8,    /* 96: of_action_dec_nw_ttl */
-    -1,   /* 97: of_action_enqueue */
-    8,    /* 98: of_action_experimenter */
-    8,    /* 99: of_action_group */
-    8,    /* 100: of_action_header */
-    -1,   /* 101: of_action_id */
-    -1,   /* 102: of_action_id_bsn_mirror */
-    -1,   /* 103: of_action_id_bsn_set_tunnel_dst */
-    -1,   /* 104: of_action_id_copy_ttl_in */
-    -1,   /* 105: of_action_id_copy_ttl_out */
-    -1,   /* 106: of_action_id_dec_mpls_ttl */
-    -1,   /* 107: of_action_id_dec_nw_ttl */
-    -1,   /* 108: of_action_id_experimenter */
-    -1,   /* 109: of_action_id_group */
-    -1,   /* 110: of_action_id_header */
-    -1,   /* 111: of_action_id_nicira_dec_ttl */
-    -1,   /* 112: of_action_id_output */
-    -1,   /* 113: of_action_id_pop_mpls */
-    -1,   /* 114: of_action_id_pop_pbb */
-    -1,   /* 115: of_action_id_pop_vlan */
-    -1,   /* 116: of_action_id_push_mpls */
-    -1,   /* 117: of_action_id_push_pbb */
-    -1,   /* 118: of_action_id_push_vlan */
-    -1,   /* 119: of_action_id_set_field */
-    -1,   /* 120: of_action_id_set_mpls_ttl */
-    -1,   /* 121: of_action_id_set_nw_ttl */
-    -1,   /* 122: of_action_id_set_queue */
-    16,   /* 123: of_action_nicira_dec_ttl */
-    16,   /* 124: of_action_output */
-    8,    /* 125: of_action_pop_mpls */
-    -1,   /* 126: of_action_pop_pbb */
-    8,    /* 127: of_action_pop_vlan */
-    8,    /* 128: of_action_push_mpls */
-    -1,   /* 129: of_action_push_pbb */
-    8,    /* 130: of_action_push_vlan */
-    -1,   /* 131: of_action_set_dl_dst */
-    -1,   /* 132: of_action_set_dl_src */
-    4,    /* 133: of_action_set_field */
-    -1,   /* 134: of_action_set_mpls_label */
-    -1,   /* 135: of_action_set_mpls_tc */
-    8,    /* 136: of_action_set_mpls_ttl */
-    -1,   /* 137: of_action_set_nw_dst */
-    -1,   /* 138: of_action_set_nw_ecn */
-    -1,   /* 139: of_action_set_nw_src */
-    -1,   /* 140: of_action_set_nw_tos */
-    8,    /* 141: of_action_set_nw_ttl */
-    8,    /* 142: of_action_set_queue */
-    -1,   /* 143: of_action_set_tp_dst */
-    -1,   /* 144: of_action_set_tp_src */
-    -1,   /* 145: of_action_set_vlan_pcp */
-    -1,   /* 146: of_action_set_vlan_vid */
-    -1,   /* 147: of_action_strip_vlan */
-    32,   /* 148: of_bsn_interface */
-    4,    /* 149: of_bsn_vport */
-    4,    /* 150: of_bsn_vport_header */
-    16,   /* 151: of_bsn_vport_q_in_q */
-    16,   /* 152: of_bucket */
-    16,   /* 153: of_bucket_counter */
-    -1,   /* 154: of_experimenter_multipart_header */
-    56,   /* 155: of_flow_stats_entry */
-    8,    /* 156: of_group_desc_stats_entry */
-    32,   /* 157: of_group_stats_entry */
-    8,    /* 158: of_header */
-    -1,   /* 159: of_hello_elem */
-    -1,   /* 160: of_hello_elem_header */
-    -1,   /* 161: of_hello_elem_versionbitmap */
-    8,    /* 162: of_instruction */
-    8,    /* 163: of_instruction_apply_actions */
-    8,    /* 164: of_instruction_clear_actions */
-    8,    /* 165: of_instruction_experimenter */
-    8,    /* 166: of_instruction_goto_table */
-    8,    /* 167: of_instruction_header */
-    -1,   /* 168: of_instruction_meter */
-    8,    /* 169: of_instruction_write_actions */
-    24,   /* 170: of_instruction_write_metadata */
-    -1,   /* 171: of_match_v1 */
-    -1,   /* 172: of_match_v2 */
-    4,    /* 173: of_match_v3 */
-    -1,   /* 174: of_meter_band */
-    -1,   /* 175: of_meter_band_drop */
-    -1,   /* 176: of_meter_band_dscp_remark */
-    -1,   /* 177: of_meter_band_experimenter */
-    -1,   /* 178: of_meter_band_header */
-    -1,   /* 179: of_meter_band_stats */
-    -1,   /* 180: of_meter_config */
-    -1,   /* 181: of_meter_features */
-    -1,   /* 182: of_meter_stats */
-    4,    /* 183: of_oxm */
-    6,    /* 184: of_oxm_arp_op */
-    8,    /* 185: of_oxm_arp_op_masked */
-    10,   /* 186: of_oxm_arp_sha */
-    16,   /* 187: of_oxm_arp_sha_masked */
-    8,    /* 188: of_oxm_arp_spa */
-    12,   /* 189: of_oxm_arp_spa_masked */
-    10,   /* 190: of_oxm_arp_tha */
-    16,   /* 191: of_oxm_arp_tha_masked */
-    8,    /* 192: of_oxm_arp_tpa */
-    12,   /* 193: of_oxm_arp_tpa_masked */
-    10,   /* 194: of_oxm_eth_dst */
-    16,   /* 195: of_oxm_eth_dst_masked */
-    10,   /* 196: of_oxm_eth_src */
-    16,   /* 197: of_oxm_eth_src_masked */
-    6,    /* 198: of_oxm_eth_type */
-    8,    /* 199: of_oxm_eth_type_masked */
-    4,    /* 200: of_oxm_header */
-    5,    /* 201: of_oxm_icmpv4_code */
-    6,    /* 202: of_oxm_icmpv4_code_masked */
-    5,    /* 203: of_oxm_icmpv4_type */
-    6,    /* 204: of_oxm_icmpv4_type_masked */
-    5,    /* 205: of_oxm_icmpv6_code */
-    6,    /* 206: of_oxm_icmpv6_code_masked */
-    5,    /* 207: of_oxm_icmpv6_type */
-    6,    /* 208: of_oxm_icmpv6_type_masked */
-    8,    /* 209: of_oxm_in_phy_port */
-    12,   /* 210: of_oxm_in_phy_port_masked */
-    8,    /* 211: of_oxm_in_port */
-    12,   /* 212: of_oxm_in_port_masked */
-    5,    /* 213: of_oxm_ip_dscp */
-    6,    /* 214: of_oxm_ip_dscp_masked */
-    5,    /* 215: of_oxm_ip_ecn */
-    6,    /* 216: of_oxm_ip_ecn_masked */
-    5,    /* 217: of_oxm_ip_proto */
-    6,    /* 218: of_oxm_ip_proto_masked */
-    8,    /* 219: of_oxm_ipv4_dst */
-    12,   /* 220: of_oxm_ipv4_dst_masked */
-    8,    /* 221: of_oxm_ipv4_src */
-    12,   /* 222: of_oxm_ipv4_src_masked */
-    20,   /* 223: of_oxm_ipv6_dst */
-    36,   /* 224: of_oxm_ipv6_dst_masked */
-    8,    /* 225: of_oxm_ipv6_flabel */
-    12,   /* 226: of_oxm_ipv6_flabel_masked */
-    10,   /* 227: of_oxm_ipv6_nd_sll */
-    16,   /* 228: of_oxm_ipv6_nd_sll_masked */
-    20,   /* 229: of_oxm_ipv6_nd_target */
-    36,   /* 230: of_oxm_ipv6_nd_target_masked */
-    10,   /* 231: of_oxm_ipv6_nd_tll */
-    16,   /* 232: of_oxm_ipv6_nd_tll_masked */
-    20,   /* 233: of_oxm_ipv6_src */
-    36,   /* 234: of_oxm_ipv6_src_masked */
-    12,   /* 235: of_oxm_metadata */
-    20,   /* 236: of_oxm_metadata_masked */
-    8,    /* 237: of_oxm_mpls_label */
-    12,   /* 238: of_oxm_mpls_label_masked */
-    5,    /* 239: of_oxm_mpls_tc */
-    6,    /* 240: of_oxm_mpls_tc_masked */
-    6,    /* 241: of_oxm_sctp_dst */
-    8,    /* 242: of_oxm_sctp_dst_masked */
-    6,    /* 243: of_oxm_sctp_src */
-    8,    /* 244: of_oxm_sctp_src_masked */
-    6,    /* 245: of_oxm_tcp_dst */
-    8,    /* 246: of_oxm_tcp_dst_masked */
-    6,    /* 247: of_oxm_tcp_src */
-    8,    /* 248: of_oxm_tcp_src_masked */
-    6,    /* 249: of_oxm_udp_dst */
-    8,    /* 250: of_oxm_udp_dst_masked */
-    6,    /* 251: of_oxm_udp_src */
-    8,    /* 252: of_oxm_udp_src_masked */
-    5,    /* 253: of_oxm_vlan_pcp */
-    6,    /* 254: of_oxm_vlan_pcp_masked */
-    6,    /* 255: of_oxm_vlan_vid */
-    8,    /* 256: of_oxm_vlan_vid_masked */
-    16,   /* 257: of_packet_queue */
-    64,   /* 258: of_port_desc */
-    104,  /* 259: of_port_stats_entry */
-    8,    /* 260: of_queue_prop */
-    16,   /* 261: of_queue_prop_experimenter */
-    8,    /* 262: of_queue_prop_header */
-    16,   /* 263: of_queue_prop_max_rate */
-    16,   /* 264: of_queue_prop_min_rate */
-    32,   /* 265: of_queue_stats_entry */
-    -1,   /* 266: of_table_feature_prop */
-    -1,   /* 267: of_table_feature_prop_apply_actions */
-    -1,   /* 268: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 269: of_table_feature_prop_apply_setfield */
-    -1,   /* 270: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 271: of_table_feature_prop_experimenter */
-    -1,   /* 272: of_table_feature_prop_header */
-    -1,   /* 273: of_table_feature_prop_instructions */
-    -1,   /* 274: of_table_feature_prop_instructions_miss */
-    -1,   /* 275: of_table_feature_prop_match */
-    -1,   /* 276: of_table_feature_prop_next_tables */
-    -1,   /* 277: of_table_feature_prop_next_tables_miss */
-    -1,   /* 278: of_table_feature_prop_wildcards */
-    -1,   /* 279: of_table_feature_prop_write_actions */
-    -1,   /* 280: of_table_feature_prop_write_actions_miss */
-    -1,   /* 281: of_table_feature_prop_write_setfield */
-    -1,   /* 282: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 283: of_table_features */
-    128,  /* 284: of_table_stats_entry */
-    -1,   /* 285: of_uint32 */
-    -1,   /* 286: of_uint8 */
-    0,    /* 287: of_list_action */
-    -1,   /* 288: of_list_action_id */
-    0,    /* 289: of_list_bsn_interface */
-    0,    /* 290: of_list_bucket */
-    0,    /* 291: of_list_bucket_counter */
-    0,    /* 292: of_list_flow_stats_entry */
-    0,    /* 293: of_list_group_desc_stats_entry */
-    0,    /* 294: of_list_group_stats_entry */
-    -1,   /* 295: of_list_hello_elem */
-    0,    /* 296: of_list_instruction */
-    -1,   /* 297: of_list_meter_band */
-    -1,   /* 298: of_list_meter_band_stats */
-    -1,   /* 299: of_list_meter_stats */
-    0,    /* 300: of_list_oxm */
-    0,    /* 301: of_list_packet_queue */
-    0,    /* 302: of_list_port_desc */
-    0,    /* 303: of_list_port_stats_entry */
-    0,    /* 304: of_list_queue_prop */
-    0,    /* 305: of_list_queue_stats_entry */
-    -1,   /* 306: of_list_table_feature_prop */
-    -1,   /* 307: of_list_table_features */
-    0,    /* 308: of_list_table_stats_entry */
-    -1,   /* 309: of_list_uint32 */
-    -1,   /* 310: of_list_uint8 */
-    -1,   /* 311: of_flow_mod */
-    -1,   /* 312: of_stats_reply */
-    -1    /* 313: of_stats_request */
+    20,   /* 26: of_bsn_set_pktin_suppression_reply */
+    32,   /* 27: of_bsn_set_pktin_suppression_request */
+    -1,   /* 28: of_bsn_shell_command */
+    -1,   /* 29: of_bsn_shell_output */
+    -1,   /* 30: of_bsn_shell_status */
+    24,   /* 31: of_bsn_virtual_port_create_reply */
+    32,   /* 32: of_bsn_virtual_port_create_request */
+    20,   /* 33: of_bsn_virtual_port_remove_reply */
+    20,   /* 34: of_bsn_virtual_port_remove_request */
+    1072, /* 35: of_desc_stats_reply */
+    16,   /* 36: of_desc_stats_request */
+    8,    /* 37: of_echo_reply */
+    8,    /* 38: of_echo_request */
+    12,   /* 39: of_error_msg */
+    16,   /* 40: of_experimenter */
+    24,   /* 41: of_experimenter_stats_reply */
+    24,   /* 42: of_experimenter_stats_request */
+    32,   /* 43: of_features_reply */
+    8,    /* 44: of_features_request */
+    56,   /* 45: of_flow_add */
+    56,   /* 46: of_flow_delete */
+    56,   /* 47: of_flow_delete_strict */
+    56,   /* 48: of_flow_modify */
+    56,   /* 49: of_flow_modify_strict */
+    56,   /* 50: of_flow_removed */
+    16,   /* 51: of_flow_stats_reply */
+    56,   /* 52: of_flow_stats_request */
+    12,   /* 53: of_get_config_reply */
+    8,    /* 54: of_get_config_request */
+    16,   /* 55: of_group_desc_stats_reply */
+    16,   /* 56: of_group_desc_stats_request */
+    56,   /* 57: of_group_features_stats_reply */
+    16,   /* 58: of_group_features_stats_request */
+    16,   /* 59: of_group_mod */
+    16,   /* 60: of_group_stats_reply */
+    24,   /* 61: of_group_stats_request */
+    8,    /* 62: of_hello */
+    -1,   /* 63: of_meter_config_stats_reply */
+    -1,   /* 64: of_meter_config_stats_request */
+    -1,   /* 65: of_meter_features_stats_reply */
+    -1,   /* 66: of_meter_features_stats_request */
+    -1,   /* 67: of_meter_mod */
+    -1,   /* 68: of_meter_stats_reply */
+    -1,   /* 69: of_meter_stats_request */
+    -1,   /* 70: of_nicira_controller_role_reply */
+    -1,   /* 71: of_nicira_controller_role_request */
+    24,   /* 72: of_packet_in */
+    24,   /* 73: of_packet_out */
+    -1,   /* 74: of_port_desc_stats_reply */
+    -1,   /* 75: of_port_desc_stats_request */
+    40,   /* 76: of_port_mod */
+    16,   /* 77: of_port_stats_reply */
+    24,   /* 78: of_port_stats_request */
+    80,   /* 79: of_port_status */
+    16,   /* 80: of_queue_get_config_reply */
+    16,   /* 81: of_queue_get_config_request */
+    16,   /* 82: of_queue_stats_reply */
+    24,   /* 83: of_queue_stats_request */
+    8,    /* 84: of_role_reply */
+    24,   /* 85: of_role_request */
+    12,   /* 86: of_set_config */
+    -1,   /* 87: of_table_features_stats_reply */
+    -1,   /* 88: of_table_features_stats_request */
+    16,   /* 89: of_table_mod */
+    16,   /* 90: of_table_stats_reply */
+    16,   /* 91: of_table_stats_request */
+    8,    /* 92: of_action */
+    24,   /* 93: of_action_bsn_mirror */
+    16,   /* 94: of_action_bsn_set_tunnel_dst */
+    8,    /* 95: of_action_copy_ttl_in */
+    8,    /* 96: of_action_copy_ttl_out */
+    8,    /* 97: of_action_dec_mpls_ttl */
+    8,    /* 98: of_action_dec_nw_ttl */
+    -1,   /* 99: of_action_enqueue */
+    8,    /* 100: of_action_experimenter */
+    8,    /* 101: of_action_group */
+    8,    /* 102: of_action_header */
+    -1,   /* 103: of_action_id */
+    -1,   /* 104: of_action_id_bsn_mirror */
+    -1,   /* 105: of_action_id_bsn_set_tunnel_dst */
+    -1,   /* 106: of_action_id_copy_ttl_in */
+    -1,   /* 107: of_action_id_copy_ttl_out */
+    -1,   /* 108: of_action_id_dec_mpls_ttl */
+    -1,   /* 109: of_action_id_dec_nw_ttl */
+    -1,   /* 110: of_action_id_experimenter */
+    -1,   /* 111: of_action_id_group */
+    -1,   /* 112: of_action_id_header */
+    -1,   /* 113: of_action_id_nicira_dec_ttl */
+    -1,   /* 114: of_action_id_output */
+    -1,   /* 115: of_action_id_pop_mpls */
+    -1,   /* 116: of_action_id_pop_pbb */
+    -1,   /* 117: of_action_id_pop_vlan */
+    -1,   /* 118: of_action_id_push_mpls */
+    -1,   /* 119: of_action_id_push_pbb */
+    -1,   /* 120: of_action_id_push_vlan */
+    -1,   /* 121: of_action_id_set_field */
+    -1,   /* 122: of_action_id_set_mpls_ttl */
+    -1,   /* 123: of_action_id_set_nw_ttl */
+    -1,   /* 124: of_action_id_set_queue */
+    16,   /* 125: of_action_nicira_dec_ttl */
+    16,   /* 126: of_action_output */
+    8,    /* 127: of_action_pop_mpls */
+    -1,   /* 128: of_action_pop_pbb */
+    8,    /* 129: of_action_pop_vlan */
+    8,    /* 130: of_action_push_mpls */
+    -1,   /* 131: of_action_push_pbb */
+    8,    /* 132: of_action_push_vlan */
+    -1,   /* 133: of_action_set_dl_dst */
+    -1,   /* 134: of_action_set_dl_src */
+    4,    /* 135: of_action_set_field */
+    -1,   /* 136: of_action_set_mpls_label */
+    -1,   /* 137: of_action_set_mpls_tc */
+    8,    /* 138: of_action_set_mpls_ttl */
+    -1,   /* 139: of_action_set_nw_dst */
+    -1,   /* 140: of_action_set_nw_ecn */
+    -1,   /* 141: of_action_set_nw_src */
+    -1,   /* 142: of_action_set_nw_tos */
+    8,    /* 143: of_action_set_nw_ttl */
+    8,    /* 144: of_action_set_queue */
+    -1,   /* 145: of_action_set_tp_dst */
+    -1,   /* 146: of_action_set_tp_src */
+    -1,   /* 147: of_action_set_vlan_pcp */
+    -1,   /* 148: of_action_set_vlan_vid */
+    -1,   /* 149: of_action_strip_vlan */
+    32,   /* 150: of_bsn_interface */
+    4,    /* 151: of_bsn_vport */
+    4,    /* 152: of_bsn_vport_header */
+    16,   /* 153: of_bsn_vport_q_in_q */
+    16,   /* 154: of_bucket */
+    16,   /* 155: of_bucket_counter */
+    -1,   /* 156: of_experimenter_multipart_header */
+    56,   /* 157: of_flow_stats_entry */
+    8,    /* 158: of_group_desc_stats_entry */
+    32,   /* 159: of_group_stats_entry */
+    8,    /* 160: of_header */
+    -1,   /* 161: of_hello_elem */
+    -1,   /* 162: of_hello_elem_header */
+    -1,   /* 163: of_hello_elem_versionbitmap */
+    8,    /* 164: of_instruction */
+    8,    /* 165: of_instruction_apply_actions */
+    8,    /* 166: of_instruction_clear_actions */
+    8,    /* 167: of_instruction_experimenter */
+    8,    /* 168: of_instruction_goto_table */
+    8,    /* 169: of_instruction_header */
+    -1,   /* 170: of_instruction_meter */
+    8,    /* 171: of_instruction_write_actions */
+    24,   /* 172: of_instruction_write_metadata */
+    -1,   /* 173: of_match_v1 */
+    -1,   /* 174: of_match_v2 */
+    4,    /* 175: of_match_v3 */
+    -1,   /* 176: of_meter_band */
+    -1,   /* 177: of_meter_band_drop */
+    -1,   /* 178: of_meter_band_dscp_remark */
+    -1,   /* 179: of_meter_band_experimenter */
+    -1,   /* 180: of_meter_band_header */
+    -1,   /* 181: of_meter_band_stats */
+    -1,   /* 182: of_meter_config */
+    -1,   /* 183: of_meter_features */
+    -1,   /* 184: of_meter_stats */
+    4,    /* 185: of_oxm */
+    6,    /* 186: of_oxm_arp_op */
+    8,    /* 187: of_oxm_arp_op_masked */
+    10,   /* 188: of_oxm_arp_sha */
+    16,   /* 189: of_oxm_arp_sha_masked */
+    8,    /* 190: of_oxm_arp_spa */
+    12,   /* 191: of_oxm_arp_spa_masked */
+    10,   /* 192: of_oxm_arp_tha */
+    16,   /* 193: of_oxm_arp_tha_masked */
+    8,    /* 194: of_oxm_arp_tpa */
+    12,   /* 195: of_oxm_arp_tpa_masked */
+    5,    /* 196: of_oxm_dst_meta_id */
+    6,    /* 197: of_oxm_dst_meta_id_masked */
+    10,   /* 198: of_oxm_eth_dst */
+    16,   /* 199: of_oxm_eth_dst_masked */
+    10,   /* 200: of_oxm_eth_src */
+    16,   /* 201: of_oxm_eth_src_masked */
+    6,    /* 202: of_oxm_eth_type */
+    8,    /* 203: of_oxm_eth_type_masked */
+    4,    /* 204: of_oxm_header */
+    5,    /* 205: of_oxm_icmpv4_code */
+    6,    /* 206: of_oxm_icmpv4_code_masked */
+    5,    /* 207: of_oxm_icmpv4_type */
+    6,    /* 208: of_oxm_icmpv4_type_masked */
+    5,    /* 209: of_oxm_icmpv6_code */
+    6,    /* 210: of_oxm_icmpv6_code_masked */
+    5,    /* 211: of_oxm_icmpv6_type */
+    6,    /* 212: of_oxm_icmpv6_type_masked */
+    8,    /* 213: of_oxm_in_phy_port */
+    12,   /* 214: of_oxm_in_phy_port_masked */
+    8,    /* 215: of_oxm_in_port */
+    12,   /* 216: of_oxm_in_port_masked */
+    5,    /* 217: of_oxm_ip_dscp */
+    6,    /* 218: of_oxm_ip_dscp_masked */
+    5,    /* 219: of_oxm_ip_ecn */
+    6,    /* 220: of_oxm_ip_ecn_masked */
+    5,    /* 221: of_oxm_ip_proto */
+    6,    /* 222: of_oxm_ip_proto_masked */
+    8,    /* 223: of_oxm_ipv4_dst */
+    12,   /* 224: of_oxm_ipv4_dst_masked */
+    8,    /* 225: of_oxm_ipv4_src */
+    12,   /* 226: of_oxm_ipv4_src_masked */
+    20,   /* 227: of_oxm_ipv6_dst */
+    36,   /* 228: of_oxm_ipv6_dst_masked */
+    8,    /* 229: of_oxm_ipv6_flabel */
+    12,   /* 230: of_oxm_ipv6_flabel_masked */
+    10,   /* 231: of_oxm_ipv6_nd_sll */
+    16,   /* 232: of_oxm_ipv6_nd_sll_masked */
+    20,   /* 233: of_oxm_ipv6_nd_target */
+    36,   /* 234: of_oxm_ipv6_nd_target_masked */
+    10,   /* 235: of_oxm_ipv6_nd_tll */
+    16,   /* 236: of_oxm_ipv6_nd_tll_masked */
+    20,   /* 237: of_oxm_ipv6_src */
+    36,   /* 238: of_oxm_ipv6_src_masked */
+    12,   /* 239: of_oxm_metadata */
+    20,   /* 240: of_oxm_metadata_masked */
+    8,    /* 241: of_oxm_mpls_label */
+    12,   /* 242: of_oxm_mpls_label_masked */
+    5,    /* 243: of_oxm_mpls_tc */
+    6,    /* 244: of_oxm_mpls_tc_masked */
+    6,    /* 245: of_oxm_sctp_dst */
+    8,    /* 246: of_oxm_sctp_dst_masked */
+    6,    /* 247: of_oxm_sctp_src */
+    8,    /* 248: of_oxm_sctp_src_masked */
+    5,    /* 249: of_oxm_src_meta_id */
+    6,    /* 250: of_oxm_src_meta_id_masked */
+    6,    /* 251: of_oxm_tcp_dst */
+    8,    /* 252: of_oxm_tcp_dst_masked */
+    6,    /* 253: of_oxm_tcp_src */
+    8,    /* 254: of_oxm_tcp_src_masked */
+    6,    /* 255: of_oxm_udp_dst */
+    8,    /* 256: of_oxm_udp_dst_masked */
+    6,    /* 257: of_oxm_udp_src */
+    8,    /* 258: of_oxm_udp_src_masked */
+    5,    /* 259: of_oxm_vlan_pcp */
+    6,    /* 260: of_oxm_vlan_pcp_masked */
+    6,    /* 261: of_oxm_vlan_vid */
+    8,    /* 262: of_oxm_vlan_vid_masked */
+    16,   /* 263: of_packet_queue */
+    64,   /* 264: of_port_desc */
+    104,  /* 265: of_port_stats_entry */
+    8,    /* 266: of_queue_prop */
+    16,   /* 267: of_queue_prop_experimenter */
+    8,    /* 268: of_queue_prop_header */
+    16,   /* 269: of_queue_prop_max_rate */
+    16,   /* 270: of_queue_prop_min_rate */
+    32,   /* 271: of_queue_stats_entry */
+    -1,   /* 272: of_table_feature_prop */
+    -1,   /* 273: of_table_feature_prop_apply_actions */
+    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 275: of_table_feature_prop_apply_setfield */
+    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 277: of_table_feature_prop_experimenter */
+    -1,   /* 278: of_table_feature_prop_header */
+    -1,   /* 279: of_table_feature_prop_instructions */
+    -1,   /* 280: of_table_feature_prop_instructions_miss */
+    -1,   /* 281: of_table_feature_prop_match */
+    -1,   /* 282: of_table_feature_prop_next_tables */
+    -1,   /* 283: of_table_feature_prop_next_tables_miss */
+    -1,   /* 284: of_table_feature_prop_wildcards */
+    -1,   /* 285: of_table_feature_prop_write_actions */
+    -1,   /* 286: of_table_feature_prop_write_actions_miss */
+    -1,   /* 287: of_table_feature_prop_write_setfield */
+    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 289: of_table_features */
+    128,  /* 290: of_table_stats_entry */
+    -1,   /* 291: of_uint32 */
+    -1,   /* 292: of_uint8 */
+    0,    /* 293: of_list_action */
+    -1,   /* 294: of_list_action_id */
+    0,    /* 295: of_list_bsn_interface */
+    0,    /* 296: of_list_bucket */
+    0,    /* 297: of_list_bucket_counter */
+    0,    /* 298: of_list_flow_stats_entry */
+    0,    /* 299: of_list_group_desc_stats_entry */
+    0,    /* 300: of_list_group_stats_entry */
+    -1,   /* 301: of_list_hello_elem */
+    0,    /* 302: of_list_instruction */
+    -1,   /* 303: of_list_meter_band */
+    -1,   /* 304: of_list_meter_band_stats */
+    -1,   /* 305: of_list_meter_stats */
+    0,    /* 306: of_list_oxm */
+    0,    /* 307: of_list_packet_queue */
+    0,    /* 308: of_list_port_desc */
+    0,    /* 309: of_list_port_stats_entry */
+    0,    /* 310: of_list_queue_prop */
+    0,    /* 311: of_list_queue_stats_entry */
+    -1,   /* 312: of_list_table_feature_prop */
+    -1,   /* 313: of_list_table_features */
+    0,    /* 314: of_list_table_stats_entry */
+    -1,   /* 315: of_list_uint32 */
+    -1,   /* 316: of_list_uint8 */
+    -1,   /* 317: of_flow_mod */
+    -1,   /* 318: of_stats_reply */
+    -1    /* 319: of_stats_request */
 };
 
 static const int
@@ -4830,294 +5566,300 @@ of_object_fixed_len_v4[OF_OBJECT_COUNT] = {
     -1,   /* 23: of_bsn_set_l2_table_reply */
     -1,   /* 24: of_bsn_set_l2_table_request */
     20,   /* 25: of_bsn_set_mirroring */
-    32,   /* 26: of_bsn_set_pktin_suppression */
-    -1,   /* 27: of_bsn_shell_command */
-    -1,   /* 28: of_bsn_shell_output */
-    -1,   /* 29: of_bsn_shell_status */
-    20,   /* 30: of_bsn_virtual_port_create_reply */
-    32,   /* 31: of_bsn_virtual_port_create_request */
-    20,   /* 32: of_bsn_virtual_port_remove */
-    1072, /* 33: of_desc_stats_reply */
-    16,   /* 34: of_desc_stats_request */
-    8,    /* 35: of_echo_reply */
-    8,    /* 36: of_echo_request */
-    12,   /* 37: of_error_msg */
-    16,   /* 38: of_experimenter */
-    -1,   /* 39: of_experimenter_stats_reply */
-    -1,   /* 40: of_experimenter_stats_request */
-    32,   /* 41: of_features_reply */
-    8,    /* 42: of_features_request */
-    56,   /* 43: of_flow_add */
-    56,   /* 44: of_flow_delete */
-    56,   /* 45: of_flow_delete_strict */
-    56,   /* 46: of_flow_modify */
-    56,   /* 47: of_flow_modify_strict */
-    56,   /* 48: of_flow_removed */
-    16,   /* 49: of_flow_stats_reply */
-    56,   /* 50: of_flow_stats_request */
-    12,   /* 51: of_get_config_reply */
-    8,    /* 52: of_get_config_request */
-    16,   /* 53: of_group_desc_stats_reply */
-    16,   /* 54: of_group_desc_stats_request */
-    56,   /* 55: of_group_features_stats_reply */
-    16,   /* 56: of_group_features_stats_request */
-    16,   /* 57: of_group_mod */
-    16,   /* 58: of_group_stats_reply */
-    24,   /* 59: of_group_stats_request */
-    8,    /* 60: of_hello */
-    16,   /* 61: of_meter_config_stats_reply */
-    24,   /* 62: of_meter_config_stats_request */
-    32,   /* 63: of_meter_features_stats_reply */
-    16,   /* 64: of_meter_features_stats_request */
-    16,   /* 65: of_meter_mod */
-    16,   /* 66: of_meter_stats_reply */
-    24,   /* 67: of_meter_stats_request */
-    -1,   /* 68: of_nicira_controller_role_reply */
-    -1,   /* 69: of_nicira_controller_role_request */
-    32,   /* 70: of_packet_in */
-    24,   /* 71: of_packet_out */
-    16,   /* 72: of_port_desc_stats_reply */
-    16,   /* 73: of_port_desc_stats_request */
-    40,   /* 74: of_port_mod */
-    16,   /* 75: of_port_stats_reply */
-    24,   /* 76: of_port_stats_request */
-    80,   /* 77: of_port_status */
-    16,   /* 78: of_queue_get_config_reply */
-    16,   /* 79: of_queue_get_config_request */
-    16,   /* 80: of_queue_stats_reply */
-    24,   /* 81: of_queue_stats_request */
-    8,    /* 82: of_role_reply */
-    24,   /* 83: of_role_request */
-    12,   /* 84: of_set_config */
-    16,   /* 85: of_table_features_stats_reply */
-    16,   /* 86: of_table_features_stats_request */
-    16,   /* 87: of_table_mod */
-    16,   /* 88: of_table_stats_reply */
-    16,   /* 89: of_table_stats_request */
-    8,    /* 90: of_action */
-    24,   /* 91: of_action_bsn_mirror */
-    16,   /* 92: of_action_bsn_set_tunnel_dst */
-    8,    /* 93: of_action_copy_ttl_in */
-    8,    /* 94: of_action_copy_ttl_out */
-    8,    /* 95: of_action_dec_mpls_ttl */
-    8,    /* 96: of_action_dec_nw_ttl */
-    -1,   /* 97: of_action_enqueue */
-    8,    /* 98: of_action_experimenter */
-    8,    /* 99: of_action_group */
-    8,    /* 100: of_action_header */
-    8,    /* 101: of_action_id */
-    12,   /* 102: of_action_id_bsn_mirror */
-    12,   /* 103: of_action_id_bsn_set_tunnel_dst */
-    8,    /* 104: of_action_id_copy_ttl_in */
-    8,    /* 105: of_action_id_copy_ttl_out */
-    8,    /* 106: of_action_id_dec_mpls_ttl */
-    8,    /* 107: of_action_id_dec_nw_ttl */
-    8,    /* 108: of_action_id_experimenter */
-    8,    /* 109: of_action_id_group */
-    8,    /* 110: of_action_id_header */
-    10,   /* 111: of_action_id_nicira_dec_ttl */
-    8,    /* 112: of_action_id_output */
-    8,    /* 113: of_action_id_pop_mpls */
-    8,    /* 114: of_action_id_pop_pbb */
-    8,    /* 115: of_action_id_pop_vlan */
-    8,    /* 116: of_action_id_push_mpls */
-    8,    /* 117: of_action_id_push_pbb */
-    8,    /* 118: of_action_id_push_vlan */
-    8,    /* 119: of_action_id_set_field */
-    8,    /* 120: of_action_id_set_mpls_ttl */
-    8,    /* 121: of_action_id_set_nw_ttl */
-    8,    /* 122: of_action_id_set_queue */
-    16,   /* 123: of_action_nicira_dec_ttl */
-    16,   /* 124: of_action_output */
-    8,    /* 125: of_action_pop_mpls */
-    8,    /* 126: of_action_pop_pbb */
-    8,    /* 127: of_action_pop_vlan */
-    8,    /* 128: of_action_push_mpls */
-    8,    /* 129: of_action_push_pbb */
-    8,    /* 130: of_action_push_vlan */
-    -1,   /* 131: of_action_set_dl_dst */
-    -1,   /* 132: of_action_set_dl_src */
-    4,    /* 133: of_action_set_field */
-    -1,   /* 134: of_action_set_mpls_label */
-    -1,   /* 135: of_action_set_mpls_tc */
-    8,    /* 136: of_action_set_mpls_ttl */
-    -1,   /* 137: of_action_set_nw_dst */
-    -1,   /* 138: of_action_set_nw_ecn */
-    -1,   /* 139: of_action_set_nw_src */
-    -1,   /* 140: of_action_set_nw_tos */
-    8,    /* 141: of_action_set_nw_ttl */
-    8,    /* 142: of_action_set_queue */
-    -1,   /* 143: of_action_set_tp_dst */
-    -1,   /* 144: of_action_set_tp_src */
-    -1,   /* 145: of_action_set_vlan_pcp */
-    -1,   /* 146: of_action_set_vlan_vid */
-    -1,   /* 147: of_action_strip_vlan */
-    32,   /* 148: of_bsn_interface */
-    4,    /* 149: of_bsn_vport */
-    4,    /* 150: of_bsn_vport_header */
-    16,   /* 151: of_bsn_vport_q_in_q */
-    16,   /* 152: of_bucket */
-    16,   /* 153: of_bucket_counter */
-    8,    /* 154: of_experimenter_multipart_header */
-    56,   /* 155: of_flow_stats_entry */
-    8,    /* 156: of_group_desc_stats_entry */
-    40,   /* 157: of_group_stats_entry */
-    8,    /* 158: of_header */
-    4,    /* 159: of_hello_elem */
-    4,    /* 160: of_hello_elem_header */
-    4,    /* 161: of_hello_elem_versionbitmap */
-    4,    /* 162: of_instruction */
-    8,    /* 163: of_instruction_apply_actions */
-    8,    /* 164: of_instruction_clear_actions */
-    8,    /* 165: of_instruction_experimenter */
-    8,    /* 166: of_instruction_goto_table */
-    4,    /* 167: of_instruction_header */
-    8,    /* 168: of_instruction_meter */
-    8,    /* 169: of_instruction_write_actions */
-    24,   /* 170: of_instruction_write_metadata */
-    -1,   /* 171: of_match_v1 */
-    -1,   /* 172: of_match_v2 */
-    4,    /* 173: of_match_v3 */
-    4,    /* 174: of_meter_band */
-    16,   /* 175: of_meter_band_drop */
-    16,   /* 176: of_meter_band_dscp_remark */
-    16,   /* 177: of_meter_band_experimenter */
-    4,    /* 178: of_meter_band_header */
-    16,   /* 179: of_meter_band_stats */
-    8,    /* 180: of_meter_config */
-    16,   /* 181: of_meter_features */
-    40,   /* 182: of_meter_stats */
-    4,    /* 183: of_oxm */
-    6,    /* 184: of_oxm_arp_op */
-    8,    /* 185: of_oxm_arp_op_masked */
-    10,   /* 186: of_oxm_arp_sha */
-    16,   /* 187: of_oxm_arp_sha_masked */
-    8,    /* 188: of_oxm_arp_spa */
-    12,   /* 189: of_oxm_arp_spa_masked */
-    10,   /* 190: of_oxm_arp_tha */
-    16,   /* 191: of_oxm_arp_tha_masked */
-    8,    /* 192: of_oxm_arp_tpa */
-    12,   /* 193: of_oxm_arp_tpa_masked */
-    10,   /* 194: of_oxm_eth_dst */
-    16,   /* 195: of_oxm_eth_dst_masked */
-    10,   /* 196: of_oxm_eth_src */
-    16,   /* 197: of_oxm_eth_src_masked */
-    6,    /* 198: of_oxm_eth_type */
-    8,    /* 199: of_oxm_eth_type_masked */
-    4,    /* 200: of_oxm_header */
-    5,    /* 201: of_oxm_icmpv4_code */
-    6,    /* 202: of_oxm_icmpv4_code_masked */
-    5,    /* 203: of_oxm_icmpv4_type */
-    6,    /* 204: of_oxm_icmpv4_type_masked */
-    5,    /* 205: of_oxm_icmpv6_code */
-    6,    /* 206: of_oxm_icmpv6_code_masked */
-    5,    /* 207: of_oxm_icmpv6_type */
-    6,    /* 208: of_oxm_icmpv6_type_masked */
-    8,    /* 209: of_oxm_in_phy_port */
-    12,   /* 210: of_oxm_in_phy_port_masked */
-    8,    /* 211: of_oxm_in_port */
-    12,   /* 212: of_oxm_in_port_masked */
-    5,    /* 213: of_oxm_ip_dscp */
-    6,    /* 214: of_oxm_ip_dscp_masked */
-    5,    /* 215: of_oxm_ip_ecn */
-    6,    /* 216: of_oxm_ip_ecn_masked */
-    5,    /* 217: of_oxm_ip_proto */
-    6,    /* 218: of_oxm_ip_proto_masked */
-    8,    /* 219: of_oxm_ipv4_dst */
-    12,   /* 220: of_oxm_ipv4_dst_masked */
-    8,    /* 221: of_oxm_ipv4_src */
-    12,   /* 222: of_oxm_ipv4_src_masked */
-    20,   /* 223: of_oxm_ipv6_dst */
-    36,   /* 224: of_oxm_ipv6_dst_masked */
-    8,    /* 225: of_oxm_ipv6_flabel */
-    12,   /* 226: of_oxm_ipv6_flabel_masked */
-    10,   /* 227: of_oxm_ipv6_nd_sll */
-    16,   /* 228: of_oxm_ipv6_nd_sll_masked */
-    20,   /* 229: of_oxm_ipv6_nd_target */
-    36,   /* 230: of_oxm_ipv6_nd_target_masked */
-    10,   /* 231: of_oxm_ipv6_nd_tll */
-    16,   /* 232: of_oxm_ipv6_nd_tll_masked */
-    20,   /* 233: of_oxm_ipv6_src */
-    36,   /* 234: of_oxm_ipv6_src_masked */
-    12,   /* 235: of_oxm_metadata */
-    20,   /* 236: of_oxm_metadata_masked */
-    8,    /* 237: of_oxm_mpls_label */
-    12,   /* 238: of_oxm_mpls_label_masked */
-    5,    /* 239: of_oxm_mpls_tc */
-    6,    /* 240: of_oxm_mpls_tc_masked */
-    6,    /* 241: of_oxm_sctp_dst */
-    8,    /* 242: of_oxm_sctp_dst_masked */
-    6,    /* 243: of_oxm_sctp_src */
-    8,    /* 244: of_oxm_sctp_src_masked */
-    6,    /* 245: of_oxm_tcp_dst */
-    8,    /* 246: of_oxm_tcp_dst_masked */
-    6,    /* 247: of_oxm_tcp_src */
-    8,    /* 248: of_oxm_tcp_src_masked */
-    6,    /* 249: of_oxm_udp_dst */
-    8,    /* 250: of_oxm_udp_dst_masked */
-    6,    /* 251: of_oxm_udp_src */
-    8,    /* 252: of_oxm_udp_src_masked */
-    5,    /* 253: of_oxm_vlan_pcp */
-    6,    /* 254: of_oxm_vlan_pcp_masked */
-    6,    /* 255: of_oxm_vlan_vid */
-    8,    /* 256: of_oxm_vlan_vid_masked */
-    16,   /* 257: of_packet_queue */
-    64,   /* 258: of_port_desc */
-    112,  /* 259: of_port_stats_entry */
-    8,    /* 260: of_queue_prop */
-    16,   /* 261: of_queue_prop_experimenter */
-    8,    /* 262: of_queue_prop_header */
-    16,   /* 263: of_queue_prop_max_rate */
-    16,   /* 264: of_queue_prop_min_rate */
-    40,   /* 265: of_queue_stats_entry */
-    4,    /* 266: of_table_feature_prop */
-    4,    /* 267: of_table_feature_prop_apply_actions */
-    4,    /* 268: of_table_feature_prop_apply_actions_miss */
-    4,    /* 269: of_table_feature_prop_apply_setfield */
-    4,    /* 270: of_table_feature_prop_apply_setfield_miss */
-    12,   /* 271: of_table_feature_prop_experimenter */
-    4,    /* 272: of_table_feature_prop_header */
-    4,    /* 273: of_table_feature_prop_instructions */
-    4,    /* 274: of_table_feature_prop_instructions_miss */
-    4,    /* 275: of_table_feature_prop_match */
-    4,    /* 276: of_table_feature_prop_next_tables */
-    4,    /* 277: of_table_feature_prop_next_tables_miss */
-    4,    /* 278: of_table_feature_prop_wildcards */
-    4,    /* 279: of_table_feature_prop_write_actions */
-    4,    /* 280: of_table_feature_prop_write_actions_miss */
-    4,    /* 281: of_table_feature_prop_write_setfield */
-    4,    /* 282: of_table_feature_prop_write_setfield_miss */
-    64,   /* 283: of_table_features */
-    24,   /* 284: of_table_stats_entry */
-    4,    /* 285: of_uint32 */
-    1,    /* 286: of_uint8 */
-    0,    /* 287: of_list_action */
-    0,    /* 288: of_list_action_id */
-    0,    /* 289: of_list_bsn_interface */
-    0,    /* 290: of_list_bucket */
-    0,    /* 291: of_list_bucket_counter */
-    0,    /* 292: of_list_flow_stats_entry */
-    0,    /* 293: of_list_group_desc_stats_entry */
-    0,    /* 294: of_list_group_stats_entry */
-    0,    /* 295: of_list_hello_elem */
-    0,    /* 296: of_list_instruction */
-    0,    /* 297: of_list_meter_band */
-    0,    /* 298: of_list_meter_band_stats */
-    0,    /* 299: of_list_meter_stats */
-    0,    /* 300: of_list_oxm */
-    0,    /* 301: of_list_packet_queue */
-    0,    /* 302: of_list_port_desc */
-    0,    /* 303: of_list_port_stats_entry */
-    0,    /* 304: of_list_queue_prop */
-    0,    /* 305: of_list_queue_stats_entry */
-    0,    /* 306: of_list_table_feature_prop */
-    0,    /* 307: of_list_table_features */
-    0,    /* 308: of_list_table_stats_entry */
-    0,    /* 309: of_list_uint32 */
-    0,    /* 310: of_list_uint8 */
-    -1,   /* 311: of_flow_mod */
-    -1,   /* 312: of_stats_reply */
-    -1    /* 313: of_stats_request */
+    20,   /* 26: of_bsn_set_pktin_suppression_reply */
+    32,   /* 27: of_bsn_set_pktin_suppression_request */
+    -1,   /* 28: of_bsn_shell_command */
+    -1,   /* 29: of_bsn_shell_output */
+    -1,   /* 30: of_bsn_shell_status */
+    24,   /* 31: of_bsn_virtual_port_create_reply */
+    32,   /* 32: of_bsn_virtual_port_create_request */
+    20,   /* 33: of_bsn_virtual_port_remove_reply */
+    20,   /* 34: of_bsn_virtual_port_remove_request */
+    1072, /* 35: of_desc_stats_reply */
+    16,   /* 36: of_desc_stats_request */
+    8,    /* 37: of_echo_reply */
+    8,    /* 38: of_echo_request */
+    12,   /* 39: of_error_msg */
+    16,   /* 40: of_experimenter */
+    -1,   /* 41: of_experimenter_stats_reply */
+    -1,   /* 42: of_experimenter_stats_request */
+    32,   /* 43: of_features_reply */
+    8,    /* 44: of_features_request */
+    56,   /* 45: of_flow_add */
+    56,   /* 46: of_flow_delete */
+    56,   /* 47: of_flow_delete_strict */
+    56,   /* 48: of_flow_modify */
+    56,   /* 49: of_flow_modify_strict */
+    56,   /* 50: of_flow_removed */
+    16,   /* 51: of_flow_stats_reply */
+    56,   /* 52: of_flow_stats_request */
+    12,   /* 53: of_get_config_reply */
+    8,    /* 54: of_get_config_request */
+    16,   /* 55: of_group_desc_stats_reply */
+    16,   /* 56: of_group_desc_stats_request */
+    56,   /* 57: of_group_features_stats_reply */
+    16,   /* 58: of_group_features_stats_request */
+    16,   /* 59: of_group_mod */
+    16,   /* 60: of_group_stats_reply */
+    24,   /* 61: of_group_stats_request */
+    8,    /* 62: of_hello */
+    16,   /* 63: of_meter_config_stats_reply */
+    24,   /* 64: of_meter_config_stats_request */
+    32,   /* 65: of_meter_features_stats_reply */
+    16,   /* 66: of_meter_features_stats_request */
+    16,   /* 67: of_meter_mod */
+    16,   /* 68: of_meter_stats_reply */
+    24,   /* 69: of_meter_stats_request */
+    -1,   /* 70: of_nicira_controller_role_reply */
+    -1,   /* 71: of_nicira_controller_role_request */
+    32,   /* 72: of_packet_in */
+    24,   /* 73: of_packet_out */
+    16,   /* 74: of_port_desc_stats_reply */
+    16,   /* 75: of_port_desc_stats_request */
+    40,   /* 76: of_port_mod */
+    16,   /* 77: of_port_stats_reply */
+    24,   /* 78: of_port_stats_request */
+    80,   /* 79: of_port_status */
+    16,   /* 80: of_queue_get_config_reply */
+    16,   /* 81: of_queue_get_config_request */
+    16,   /* 82: of_queue_stats_reply */
+    24,   /* 83: of_queue_stats_request */
+    8,    /* 84: of_role_reply */
+    24,   /* 85: of_role_request */
+    12,   /* 86: of_set_config */
+    16,   /* 87: of_table_features_stats_reply */
+    16,   /* 88: of_table_features_stats_request */
+    16,   /* 89: of_table_mod */
+    16,   /* 90: of_table_stats_reply */
+    16,   /* 91: of_table_stats_request */
+    8,    /* 92: of_action */
+    24,   /* 93: of_action_bsn_mirror */
+    16,   /* 94: of_action_bsn_set_tunnel_dst */
+    8,    /* 95: of_action_copy_ttl_in */
+    8,    /* 96: of_action_copy_ttl_out */
+    8,    /* 97: of_action_dec_mpls_ttl */
+    8,    /* 98: of_action_dec_nw_ttl */
+    -1,   /* 99: of_action_enqueue */
+    8,    /* 100: of_action_experimenter */
+    8,    /* 101: of_action_group */
+    8,    /* 102: of_action_header */
+    8,    /* 103: of_action_id */
+    12,   /* 104: of_action_id_bsn_mirror */
+    12,   /* 105: of_action_id_bsn_set_tunnel_dst */
+    8,    /* 106: of_action_id_copy_ttl_in */
+    8,    /* 107: of_action_id_copy_ttl_out */
+    8,    /* 108: of_action_id_dec_mpls_ttl */
+    8,    /* 109: of_action_id_dec_nw_ttl */
+    8,    /* 110: of_action_id_experimenter */
+    8,    /* 111: of_action_id_group */
+    8,    /* 112: of_action_id_header */
+    10,   /* 113: of_action_id_nicira_dec_ttl */
+    8,    /* 114: of_action_id_output */
+    8,    /* 115: of_action_id_pop_mpls */
+    8,    /* 116: of_action_id_pop_pbb */
+    8,    /* 117: of_action_id_pop_vlan */
+    8,    /* 118: of_action_id_push_mpls */
+    8,    /* 119: of_action_id_push_pbb */
+    8,    /* 120: of_action_id_push_vlan */
+    8,    /* 121: of_action_id_set_field */
+    8,    /* 122: of_action_id_set_mpls_ttl */
+    8,    /* 123: of_action_id_set_nw_ttl */
+    8,    /* 124: of_action_id_set_queue */
+    16,   /* 125: of_action_nicira_dec_ttl */
+    16,   /* 126: of_action_output */
+    8,    /* 127: of_action_pop_mpls */
+    8,    /* 128: of_action_pop_pbb */
+    8,    /* 129: of_action_pop_vlan */
+    8,    /* 130: of_action_push_mpls */
+    8,    /* 131: of_action_push_pbb */
+    8,    /* 132: of_action_push_vlan */
+    -1,   /* 133: of_action_set_dl_dst */
+    -1,   /* 134: of_action_set_dl_src */
+    4,    /* 135: of_action_set_field */
+    -1,   /* 136: of_action_set_mpls_label */
+    -1,   /* 137: of_action_set_mpls_tc */
+    8,    /* 138: of_action_set_mpls_ttl */
+    -1,   /* 139: of_action_set_nw_dst */
+    -1,   /* 140: of_action_set_nw_ecn */
+    -1,   /* 141: of_action_set_nw_src */
+    -1,   /* 142: of_action_set_nw_tos */
+    8,    /* 143: of_action_set_nw_ttl */
+    8,    /* 144: of_action_set_queue */
+    -1,   /* 145: of_action_set_tp_dst */
+    -1,   /* 146: of_action_set_tp_src */
+    -1,   /* 147: of_action_set_vlan_pcp */
+    -1,   /* 148: of_action_set_vlan_vid */
+    -1,   /* 149: of_action_strip_vlan */
+    32,   /* 150: of_bsn_interface */
+    4,    /* 151: of_bsn_vport */
+    4,    /* 152: of_bsn_vport_header */
+    16,   /* 153: of_bsn_vport_q_in_q */
+    16,   /* 154: of_bucket */
+    16,   /* 155: of_bucket_counter */
+    8,    /* 156: of_experimenter_multipart_header */
+    56,   /* 157: of_flow_stats_entry */
+    8,    /* 158: of_group_desc_stats_entry */
+    40,   /* 159: of_group_stats_entry */
+    8,    /* 160: of_header */
+    4,    /* 161: of_hello_elem */
+    4,    /* 162: of_hello_elem_header */
+    4,    /* 163: of_hello_elem_versionbitmap */
+    4,    /* 164: of_instruction */
+    8,    /* 165: of_instruction_apply_actions */
+    8,    /* 166: of_instruction_clear_actions */
+    8,    /* 167: of_instruction_experimenter */
+    8,    /* 168: of_instruction_goto_table */
+    4,    /* 169: of_instruction_header */
+    8,    /* 170: of_instruction_meter */
+    8,    /* 171: of_instruction_write_actions */
+    24,   /* 172: of_instruction_write_metadata */
+    -1,   /* 173: of_match_v1 */
+    -1,   /* 174: of_match_v2 */
+    4,    /* 175: of_match_v3 */
+    4,    /* 176: of_meter_band */
+    16,   /* 177: of_meter_band_drop */
+    16,   /* 178: of_meter_band_dscp_remark */
+    16,   /* 179: of_meter_band_experimenter */
+    4,    /* 180: of_meter_band_header */
+    16,   /* 181: of_meter_band_stats */
+    8,    /* 182: of_meter_config */
+    16,   /* 183: of_meter_features */
+    40,   /* 184: of_meter_stats */
+    4,    /* 185: of_oxm */
+    6,    /* 186: of_oxm_arp_op */
+    8,    /* 187: of_oxm_arp_op_masked */
+    10,   /* 188: of_oxm_arp_sha */
+    16,   /* 189: of_oxm_arp_sha_masked */
+    8,    /* 190: of_oxm_arp_spa */
+    12,   /* 191: of_oxm_arp_spa_masked */
+    10,   /* 192: of_oxm_arp_tha */
+    16,   /* 193: of_oxm_arp_tha_masked */
+    8,    /* 194: of_oxm_arp_tpa */
+    12,   /* 195: of_oxm_arp_tpa_masked */
+    5,    /* 196: of_oxm_dst_meta_id */
+    6,    /* 197: of_oxm_dst_meta_id_masked */
+    10,   /* 198: of_oxm_eth_dst */
+    16,   /* 199: of_oxm_eth_dst_masked */
+    10,   /* 200: of_oxm_eth_src */
+    16,   /* 201: of_oxm_eth_src_masked */
+    6,    /* 202: of_oxm_eth_type */
+    8,    /* 203: of_oxm_eth_type_masked */
+    4,    /* 204: of_oxm_header */
+    5,    /* 205: of_oxm_icmpv4_code */
+    6,    /* 206: of_oxm_icmpv4_code_masked */
+    5,    /* 207: of_oxm_icmpv4_type */
+    6,    /* 208: of_oxm_icmpv4_type_masked */
+    5,    /* 209: of_oxm_icmpv6_code */
+    6,    /* 210: of_oxm_icmpv6_code_masked */
+    5,    /* 211: of_oxm_icmpv6_type */
+    6,    /* 212: of_oxm_icmpv6_type_masked */
+    8,    /* 213: of_oxm_in_phy_port */
+    12,   /* 214: of_oxm_in_phy_port_masked */
+    8,    /* 215: of_oxm_in_port */
+    12,   /* 216: of_oxm_in_port_masked */
+    5,    /* 217: of_oxm_ip_dscp */
+    6,    /* 218: of_oxm_ip_dscp_masked */
+    5,    /* 219: of_oxm_ip_ecn */
+    6,    /* 220: of_oxm_ip_ecn_masked */
+    5,    /* 221: of_oxm_ip_proto */
+    6,    /* 222: of_oxm_ip_proto_masked */
+    8,    /* 223: of_oxm_ipv4_dst */
+    12,   /* 224: of_oxm_ipv4_dst_masked */
+    8,    /* 225: of_oxm_ipv4_src */
+    12,   /* 226: of_oxm_ipv4_src_masked */
+    20,   /* 227: of_oxm_ipv6_dst */
+    36,   /* 228: of_oxm_ipv6_dst_masked */
+    8,    /* 229: of_oxm_ipv6_flabel */
+    12,   /* 230: of_oxm_ipv6_flabel_masked */
+    10,   /* 231: of_oxm_ipv6_nd_sll */
+    16,   /* 232: of_oxm_ipv6_nd_sll_masked */
+    20,   /* 233: of_oxm_ipv6_nd_target */
+    36,   /* 234: of_oxm_ipv6_nd_target_masked */
+    10,   /* 235: of_oxm_ipv6_nd_tll */
+    16,   /* 236: of_oxm_ipv6_nd_tll_masked */
+    20,   /* 237: of_oxm_ipv6_src */
+    36,   /* 238: of_oxm_ipv6_src_masked */
+    12,   /* 239: of_oxm_metadata */
+    20,   /* 240: of_oxm_metadata_masked */
+    8,    /* 241: of_oxm_mpls_label */
+    12,   /* 242: of_oxm_mpls_label_masked */
+    5,    /* 243: of_oxm_mpls_tc */
+    6,    /* 244: of_oxm_mpls_tc_masked */
+    6,    /* 245: of_oxm_sctp_dst */
+    8,    /* 246: of_oxm_sctp_dst_masked */
+    6,    /* 247: of_oxm_sctp_src */
+    8,    /* 248: of_oxm_sctp_src_masked */
+    5,    /* 249: of_oxm_src_meta_id */
+    6,    /* 250: of_oxm_src_meta_id_masked */
+    6,    /* 251: of_oxm_tcp_dst */
+    8,    /* 252: of_oxm_tcp_dst_masked */
+    6,    /* 253: of_oxm_tcp_src */
+    8,    /* 254: of_oxm_tcp_src_masked */
+    6,    /* 255: of_oxm_udp_dst */
+    8,    /* 256: of_oxm_udp_dst_masked */
+    6,    /* 257: of_oxm_udp_src */
+    8,    /* 258: of_oxm_udp_src_masked */
+    5,    /* 259: of_oxm_vlan_pcp */
+    6,    /* 260: of_oxm_vlan_pcp_masked */
+    6,    /* 261: of_oxm_vlan_vid */
+    8,    /* 262: of_oxm_vlan_vid_masked */
+    16,   /* 263: of_packet_queue */
+    64,   /* 264: of_port_desc */
+    112,  /* 265: of_port_stats_entry */
+    8,    /* 266: of_queue_prop */
+    16,   /* 267: of_queue_prop_experimenter */
+    8,    /* 268: of_queue_prop_header */
+    16,   /* 269: of_queue_prop_max_rate */
+    16,   /* 270: of_queue_prop_min_rate */
+    40,   /* 271: of_queue_stats_entry */
+    4,    /* 272: of_table_feature_prop */
+    4,    /* 273: of_table_feature_prop_apply_actions */
+    4,    /* 274: of_table_feature_prop_apply_actions_miss */
+    4,    /* 275: of_table_feature_prop_apply_setfield */
+    4,    /* 276: of_table_feature_prop_apply_setfield_miss */
+    12,   /* 277: of_table_feature_prop_experimenter */
+    4,    /* 278: of_table_feature_prop_header */
+    4,    /* 279: of_table_feature_prop_instructions */
+    4,    /* 280: of_table_feature_prop_instructions_miss */
+    4,    /* 281: of_table_feature_prop_match */
+    4,    /* 282: of_table_feature_prop_next_tables */
+    4,    /* 283: of_table_feature_prop_next_tables_miss */
+    4,    /* 284: of_table_feature_prop_wildcards */
+    4,    /* 285: of_table_feature_prop_write_actions */
+    4,    /* 286: of_table_feature_prop_write_actions_miss */
+    4,    /* 287: of_table_feature_prop_write_setfield */
+    4,    /* 288: of_table_feature_prop_write_setfield_miss */
+    64,   /* 289: of_table_features */
+    24,   /* 290: of_table_stats_entry */
+    4,    /* 291: of_uint32 */
+    1,    /* 292: of_uint8 */
+    0,    /* 293: of_list_action */
+    0,    /* 294: of_list_action_id */
+    0,    /* 295: of_list_bsn_interface */
+    0,    /* 296: of_list_bucket */
+    0,    /* 297: of_list_bucket_counter */
+    0,    /* 298: of_list_flow_stats_entry */
+    0,    /* 299: of_list_group_desc_stats_entry */
+    0,    /* 300: of_list_group_stats_entry */
+    0,    /* 301: of_list_hello_elem */
+    0,    /* 302: of_list_instruction */
+    0,    /* 303: of_list_meter_band */
+    0,    /* 304: of_list_meter_band_stats */
+    0,    /* 305: of_list_meter_stats */
+    0,    /* 306: of_list_oxm */
+    0,    /* 307: of_list_packet_queue */
+    0,    /* 308: of_list_port_desc */
+    0,    /* 309: of_list_port_stats_entry */
+    0,    /* 310: of_list_queue_prop */
+    0,    /* 311: of_list_queue_stats_entry */
+    0,    /* 312: of_list_table_feature_prop */
+    0,    /* 313: of_list_table_features */
+    0,    /* 314: of_list_table_stats_entry */
+    0,    /* 315: of_list_uint32 */
+    0,    /* 316: of_list_uint8 */
+    -1,   /* 317: of_flow_mod */
+    -1,   /* 318: of_stats_reply */
+    -1    /* 319: of_stats_request */
 };
 
 /**

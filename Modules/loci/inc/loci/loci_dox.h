@@ -1,28 +1,12 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2013, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /**************************************************************************//**
- *
+ * 
  * loci Doxygen Header
- *
+ * 
  *****************************************************************************/
 #ifndef __LOCI_DOX_H__
 #define __LOCI_DOX_H__
@@ -31,7 +15,7 @@
  * @defgroup loci loci - loci Description
  *
 
-The documentation overview for this module should go here.
+The documentation overview for this module should go here. 
 
  *
  * @{
@@ -39,7 +23,7 @@ The documentation overview for this module should go here.
  * @defgroup loci-loci Public Interface
  * @defgroup loci-config Compile Time Configuration
  * @defgroup loci-porting Porting Macros
- *
+ * 
  * @}
  *
  */

@@ -1,30 +1,14 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2013, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /*
  * @fixme THIS FILE NEEDS CLEANUP.  It may just go away.
- *
+ * 
  * Low level internal header file.  Defines inheritance mechanism for
  * LOCI objects.  In general, the routines in this file should not be
- * called directly.  Rather the class-specific operations should be
+ * called directly.  Rather the class-specific operations should be 
  * used from loci.h.
  *
  * TREAT THESE FUNCTIONS AS PRIVATE.  THEY ARE GENERALLY HELPER
@@ -102,8 +86,8 @@ extern of_object_t * of_object_dup_tracking(of_object_t *src,
 #define of_object_dup(src) of_object_dup_tracking(src, __FILE__, __LINE__)
 extern void of_object_track(of_object_t *obj, const char *file, int line);
 
-extern void of_object_track_output(of_object_t *obj, loci_writer_f writer, void* cookie);
-extern void of_object_track_report(loci_writer_f writer, void* cookie);
+extern void of_object_track_output(of_object_t *obj, loci_writer_f writer, void* cookie); 
+extern void of_object_track_report(loci_writer_f writer, void* cookie); 
 
 /**
  * The data stored in each object related to tracking and
@@ -143,7 +127,7 @@ extern int of_object_xid_set(of_object_t *obj, uint32_t xid);
 extern int of_object_xid_get(of_object_t *obj, uint32_t *xid);
 
 /* Bind a buffer to an object, usually for parsing the buffer */
-extern int of_object_buffer_bind(of_object_t *obj, uint8_t *buf,
+extern int of_object_buffer_bind(of_object_t *obj, uint8_t *buf, 
                                  int bytes, of_buffer_free_f buf_free);
 
 

@@ -1,23 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2013, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 #if !defined(_OF_WIRE_BUF_H_)
 #define _OF_WIRE_BUF_H_
@@ -61,7 +45,7 @@ typedef struct of_wire_buffer_s {
  */
 typedef struct of_wire_object_s {
     /** A pointer to the underlying buffer's management structure. */
-    of_wire_buffer_t *wbuf;
+    of_wire_buffer_t *wbuf;  
     /** The start offset for this object relative to the start of the
      * underlying buffer */
     int obj_offset;
@@ -867,8 +851,8 @@ of_match_bytes(of_wire_buffer_t *wbuf, int offset) {
 }
 
 extern void
-of_wire_buffer_replace_data(of_wire_buffer_t *wbuf,
-                            int offset,
+of_wire_buffer_replace_data(of_wire_buffer_t *wbuf, 
+                            int offset, 
                             int old_len,
                             uint8_t *data,
                             int new_len);
