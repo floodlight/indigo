@@ -1,23 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2012, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 #if !defined(_LOCI_SHOW_H_)
 #define _LOCI_SHOW_H_
@@ -47,8 +31,8 @@ typedef int (*loci_obj_show_f)(loci_writer_f writer,
 #define LOCI_SHOW_u32(writer, cookie, val) writer(cookie, "%u (0x%x)", (val), (val))
 #define LOCI_SHOW_u64(writer, cookie, val) writer(cookie, "%" PRIu64 "(0x%" PRIx64 ")", (val), (val))
 
-#define LOCI_SHOW_D_INT(cookie, macro, val) writer(cookie, "%" macro , val);
-#define LOCI_SHOW_X_INT(cookie, macro, val) writer(cookie, "0x%" macro, val);
+#define LOCI_SHOW_D_INT(cookie, macro, val) writer(cookie, "%" macro , val); 
+#define LOCI_SHOW_X_INT(cookie, macro, val) writer(cookie, "0x%" macro, val); 
 
 #define LOCI_SHOW_x8(writer, cookie, val) LOCI_SHOW_X_INT(cookie,  PRIx8, val)
 #define LOCI_SHOW_x16(writer, cookie, val) LOCI_SHOW_X_INT(cookie, PRIx16, val)
@@ -62,7 +46,7 @@ typedef int (*loci_obj_show_f)(loci_writer_f writer,
 
 
 /**
- * Field-specific show macros.
+ * Field-specific show macros. 
  */
 #define LOCI_SHOW_u32_ipv6_flabel(writer, cookie, val)     LOCI_SHOW_u32(writer, cookie, val)
 #define LOCI_SHOW_u8_vlan_pcp(writer, cookie, val)         LOCI_SHOW_u8(writer, cookie, val)
@@ -162,8 +146,8 @@ int of_object_show(loci_writer_f writer, void *cookie, of_object_t *obj);
 
 
 /**
- * Choose a representation for each field that
- * makes the most sense for display to the user.
+ * Choose a representation for each field that 
+ * makes the most sense for display to the user. 
  */
 #define LOCI_SHOW_u32_xid(writer, cookie, val) LOCI_SHOW_x32(writer, cookie, val)
 #define LOCI_SHOW_u16_flags(writer, cookie, val) LOCI_SHOW_x16(writer, cookie, val)
@@ -324,6 +308,8 @@ int of_object_show(loci_writer_f writer, void *cookie, of_object_t *obj);
 #define LOCI_SHOW_u32_ipv4_netmask(writer, cookie, val) LOCI_SHOW_ipv4(writer, cookie, val)
 #define LOCI_SHOW_u8_l2_table_enable(writer, cookie, val) LOCI_SHOW_u8(writer, cookie, val)
 #define LOCI_SHOW_u16_l2_table_priority(writer, cookie, val) LOCI_SHOW_u16(writer, cookie, val)
+#define LOCI_SHOW_u8_src_meta_id(writer, cookie, val) LOCI_SHOW_u8(writer, cookie, val)
+#define LOCI_SHOW_u8_dst_meta_id(writer, cookie, val) LOCI_SHOW_u8(writer, cookie, val)
 
 
 
