@@ -1,26 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
-
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /*
  * Duplication function header file
@@ -133,9 +114,13 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_dup(
         of_bsn_set_mirroring_t *src);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_dup(
-        of_bsn_set_pktin_suppression_t *src);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_dup(
+        of_bsn_set_pktin_suppression_reply_t *src);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_dup(
+        of_bsn_set_pktin_suppression_request_t *src);
 
 extern of_bsn_shell_command_t *
     of_bsn_shell_command_dup(
@@ -157,9 +142,13 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_dup(
         of_bsn_virtual_port_create_request_t *src);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_dup(
-        of_bsn_virtual_port_remove_t *src);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_dup(
+        of_bsn_virtual_port_remove_reply_t *src);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_dup(
+        of_bsn_virtual_port_remove_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_dup(
@@ -805,6 +794,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_dst_meta_id_t *
+    of_oxm_dst_meta_id_dup(
+        of_oxm_dst_meta_id_t *src);
+
+extern of_oxm_dst_meta_id_masked_t *
+    of_oxm_dst_meta_id_masked_dup(
+        of_oxm_dst_meta_id_masked_t *src);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_dup(
         of_oxm_eth_dst_t *src);
@@ -1008,6 +1005,14 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_dup(
         of_oxm_sctp_src_masked_t *src);
+
+extern of_oxm_src_meta_id_t *
+    of_oxm_src_meta_id_dup(
+        of_oxm_src_meta_id_t *src);
+
+extern of_oxm_src_meta_id_masked_t *
+    of_oxm_src_meta_id_masked_dup(
+        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_dup(
@@ -1361,9 +1366,13 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_0_dup(
         of_bsn_set_mirroring_t *src);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_OF_VERSION_1_0_dup(
-        of_bsn_set_pktin_suppression_t *src);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_dup(
+        of_bsn_set_pktin_suppression_reply_t *src);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_dup(
+        of_bsn_set_pktin_suppression_request_t *src);
 
 extern of_bsn_shell_command_t *
     of_bsn_shell_command_OF_VERSION_1_0_dup(
@@ -1385,9 +1394,13 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_OF_VERSION_1_0_dup(
         of_bsn_virtual_port_create_request_t *src);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_OF_VERSION_1_0_dup(
-        of_bsn_virtual_port_remove_t *src);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_dup(
+        of_bsn_virtual_port_remove_reply_t *src);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_0_dup(
+        of_bsn_virtual_port_remove_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_OF_VERSION_1_0_dup(
@@ -1765,9 +1778,13 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_1_dup(
         of_bsn_set_mirroring_t *src);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_OF_VERSION_1_1_dup(
-        of_bsn_set_pktin_suppression_t *src);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_dup(
+        of_bsn_set_pktin_suppression_reply_t *src);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dup(
+        of_bsn_set_pktin_suppression_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_1_dup(
@@ -1777,9 +1794,13 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_OF_VERSION_1_1_dup(
         of_bsn_virtual_port_create_request_t *src);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_OF_VERSION_1_1_dup(
-        of_bsn_virtual_port_remove_t *src);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_dup(
+        of_bsn_virtual_port_remove_reply_t *src);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_1_dup(
+        of_bsn_virtual_port_remove_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_OF_VERSION_1_1_dup(
@@ -2289,9 +2310,13 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_2_dup(
         of_bsn_set_mirroring_t *src);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_OF_VERSION_1_2_dup(
-        of_bsn_set_pktin_suppression_t *src);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_dup(
+        of_bsn_set_pktin_suppression_reply_t *src);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dup(
+        of_bsn_set_pktin_suppression_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_2_dup(
@@ -2301,9 +2326,13 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_OF_VERSION_1_2_dup(
         of_bsn_virtual_port_create_request_t *src);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_OF_VERSION_1_2_dup(
-        of_bsn_virtual_port_remove_t *src);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_dup(
+        of_bsn_virtual_port_remove_reply_t *src);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_2_dup(
+        of_bsn_virtual_port_remove_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_OF_VERSION_1_2_dup(
@@ -2681,6 +2710,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_dst_meta_id_t *
+    of_oxm_dst_meta_id_OF_VERSION_1_2_dup(
+        of_oxm_dst_meta_id_t *src);
+
+extern of_oxm_dst_meta_id_masked_t *
+    of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_dst_meta_id_masked_t *src);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_2_dup(
         of_oxm_eth_dst_t *src);
@@ -2884,6 +2921,14 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_OF_VERSION_1_2_dup(
         of_oxm_sctp_src_masked_t *src);
+
+extern of_oxm_src_meta_id_t *
+    of_oxm_src_meta_id_OF_VERSION_1_2_dup(
+        of_oxm_src_meta_id_t *src);
+
+extern of_oxm_src_meta_id_masked_t *
+    of_oxm_src_meta_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_OF_VERSION_1_2_dup(
@@ -3105,9 +3150,13 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_3_dup(
         of_bsn_set_mirroring_t *src);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_OF_VERSION_1_3_dup(
-        of_bsn_set_pktin_suppression_t *src);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_dup(
+        of_bsn_set_pktin_suppression_reply_t *src);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dup(
+        of_bsn_set_pktin_suppression_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_3_dup(
@@ -3117,9 +3166,13 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_OF_VERSION_1_3_dup(
         of_bsn_virtual_port_create_request_t *src);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_OF_VERSION_1_3_dup(
-        of_bsn_virtual_port_remove_t *src);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_dup(
+        of_bsn_virtual_port_remove_reply_t *src);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_3_dup(
+        of_bsn_virtual_port_remove_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_OF_VERSION_1_3_dup(
@@ -3685,6 +3738,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_dst_meta_id_t *
+    of_oxm_dst_meta_id_OF_VERSION_1_3_dup(
+        of_oxm_dst_meta_id_t *src);
+
+extern of_oxm_dst_meta_id_masked_t *
+    of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_dst_meta_id_masked_t *src);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_3_dup(
         of_oxm_eth_dst_t *src);
@@ -3888,6 +3949,14 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_OF_VERSION_1_3_dup(
         of_oxm_sctp_src_masked_t *src);
+
+extern of_oxm_src_meta_id_t *
+    of_oxm_src_meta_id_OF_VERSION_1_3_dup(
+        of_oxm_src_meta_id_t *src);
+
+extern of_oxm_src_meta_id_masked_t *
+    of_oxm_src_meta_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_OF_VERSION_1_3_dup(

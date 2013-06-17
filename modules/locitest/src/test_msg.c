@@ -1,26 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
-
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /**
  *
@@ -912,41 +893,81 @@ test_of_bsn_set_mirroring_create_OF_VERSION_1_0(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_create_OF_VERSION_1_0(void)
+test_of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_0(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
+    of_bsn_set_pktin_suppression_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_0);
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_0_populate_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION);
-    obj = of_bsn_set_pktin_suppression_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    obj = of_bsn_set_pktin_suppression_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_0_check_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_0(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_set_pktin_suppression_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+    obj = of_bsn_set_pktin_suppression_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -1082,7 +1103,7 @@ test_of_bsn_virtual_port_create_reply_create_OF_VERSION_1_0(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -1152,41 +1173,81 @@ test_of_bsn_virtual_port_create_request_create_OF_VERSION_1_0(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_create_OF_VERSION_1_0(void)
+test_of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_0(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
+    of_bsn_virtual_port_remove_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_0);
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_0_populate_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE);
-    obj = of_bsn_virtual_port_remove_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
+    obj = of_bsn_virtual_port_remove_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_0_check_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_create_OF_VERSION_1_0(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_0_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_virtual_port_remove_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    obj = of_bsn_virtual_port_remove_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_0_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -3272,41 +3333,81 @@ test_of_bsn_set_mirroring_create_OF_VERSION_1_1(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_create_OF_VERSION_1_1(void)
+test_of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_1(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
+    of_bsn_set_pktin_suppression_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_1);
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_1_populate_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION);
-    obj = of_bsn_set_pktin_suppression_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    obj = of_bsn_set_pktin_suppression_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_1_check_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_1(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_set_pktin_suppression_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+    obj = of_bsn_set_pktin_suppression_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -3322,7 +3423,7 @@ test_of_bsn_virtual_port_create_reply_create_OF_VERSION_1_1(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -3392,41 +3493,81 @@ test_of_bsn_virtual_port_create_request_create_OF_VERSION_1_1(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_create_OF_VERSION_1_1(void)
+test_of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_1(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
+    of_bsn_virtual_port_remove_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_1);
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_1_populate_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE);
-    obj = of_bsn_virtual_port_remove_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
+    obj = of_bsn_virtual_port_remove_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_1_check_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_create_OF_VERSION_1_1(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_1_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_virtual_port_remove_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    obj = of_bsn_virtual_port_remove_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_1_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -5632,41 +5773,81 @@ test_of_bsn_set_mirroring_create_OF_VERSION_1_2(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_create_OF_VERSION_1_2(void)
+test_of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_2(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
+    of_bsn_set_pktin_suppression_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_2);
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_2_populate_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION);
-    obj = of_bsn_set_pktin_suppression_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    obj = of_bsn_set_pktin_suppression_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_2_check_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_2(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_set_pktin_suppression_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+    obj = of_bsn_set_pktin_suppression_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -5682,7 +5863,7 @@ test_of_bsn_virtual_port_create_reply_create_OF_VERSION_1_2(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -5752,41 +5933,81 @@ test_of_bsn_virtual_port_create_request_create_OF_VERSION_1_2(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_create_OF_VERSION_1_2(void)
+test_of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_2(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
+    of_bsn_virtual_port_remove_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_2);
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_2_populate_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE);
-    obj = of_bsn_virtual_port_remove_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
+    obj = of_bsn_virtual_port_remove_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_2_check_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_create_OF_VERSION_1_2(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_2_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_virtual_port_remove_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    obj = of_bsn_virtual_port_remove_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_2_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -8272,41 +8493,81 @@ test_of_bsn_set_mirroring_create_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_create_OF_VERSION_1_3(void)
+test_of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_3(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
+    of_bsn_set_pktin_suppression_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_3);
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_3_populate_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION);
-    obj = of_bsn_set_pktin_suppression_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    obj = of_bsn_set_pktin_suppression_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_set_pktin_suppression_OF_VERSION_1_3_check_scalars(obj, 1);
+    value = of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_3(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_set_pktin_suppression_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
+    obj = of_bsn_set_pktin_suppression_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -8322,7 +8583,7 @@ test_of_bsn_virtual_port_create_reply_create_OF_VERSION_1_3(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -8392,41 +8653,81 @@ test_of_bsn_virtual_port_create_request_create_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_create_OF_VERSION_1_3(void)
+test_of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_3(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
+    of_bsn_virtual_port_remove_reply_t *obj;
     uint8_t *msg_buf;
     int value;
     int len;
 
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_3);
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     /* Set up incrementing values for scalar members */
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_3_populate_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
     /* Grab the underlying buffer from the message */
     len = obj->length;
     of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
     TEST_ASSERT(msg_buf != NULL);
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
     /* TODO:  */
-    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE);
-    obj = of_bsn_virtual_port_remove_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
+    obj = of_bsn_virtual_port_remove_reply_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
 
     TEST_ASSERT(obj != NULL);
 
     /* @fixme Set up all message objects (recursively?) */
 
-    value = of_bsn_virtual_port_remove_OF_VERSION_1_3_check_scalars(obj, 1);
+    value = of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_check_scalars(obj, 1);
     TEST_ASSERT(value != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_create_OF_VERSION_1_3(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    uint8_t *msg_buf;
+    int value;
+    int len;
+
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    /* Set up incrementing values for scalar members */
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    /* Grab the underlying buffer from the message */
+    len = obj->length;
+    of_object_wire_buffer_steal((of_object_t *)obj, &msg_buf);
+    TEST_ASSERT(msg_buf != NULL);
+    of_bsn_virtual_port_remove_request_delete(obj);
+    /* TODO:  */
+    TEST_ASSERT(of_message_to_object_id(msg_buf, len) == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    obj = of_bsn_virtual_port_remove_request_new_from_message(OF_BUFFER_TO_MESSAGE(msg_buf));
+
+    TEST_ASSERT(obj != NULL);
+
+    /* @fixme Set up all message objects (recursively?) */
+
+    value = of_bsn_virtual_port_remove_request_OF_VERSION_1_3_check_scalars(obj, 1);
+    TEST_ASSERT(value != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     return TEST_PASS;
 }
@@ -10576,13 +10877,15 @@ run_message_tests(void)
     RUN_TEST(of_bsn_set_l2_table_reply_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_request_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_mirroring_create_OF_VERSION_1_0);
-    RUN_TEST(of_bsn_set_pktin_suppression_create_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_command_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_output_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_status_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_virtual_port_create_reply_create_OF_VERSION_1_0);
     RUN_TEST(of_bsn_virtual_port_create_request_create_OF_VERSION_1_0);
-    RUN_TEST(of_bsn_virtual_port_remove_create_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_virtual_port_remove_request_create_OF_VERSION_1_0);
     RUN_TEST(of_desc_stats_reply_create_OF_VERSION_1_0);
     RUN_TEST(of_desc_stats_request_create_OF_VERSION_1_0);
     RUN_TEST(of_echo_reply_create_OF_VERSION_1_0);
@@ -10635,10 +10938,12 @@ run_message_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_create_OF_VERSION_1_1);
     RUN_TEST(of_bsn_get_mirroring_request_create_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_mirroring_create_OF_VERSION_1_1);
-    RUN_TEST(of_bsn_set_pktin_suppression_create_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_1);
     RUN_TEST(of_bsn_virtual_port_create_reply_create_OF_VERSION_1_1);
     RUN_TEST(of_bsn_virtual_port_create_request_create_OF_VERSION_1_1);
-    RUN_TEST(of_bsn_virtual_port_remove_create_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_virtual_port_remove_request_create_OF_VERSION_1_1);
     RUN_TEST(of_desc_stats_reply_create_OF_VERSION_1_1);
     RUN_TEST(of_desc_stats_request_create_OF_VERSION_1_1);
     RUN_TEST(of_echo_reply_create_OF_VERSION_1_1);
@@ -10694,10 +10999,12 @@ run_message_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_create_OF_VERSION_1_2);
     RUN_TEST(of_bsn_get_mirroring_request_create_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_mirroring_create_OF_VERSION_1_2);
-    RUN_TEST(of_bsn_set_pktin_suppression_create_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_2);
     RUN_TEST(of_bsn_virtual_port_create_reply_create_OF_VERSION_1_2);
     RUN_TEST(of_bsn_virtual_port_create_request_create_OF_VERSION_1_2);
-    RUN_TEST(of_bsn_virtual_port_remove_create_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_virtual_port_remove_request_create_OF_VERSION_1_2);
     RUN_TEST(of_desc_stats_reply_create_OF_VERSION_1_2);
     RUN_TEST(of_desc_stats_request_create_OF_VERSION_1_2);
     RUN_TEST(of_echo_reply_create_OF_VERSION_1_2);
@@ -10760,10 +11067,12 @@ run_message_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_create_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_request_create_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_mirroring_create_OF_VERSION_1_3);
-    RUN_TEST(of_bsn_set_pktin_suppression_create_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_create_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_create_OF_VERSION_1_3);
     RUN_TEST(of_bsn_virtual_port_create_reply_create_OF_VERSION_1_3);
     RUN_TEST(of_bsn_virtual_port_create_request_create_OF_VERSION_1_3);
-    RUN_TEST(of_bsn_virtual_port_remove_create_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_create_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_virtual_port_remove_request_create_OF_VERSION_1_3);
     RUN_TEST(of_desc_stats_reply_create_OF_VERSION_1_3);
     RUN_TEST(of_desc_stats_request_create_OF_VERSION_1_3);
     RUN_TEST(of_echo_reply_create_OF_VERSION_1_3);
