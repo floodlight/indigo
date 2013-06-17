@@ -1,25 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  * File: loci.h
@@ -169,13 +151,15 @@ typedef of_object_t of_bsn_set_ip_mask_t;
 typedef of_object_t of_bsn_set_l2_table_reply_t;
 typedef of_object_t of_bsn_set_l2_table_request_t;
 typedef of_object_t of_bsn_set_mirroring_t;
-typedef of_object_t of_bsn_set_pktin_suppression_t;
+typedef of_object_t of_bsn_set_pktin_suppression_reply_t;
+typedef of_object_t of_bsn_set_pktin_suppression_request_t;
 typedef of_object_t of_bsn_shell_command_t;
 typedef of_object_t of_bsn_shell_output_t;
 typedef of_object_t of_bsn_shell_status_t;
 typedef of_object_t of_bsn_virtual_port_create_reply_t;
 typedef of_object_t of_bsn_virtual_port_create_request_t;
-typedef of_object_t of_bsn_virtual_port_remove_t;
+typedef of_object_t of_bsn_virtual_port_remove_reply_t;
+typedef of_object_t of_bsn_virtual_port_remove_request_t;
 typedef of_object_t of_desc_stats_reply_t;
 typedef of_object_t of_desc_stats_request_t;
 typedef of_object_t of_echo_reply_t;
@@ -330,6 +314,8 @@ typedef of_object_t of_oxm_arp_tha_t;
 typedef of_object_t of_oxm_arp_tha_masked_t;
 typedef of_object_t of_oxm_arp_tpa_t;
 typedef of_object_t of_oxm_arp_tpa_masked_t;
+typedef of_object_t of_oxm_dst_meta_id_t;
+typedef of_object_t of_oxm_dst_meta_id_masked_t;
 typedef of_object_t of_oxm_eth_dst_t;
 typedef of_object_t of_oxm_eth_dst_masked_t;
 typedef of_object_t of_oxm_eth_src_t;
@@ -381,6 +367,8 @@ typedef of_object_t of_oxm_sctp_dst_t;
 typedef of_object_t of_oxm_sctp_dst_masked_t;
 typedef of_object_t of_oxm_sctp_src_t;
 typedef of_object_t of_oxm_sctp_src_masked_t;
+typedef of_object_t of_oxm_src_meta_id_t;
+typedef of_object_t of_oxm_src_meta_id_masked_t;
 typedef of_object_t of_oxm_tcp_dst_t;
 typedef of_object_t of_oxm_tcp_dst_masked_t;
 typedef of_object_t of_oxm_tcp_src_t;
@@ -829,17 +817,30 @@ extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_new_tracking(of_version_t version,
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_new_tracking(of_version_t version,
         const char *file, int line);
-#define of_bsn_set_pktin_suppression_new(version) \
-    of_bsn_set_pktin_suppression_new_tracking(version, \
+#define of_bsn_set_pktin_suppression_reply_new(version) \
+    of_bsn_set_pktin_suppression_reply_new_tracking(version, \
         __FILE__, __LINE__)
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_new_from_message_tracking(of_message_t msg,
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_new_from_message_tracking(of_message_t msg,
         const char *file, int line);
-#define of_bsn_set_pktin_suppression_new_from_message(msg) \
-    of_bsn_set_pktin_suppression_new_from_message_tracking(msg, \
+#define of_bsn_set_pktin_suppression_reply_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_set_pktin_suppression_request_new(version) \
+    of_bsn_set_pktin_suppression_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_set_pktin_suppression_request_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_shell_command_t *
@@ -907,17 +908,30 @@ extern of_bsn_virtual_port_create_request_t *
     of_bsn_virtual_port_create_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_new_tracking(of_version_t version,
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_new_tracking(of_version_t version,
         const char *file, int line);
-#define of_bsn_virtual_port_remove_new(version) \
-    of_bsn_virtual_port_remove_new_tracking(version, \
+#define of_bsn_virtual_port_remove_reply_new(version) \
+    of_bsn_virtual_port_remove_reply_new_tracking(version, \
         __FILE__, __LINE__)
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_new_from_message_tracking(of_message_t msg,
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_new_from_message_tracking(of_message_t msg,
         const char *file, int line);
-#define of_bsn_virtual_port_remove_new_from_message(msg) \
-    of_bsn_virtual_port_remove_new_from_message_tracking(msg, \
+#define of_bsn_virtual_port_remove_reply_new_from_message(msg) \
+    of_bsn_virtual_port_remove_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_virtual_port_remove_request_new(version) \
+    of_bsn_virtual_port_remove_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_virtual_port_remove_request_new_from_message(msg) \
+    of_bsn_virtual_port_remove_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_desc_stats_reply_t *
@@ -2389,6 +2403,20 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_oxm_dst_meta_id_t *
+    of_oxm_dst_meta_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_dst_meta_id_new(version) \
+    of_oxm_dst_meta_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_dst_meta_id_masked_t *
+    of_oxm_dst_meta_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_dst_meta_id_masked_new(version) \
+    of_oxm_dst_meta_id_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_tracking(of_version_t version,
         const char *file, int line);
@@ -2744,6 +2772,20 @@ extern of_oxm_sctp_src_masked_t *
         const char *file, int line);
 #define of_oxm_sctp_src_masked_new(version) \
     of_oxm_sctp_src_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_src_meta_id_t *
+    of_oxm_src_meta_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_src_meta_id_new(version) \
+    of_oxm_src_meta_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_src_meta_id_masked_t *
+    of_oxm_src_meta_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_src_meta_id_masked_new(version) \
+    of_oxm_src_meta_id_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_oxm_tcp_dst_t *
@@ -3335,10 +3377,15 @@ extern of_list_uint8_t *
 #define of_bsn_set_mirroring_new_from_message(msg) \
     of_bsn_set_mirroring_new_from_message_(msg)
 
-#define of_bsn_set_pktin_suppression_new(version) \
-    of_bsn_set_pktin_suppression_new_(version)
-#define of_bsn_set_pktin_suppression_new_from_message(msg) \
-    of_bsn_set_pktin_suppression_new_from_message_(msg)
+#define of_bsn_set_pktin_suppression_reply_new(version) \
+    of_bsn_set_pktin_suppression_reply_new_(version)
+#define of_bsn_set_pktin_suppression_reply_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_reply_new_from_message_(msg)
+
+#define of_bsn_set_pktin_suppression_request_new(version) \
+    of_bsn_set_pktin_suppression_request_new_(version)
+#define of_bsn_set_pktin_suppression_request_new_from_message(msg) \
+    of_bsn_set_pktin_suppression_request_new_from_message_(msg)
 
 #define of_bsn_shell_command_new(version) \
     of_bsn_shell_command_new_(version)
@@ -3365,10 +3412,15 @@ extern of_list_uint8_t *
 #define of_bsn_virtual_port_create_request_new_from_message(msg) \
     of_bsn_virtual_port_create_request_new_from_message_(msg)
 
-#define of_bsn_virtual_port_remove_new(version) \
-    of_bsn_virtual_port_remove_new_(version)
-#define of_bsn_virtual_port_remove_new_from_message(msg) \
-    of_bsn_virtual_port_remove_new_from_message_(msg)
+#define of_bsn_virtual_port_remove_reply_new(version) \
+    of_bsn_virtual_port_remove_reply_new_(version)
+#define of_bsn_virtual_port_remove_reply_new_from_message(msg) \
+    of_bsn_virtual_port_remove_reply_new_from_message_(msg)
+
+#define of_bsn_virtual_port_remove_request_new(version) \
+    of_bsn_virtual_port_remove_request_new_(version)
+#define of_bsn_virtual_port_remove_request_new_from_message(msg) \
+    of_bsn_virtual_port_remove_request_new_from_message_(msg)
 
 #define of_desc_stats_reply_new(version) \
     of_desc_stats_reply_new_(version)
@@ -3967,6 +4019,12 @@ extern of_list_uint8_t *
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_(version)
 
+#define of_oxm_dst_meta_id_new(version) \
+    of_oxm_dst_meta_id_new_(version)
+
+#define of_oxm_dst_meta_id_masked_new(version) \
+    of_oxm_dst_meta_id_masked_new_(version)
+
 #define of_oxm_eth_dst_new(version) \
     of_oxm_eth_dst_new_(version)
 
@@ -4119,6 +4177,12 @@ extern of_list_uint8_t *
 
 #define of_oxm_sctp_src_masked_new(version) \
     of_oxm_sctp_src_masked_new_(version)
+
+#define of_oxm_src_meta_id_new(version) \
+    of_oxm_src_meta_id_new_(version)
+
+#define of_oxm_src_meta_id_masked_new(version) \
+    of_oxm_src_meta_id_masked_new_(version)
 
 #define of_oxm_tcp_dst_new(version) \
     of_oxm_tcp_dst_new_(version)
@@ -4495,12 +4559,19 @@ extern of_bsn_set_mirroring_t *
 extern void of_bsn_set_mirroring_init(
     of_bsn_set_mirroring_t *obj, of_version_t version, int bytes, int clean_wire);
 
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_new_(of_version_t version);
-extern of_bsn_set_pktin_suppression_t *
-    of_bsn_set_pktin_suppression_new_from_message_(of_message_t msg);
-extern void of_bsn_set_pktin_suppression_init(
-    of_bsn_set_pktin_suppression_t *obj, of_version_t version, int bytes, int clean_wire);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_new_(of_version_t version);
+extern of_bsn_set_pktin_suppression_reply_t *
+    of_bsn_set_pktin_suppression_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_set_pktin_suppression_reply_init(
+    of_bsn_set_pktin_suppression_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_new_(of_version_t version);
+extern of_bsn_set_pktin_suppression_request_t *
+    of_bsn_set_pktin_suppression_request_new_from_message_(of_message_t msg);
+extern void of_bsn_set_pktin_suppression_request_init(
+    of_bsn_set_pktin_suppression_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_shell_command_t *
     of_bsn_shell_command_new_(of_version_t version);
@@ -4537,12 +4608,19 @@ extern of_bsn_virtual_port_create_request_t *
 extern void of_bsn_virtual_port_create_request_init(
     of_bsn_virtual_port_create_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_new_(of_version_t version);
-extern of_bsn_virtual_port_remove_t *
-    of_bsn_virtual_port_remove_new_from_message_(of_message_t msg);
-extern void of_bsn_virtual_port_remove_init(
-    of_bsn_virtual_port_remove_t *obj, of_version_t version, int bytes, int clean_wire);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_new_(of_version_t version);
+extern of_bsn_virtual_port_remove_reply_t *
+    of_bsn_virtual_port_remove_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_virtual_port_remove_reply_init(
+    of_bsn_virtual_port_remove_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_new_(of_version_t version);
+extern of_bsn_virtual_port_remove_request_t *
+    of_bsn_virtual_port_remove_request_new_from_message_(of_message_t msg);
+extern void of_bsn_virtual_port_remove_request_init(
+    of_bsn_virtual_port_remove_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_new_(of_version_t version);
@@ -5463,6 +5541,16 @@ extern of_oxm_arp_tpa_masked_t *
 extern void of_oxm_arp_tpa_masked_init(
     of_oxm_arp_tpa_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_oxm_dst_meta_id_t *
+    of_oxm_dst_meta_id_new_(of_version_t version);
+extern void of_oxm_dst_meta_id_init(
+    of_oxm_dst_meta_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_dst_meta_id_masked_t *
+    of_oxm_dst_meta_id_masked_new_(of_version_t version);
+extern void of_oxm_dst_meta_id_masked_init(
+    of_oxm_dst_meta_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_(of_version_t version);
 extern void of_oxm_eth_dst_init(
@@ -5717,6 +5805,16 @@ extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_new_(of_version_t version);
 extern void of_oxm_sctp_src_masked_init(
     of_oxm_sctp_src_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_src_meta_id_t *
+    of_oxm_src_meta_id_new_(of_version_t version);
+extern void of_oxm_src_meta_id_init(
+    of_oxm_src_meta_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_src_meta_id_masked_t *
+    of_oxm_src_meta_id_masked_new_(of_version_t version);
+extern void of_oxm_src_meta_id_masked_init(
+    of_oxm_src_meta_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_new_(of_version_t version);
@@ -6331,13 +6429,24 @@ of_bsn_set_mirroring_delete(of_bsn_set_mirroring_t *obj) {
 }
 
 /**
- * Delete an object of type of_bsn_set_pktin_suppression_t
- * @param obj An instance of type of_bsn_set_pktin_suppression_t
+ * Delete an object of type of_bsn_set_pktin_suppression_reply_t
+ * @param obj An instance of type of_bsn_set_pktin_suppression_reply_t
  *
- * \ingroup of_bsn_set_pktin_suppression
+ * \ingroup of_bsn_set_pktin_suppression_reply
  */
 static inline void
-of_bsn_set_pktin_suppression_delete(of_bsn_set_pktin_suppression_t *obj) {
+of_bsn_set_pktin_suppression_reply_delete(of_bsn_set_pktin_suppression_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_set_pktin_suppression_request_t
+ * @param obj An instance of type of_bsn_set_pktin_suppression_request_t
+ *
+ * \ingroup of_bsn_set_pktin_suppression_request
+ */
+static inline void
+of_bsn_set_pktin_suppression_request_delete(of_bsn_set_pktin_suppression_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -6397,13 +6506,24 @@ of_bsn_virtual_port_create_request_delete(of_bsn_virtual_port_create_request_t *
 }
 
 /**
- * Delete an object of type of_bsn_virtual_port_remove_t
- * @param obj An instance of type of_bsn_virtual_port_remove_t
+ * Delete an object of type of_bsn_virtual_port_remove_reply_t
+ * @param obj An instance of type of_bsn_virtual_port_remove_reply_t
  *
- * \ingroup of_bsn_virtual_port_remove
+ * \ingroup of_bsn_virtual_port_remove_reply
  */
 static inline void
-of_bsn_virtual_port_remove_delete(of_bsn_virtual_port_remove_t *obj) {
+of_bsn_virtual_port_remove_reply_delete(of_bsn_virtual_port_remove_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_virtual_port_remove_request_t
+ * @param obj An instance of type of_bsn_virtual_port_remove_request_t
+ *
+ * \ingroup of_bsn_virtual_port_remove_request
+ */
+static inline void
+of_bsn_virtual_port_remove_request_delete(of_bsn_virtual_port_remove_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -8179,6 +8299,28 @@ of_oxm_arp_tpa_masked_delete(of_oxm_arp_tpa_masked_t *obj) {
 }
 
 /**
+ * Delete an object of type of_oxm_dst_meta_id_t
+ * @param obj An instance of type of_oxm_dst_meta_id_t
+ *
+ * \ingroup of_oxm_dst_meta_id
+ */
+static inline void
+of_oxm_dst_meta_id_delete(of_oxm_dst_meta_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_dst_meta_id_masked_t
+ * @param obj An instance of type of_oxm_dst_meta_id_masked_t
+ *
+ * \ingroup of_oxm_dst_meta_id_masked
+ */
+static inline void
+of_oxm_dst_meta_id_masked_delete(of_oxm_dst_meta_id_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_oxm_eth_dst_t
  * @param obj An instance of type of_oxm_eth_dst_t
  *
@@ -8736,6 +8878,28 @@ of_oxm_sctp_src_delete(of_oxm_sctp_src_t *obj) {
  */
 static inline void
 of_oxm_sctp_src_masked_delete(of_oxm_sctp_src_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_src_meta_id_t
+ * @param obj An instance of type of_oxm_src_meta_id_t
+ *
+ * \ingroup of_oxm_src_meta_id
+ */
+static inline void
+of_oxm_src_meta_id_delete(of_oxm_src_meta_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_src_meta_id_masked_t
+ * @param obj An instance of type of_oxm_src_meta_id_masked_t
+ *
+ * \ingroup of_oxm_src_meta_id_masked
+ */
+static inline void
+of_oxm_src_meta_id_masked_delete(of_oxm_src_meta_id_masked_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10311,62 +10475,92 @@ extern void of_bsn_set_mirroring_report_mirror_ports_get(
     of_bsn_set_mirroring_t *obj,
     uint8_t *report_mirror_ports);
 
-/* Unified accessor functions for of_bsn_set_pktin_suppression */
+/* Unified accessor functions for of_bsn_set_pktin_suppression_reply */
 
-extern void of_bsn_set_pktin_suppression_xid_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_xid_set(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t xid);
-extern void of_bsn_set_pktin_suppression_xid_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_xid_get(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t *xid);
 
-extern void of_bsn_set_pktin_suppression_experimenter_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_experimenter_set(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t experimenter);
-extern void of_bsn_set_pktin_suppression_experimenter_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_experimenter_get(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t *experimenter);
 
-extern void of_bsn_set_pktin_suppression_subtype_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_subtype_set(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t subtype);
-extern void of_bsn_set_pktin_suppression_subtype_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_subtype_get(
+    of_bsn_set_pktin_suppression_reply_t *obj,
     uint32_t *subtype);
 
-extern void of_bsn_set_pktin_suppression_enabled_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_reply_status_set(
+    of_bsn_set_pktin_suppression_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_set_pktin_suppression_reply_status_get(
+    of_bsn_set_pktin_suppression_reply_t *obj,
+    uint32_t *status);
+
+/* Unified accessor functions for of_bsn_set_pktin_suppression_request */
+
+extern void of_bsn_set_pktin_suppression_request_xid_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_set_pktin_suppression_request_xid_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_set_pktin_suppression_request_experimenter_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_set_pktin_suppression_request_experimenter_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_set_pktin_suppression_request_subtype_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_set_pktin_suppression_request_subtype_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_set_pktin_suppression_request_enabled_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint8_t enabled);
-extern void of_bsn_set_pktin_suppression_enabled_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_enabled_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint8_t *enabled);
 
-extern void of_bsn_set_pktin_suppression_idle_timeout_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_idle_timeout_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t idle_timeout);
-extern void of_bsn_set_pktin_suppression_idle_timeout_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_idle_timeout_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t *idle_timeout);
 
-extern void of_bsn_set_pktin_suppression_hard_timeout_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_hard_timeout_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t hard_timeout);
-extern void of_bsn_set_pktin_suppression_hard_timeout_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_hard_timeout_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t *hard_timeout);
 
-extern void of_bsn_set_pktin_suppression_priority_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_priority_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t priority);
-extern void of_bsn_set_pktin_suppression_priority_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_priority_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint16_t *priority);
 
-extern void of_bsn_set_pktin_suppression_cookie_set(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_cookie_set(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint64_t cookie);
-extern void of_bsn_set_pktin_suppression_cookie_get(
-    of_bsn_set_pktin_suppression_t *obj,
+extern void of_bsn_set_pktin_suppression_request_cookie_get(
+    of_bsn_set_pktin_suppression_request_t *obj,
     uint64_t *cookie);
 
 /* Unified accessor functions for of_bsn_shell_command */
@@ -10489,6 +10683,13 @@ extern void of_bsn_virtual_port_create_reply_subtype_get(
     of_bsn_virtual_port_create_reply_t *obj,
     uint32_t *subtype);
 
+extern void of_bsn_virtual_port_create_reply_status_set(
+    of_bsn_virtual_port_create_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_virtual_port_create_reply_status_get(
+    of_bsn_virtual_port_create_reply_t *obj,
+    uint32_t *status);
+
 extern void of_bsn_virtual_port_create_reply_vport_no_set(
     of_bsn_virtual_port_create_reply_t *obj,
     uint32_t vport_no);
@@ -10528,34 +10729,64 @@ extern void of_bsn_virtual_port_create_request_vport_bind(
 extern of_bsn_vport_q_in_q_t *of_bsn_virtual_port_create_request_vport_get(
     of_bsn_virtual_port_create_request_t *obj);
 
-/* Unified accessor functions for of_bsn_virtual_port_remove */
+/* Unified accessor functions for of_bsn_virtual_port_remove_reply */
 
-extern void of_bsn_virtual_port_remove_xid_set(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_xid_set(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t xid);
-extern void of_bsn_virtual_port_remove_xid_get(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_xid_get(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t *xid);
 
-extern void of_bsn_virtual_port_remove_experimenter_set(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_experimenter_set(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t experimenter);
-extern void of_bsn_virtual_port_remove_experimenter_get(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_experimenter_get(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t *experimenter);
 
-extern void of_bsn_virtual_port_remove_subtype_set(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_subtype_set(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t subtype);
-extern void of_bsn_virtual_port_remove_subtype_get(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_subtype_get(
+    of_bsn_virtual_port_remove_reply_t *obj,
     uint32_t *subtype);
 
-extern void of_bsn_virtual_port_remove_vport_no_set(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_reply_status_set(
+    of_bsn_virtual_port_remove_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_virtual_port_remove_reply_status_get(
+    of_bsn_virtual_port_remove_reply_t *obj,
+    uint32_t *status);
+
+/* Unified accessor functions for of_bsn_virtual_port_remove_request */
+
+extern void of_bsn_virtual_port_remove_request_xid_set(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_virtual_port_remove_request_xid_get(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_virtual_port_remove_request_experimenter_set(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_virtual_port_remove_request_experimenter_get(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_virtual_port_remove_request_subtype_set(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_virtual_port_remove_request_subtype_get(
+    of_bsn_virtual_port_remove_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_virtual_port_remove_request_vport_no_set(
+    of_bsn_virtual_port_remove_request_t *obj,
     uint32_t vport_no);
-extern void of_bsn_virtual_port_remove_vport_no_get(
-    of_bsn_virtual_port_remove_t *obj,
+extern void of_bsn_virtual_port_remove_request_vport_no_get(
+    of_bsn_virtual_port_remove_request_t *obj,
     uint32_t *vport_no);
 
 /* Unified accessor functions for of_desc_stats_reply */
@@ -13483,6 +13714,20 @@ extern void of_match_v1_ip_proto_get(
     of_match_v1_t *obj,
     uint8_t *ip_proto);
 
+extern void of_match_v1_src_meta_id_set(
+    of_match_v1_t *obj,
+    uint8_t src_meta_id);
+extern void of_match_v1_src_meta_id_get(
+    of_match_v1_t *obj,
+    uint8_t *src_meta_id);
+
+extern void of_match_v1_dst_meta_id_set(
+    of_match_v1_t *obj,
+    uint8_t dst_meta_id);
+extern void of_match_v1_dst_meta_id_get(
+    of_match_v1_t *obj,
+    uint8_t *dst_meta_id);
+
 extern void of_match_v1_ipv4_src_set(
     of_match_v1_t *obj,
     uint32_t ipv4_src);
@@ -13990,6 +14235,31 @@ extern void of_oxm_arp_tpa_masked_value_mask_set(
 extern void of_oxm_arp_tpa_masked_value_mask_get(
     of_oxm_arp_tpa_masked_t *obj,
     uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_dst_meta_id */
+
+extern void of_oxm_dst_meta_id_value_set(
+    of_oxm_dst_meta_id_t *obj,
+    uint8_t value);
+extern void of_oxm_dst_meta_id_value_get(
+    of_oxm_dst_meta_id_t *obj,
+    uint8_t *value);
+
+/* Unified accessor functions for of_oxm_dst_meta_id_masked */
+
+extern void of_oxm_dst_meta_id_masked_value_set(
+    of_oxm_dst_meta_id_masked_t *obj,
+    uint8_t value);
+extern void of_oxm_dst_meta_id_masked_value_get(
+    of_oxm_dst_meta_id_masked_t *obj,
+    uint8_t *value);
+
+extern void of_oxm_dst_meta_id_masked_value_mask_set(
+    of_oxm_dst_meta_id_masked_t *obj,
+    uint8_t value_mask);
+extern void of_oxm_dst_meta_id_masked_value_mask_get(
+    of_oxm_dst_meta_id_masked_t *obj,
+    uint8_t *value_mask);
 
 /* Unified accessor functions for of_oxm_eth_dst */
 
@@ -14617,6 +14887,31 @@ extern void of_oxm_sctp_src_masked_value_mask_set(
 extern void of_oxm_sctp_src_masked_value_mask_get(
     of_oxm_sctp_src_masked_t *obj,
     uint16_t *value_mask);
+
+/* Unified accessor functions for of_oxm_src_meta_id */
+
+extern void of_oxm_src_meta_id_value_set(
+    of_oxm_src_meta_id_t *obj,
+    uint8_t value);
+extern void of_oxm_src_meta_id_value_get(
+    of_oxm_src_meta_id_t *obj,
+    uint8_t *value);
+
+/* Unified accessor functions for of_oxm_src_meta_id_masked */
+
+extern void of_oxm_src_meta_id_masked_value_set(
+    of_oxm_src_meta_id_masked_t *obj,
+    uint8_t value);
+extern void of_oxm_src_meta_id_masked_value_get(
+    of_oxm_src_meta_id_masked_t *obj,
+    uint8_t *value);
+
+extern void of_oxm_src_meta_id_masked_value_mask_set(
+    of_oxm_src_meta_id_masked_t *obj,
+    uint8_t value_mask);
+extern void of_oxm_src_meta_id_masked_value_mask_get(
+    of_oxm_src_meta_id_masked_t *obj,
+    uint8_t *value_mask);
 
 /* Unified accessor functions for of_oxm_tcp_dst */
 
@@ -16134,13 +16429,15 @@ union of_generic_u {
     of_bsn_set_l2_table_reply_t of_bsn_set_l2_table_reply;
     of_bsn_set_l2_table_request_t of_bsn_set_l2_table_request;
     of_bsn_set_mirroring_t of_bsn_set_mirroring;
-    of_bsn_set_pktin_suppression_t of_bsn_set_pktin_suppression;
+    of_bsn_set_pktin_suppression_reply_t of_bsn_set_pktin_suppression_reply;
+    of_bsn_set_pktin_suppression_request_t of_bsn_set_pktin_suppression_request;
     of_bsn_shell_command_t of_bsn_shell_command;
     of_bsn_shell_output_t of_bsn_shell_output;
     of_bsn_shell_status_t of_bsn_shell_status;
     of_bsn_virtual_port_create_reply_t of_bsn_virtual_port_create_reply;
     of_bsn_virtual_port_create_request_t of_bsn_virtual_port_create_request;
-    of_bsn_virtual_port_remove_t of_bsn_virtual_port_remove;
+    of_bsn_virtual_port_remove_reply_t of_bsn_virtual_port_remove_reply;
+    of_bsn_virtual_port_remove_request_t of_bsn_virtual_port_remove_request;
     of_desc_stats_reply_t of_desc_stats_reply;
     of_desc_stats_request_t of_desc_stats_request;
     of_echo_reply_t of_echo_reply;
@@ -16297,6 +16594,8 @@ union of_generic_u {
     of_oxm_arp_tha_masked_t of_oxm_arp_tha_masked;
     of_oxm_arp_tpa_t of_oxm_arp_tpa;
     of_oxm_arp_tpa_masked_t of_oxm_arp_tpa_masked;
+    of_oxm_dst_meta_id_t of_oxm_dst_meta_id;
+    of_oxm_dst_meta_id_masked_t of_oxm_dst_meta_id_masked;
     of_oxm_eth_dst_t of_oxm_eth_dst;
     of_oxm_eth_dst_masked_t of_oxm_eth_dst_masked;
     of_oxm_eth_src_t of_oxm_eth_src;
@@ -16348,6 +16647,8 @@ union of_generic_u {
     of_oxm_sctp_dst_masked_t of_oxm_sctp_dst_masked;
     of_oxm_sctp_src_t of_oxm_sctp_src;
     of_oxm_sctp_src_masked_t of_oxm_sctp_src_masked;
+    of_oxm_src_meta_id_t of_oxm_src_meta_id;
+    of_oxm_src_meta_id_masked_t of_oxm_src_meta_id_masked;
     of_oxm_tcp_dst_t of_oxm_tcp_dst;
     of_oxm_tcp_dst_masked_t of_oxm_tcp_dst_masked;
     of_oxm_tcp_src_t of_oxm_tcp_src;
@@ -16616,6 +16917,8 @@ union of_oxm_u {
     of_oxm_arp_tha_masked_t arp_tha_masked;
     of_oxm_arp_tpa_t arp_tpa;
     of_oxm_arp_tpa_masked_t arp_tpa_masked;
+    of_oxm_dst_meta_id_t dst_meta_id;
+    of_oxm_dst_meta_id_masked_t dst_meta_id_masked;
     of_oxm_eth_dst_t eth_dst;
     of_oxm_eth_dst_masked_t eth_dst_masked;
     of_oxm_eth_src_t eth_src;
@@ -16666,6 +16969,8 @@ union of_oxm_u {
     of_oxm_sctp_dst_masked_t sctp_dst_masked;
     of_oxm_sctp_src_t sctp_src;
     of_oxm_sctp_src_masked_t sctp_src_masked;
+    of_oxm_src_meta_id_t src_meta_id;
+    of_oxm_src_meta_id_masked_t src_meta_id_masked;
     of_oxm_tcp_dst_t tcp_dst;
     of_oxm_tcp_dst_masked_t tcp_dst_masked;
     of_oxm_tcp_src_t tcp_src;
@@ -17077,7 +17382,7 @@ of_flow_mod_to_object_id(int flow_mod, of_version_t version)
 
 extern const of_object_id_t *const of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
 
-#define OF_OXM_ITEM_COUNT 72
+#define OF_OXM_ITEM_COUNT 244
 
 
 /**
@@ -17153,8 +17458,20 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_CLEAR_DATA_REPLY;
         }
 
+        if (subtype == 25) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
+        }
+
         if (subtype == 14) {
             return OF_BSN_GET_L2_TABLE_REPLY;
+        }
+
+        if (subtype == 26) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
         }
 
         if (subtype == 7) {
@@ -17173,16 +17490,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_GET_L2_TABLE_REQUEST;
         }
 
-        if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE;
-        }
-
         if (subtype == 20) {
             return OF_BSN_BW_ENABLE_GET_REPLY;
         }
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
+        }
+
+        if (subtype == 17) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 8) {
@@ -17211,10 +17528,6 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
 
         if (subtype == 15) {
             return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
-        }
-
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 2) {
@@ -17259,11 +17572,15 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
         }
 
         if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE;
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 22) {
             return OF_BSN_BW_CLEAR_DATA_REPLY;
+        }
+
+        if (subtype == 25) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
         if (subtype == 20) {
@@ -17276,10 +17593,6 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
-        }
-
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 18) {
@@ -17298,8 +17611,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
+        if (subtype == 26) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
+        }
+
         if (subtype == 3) {
             return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
         }
 
         if (subtype == 4) {
@@ -17324,11 +17645,15 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
         }
 
         if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE;
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 22) {
             return OF_BSN_BW_CLEAR_DATA_REPLY;
+        }
+
+        if (subtype == 25) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
         if (subtype == 20) {
@@ -17341,10 +17666,6 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
-        }
-
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 18) {
@@ -17363,8 +17684,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
+        if (subtype == 26) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
+        }
+
         if (subtype == 3) {
             return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
         }
 
         if (subtype == 4) {
@@ -17389,11 +17718,15 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
         }
 
         if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE;
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 22) {
             return OF_BSN_BW_CLEAR_DATA_REPLY;
+        }
+
+        if (subtype == 25) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
         if (subtype == 20) {
@@ -17406,10 +17739,6 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
-        }
-
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION;
         }
 
         if (subtype == 18) {
@@ -17428,8 +17757,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
+        if (subtype == 26) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
+        }
+
         if (subtype == 3) {
             return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
         }
 
         if (subtype == 4) {

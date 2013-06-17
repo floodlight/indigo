@@ -1,26 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
-
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /**
  *
@@ -743,7 +724,38 @@ of_bsn_set_mirroring_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_
 }
 
 int
-of_bsn_set_pktin_suppression_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_t *obj)
+of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_reply\n");
+
+    of_bsn_set_pktin_suppression_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj)
 {
     int out = 0;
     uint32_t val32;
@@ -751,44 +763,44 @@ of_bsn_set_pktin_suppression_OF_VERSION_1_0_dump(loci_writer_f writer, void* coo
     uint16_t val16;
     uint64_t val64;
 
-    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression\n");
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_request\n");
 
-    of_bsn_set_pktin_suppression_xid_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_experimenter_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_subtype_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_enabled_get(obj, &val8);
+    of_bsn_set_pktin_suppression_request_enabled_get(obj, &val8);
     out += writer(cookie, "  enabled (uint8_t):  ");
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_idle_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_idle_timeout_get(obj, &val16);
     out += writer(cookie, "  idle_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_hard_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_hard_timeout_get(obj, &val16);
     out += writer(cookie, "  hard_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_priority_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_priority_get(obj, &val16);
     out += writer(cookie, "  priority (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_cookie_get(obj, &val64);
+    of_bsn_set_pktin_suppression_request_cookie_get(obj, &val64);
     out += writer(cookie, "  cookie (uint64_t):  ");
     out += LOCI_DUMP_u64(writer, cookie, val64);
     out += writer(cookie, "\n");
@@ -919,6 +931,11 @@ of_bsn_virtual_port_create_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void*
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
+    of_bsn_virtual_port_create_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
     of_bsn_virtual_port_create_reply_vport_no_get(obj, &val32);
     out += writer(cookie, "  vport_no (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
@@ -959,29 +976,60 @@ of_bsn_virtual_port_create_request_OF_VERSION_1_0_dump(loci_writer_f writer, voi
 }
 
 int
-of_bsn_virtual_port_remove_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_t *obj)
+of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_reply_t *obj)
 {
     int out = 0;
     uint32_t val32;
 
-    out += writer(cookie, "Object of type of_bsn_virtual_port_remove\n");
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_reply\n");
 
-    of_bsn_virtual_port_remove_xid_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_experimenter_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_subtype_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_vport_no_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_virtual_port_remove_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_request\n");
+
+    of_bsn_virtual_port_remove_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_vport_no_get(obj, &val32);
     out += writer(cookie, "  vport_no (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
@@ -2901,6 +2949,16 @@ of_match_v1_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_match_v1_
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
+    of_match_v1_src_meta_id_get(obj, &val8);
+    out += writer(cookie, "  src_meta_id (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_match_v1_dst_meta_id_get(obj, &val8);
+    out += writer(cookie, "  dst_meta_id (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
     of_match_v1_ipv4_src_get(obj, &val32);
     out += writer(cookie, "  ipv4_src (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
@@ -3756,7 +3814,38 @@ of_bsn_set_mirroring_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_
 }
 
 int
-of_bsn_set_pktin_suppression_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_t *obj)
+of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_reply\n");
+
+    of_bsn_set_pktin_suppression_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj)
 {
     int out = 0;
     uint32_t val32;
@@ -3764,44 +3853,44 @@ of_bsn_set_pktin_suppression_OF_VERSION_1_1_dump(loci_writer_f writer, void* coo
     uint16_t val16;
     uint64_t val64;
 
-    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression\n");
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_request\n");
 
-    of_bsn_set_pktin_suppression_xid_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_experimenter_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_subtype_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_enabled_get(obj, &val8);
+    of_bsn_set_pktin_suppression_request_enabled_get(obj, &val8);
     out += writer(cookie, "  enabled (uint8_t):  ");
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_idle_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_idle_timeout_get(obj, &val16);
     out += writer(cookie, "  idle_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_hard_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_hard_timeout_get(obj, &val16);
     out += writer(cookie, "  hard_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_priority_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_priority_get(obj, &val16);
     out += writer(cookie, "  priority (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_cookie_get(obj, &val64);
+    of_bsn_set_pktin_suppression_request_cookie_get(obj, &val64);
     out += writer(cookie, "  cookie (uint64_t):  ");
     out += LOCI_DUMP_u64(writer, cookie, val64);
     out += writer(cookie, "\n");
@@ -3829,6 +3918,11 @@ of_bsn_virtual_port_create_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void*
 
     of_bsn_virtual_port_create_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_create_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
@@ -3872,29 +3966,60 @@ of_bsn_virtual_port_create_request_OF_VERSION_1_1_dump(loci_writer_f writer, voi
 }
 
 int
-of_bsn_virtual_port_remove_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_t *obj)
+of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_reply_t *obj)
 {
     int out = 0;
     uint32_t val32;
 
-    out += writer(cookie, "Object of type of_bsn_virtual_port_remove\n");
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_reply\n");
 
-    of_bsn_virtual_port_remove_xid_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_experimenter_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_subtype_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_vport_no_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_virtual_port_remove_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_request\n");
+
+    of_bsn_virtual_port_remove_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_vport_no_get(obj, &val32);
     out += writer(cookie, "  vport_no (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
@@ -7425,7 +7550,38 @@ of_bsn_set_mirroring_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_
 }
 
 int
-of_bsn_set_pktin_suppression_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_t *obj)
+of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_reply\n");
+
+    of_bsn_set_pktin_suppression_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj)
 {
     int out = 0;
     uint32_t val32;
@@ -7433,44 +7589,44 @@ of_bsn_set_pktin_suppression_OF_VERSION_1_2_dump(loci_writer_f writer, void* coo
     uint16_t val16;
     uint64_t val64;
 
-    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression\n");
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_request\n");
 
-    of_bsn_set_pktin_suppression_xid_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_experimenter_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_subtype_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_enabled_get(obj, &val8);
+    of_bsn_set_pktin_suppression_request_enabled_get(obj, &val8);
     out += writer(cookie, "  enabled (uint8_t):  ");
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_idle_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_idle_timeout_get(obj, &val16);
     out += writer(cookie, "  idle_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_hard_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_hard_timeout_get(obj, &val16);
     out += writer(cookie, "  hard_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_priority_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_priority_get(obj, &val16);
     out += writer(cookie, "  priority (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_cookie_get(obj, &val64);
+    of_bsn_set_pktin_suppression_request_cookie_get(obj, &val64);
     out += writer(cookie, "  cookie (uint64_t):  ");
     out += LOCI_DUMP_u64(writer, cookie, val64);
     out += writer(cookie, "\n");
@@ -7498,6 +7654,11 @@ of_bsn_virtual_port_create_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void*
 
     of_bsn_virtual_port_create_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_create_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
@@ -7541,29 +7702,60 @@ of_bsn_virtual_port_create_request_OF_VERSION_1_2_dump(loci_writer_f writer, voi
 }
 
 int
-of_bsn_virtual_port_remove_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_t *obj)
+of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_reply_t *obj)
 {
     int out = 0;
     uint32_t val32;
 
-    out += writer(cookie, "Object of type of_bsn_virtual_port_remove\n");
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_reply\n");
 
-    of_bsn_virtual_port_remove_xid_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_experimenter_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_subtype_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_vport_no_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_virtual_port_remove_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_request\n");
+
+    of_bsn_virtual_port_remove_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_vport_no_get(obj, &val32);
     out += writer(cookie, "  vport_no (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
@@ -10237,6 +10429,43 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of
 }
 
 int
+of_oxm_dst_meta_id_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_dst_meta_id\n");
+
+    of_oxm_dst_meta_id_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_dst_meta_id_masked\n");
+
+    of_oxm_dst_meta_id_masked_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_oxm_dst_meta_id_masked_value_mask_get(obj, &val8);
+    out += writer(cookie, "  value_mask (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_oxm_eth_dst_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -11166,6 +11395,43 @@ of_oxm_sctp_src_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, o
     of_oxm_sctp_src_masked_value_mask_get(obj, &val16);
     out += writer(cookie, "  value_mask (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_src_meta_id_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_src_meta_id\n");
+
+    of_oxm_src_meta_id_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_src_meta_id_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_src_meta_id_masked\n");
+
+    of_oxm_src_meta_id_masked_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_oxm_src_meta_id_masked_value_mask_get(obj, &val8);
+    out += writer(cookie, "  value_mask (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
     return out;
@@ -12523,7 +12789,38 @@ of_bsn_set_mirroring_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_
 }
 
 int
-of_bsn_set_pktin_suppression_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_t *obj)
+of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_reply\n");
+
+    of_bsn_set_pktin_suppression_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_set_pktin_suppression_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj)
 {
     int out = 0;
     uint32_t val32;
@@ -12531,44 +12828,44 @@ of_bsn_set_pktin_suppression_OF_VERSION_1_3_dump(loci_writer_f writer, void* coo
     uint16_t val16;
     uint64_t val64;
 
-    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression\n");
+    out += writer(cookie, "Object of type of_bsn_set_pktin_suppression_request\n");
 
-    of_bsn_set_pktin_suppression_xid_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_experimenter_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_subtype_get(obj, &val32);
+    of_bsn_set_pktin_suppression_request_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_enabled_get(obj, &val8);
+    of_bsn_set_pktin_suppression_request_enabled_get(obj, &val8);
     out += writer(cookie, "  enabled (uint8_t):  ");
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_idle_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_idle_timeout_get(obj, &val16);
     out += writer(cookie, "  idle_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_hard_timeout_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_hard_timeout_get(obj, &val16);
     out += writer(cookie, "  hard_timeout (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_priority_get(obj, &val16);
+    of_bsn_set_pktin_suppression_request_priority_get(obj, &val16);
     out += writer(cookie, "  priority (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
-    of_bsn_set_pktin_suppression_cookie_get(obj, &val64);
+    of_bsn_set_pktin_suppression_request_cookie_get(obj, &val64);
     out += writer(cookie, "  cookie (uint64_t):  ");
     out += LOCI_DUMP_u64(writer, cookie, val64);
     out += writer(cookie, "\n");
@@ -12596,6 +12893,11 @@ of_bsn_virtual_port_create_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void*
 
     of_bsn_virtual_port_create_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_create_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
@@ -12639,29 +12941,60 @@ of_bsn_virtual_port_create_request_OF_VERSION_1_3_dump(loci_writer_f writer, voi
 }
 
 int
-of_bsn_virtual_port_remove_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_t *obj)
+of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_reply_t *obj)
 {
     int out = 0;
     uint32_t val32;
 
-    out += writer(cookie, "Object of type of_bsn_virtual_port_remove\n");
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_reply\n");
 
-    of_bsn_virtual_port_remove_xid_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_experimenter_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_subtype_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_bsn_virtual_port_remove_vport_no_get(obj, &val32);
+    of_bsn_virtual_port_remove_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_virtual_port_remove_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_virtual_port_remove_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_virtual_port_remove_request\n");
+
+    of_bsn_virtual_port_remove_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_virtual_port_remove_request_vport_no_get(obj, &val32);
     out += writer(cookie, "  vport_no (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
@@ -16170,6 +16503,43 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of
 }
 
 int
+of_oxm_dst_meta_id_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_dst_meta_id\n");
+
+    of_oxm_dst_meta_id_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_dst_meta_id_masked\n");
+
+    of_oxm_dst_meta_id_masked_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_oxm_dst_meta_id_masked_value_mask_get(obj, &val8);
+    out += writer(cookie, "  value_mask (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_oxm_eth_dst_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -17099,6 +17469,43 @@ of_oxm_sctp_src_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, o
     of_oxm_sctp_src_masked_value_mask_get(obj, &val16);
     out += writer(cookie, "  value_mask (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_src_meta_id_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_src_meta_id\n");
+
+    of_oxm_src_meta_id_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_src_meta_id_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj)
+{
+    int out = 0;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_oxm_src_meta_id_masked\n");
+
+    of_oxm_src_meta_id_masked_value_get(obj, &val8);
+    out += writer(cookie, "  value (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_oxm_src_meta_id_masked_value_mask_get(obj, &val8);
+    out += writer(cookie, "  value_mask (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
     return out;
@@ -18433,11 +18840,11 @@ loci_dump_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, "\n");
     }
 
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
-        out += writer(cookie, "  ipv6_nd_target (of_ipv6_t) active: Value ");
-        out += LOCI_DUMP_ipv6(writer, cookie, match->fields.ipv6_nd_target);
+    if (OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(match)) {
+        out += writer(cookie, "  dst_meta_id (uint8_t) active: Value ");
+        out += LOCI_DUMP_u8(writer, cookie, match->fields.dst_meta_id);
         out += writer(cookie, "\n    Mask ");
-        out += LOCI_DUMP_ipv6(writer, cookie, match->masks.ipv6_nd_target);
+        out += LOCI_DUMP_u8(writer, cookie, match->masks.dst_meta_id);
         out += writer(cookie, "\n");
     }
 
@@ -18513,11 +18920,27 @@ loci_dump_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, "\n");
     }
 
+    if (OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(match)) {
+        out += writer(cookie, "  src_meta_id (uint8_t) active: Value ");
+        out += LOCI_DUMP_u8(writer, cookie, match->fields.src_meta_id);
+        out += writer(cookie, "\n    Mask ");
+        out += LOCI_DUMP_u8(writer, cookie, match->masks.src_meta_id);
+        out += writer(cookie, "\n");
+    }
+
     if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(match)) {
         out += writer(cookie, "  udp_dst (uint16_t) active: Value ");
         out += LOCI_DUMP_u16(writer, cookie, match->fields.udp_dst);
         out += writer(cookie, "\n    Mask ");
         out += LOCI_DUMP_u16(writer, cookie, match->masks.udp_dst);
+        out += writer(cookie, "\n");
+    }
+
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
+        out += writer(cookie, "  ipv6_nd_target (of_ipv6_t) active: Value ");
+        out += LOCI_DUMP_ipv6(writer, cookie, match->fields.ipv6_nd_target);
+        out += writer(cookie, "\n    Mask ");
+        out += LOCI_DUMP_ipv6(writer, cookie, match->masks.ipv6_nd_target);
         out += writer(cookie, "\n");
     }
 
@@ -18631,13 +19054,15 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_bsn_set_l2_table_reply_OF_VERSION_1_0_dump,
     of_bsn_set_l2_table_request_OF_VERSION_1_0_dump,
     of_bsn_set_mirroring_OF_VERSION_1_0_dump,
-    of_bsn_set_pktin_suppression_OF_VERSION_1_0_dump,
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_dump,
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_dump,
     of_bsn_shell_command_OF_VERSION_1_0_dump,
     of_bsn_shell_output_OF_VERSION_1_0_dump,
     of_bsn_shell_status_OF_VERSION_1_0_dump,
     of_bsn_virtual_port_create_reply_OF_VERSION_1_0_dump,
     of_bsn_virtual_port_create_request_OF_VERSION_1_0_dump,
-    of_bsn_virtual_port_remove_OF_VERSION_1_0_dump,
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_dump,
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_0_dump,
     of_desc_stats_reply_OF_VERSION_1_0_dump,
     of_desc_stats_request_OF_VERSION_1_0_dump,
     of_echo_reply_OF_VERSION_1_0_dump,
@@ -18862,6 +19287,10 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_packet_queue_OF_VERSION_1_0_dump,
     of_port_desc_OF_VERSION_1_0_dump,
     of_port_stats_entry_OF_VERSION_1_0_dump,
@@ -18949,13 +19378,15 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_bsn_set_mirroring_OF_VERSION_1_1_dump,
-    of_bsn_set_pktin_suppression_OF_VERSION_1_1_dump,
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_dump,
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
     of_bsn_virtual_port_create_reply_OF_VERSION_1_1_dump,
     of_bsn_virtual_port_create_request_OF_VERSION_1_1_dump,
-    of_bsn_virtual_port_remove_OF_VERSION_1_1_dump,
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_dump,
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_1_dump,
     of_desc_stats_reply_OF_VERSION_1_1_dump,
     of_desc_stats_request_OF_VERSION_1_1_dump,
     of_echo_reply_OF_VERSION_1_1_dump,
@@ -19180,6 +19611,10 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_packet_queue_OF_VERSION_1_1_dump,
     of_port_desc_OF_VERSION_1_1_dump,
     of_port_stats_entry_OF_VERSION_1_1_dump,
@@ -19267,13 +19702,15 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_bsn_set_mirroring_OF_VERSION_1_2_dump,
-    of_bsn_set_pktin_suppression_OF_VERSION_1_2_dump,
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_dump,
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
     of_bsn_virtual_port_create_reply_OF_VERSION_1_2_dump,
     of_bsn_virtual_port_create_request_OF_VERSION_1_2_dump,
-    of_bsn_virtual_port_remove_OF_VERSION_1_2_dump,
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_dump,
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_2_dump,
     of_desc_stats_reply_OF_VERSION_1_2_dump,
     of_desc_stats_request_OF_VERSION_1_2_dump,
     of_echo_reply_OF_VERSION_1_2_dump,
@@ -19435,6 +19872,8 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump,
+    of_oxm_dst_meta_id_OF_VERSION_1_2_dump,
+    of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_src_OF_VERSION_1_2_dump,
@@ -19486,6 +19925,8 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_sctp_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_sctp_src_OF_VERSION_1_2_dump,
     of_oxm_sctp_src_masked_OF_VERSION_1_2_dump,
+    of_oxm_src_meta_id_OF_VERSION_1_2_dump,
+    of_oxm_src_meta_id_masked_OF_VERSION_1_2_dump,
     of_oxm_tcp_dst_OF_VERSION_1_2_dump,
     of_oxm_tcp_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_tcp_src_OF_VERSION_1_2_dump,
@@ -19585,13 +20026,15 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_bsn_set_mirroring_OF_VERSION_1_3_dump,
-    of_bsn_set_pktin_suppression_OF_VERSION_1_3_dump,
+    of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_dump,
+    of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
     of_bsn_virtual_port_create_reply_OF_VERSION_1_3_dump,
     of_bsn_virtual_port_create_request_OF_VERSION_1_3_dump,
-    of_bsn_virtual_port_remove_OF_VERSION_1_3_dump,
+    of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_dump,
+    of_bsn_virtual_port_remove_request_OF_VERSION_1_3_dump,
     of_desc_stats_reply_OF_VERSION_1_3_dump,
     of_desc_stats_request_OF_VERSION_1_3_dump,
     of_echo_reply_OF_VERSION_1_3_dump,
@@ -19753,6 +20196,8 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump,
+    of_oxm_dst_meta_id_OF_VERSION_1_3_dump,
+    of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_src_OF_VERSION_1_3_dump,
@@ -19804,6 +20249,8 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_sctp_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_sctp_src_OF_VERSION_1_3_dump,
     of_oxm_sctp_src_masked_OF_VERSION_1_3_dump,
+    of_oxm_src_meta_id_OF_VERSION_1_3_dump,
+    of_oxm_src_meta_id_masked_OF_VERSION_1_3_dump,
     of_oxm_tcp_dst_OF_VERSION_1_3_dump,
     of_oxm_tcp_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_tcp_src_OF_VERSION_1_3_dump,

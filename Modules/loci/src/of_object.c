@@ -1,23 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2013, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  *
@@ -286,7 +270,7 @@ of_object_new_from_message(of_message_t msg, int len)
 
     of_object_init_map[object_id](obj, version, 0, 0);
 
-    if (of_object_buffer_bind(obj, OF_MESSAGE_TO_BUFFER(msg), len,
+    if (of_object_buffer_bind(obj, OF_MESSAGE_TO_BUFFER(msg), len, 
                               OF_MESSAGE_FREE_FUNCTION) < 0) {
         FREE(obj);
         return NULL;
@@ -316,7 +300,7 @@ of_object_new_from_message(of_message_t msg, int len)
  */
 
 int
-of_object_buffer_bind(of_object_t *obj, uint8_t *buf, int bytes,
+of_object_buffer_bind(of_object_t *obj, uint8_t *buf, int bytes, 
                       of_buffer_free_f buf_free)
 {
     of_wire_object_t *wobj;
@@ -346,11 +330,11 @@ of_object_buffer_bind(of_object_t *obj, uint8_t *buf, int bytes,
  *
  * @param parent The top level object to bind to
  * @param child The sub-object connecting to the parent
- * @param offset The offset at which to attach the child RELATIVE
+ * @param offset The offset at which to attach the child RELATIVE 
  * TO THE PARENT in the buffer
  * @param bytes The amount of the buffer dedicated to the child; see below
  * @param inc_ref_count Should the ref count of the parent be incremented
- *
+ * 
  * This is used for 'get' accessors for composite types as well as
  * iterator functions for lists, both read (first/next) and write
  * (append_init, append_advance).
@@ -361,14 +345,14 @@ of_object_buffer_bind(of_object_t *obj, uint8_t *buf, int bytes,
  * is initialized:
  * @li If bytes <= 0, the length and type of the child are not modified;
  * no additional space is added to the buffer.
- * @li If bytes > 0, the current wire buffer is grown to
+ * @li If bytes > 0, the current wire buffer is grown to 
  * accomodate this many bytes.  This is to support append operations.
  *
  * If an error is returned, future references to the child object
  * (until it is reinitialized) are undefined.
  */
 static void
-object_child_attach(of_object_t *parent, of_object_t *child,
+object_child_attach(of_object_t *parent, of_object_t *child, 
                        int offset, int bytes)
 {
     of_wire_object_t *c_wobj; /* Pointer to child's wire object */
@@ -431,7 +415,7 @@ of_object_xid_set(of_object_t *obj, uint32_t xid)
     if ((wbuf = OF_OBJECT_TO_WBUF(obj)) == NULL) {
         return OF_ERROR_PARAM;
     }
-    of_wire_buffer_u32_set(wbuf,
+    of_wire_buffer_u32_set(wbuf, 
         OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_MESSAGE_XID_OFFSET), xid);
     return OF_ERROR_NONE;
 }
@@ -453,7 +437,7 @@ of_object_xid_get(of_object_t *obj, uint32_t *xid)
     if ((wbuf = OF_OBJECT_TO_WBUF(obj)) == NULL) {
         return OF_ERROR_PARAM;
     }
-    of_wire_buffer_u32_get(wbuf,
+    of_wire_buffer_u32_get(wbuf, 
         OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_MESSAGE_XID_OFFSET), xid);
     return OF_ERROR_NONE;
 }
@@ -472,14 +456,14 @@ of_object_xid_get(of_object_t *obj, uint32_t *xid)
  *
  * Attaches the wire buffer of the parent to the child by pointing
  * the child to the end of the parent.
- *
+ * 
  * Set the wire length and type from the child.
  * Update the parent length adding the current child length
  *
  * After calling this function, the child object may be updated
  * resulting in changes to the parent's wire buffer
- *
- */
+ * 
+ */ 
 
 int
 of_list_append_bind(of_object_t *parent, of_object_t *child)
@@ -493,7 +477,7 @@ of_list_append_bind(of_object_t *parent, of_object_t *child)
         return OF_ERROR_RESOURCE;
     }
 
-    object_child_attach(parent, child, parent->length,
+    object_child_attach(parent, child, parent->length, 
                         child->length);
 
     /* Update the wire length and type if needed */
@@ -583,7 +567,7 @@ of_list_first(of_object_t *parent, of_object_t *child)
 static int
 of_list_is_last(of_object_t *parent, of_object_t *child)
 {
-    if (child->wire_object.obj_offset + child->length >=
+    if (child->wire_object.obj_offset + child->length >= 
         parent->wire_object.obj_offset + parent->length) {
         return 1;
     }
@@ -599,12 +583,12 @@ of_list_is_last(of_object_t *parent, of_object_t *child)
  * @return OF_ERROR_
  *
  * Advances the child to point to the subsequent element in the list.
- * The wire buffer object must not have been modified since the
+ * The wire buffer object must not have been modified since the 
  * previous call to _first or _next.
  *
  * @note TREAT AS PRIVATE
  * Does not fully initialized object
- */
+ */ 
 int
 of_list_next(of_object_t *parent, of_object_t *child)
 {
@@ -705,16 +689,16 @@ _packet_out_data_offset_get(of_packet_t *obj)
  *
  * Most variable length fields are alone at the end of a structure.
  * Their length is a simple calculation, just the total length of
- * the parent minus the length of the non-variable part of the
+ * the parent minus the length of the non-variable part of the 
  * parent's class type.
  *
  * @param parent The parent object
- * @param length (out) Where to store the length of the final
+ * @param length (out) Where to store the length of the final 
  * variable length member
  */
 int
 of_object_simple_length_derive(of_object_t *obj, int *length)
 {
-
+    
 }
 #endif

@@ -1,23 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
-/* Copyright 2013, Big Switch Networks, Inc. */
+/* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
+/* Copyright (c) 2011, 2012 Open Networking Foundation */
+/* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  *
@@ -86,7 +70,7 @@ of_tlv16_wire_length_get(of_object_t *obj, int *bytes)
     of_wire_buffer_t *wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
 
-    of_wire_buffer_u16_get(wbuf,
+    of_wire_buffer_u16_get(wbuf, 
            OF_OBJECT_ABSOLUTE_OFFSET(obj, TLV16_WIRE_LENGTH_OFFSET), &val16);
     *bytes = val16;
 }
@@ -104,7 +88,7 @@ of_tlv16_wire_length_set(of_object_t *obj, int bytes)
     of_wire_buffer_t *wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
 
-    of_wire_buffer_u16_set(wbuf,
+    of_wire_buffer_u16_set(wbuf, 
         OF_OBJECT_ABSOLUTE_OFFSET(obj, TLV16_WIRE_LENGTH_OFFSET), bytes);
 }
 
@@ -121,7 +105,7 @@ of_tlv16_wire_type_get(of_object_t *obj, int *wire_type)
     uint16_t val16;
     of_wire_buffer_t *wbuf = OF_OBJECT_TO_WBUF(obj);
 
-    of_wire_buffer_u16_get(wbuf, OF_OBJECT_ABSOLUTE_OFFSET(obj,
+    of_wire_buffer_u16_get(wbuf, OF_OBJECT_ABSOLUTE_OFFSET(obj, 
            TLV16_WIRE_TYPE_OFFSET), &val16);
 
     *wire_type = val16;
@@ -143,7 +127,7 @@ of_tlv16_wire_object_id_set(of_object_t *obj, of_object_id_t id)
     wire_type = of_object_to_type_map[obj->version][id];
     ASSERT(wire_type >= 0);
 
-    of_wire_buffer_u16_set(wbuf,
+    of_wire_buffer_u16_set(wbuf, 
         OF_OBJECT_ABSOLUTE_OFFSET(obj, TLV16_WIRE_TYPE_OFFSET), wire_type);
 
     if (wire_type == OF_EXPERIMENTER_TYPE) {
@@ -173,7 +157,7 @@ extension_action_object_id_get(of_object_t *obj, of_object_id_t *id)
     *id = OF_ACTION_EXPERIMENTER;
 
     buf = OF_OBJECT_BUFFER_INDEX(obj, 0);
-
+    
     buf_u32_get(buf + OF_ACTION_EXPERIMENTER_ID_OFFSET, &exp_id);
 
     switch (exp_id) {
@@ -207,7 +191,7 @@ void
 of_extension_object_id_set(of_object_t *obj, of_object_id_t id)
 {
     uint8_t *buf = OF_OBJECT_BUFFER_INDEX(obj, 0);
-
+    
     switch (id) {
     case OF_ACTION_BSN_MIRROR:
     case OF_ACTION_ID_BSN_MIRROR:
@@ -250,7 +234,7 @@ extension_action_id_object_id_get(of_object_t *obj, of_object_id_t *id)
     *id = OF_ACTION_ID_EXPERIMENTER;
 
     buf = OF_OBJECT_BUFFER_INDEX(obj, 0);
-
+    
     buf_u32_get(buf + OF_ACTION_EXPERIMENTER_ID_OFFSET, &exp_id);
 
     switch (exp_id) {
@@ -507,7 +491,7 @@ of_hello_elem_wire_object_id_get(of_object_t *obj, of_object_id_t *id)
 /**
  * Get the length of an OXM object from the wire buffer
  * @param obj The object whose wire buffer is an OXM type
- * @param bytes (out) Where length is stored
+ * @param bytes (out) Where length is stored 
  */
 
 void
@@ -537,14 +521,14 @@ of_oxm_wire_length_set(of_object_t *obj, int bytes)
     /* Read-modify-write */
     _GET_OXM_TYPE_LEN(obj, &type_len, wbuf);
     OF_OXM_LENGTH_SET(type_len, bytes);
-    of_wire_buffer_u32_set(wbuf,
+    of_wire_buffer_u32_set(wbuf, 
            OF_OBJECT_ABSOLUTE_OFFSET(obj, OXM_HDR_OFFSET), type_len);
 }
 
 /**
  * Get the object ID of an OXM object based on the wire buffer type
  * @param obj The object whose wire buffer is an OXM type
- * @param id (out) Where the ID is stored
+ * @param id (out) Where the ID is stored 
  */
 
 void
@@ -579,7 +563,7 @@ of_oxm_wire_object_id_set(of_object_t *obj, of_object_id_t id)
     wire_type = of_object_to_wire_type(id, obj->version);
     ASSERT(wire_type >= 0);
     OF_OXM_MASKED_TYPE_SET(type_len, wire_type);
-    of_wire_buffer_u32_set(wbuf,
+    of_wire_buffer_u32_set(wbuf, 
            OF_OBJECT_ABSOLUTE_OFFSET(obj, OXM_HDR_OFFSET), type_len);
 }
 
@@ -600,7 +584,7 @@ of_u16_len_wire_length_get(of_object_t *obj, int *bytes)
 
     ASSERT(wbuf != NULL);
 
-    of_wire_buffer_u16_get(wbuf,
+    of_wire_buffer_u16_get(wbuf, 
            OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_U16_LEN_LENGTH_OFFSET),
            &u16);
 
@@ -621,7 +605,7 @@ of_u16_len_wire_length_set(of_object_t *obj, int bytes)
 
     /* ASSERT(obj is u16-len entry) */
 
-    of_wire_buffer_u16_set(wbuf,
+    of_wire_buffer_u16_set(wbuf, 
            OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_U16_LEN_LENGTH_OFFSET),
            bytes);
 }
@@ -712,7 +696,7 @@ of_meter_stats_wire_length_get(of_object_t *obj, int *bytes)
     uint16_t val16;
     of_wire_buffer_t *wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
-    of_wire_buffer_u16_get(wbuf,
+    of_wire_buffer_u16_get(wbuf, 
                OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_METER_STATS_LENGTH_OFFSET),
                &val16);
     *bytes = val16;
@@ -724,7 +708,7 @@ of_meter_stats_wire_length_set(of_object_t *obj, int bytes)
     of_wire_buffer_t *wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
 
-    of_wire_buffer_u16_set(wbuf,
+    of_wire_buffer_u16_set(wbuf, 
         OF_OBJECT_ABSOLUTE_OFFSET(obj, OF_METER_STATS_LENGTH_OFFSET), bytes);
 }
 

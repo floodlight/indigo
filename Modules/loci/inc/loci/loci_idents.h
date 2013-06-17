@@ -1,25 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  * File: loci_idents.h
@@ -2204,6 +2186,16 @@
 #define OF_FLOW_WC_V1_DL_VLAN_PCP_GENERIC 179
 
 /*
+ * Defines for OF_FLOW_WC_V1_DST_META_ID
+ * Original name OFPFW_DST_META_ID
+ */
+#define OF_FLOW_WC_V1_DST_META_ID_SUPPORTED(version)      \
+    (((version) == OF_VERSION_1_0))
+#define OF_FLOW_WC_V1_DST_META_ID (0x800000)
+#define OF_FLOW_WC_V1_DST_META_ID_BY_VERSION(version) (0x800000)
+#define OF_FLOW_WC_V1_DST_META_ID_GENERIC 180
+
+/*
  * Defines for OF_FLOW_WC_V1_IN_PORT
  * Original name OFPFW_IN_PORT
  */
@@ -2212,7 +2204,7 @@
      ((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_IN_PORT (0x1)
 #define OF_FLOW_WC_V1_IN_PORT_BY_VERSION(version) (0x1)
-#define OF_FLOW_WC_V1_IN_PORT_GENERIC 180
+#define OF_FLOW_WC_V1_IN_PORT_GENERIC 181
 
 /*
  * Defines for OF_FLOW_WC_V1_MPLS_LABEL
@@ -2222,7 +2214,7 @@
     (((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_MPLS_LABEL (0x100)
 #define OF_FLOW_WC_V1_MPLS_LABEL_BY_VERSION(version) (0x100)
-#define OF_FLOW_WC_V1_MPLS_LABEL_GENERIC 181
+#define OF_FLOW_WC_V1_MPLS_LABEL_GENERIC 182
 
 /*
  * Defines for OF_FLOW_WC_V1_MPLS_TC
@@ -2232,7 +2224,7 @@
     (((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_MPLS_TC (0x200)
 #define OF_FLOW_WC_V1_MPLS_TC_BY_VERSION(version) (0x200)
-#define OF_FLOW_WC_V1_MPLS_TC_GENERIC 182
+#define OF_FLOW_WC_V1_MPLS_TC_GENERIC 183
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_DST_ALL
@@ -2242,7 +2234,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_DST_ALL (0x80000)
 #define OF_FLOW_WC_V1_NW_DST_ALL_BY_VERSION(version) (0x80000)
-#define OF_FLOW_WC_V1_NW_DST_ALL_GENERIC 183
+#define OF_FLOW_WC_V1_NW_DST_ALL_GENERIC 184
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_DST_BITS
@@ -2252,7 +2244,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_DST_BITS (0x6)
 #define OF_FLOW_WC_V1_NW_DST_BITS_BY_VERSION(version) (0x6)
-#define OF_FLOW_WC_V1_NW_DST_BITS_GENERIC 184
+#define OF_FLOW_WC_V1_NW_DST_BITS_GENERIC 185
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_DST_MASK
@@ -2262,7 +2254,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_DST_MASK (0xfc000)
 #define OF_FLOW_WC_V1_NW_DST_MASK_BY_VERSION(version) (0xfc000)
-#define OF_FLOW_WC_V1_NW_DST_MASK_GENERIC 185
+#define OF_FLOW_WC_V1_NW_DST_MASK_GENERIC 186
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_DST_SHIFT
@@ -2272,7 +2264,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_DST_SHIFT (0xe)
 #define OF_FLOW_WC_V1_NW_DST_SHIFT_BY_VERSION(version) (0xe)
-#define OF_FLOW_WC_V1_NW_DST_SHIFT_GENERIC 186
+#define OF_FLOW_WC_V1_NW_DST_SHIFT_GENERIC 187
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_PROTO
@@ -2283,7 +2275,7 @@
      ((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_NW_PROTO (0x20)
 #define OF_FLOW_WC_V1_NW_PROTO_BY_VERSION(version) (0x20)
-#define OF_FLOW_WC_V1_NW_PROTO_GENERIC 187
+#define OF_FLOW_WC_V1_NW_PROTO_GENERIC 188
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_SRC_ALL
@@ -2293,7 +2285,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_SRC_ALL (0x2000)
 #define OF_FLOW_WC_V1_NW_SRC_ALL_BY_VERSION(version) (0x2000)
-#define OF_FLOW_WC_V1_NW_SRC_ALL_GENERIC 188
+#define OF_FLOW_WC_V1_NW_SRC_ALL_GENERIC 189
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_SRC_BITS
@@ -2303,7 +2295,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_SRC_BITS (0x6)
 #define OF_FLOW_WC_V1_NW_SRC_BITS_BY_VERSION(version) (0x6)
-#define OF_FLOW_WC_V1_NW_SRC_BITS_GENERIC 189
+#define OF_FLOW_WC_V1_NW_SRC_BITS_GENERIC 190
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_SRC_MASK
@@ -2313,7 +2305,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_SRC_MASK (0x3f00)
 #define OF_FLOW_WC_V1_NW_SRC_MASK_BY_VERSION(version) (0x3f00)
-#define OF_FLOW_WC_V1_NW_SRC_MASK_GENERIC 190
+#define OF_FLOW_WC_V1_NW_SRC_MASK_GENERIC 191
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_SRC_SHIFT
@@ -2323,7 +2315,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_FLOW_WC_V1_NW_SRC_SHIFT (0x8)
 #define OF_FLOW_WC_V1_NW_SRC_SHIFT_BY_VERSION(version) (0x8)
-#define OF_FLOW_WC_V1_NW_SRC_SHIFT_GENERIC 191
+#define OF_FLOW_WC_V1_NW_SRC_SHIFT_GENERIC 192
 
 /*
  * Defines for OF_FLOW_WC_V1_NW_TOS
@@ -2334,7 +2326,17 @@
      ((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_NW_TOS_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x200000, 0x10, 0x0, 0x0)
-#define OF_FLOW_WC_V1_NW_TOS_GENERIC 192
+#define OF_FLOW_WC_V1_NW_TOS_GENERIC 193
+
+/*
+ * Defines for OF_FLOW_WC_V1_SRC_META_ID
+ * Original name OFPFW_SRC_META_ID
+ */
+#define OF_FLOW_WC_V1_SRC_META_ID_SUPPORTED(version)      \
+    (((version) == OF_VERSION_1_0))
+#define OF_FLOW_WC_V1_SRC_META_ID (0x400000)
+#define OF_FLOW_WC_V1_SRC_META_ID_BY_VERSION(version) (0x400000)
+#define OF_FLOW_WC_V1_SRC_META_ID_GENERIC 194
 
 /*
  * Defines for OF_FLOW_WC_V1_TP_DST
@@ -2345,7 +2347,7 @@
      ((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_TP_DST (0x80)
 #define OF_FLOW_WC_V1_TP_DST_BY_VERSION(version) (0x80)
-#define OF_FLOW_WC_V1_TP_DST_GENERIC 193
+#define OF_FLOW_WC_V1_TP_DST_GENERIC 195
 
 /*
  * Defines for OF_FLOW_WC_V1_TP_SRC
@@ -2356,7 +2358,7 @@
      ((version) == OF_VERSION_1_1))
 #define OF_FLOW_WC_V1_TP_SRC (0x40)
 #define OF_FLOW_WC_V1_TP_SRC_BY_VERSION(version) (0x40)
-#define OF_FLOW_WC_V1_TP_SRC_GENERIC 194
+#define OF_FLOW_WC_V1_TP_SRC_GENERIC 196
 
 /****************************************************************
  * Identifiers from ofp_group
@@ -2372,7 +2374,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_ALL (0xfffffffc)
 #define OF_GROUP_ALL_BY_VERSION(version) (0xfffffffc)
-#define OF_GROUP_ALL_GENERIC 195
+#define OF_GROUP_ALL_GENERIC 197
 
 /*
  * Defines for OF_GROUP_ANY
@@ -2384,7 +2386,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_ANY (0xffffffff)
 #define OF_GROUP_ANY_BY_VERSION(version) (0xffffffff)
-#define OF_GROUP_ANY_GENERIC 196
+#define OF_GROUP_ANY_GENERIC 198
 
 /*
  * Defines for OF_GROUP_MAX
@@ -2396,7 +2398,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MAX (0xffffff00)
 #define OF_GROUP_MAX_BY_VERSION(version) (0xffffff00)
-#define OF_GROUP_MAX_GENERIC 197
+#define OF_GROUP_MAX_GENERIC 199
 
 /****************************************************************
  * Identifiers from ofp_group_capabilities
@@ -2411,7 +2413,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_CAPABILITIES_CHAINING (0x4)
 #define OF_GROUP_CAPABILITIES_CHAINING_BY_VERSION(version) (0x4)
-#define OF_GROUP_CAPABILITIES_CHAINING_GENERIC 198
+#define OF_GROUP_CAPABILITIES_CHAINING_GENERIC 200
 
 /*
  * Defines for OF_GROUP_CAPABILITIES_CHAINING_CHECKS
@@ -2422,7 +2424,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_CAPABILITIES_CHAINING_CHECKS (0x8)
 #define OF_GROUP_CAPABILITIES_CHAINING_CHECKS_BY_VERSION(version) (0x8)
-#define OF_GROUP_CAPABILITIES_CHAINING_CHECKS_GENERIC 199
+#define OF_GROUP_CAPABILITIES_CHAINING_CHECKS_GENERIC 201
 
 /*
  * Defines for OF_GROUP_CAPABILITIES_SELECT_LIVENESS
@@ -2433,7 +2435,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_CAPABILITIES_SELECT_LIVENESS (0x2)
 #define OF_GROUP_CAPABILITIES_SELECT_LIVENESS_BY_VERSION(version) (0x2)
-#define OF_GROUP_CAPABILITIES_SELECT_LIVENESS_GENERIC 200
+#define OF_GROUP_CAPABILITIES_SELECT_LIVENESS_GENERIC 202
 
 /*
  * Defines for OF_GROUP_CAPABILITIES_SELECT_WEIGHT
@@ -2444,7 +2446,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_CAPABILITIES_SELECT_WEIGHT (0x1)
 #define OF_GROUP_CAPABILITIES_SELECT_WEIGHT_BY_VERSION(version) (0x1)
-#define OF_GROUP_CAPABILITIES_SELECT_WEIGHT_GENERIC 201
+#define OF_GROUP_CAPABILITIES_SELECT_WEIGHT_GENERIC 203
 
 /****************************************************************
  * Identifiers from ofp_group_mod_command
@@ -2460,7 +2462,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_ADD (0x0)
 #define OF_GROUP_ADD_BY_VERSION(version) (0x0)
-#define OF_GROUP_ADD_GENERIC 202
+#define OF_GROUP_ADD_GENERIC 204
 
 /*
  * Defines for OF_GROUP_DELETE
@@ -2472,7 +2474,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_DELETE (0x2)
 #define OF_GROUP_DELETE_BY_VERSION(version) (0x2)
-#define OF_GROUP_DELETE_GENERIC 203
+#define OF_GROUP_DELETE_GENERIC 205
 
 /*
  * Defines for OF_GROUP_MODIFY
@@ -2484,7 +2486,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MODIFY (0x1)
 #define OF_GROUP_MODIFY_BY_VERSION(version) (0x1)
-#define OF_GROUP_MODIFY_GENERIC 204
+#define OF_GROUP_MODIFY_GENERIC 206
 
 /****************************************************************
  * Identifiers from ofp_group_mod_failed_code
@@ -2499,7 +2501,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_BAD_BUCKET (0xc)
 #define OF_GROUP_MOD_FAILED_BAD_BUCKET_BY_VERSION(version) (0xc)
-#define OF_GROUP_MOD_FAILED_BAD_BUCKET_GENERIC 205
+#define OF_GROUP_MOD_FAILED_BAD_BUCKET_GENERIC 207
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_BAD_COMMAND
@@ -2510,7 +2512,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_BAD_COMMAND (0xb)
 #define OF_GROUP_MOD_FAILED_BAD_COMMAND_BY_VERSION(version) (0xb)
-#define OF_GROUP_MOD_FAILED_BAD_COMMAND_GENERIC 206
+#define OF_GROUP_MOD_FAILED_BAD_COMMAND_GENERIC 208
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_BAD_TYPE
@@ -2521,7 +2523,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_BAD_TYPE (0xa)
 #define OF_GROUP_MOD_FAILED_BAD_TYPE_BY_VERSION(version) (0xa)
-#define OF_GROUP_MOD_FAILED_BAD_TYPE_GENERIC 207
+#define OF_GROUP_MOD_FAILED_BAD_TYPE_GENERIC 209
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_BAD_WATCH
@@ -2532,7 +2534,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_BAD_WATCH (0xd)
 #define OF_GROUP_MOD_FAILED_BAD_WATCH_BY_VERSION(version) (0xd)
-#define OF_GROUP_MOD_FAILED_BAD_WATCH_GENERIC 208
+#define OF_GROUP_MOD_FAILED_BAD_WATCH_GENERIC 210
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_CHAINED_GROUP
@@ -2543,7 +2545,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_CHAINED_GROUP (0x9)
 #define OF_GROUP_MOD_FAILED_CHAINED_GROUP_BY_VERSION(version) (0x9)
-#define OF_GROUP_MOD_FAILED_CHAINED_GROUP_GENERIC 209
+#define OF_GROUP_MOD_FAILED_CHAINED_GROUP_GENERIC 211
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_CHAINING_UNSUPPORTED
@@ -2555,7 +2557,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_CHAINING_UNSUPPORTED (0x5)
 #define OF_GROUP_MOD_FAILED_CHAINING_UNSUPPORTED_BY_VERSION(version) (0x5)
-#define OF_GROUP_MOD_FAILED_CHAINING_UNSUPPORTED_GENERIC 210
+#define OF_GROUP_MOD_FAILED_CHAINING_UNSUPPORTED_GENERIC 212
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_EPERM
@@ -2566,7 +2568,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_EPERM (0xe)
 #define OF_GROUP_MOD_FAILED_EPERM_BY_VERSION(version) (0xe)
-#define OF_GROUP_MOD_FAILED_EPERM_GENERIC 211
+#define OF_GROUP_MOD_FAILED_EPERM_GENERIC 213
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_GROUP_EXISTS
@@ -2578,7 +2580,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_GROUP_EXISTS (0x0)
 #define OF_GROUP_MOD_FAILED_GROUP_EXISTS_BY_VERSION(version) (0x0)
-#define OF_GROUP_MOD_FAILED_GROUP_EXISTS_GENERIC 212
+#define OF_GROUP_MOD_FAILED_GROUP_EXISTS_GENERIC 214
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_INVALID_GROUP
@@ -2590,7 +2592,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_INVALID_GROUP (0x1)
 #define OF_GROUP_MOD_FAILED_INVALID_GROUP_BY_VERSION(version) (0x1)
-#define OF_GROUP_MOD_FAILED_INVALID_GROUP_GENERIC 213
+#define OF_GROUP_MOD_FAILED_INVALID_GROUP_GENERIC 215
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_LOOP
@@ -2602,7 +2604,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_LOOP (0x7)
 #define OF_GROUP_MOD_FAILED_LOOP_BY_VERSION(version) (0x7)
-#define OF_GROUP_MOD_FAILED_LOOP_GENERIC 214
+#define OF_GROUP_MOD_FAILED_LOOP_GENERIC 216
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_OUT_OF_BUCKETS
@@ -2614,7 +2616,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_OUT_OF_BUCKETS (0x4)
 #define OF_GROUP_MOD_FAILED_OUT_OF_BUCKETS_BY_VERSION(version) (0x4)
-#define OF_GROUP_MOD_FAILED_OUT_OF_BUCKETS_GENERIC 215
+#define OF_GROUP_MOD_FAILED_OUT_OF_BUCKETS_GENERIC 217
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_OUT_OF_GROUPS
@@ -2626,7 +2628,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_OUT_OF_GROUPS (0x3)
 #define OF_GROUP_MOD_FAILED_OUT_OF_GROUPS_BY_VERSION(version) (0x3)
-#define OF_GROUP_MOD_FAILED_OUT_OF_GROUPS_GENERIC 216
+#define OF_GROUP_MOD_FAILED_OUT_OF_GROUPS_GENERIC 218
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_UNKNOWN_GROUP
@@ -2638,7 +2640,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_UNKNOWN_GROUP (0x8)
 #define OF_GROUP_MOD_FAILED_UNKNOWN_GROUP_BY_VERSION(version) (0x8)
-#define OF_GROUP_MOD_FAILED_UNKNOWN_GROUP_GENERIC 217
+#define OF_GROUP_MOD_FAILED_UNKNOWN_GROUP_GENERIC 219
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_WATCH_UNSUPPORTED
@@ -2650,7 +2652,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_WATCH_UNSUPPORTED (0x6)
 #define OF_GROUP_MOD_FAILED_WATCH_UNSUPPORTED_BY_VERSION(version) (0x6)
-#define OF_GROUP_MOD_FAILED_WATCH_UNSUPPORTED_GENERIC 218
+#define OF_GROUP_MOD_FAILED_WATCH_UNSUPPORTED_GENERIC 220
 
 /*
  * Defines for OF_GROUP_MOD_FAILED_WEIGHT_UNSUPPORTED
@@ -2662,7 +2664,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_MOD_FAILED_WEIGHT_UNSUPPORTED (0x2)
 #define OF_GROUP_MOD_FAILED_WEIGHT_UNSUPPORTED_BY_VERSION(version) (0x2)
-#define OF_GROUP_MOD_FAILED_WEIGHT_UNSUPPORTED_GENERIC 219
+#define OF_GROUP_MOD_FAILED_WEIGHT_UNSUPPORTED_GENERIC 221
 
 /****************************************************************
  * Identifiers from ofp_group_type
@@ -2678,7 +2680,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_TYPE_ALL (0x0)
 #define OF_GROUP_TYPE_ALL_BY_VERSION(version) (0x0)
-#define OF_GROUP_TYPE_ALL_GENERIC 220
+#define OF_GROUP_TYPE_ALL_GENERIC 222
 
 /*
  * Defines for OF_GROUP_TYPE_FF
@@ -2690,7 +2692,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_TYPE_FF (0x3)
 #define OF_GROUP_TYPE_FF_BY_VERSION(version) (0x3)
-#define OF_GROUP_TYPE_FF_GENERIC 221
+#define OF_GROUP_TYPE_FF_GENERIC 223
 
 /*
  * Defines for OF_GROUP_TYPE_INDIRECT
@@ -2702,7 +2704,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_TYPE_INDIRECT (0x2)
 #define OF_GROUP_TYPE_INDIRECT_BY_VERSION(version) (0x2)
-#define OF_GROUP_TYPE_INDIRECT_GENERIC 222
+#define OF_GROUP_TYPE_INDIRECT_GENERIC 224
 
 /*
  * Defines for OF_GROUP_TYPE_SELECT
@@ -2714,7 +2716,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_GROUP_TYPE_SELECT (0x1)
 #define OF_GROUP_TYPE_SELECT_BY_VERSION(version) (0x1)
-#define OF_GROUP_TYPE_SELECT_GENERIC 223
+#define OF_GROUP_TYPE_SELECT_GENERIC 225
 
 /****************************************************************
  * Identifiers from ofp_hello_elem_type
@@ -2728,7 +2730,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_HELLO_ELEM_TYPE__VERSIONBITMAP (0x1)
 #define OF_HELLO_ELEM_TYPE__VERSIONBITMAP_BY_VERSION(version) (0x1)
-#define OF_HELLO_ELEM_TYPE__VERSIONBITMAP_GENERIC 224
+#define OF_HELLO_ELEM_TYPE__VERSIONBITMAP_GENERIC 226
 
 /****************************************************************
  * Identifiers from ofp_hello_failed_code
@@ -2741,7 +2743,7 @@
 #define OF_HELLO_FAILED_EPERM_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_HELLO_FAILED_EPERM (0x1)
 #define OF_HELLO_FAILED_EPERM_BY_VERSION(version) (0x1)
-#define OF_HELLO_FAILED_EPERM_GENERIC 225
+#define OF_HELLO_FAILED_EPERM_GENERIC 227
 
 /*
  * Defines for OF_HELLO_FAILED_INCOMPATIBLE
@@ -2750,7 +2752,7 @@
 #define OF_HELLO_FAILED_INCOMPATIBLE_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_HELLO_FAILED_INCOMPATIBLE (0x0)
 #define OF_HELLO_FAILED_INCOMPATIBLE_BY_VERSION(version) (0x0)
-#define OF_HELLO_FAILED_INCOMPATIBLE_GENERIC 226
+#define OF_HELLO_FAILED_INCOMPATIBLE_GENERIC 228
 
 /****************************************************************
  * Identifiers from ofp_instruction_type
@@ -2766,7 +2768,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_APPLY_ACTIONS (0x4)
 #define OF_INSTRUCTION_TYPE_APPLY_ACTIONS_BY_VERSION(version) (0x4)
-#define OF_INSTRUCTION_TYPE_APPLY_ACTIONS_GENERIC 227
+#define OF_INSTRUCTION_TYPE_APPLY_ACTIONS_GENERIC 229
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_CLEAR_ACTIONS
@@ -2778,7 +2780,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_CLEAR_ACTIONS (0x5)
 #define OF_INSTRUCTION_TYPE_CLEAR_ACTIONS_BY_VERSION(version) (0x5)
-#define OF_INSTRUCTION_TYPE_CLEAR_ACTIONS_GENERIC 228
+#define OF_INSTRUCTION_TYPE_CLEAR_ACTIONS_GENERIC 230
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_EXPERIMENTER
@@ -2790,7 +2792,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_EXPERIMENTER (0xffff)
 #define OF_INSTRUCTION_TYPE_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_INSTRUCTION_TYPE_EXPERIMENTER_GENERIC 229
+#define OF_INSTRUCTION_TYPE_EXPERIMENTER_GENERIC 231
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_GOTO_TABLE
@@ -2802,7 +2804,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_GOTO_TABLE (0x1)
 #define OF_INSTRUCTION_TYPE_GOTO_TABLE_BY_VERSION(version) (0x1)
-#define OF_INSTRUCTION_TYPE_GOTO_TABLE_GENERIC 230
+#define OF_INSTRUCTION_TYPE_GOTO_TABLE_GENERIC 232
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_METER
@@ -2812,7 +2814,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_METER (0x6)
 #define OF_INSTRUCTION_TYPE_METER_BY_VERSION(version) (0x6)
-#define OF_INSTRUCTION_TYPE_METER_GENERIC 231
+#define OF_INSTRUCTION_TYPE_METER_GENERIC 233
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_WRITE_ACTIONS
@@ -2824,7 +2826,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_WRITE_ACTIONS (0x3)
 #define OF_INSTRUCTION_TYPE_WRITE_ACTIONS_BY_VERSION(version) (0x3)
-#define OF_INSTRUCTION_TYPE_WRITE_ACTIONS_GENERIC 232
+#define OF_INSTRUCTION_TYPE_WRITE_ACTIONS_GENERIC 234
 
 /*
  * Defines for OF_INSTRUCTION_TYPE_WRITE_METADATA
@@ -2836,7 +2838,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_INSTRUCTION_TYPE_WRITE_METADATA (0x2)
 #define OF_INSTRUCTION_TYPE_WRITE_METADATA_BY_VERSION(version) (0x2)
-#define OF_INSTRUCTION_TYPE_WRITE_METADATA_GENERIC 233
+#define OF_INSTRUCTION_TYPE_WRITE_METADATA_GENERIC 235
 
 /****************************************************************
  * Identifiers from ofp_ipv6exthdr_flags
@@ -2857,7 +2859,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_AUTH_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_AUTH_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_AUTH_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_AUTH_GENERIC 234
+#define OF_IPV6_EXT_HDR_FLAG_AUTH_GENERIC 236
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_DEST
@@ -2874,7 +2876,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_DEST_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_DEST_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_DEST_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_DEST_GENERIC 235
+#define OF_IPV6_EXT_HDR_FLAG_DEST_GENERIC 237
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_ESP
@@ -2891,7 +2893,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_ESP_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_ESP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_ESP_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_ESP_GENERIC 236
+#define OF_IPV6_EXT_HDR_FLAG_ESP_GENERIC 238
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_FRAG
@@ -2908,7 +2910,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_FRAG_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_FRAG_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_FRAG_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_FRAG_GENERIC 237
+#define OF_IPV6_EXT_HDR_FLAG_FRAG_GENERIC 239
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_HOP
@@ -2925,7 +2927,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_HOP_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_HOP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_HOP_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_HOP_GENERIC 238
+#define OF_IPV6_EXT_HDR_FLAG_HOP_GENERIC 240
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_NONEXT
@@ -2942,7 +2944,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_NONEXT_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_NONEXT_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_NONEXT_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_NONEXT_GENERIC 239
+#define OF_IPV6_EXT_HDR_FLAG_NONEXT_GENERIC 241
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_ROUTER
@@ -2959,7 +2961,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_ROUTER_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_ROUTER_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_ROUTER_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_ROUTER_GENERIC 240
+#define OF_IPV6_EXT_HDR_FLAG_ROUTER_GENERIC 242
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_UNREP
@@ -2976,7 +2978,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_UNREP_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_UNREP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_UNREP_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_UNREP_GENERIC 241
+#define OF_IPV6_EXT_HDR_FLAG_UNREP_GENERIC 243
 
 /*
  * Defines for OF_IPV6_EXT_HDR_FLAG_UNSEQ
@@ -2993,7 +2995,7 @@
     OF_FLAG_TEST(flags, OF_IPV6_EXT_HDR_FLAG_UNSEQ_BY_VERSION(version))
 #define OF_IPV6_EXT_HDR_FLAG_UNSEQ_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_IPV6_EXT_HDR_FLAG_UNSEQ_BY_VERSION(version))
-#define OF_IPV6_EXT_HDR_FLAG_UNSEQ_GENERIC 242
+#define OF_IPV6_EXT_HDR_FLAG_UNSEQ_GENERIC 244
 
 /****************************************************************
  * Identifiers from ofp_match_type
@@ -3008,7 +3010,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_MATCH_TYPE_OXM (0x1)
 #define OF_MATCH_TYPE_OXM_BY_VERSION(version) (0x1)
-#define OF_MATCH_TYPE_OXM_GENERIC 243
+#define OF_MATCH_TYPE_OXM_GENERIC 245
 
 /*
  * Defines for OF_MATCH_TYPE_STANDARD
@@ -3020,7 +3022,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_MATCH_TYPE_STANDARD (0x0)
 #define OF_MATCH_TYPE_STANDARD_BY_VERSION(version) (0x0)
-#define OF_MATCH_TYPE_STANDARD_GENERIC 244
+#define OF_MATCH_TYPE_STANDARD_GENERIC 246
 
 /****************************************************************
  * Identifiers from ofp_meter
@@ -3034,7 +3036,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_ALL (0xffffffff)
 #define OF_METER_ALL_BY_VERSION(version) (0xffffffff)
-#define OF_METER_ALL_GENERIC 245
+#define OF_METER_ALL_GENERIC 247
 
 /*
  * Defines for OF_METER_CONTROLLER
@@ -3044,7 +3046,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_CONTROLLER (0xfffffffe)
 #define OF_METER_CONTROLLER_BY_VERSION(version) (0xfffffffe)
-#define OF_METER_CONTROLLER_GENERIC 246
+#define OF_METER_CONTROLLER_GENERIC 248
 
 /*
  * Defines for OF_METER_MAX
@@ -3054,7 +3056,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MAX (0xffff0000)
 #define OF_METER_MAX_BY_VERSION(version) (0xffff0000)
-#define OF_METER_MAX_GENERIC 247
+#define OF_METER_MAX_GENERIC 249
 
 /*
  * Defines for OF_METER_SLOWPATH
@@ -3064,7 +3066,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_SLOWPATH (0xfffffffd)
 #define OF_METER_SLOWPATH_BY_VERSION(version) (0xfffffffd)
-#define OF_METER_SLOWPATH_GENERIC 248
+#define OF_METER_SLOWPATH_GENERIC 250
 
 /****************************************************************
  * Identifiers from ofp_meter_band_type
@@ -3078,7 +3080,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_BAND_TYPE_DROP (0x1)
 #define OF_METER_BAND_TYPE_DROP_BY_VERSION(version) (0x1)
-#define OF_METER_BAND_TYPE_DROP_GENERIC 249
+#define OF_METER_BAND_TYPE_DROP_GENERIC 251
 
 /*
  * Defines for OF_METER_BAND_TYPE_DSCP_REMARK
@@ -3088,7 +3090,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_BAND_TYPE_DSCP_REMARK (0x2)
 #define OF_METER_BAND_TYPE_DSCP_REMARK_BY_VERSION(version) (0x2)
-#define OF_METER_BAND_TYPE_DSCP_REMARK_GENERIC 250
+#define OF_METER_BAND_TYPE_DSCP_REMARK_GENERIC 252
 
 /*
  * Defines for OF_METER_BAND_TYPE_EXPERIMENTER
@@ -3098,7 +3100,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_BAND_TYPE_EXPERIMENTER (0xffff)
 #define OF_METER_BAND_TYPE_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_METER_BAND_TYPE_EXPERIMENTER_GENERIC 251
+#define OF_METER_BAND_TYPE_EXPERIMENTER_GENERIC 253
 
 /****************************************************************
  * Identifiers from ofp_meter_flags
@@ -3119,7 +3121,7 @@
     OF_FLAG_TEST(flags, OF_METER_FLAG_BURST_BY_VERSION(version))
 #define OF_METER_FLAG_BURST_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_METER_FLAG_BURST_BY_VERSION(version))
-#define OF_METER_FLAG_BURST_GENERIC 252
+#define OF_METER_FLAG_BURST_GENERIC 254
 
 /*
  * Defines for OF_METER_FLAG_KBPS
@@ -3136,7 +3138,7 @@
     OF_FLAG_TEST(flags, OF_METER_FLAG_KBPS_BY_VERSION(version))
 #define OF_METER_FLAG_KBPS_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_METER_FLAG_KBPS_BY_VERSION(version))
-#define OF_METER_FLAG_KBPS_GENERIC 253
+#define OF_METER_FLAG_KBPS_GENERIC 255
 
 /*
  * Defines for OF_METER_FLAG_PKTPS
@@ -3153,7 +3155,7 @@
     OF_FLAG_TEST(flags, OF_METER_FLAG_PKTPS_BY_VERSION(version))
 #define OF_METER_FLAG_PKTPS_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_METER_FLAG_PKTPS_BY_VERSION(version))
-#define OF_METER_FLAG_PKTPS_GENERIC 254
+#define OF_METER_FLAG_PKTPS_GENERIC 256
 
 /*
  * Defines for OF_METER_FLAG_STATS
@@ -3170,7 +3172,7 @@
     OF_FLAG_TEST(flags, OF_METER_FLAG_STATS_BY_VERSION(version))
 #define OF_METER_FLAG_STATS_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_METER_FLAG_STATS_BY_VERSION(version))
-#define OF_METER_FLAG_STATS_GENERIC 255
+#define OF_METER_FLAG_STATS_GENERIC 257
 
 /****************************************************************
  * Identifiers from ofp_meter_mod_command
@@ -3184,7 +3186,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_COMMAND_ADD (0x0)
 #define OF_METER_MOD_COMMAND_ADD_BY_VERSION(version) (0x0)
-#define OF_METER_MOD_COMMAND_ADD_GENERIC 256
+#define OF_METER_MOD_COMMAND_ADD_GENERIC 258
 
 /*
  * Defines for OF_METER_MOD_COMMAND_DELETE
@@ -3194,7 +3196,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_COMMAND_DELETE (0x2)
 #define OF_METER_MOD_COMMAND_DELETE_BY_VERSION(version) (0x2)
-#define OF_METER_MOD_COMMAND_DELETE_GENERIC 257
+#define OF_METER_MOD_COMMAND_DELETE_GENERIC 259
 
 /*
  * Defines for OF_METER_MOD_COMMAND_MODIFY
@@ -3204,7 +3206,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_COMMAND_MODIFY (0x1)
 #define OF_METER_MOD_COMMAND_MODIFY_BY_VERSION(version) (0x1)
-#define OF_METER_MOD_COMMAND_MODIFY_GENERIC 258
+#define OF_METER_MOD_COMMAND_MODIFY_GENERIC 260
 
 /****************************************************************
  * Identifiers from ofp_meter_mod_failed_code
@@ -3218,7 +3220,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_BAD_BAND (0x8)
 #define OF_METER_MOD_FAILED_BAD_BAND_BY_VERSION(version) (0x8)
-#define OF_METER_MOD_FAILED_BAD_BAND_GENERIC 259
+#define OF_METER_MOD_FAILED_BAD_BAND_GENERIC 261
 
 /*
  * Defines for OF_METER_MOD_FAILED_BAD_BAND_VALUE
@@ -3228,7 +3230,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_BAD_BAND_VALUE (0x9)
 #define OF_METER_MOD_FAILED_BAD_BAND_VALUE_BY_VERSION(version) (0x9)
-#define OF_METER_MOD_FAILED_BAD_BAND_VALUE_GENERIC 260
+#define OF_METER_MOD_FAILED_BAD_BAND_VALUE_GENERIC 262
 
 /*
  * Defines for OF_METER_MOD_FAILED_BAD_BURST
@@ -3238,7 +3240,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_BAD_BURST (0x7)
 #define OF_METER_MOD_FAILED_BAD_BURST_BY_VERSION(version) (0x7)
-#define OF_METER_MOD_FAILED_BAD_BURST_GENERIC 261
+#define OF_METER_MOD_FAILED_BAD_BURST_GENERIC 263
 
 /*
  * Defines for OF_METER_MOD_FAILED_BAD_COMMAND
@@ -3248,7 +3250,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_BAD_COMMAND (0x4)
 #define OF_METER_MOD_FAILED_BAD_COMMAND_BY_VERSION(version) (0x4)
-#define OF_METER_MOD_FAILED_BAD_COMMAND_GENERIC 262
+#define OF_METER_MOD_FAILED_BAD_COMMAND_GENERIC 264
 
 /*
  * Defines for OF_METER_MOD_FAILED_BAD_FLAGS
@@ -3265,7 +3267,7 @@
     OF_FLAG_TEST(flags, OF_METER_MOD_FAILED_BAD_FLAGS_BY_VERSION(version))
 #define OF_METER_MOD_FAILED_BAD_FLAGS_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_METER_MOD_FAILED_BAD_FLAGS_BY_VERSION(version))
-#define OF_METER_MOD_FAILED_BAD_FLAGS_GENERIC 263
+#define OF_METER_MOD_FAILED_BAD_FLAGS_GENERIC 265
 
 /*
  * Defines for OF_METER_MOD_FAILED_BAD_RATE
@@ -3275,7 +3277,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_BAD_RATE (0x6)
 #define OF_METER_MOD_FAILED_BAD_RATE_BY_VERSION(version) (0x6)
-#define OF_METER_MOD_FAILED_BAD_RATE_GENERIC 264
+#define OF_METER_MOD_FAILED_BAD_RATE_GENERIC 266
 
 /*
  * Defines for OF_METER_MOD_FAILED_INVALID_METER
@@ -3285,7 +3287,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_INVALID_METER (0x2)
 #define OF_METER_MOD_FAILED_INVALID_METER_BY_VERSION(version) (0x2)
-#define OF_METER_MOD_FAILED_INVALID_METER_GENERIC 265
+#define OF_METER_MOD_FAILED_INVALID_METER_GENERIC 267
 
 /*
  * Defines for OF_METER_MOD_FAILED_METER_EXISTS
@@ -3295,7 +3297,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_METER_EXISTS (0x1)
 #define OF_METER_MOD_FAILED_METER_EXISTS_BY_VERSION(version) (0x1)
-#define OF_METER_MOD_FAILED_METER_EXISTS_GENERIC 266
+#define OF_METER_MOD_FAILED_METER_EXISTS_GENERIC 268
 
 /*
  * Defines for OF_METER_MOD_FAILED_OUT_OF_BANDS
@@ -3305,7 +3307,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_OUT_OF_BANDS (0xb)
 #define OF_METER_MOD_FAILED_OUT_OF_BANDS_BY_VERSION(version) (0xb)
-#define OF_METER_MOD_FAILED_OUT_OF_BANDS_GENERIC 267
+#define OF_METER_MOD_FAILED_OUT_OF_BANDS_GENERIC 269
 
 /*
  * Defines for OF_METER_MOD_FAILED_OUT_OF_METERS
@@ -3315,7 +3317,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_OUT_OF_METERS (0xa)
 #define OF_METER_MOD_FAILED_OUT_OF_METERS_BY_VERSION(version) (0xa)
-#define OF_METER_MOD_FAILED_OUT_OF_METERS_GENERIC 268
+#define OF_METER_MOD_FAILED_OUT_OF_METERS_GENERIC 270
 
 /*
  * Defines for OF_METER_MOD_FAILED_UNKNOWN
@@ -3325,7 +3327,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_UNKNOWN (0x0)
 #define OF_METER_MOD_FAILED_UNKNOWN_BY_VERSION(version) (0x0)
-#define OF_METER_MOD_FAILED_UNKNOWN_GENERIC 269
+#define OF_METER_MOD_FAILED_UNKNOWN_GENERIC 271
 
 /*
  * Defines for OF_METER_MOD_FAILED_UNKNOWN_METER
@@ -3335,7 +3337,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_METER_MOD_FAILED_UNKNOWN_METER (0x3)
 #define OF_METER_MOD_FAILED_UNKNOWN_METER_BY_VERSION(version) (0x3)
-#define OF_METER_MOD_FAILED_UNKNOWN_METER_GENERIC 270
+#define OF_METER_MOD_FAILED_UNKNOWN_METER_GENERIC 272
 
 /****************************************************************
  * Identifiers from ofp_multipart_reply_flags
@@ -3356,7 +3358,7 @@
     OF_FLAG_TEST(flags, OF_MULTIPART_FLAG_REPLY_MORE_BY_VERSION(version))
 #define OF_MULTIPART_FLAG_REPLY_MORE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_MULTIPART_FLAG_REPLY_MORE_BY_VERSION(version))
-#define OF_MULTIPART_FLAG_REPLY_MORE_GENERIC 271
+#define OF_MULTIPART_FLAG_REPLY_MORE_GENERIC 273
 
 /****************************************************************
  * Identifiers from ofp_multipart_request_flags
@@ -3377,7 +3379,7 @@
     OF_FLAG_TEST(flags, OF_MULTIPART_FLAG_REQ_MORE_BY_VERSION(version))
 #define OF_MULTIPART_FLAG_REQ_MORE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_MULTIPART_FLAG_REQ_MORE_BY_VERSION(version))
-#define OF_MULTIPART_FLAG_REQ_MORE_GENERIC 272
+#define OF_MULTIPART_FLAG_REQ_MORE_GENERIC 274
 
 /****************************************************************
  * Identifiers from ofp_multipart_types
@@ -3391,7 +3393,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_AGGREGATE (0x2)
 #define OF_MULTIPART_AGGREGATE_BY_VERSION(version) (0x2)
-#define OF_MULTIPART_AGGREGATE_GENERIC 273
+#define OF_MULTIPART_AGGREGATE_GENERIC 275
 
 /*
  * Defines for OF_MULTIPART_DESC
@@ -3401,7 +3403,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_DESC (0x0)
 #define OF_MULTIPART_DESC_BY_VERSION(version) (0x0)
-#define OF_MULTIPART_DESC_GENERIC 274
+#define OF_MULTIPART_DESC_GENERIC 276
 
 /*
  * Defines for OF_MULTIPART_EXPERIMENTER
@@ -3411,7 +3413,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_EXPERIMENTER (0xffff)
 #define OF_MULTIPART_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_MULTIPART_EXPERIMENTER_GENERIC 275
+#define OF_MULTIPART_EXPERIMENTER_GENERIC 277
 
 /*
  * Defines for OF_MULTIPART_FLOW
@@ -3421,7 +3423,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_FLOW (0x1)
 #define OF_MULTIPART_FLOW_BY_VERSION(version) (0x1)
-#define OF_MULTIPART_FLOW_GENERIC 276
+#define OF_MULTIPART_FLOW_GENERIC 278
 
 /*
  * Defines for OF_MULTIPART_GROUP
@@ -3431,7 +3433,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_GROUP (0x6)
 #define OF_MULTIPART_GROUP_BY_VERSION(version) (0x6)
-#define OF_MULTIPART_GROUP_GENERIC 277
+#define OF_MULTIPART_GROUP_GENERIC 279
 
 /*
  * Defines for OF_MULTIPART_GROUP_DESC
@@ -3441,7 +3443,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_GROUP_DESC (0x7)
 #define OF_MULTIPART_GROUP_DESC_BY_VERSION(version) (0x7)
-#define OF_MULTIPART_GROUP_DESC_GENERIC 278
+#define OF_MULTIPART_GROUP_DESC_GENERIC 280
 
 /*
  * Defines for OF_MULTIPART_GROUP_FEATURES
@@ -3451,7 +3453,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_GROUP_FEATURES (0x8)
 #define OF_MULTIPART_GROUP_FEATURES_BY_VERSION(version) (0x8)
-#define OF_MULTIPART_GROUP_FEATURES_GENERIC 279
+#define OF_MULTIPART_GROUP_FEATURES_GENERIC 281
 
 /*
  * Defines for OF_MULTIPART_METER
@@ -3461,7 +3463,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_METER (0x9)
 #define OF_MULTIPART_METER_BY_VERSION(version) (0x9)
-#define OF_MULTIPART_METER_GENERIC 280
+#define OF_MULTIPART_METER_GENERIC 282
 
 /*
  * Defines for OF_MULTIPART_METER_CONFIG
@@ -3471,7 +3473,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_METER_CONFIG (0xa)
 #define OF_MULTIPART_METER_CONFIG_BY_VERSION(version) (0xa)
-#define OF_MULTIPART_METER_CONFIG_GENERIC 281
+#define OF_MULTIPART_METER_CONFIG_GENERIC 283
 
 /*
  * Defines for OF_MULTIPART_METER_FEATURES
@@ -3481,7 +3483,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_METER_FEATURES (0xb)
 #define OF_MULTIPART_METER_FEATURES_BY_VERSION(version) (0xb)
-#define OF_MULTIPART_METER_FEATURES_GENERIC 282
+#define OF_MULTIPART_METER_FEATURES_GENERIC 284
 
 /*
  * Defines for OF_MULTIPART_PORT_DESC
@@ -3491,7 +3493,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_PORT_DESC (0xd)
 #define OF_MULTIPART_PORT_DESC_BY_VERSION(version) (0xd)
-#define OF_MULTIPART_PORT_DESC_GENERIC 283
+#define OF_MULTIPART_PORT_DESC_GENERIC 285
 
 /*
  * Defines for OF_MULTIPART_PORT_STATS
@@ -3501,7 +3503,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_PORT_STATS (0x4)
 #define OF_MULTIPART_PORT_STATS_BY_VERSION(version) (0x4)
-#define OF_MULTIPART_PORT_STATS_GENERIC 284
+#define OF_MULTIPART_PORT_STATS_GENERIC 286
 
 /*
  * Defines for OF_MULTIPART_QUEUE
@@ -3511,7 +3513,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_QUEUE (0x5)
 #define OF_MULTIPART_QUEUE_BY_VERSION(version) (0x5)
-#define OF_MULTIPART_QUEUE_GENERIC 285
+#define OF_MULTIPART_QUEUE_GENERIC 287
 
 /*
  * Defines for OF_MULTIPART_TABLE
@@ -3521,7 +3523,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_TABLE (0x3)
 #define OF_MULTIPART_TABLE_BY_VERSION(version) (0x3)
-#define OF_MULTIPART_TABLE_GENERIC 286
+#define OF_MULTIPART_TABLE_GENERIC 288
 
 /*
  * Defines for OF_MULTIPART_TABLE_FEATURES
@@ -3531,7 +3533,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_MULTIPART_TABLE_FEATURES (0xc)
 #define OF_MULTIPART_TABLE_FEATURES_BY_VERSION(version) (0xc)
-#define OF_MULTIPART_TABLE_FEATURES_GENERIC 287
+#define OF_MULTIPART_TABLE_FEATURES_GENERIC 289
 
 /****************************************************************
  * Identifiers from ofp_nicira_controller_role
@@ -3545,7 +3547,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_NICIRA_CONTROLLER_ROLE_MASTER (0x1)
 #define OF_NICIRA_CONTROLLER_ROLE_MASTER_BY_VERSION(version) (0x1)
-#define OF_NICIRA_CONTROLLER_ROLE_MASTER_GENERIC 288
+#define OF_NICIRA_CONTROLLER_ROLE_MASTER_GENERIC 290
 
 /*
  * Defines for OF_NICIRA_CONTROLLER_ROLE_OTHER
@@ -3555,7 +3557,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_NICIRA_CONTROLLER_ROLE_OTHER (0x0)
 #define OF_NICIRA_CONTROLLER_ROLE_OTHER_BY_VERSION(version) (0x0)
-#define OF_NICIRA_CONTROLLER_ROLE_OTHER_GENERIC 289
+#define OF_NICIRA_CONTROLLER_ROLE_OTHER_GENERIC 291
 
 /*
  * Defines for OF_NICIRA_CONTROLLER_ROLE_SLAVE
@@ -3565,7 +3567,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_NICIRA_CONTROLLER_ROLE_SLAVE (0x2)
 #define OF_NICIRA_CONTROLLER_ROLE_SLAVE_BY_VERSION(version) (0x2)
-#define OF_NICIRA_CONTROLLER_ROLE_SLAVE_GENERIC 290
+#define OF_NICIRA_CONTROLLER_ROLE_SLAVE_GENERIC 292
 
 /****************************************************************
  * Identifiers from ofp_oxm_class
@@ -3580,7 +3582,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OXM_CLASS_EXPERIMENTER (0xffff)
 #define OF_OXM_CLASS_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_OXM_CLASS_EXPERIMENTER_GENERIC 291
+#define OF_OXM_CLASS_EXPERIMENTER_GENERIC 293
 
 /*
  * Defines for OF_OXM_CLASS_NXM_0
@@ -3591,7 +3593,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OXM_CLASS_NXM_0 (0x0)
 #define OF_OXM_CLASS_NXM_0_BY_VERSION(version) (0x0)
-#define OF_OXM_CLASS_NXM_0_GENERIC 292
+#define OF_OXM_CLASS_NXM_0_GENERIC 294
 
 /*
  * Defines for OF_OXM_CLASS_NXM_1
@@ -3602,7 +3604,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OXM_CLASS_NXM_1 (0x1)
 #define OF_OXM_CLASS_NXM_1_BY_VERSION(version) (0x1)
-#define OF_OXM_CLASS_NXM_1_GENERIC 293
+#define OF_OXM_CLASS_NXM_1_GENERIC 295
 
 /*
  * Defines for OF_OXM_CLASS_OPENFLOW_BASIC
@@ -3613,7 +3615,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OXM_CLASS_OPENFLOW_BASIC (0x8000)
 #define OF_OXM_CLASS_OPENFLOW_BASIC_BY_VERSION(version) (0x8000)
-#define OF_OXM_CLASS_OPENFLOW_BASIC_GENERIC 294
+#define OF_OXM_CLASS_OPENFLOW_BASIC_GENERIC 296
 
 /****************************************************************
  * Identifiers from ofp_packet_in_reason
@@ -3626,7 +3628,7 @@
 #define OF_PACKET_IN_REASON_ACTION_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PACKET_IN_REASON_ACTION (0x1)
 #define OF_PACKET_IN_REASON_ACTION_BY_VERSION(version) (0x1)
-#define OF_PACKET_IN_REASON_ACTION_GENERIC 295
+#define OF_PACKET_IN_REASON_ACTION_GENERIC 297
 
 /*
  * Defines for OF_PACKET_IN_REASON_INVALID_TTL
@@ -3637,7 +3639,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_PACKET_IN_REASON_INVALID_TTL (0x2)
 #define OF_PACKET_IN_REASON_INVALID_TTL_BY_VERSION(version) (0x2)
-#define OF_PACKET_IN_REASON_INVALID_TTL_GENERIC 296
+#define OF_PACKET_IN_REASON_INVALID_TTL_GENERIC 298
 
 /*
  * Defines for OF_PACKET_IN_REASON_NO_MATCH
@@ -3646,7 +3648,7 @@
 #define OF_PACKET_IN_REASON_NO_MATCH_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PACKET_IN_REASON_NO_MATCH (0x0)
 #define OF_PACKET_IN_REASON_NO_MATCH_BY_VERSION(version) (0x0)
-#define OF_PACKET_IN_REASON_NO_MATCH_GENERIC 297
+#define OF_PACKET_IN_REASON_NO_MATCH_GENERIC 299
 
 /****************************************************************
  * Identifiers from ofp_port
@@ -3659,7 +3661,7 @@
 #define OF_PORT_DEST_ALL_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_ALL (0xfffffffc)
 #define OF_PORT_DEST_ALL_BY_VERSION(version) (0xfffffffc)
-#define OF_PORT_DEST_ALL_GENERIC 298
+#define OF_PORT_DEST_ALL_GENERIC 300
 
 /*
  * Defines for OF_PORT_DEST_CONTROLLER
@@ -3668,7 +3670,7 @@
 #define OF_PORT_DEST_CONTROLLER_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_CONTROLLER (0xfffffffd)
 #define OF_PORT_DEST_CONTROLLER_BY_VERSION(version) (0xfffffffd)
-#define OF_PORT_DEST_CONTROLLER_GENERIC 299
+#define OF_PORT_DEST_CONTROLLER_GENERIC 301
 
 /*
  * Defines for OF_PORT_DEST_FLOOD
@@ -3677,7 +3679,7 @@
 #define OF_PORT_DEST_FLOOD_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_FLOOD (0xfffffffb)
 #define OF_PORT_DEST_FLOOD_BY_VERSION(version) (0xfffffffb)
-#define OF_PORT_DEST_FLOOD_GENERIC 300
+#define OF_PORT_DEST_FLOOD_GENERIC 302
 
 /*
  * Defines for OF_PORT_DEST_IN_PORT
@@ -3686,7 +3688,7 @@
 #define OF_PORT_DEST_IN_PORT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_IN_PORT (0xfffffff8)
 #define OF_PORT_DEST_IN_PORT_BY_VERSION(version) (0xfffffff8)
-#define OF_PORT_DEST_IN_PORT_GENERIC 301
+#define OF_PORT_DEST_IN_PORT_GENERIC 303
 
 /*
  * Defines for OF_PORT_DEST_LOCAL
@@ -3695,7 +3697,7 @@
 #define OF_PORT_DEST_LOCAL_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_LOCAL (0xfffffffe)
 #define OF_PORT_DEST_LOCAL_BY_VERSION(version) (0xfffffffe)
-#define OF_PORT_DEST_LOCAL_GENERIC 302
+#define OF_PORT_DEST_LOCAL_GENERIC 304
 
 /*
  * Defines for OF_PORT_DEST_NONE
@@ -3705,7 +3707,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_PORT_DEST_NONE (0xffffffff)
 #define OF_PORT_DEST_NONE_BY_VERSION(version) (0xffffffff)
-#define OF_PORT_DEST_NONE_GENERIC 303
+#define OF_PORT_DEST_NONE_GENERIC 305
 
 /*
  * Defines for OF_PORT_DEST_NORMAL
@@ -3714,7 +3716,7 @@
 #define OF_PORT_DEST_NORMAL_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_NORMAL (0xfffffffa)
 #define OF_PORT_DEST_NORMAL_BY_VERSION(version) (0xfffffffa)
-#define OF_PORT_DEST_NORMAL_GENERIC 304
+#define OF_PORT_DEST_NORMAL_GENERIC 306
 
 /*
  * Defines for OF_PORT_DEST_USE_TABLE
@@ -3723,7 +3725,7 @@
 #define OF_PORT_DEST_USE_TABLE_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_DEST_USE_TABLE (0xfffffff9)
 #define OF_PORT_DEST_USE_TABLE_BY_VERSION(version) (0xfffffff9)
-#define OF_PORT_DEST_USE_TABLE_GENERIC 305
+#define OF_PORT_DEST_USE_TABLE_GENERIC 307
 
 /*
  * Defines for OF_PORT_NUMBER_MAX
@@ -3732,7 +3734,7 @@
 #define OF_PORT_NUMBER_MAX_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_NUMBER_MAX (0xffffff00)
 #define OF_PORT_NUMBER_MAX_BY_VERSION(version) (0xffffff00)
-#define OF_PORT_NUMBER_MAX_GENERIC 306
+#define OF_PORT_NUMBER_MAX_GENERIC 308
 
 /****************************************************************
  * Identifiers from ofp_port_config
@@ -3753,7 +3755,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_FLOOD_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_FLOOD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_FLOOD_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_FLOOD_GENERIC 307
+#define OF_PORT_CONFIG_FLAG_NO_FLOOD_GENERIC 309
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_NO_FWD
@@ -3769,7 +3771,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_FWD_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_FWD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_FWD_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_FWD_GENERIC 308
+#define OF_PORT_CONFIG_FLAG_NO_FWD_GENERIC 310
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_NO_PACKET_IN
@@ -3785,7 +3787,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_PACKET_IN_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_PACKET_IN_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_PACKET_IN_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_PACKET_IN_GENERIC 309
+#define OF_PORT_CONFIG_FLAG_NO_PACKET_IN_GENERIC 311
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_NO_RECV
@@ -3801,7 +3803,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_RECV_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_RECV_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_RECV_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_RECV_GENERIC 310
+#define OF_PORT_CONFIG_FLAG_NO_RECV_GENERIC 312
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_NO_RECV_STP
@@ -3818,7 +3820,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_RECV_STP_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_RECV_STP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_RECV_STP_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_RECV_STP_GENERIC 311
+#define OF_PORT_CONFIG_FLAG_NO_RECV_STP_GENERIC 313
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_NO_STP
@@ -3835,7 +3837,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_NO_STP_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_NO_STP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_NO_STP_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_NO_STP_GENERIC 312
+#define OF_PORT_CONFIG_FLAG_NO_STP_GENERIC 314
 
 /*
  * Defines for OF_PORT_CONFIG_FLAG_PORT_DOWN
@@ -3851,7 +3853,7 @@
     OF_FLAG_TEST(flags, OF_PORT_CONFIG_FLAG_PORT_DOWN_BY_VERSION(version))
 #define OF_PORT_CONFIG_FLAG_PORT_DOWN_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_CONFIG_FLAG_PORT_DOWN_BY_VERSION(version))
-#define OF_PORT_CONFIG_FLAG_PORT_DOWN_GENERIC 313
+#define OF_PORT_CONFIG_FLAG_PORT_DOWN_GENERIC 315
 
 /****************************************************************
  * Identifiers from ofp_port_features
@@ -3874,7 +3876,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_100GB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_100GB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_100GB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_100GB_FD_GENERIC 314
+#define OF_PORT_FEATURE_FLAG_100GB_FD_GENERIC 316
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_100MB_FD
@@ -3890,7 +3892,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_100MB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_100MB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_100MB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_100MB_FD_GENERIC 315
+#define OF_PORT_FEATURE_FLAG_100MB_FD_GENERIC 317
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_100MB_HD
@@ -3906,7 +3908,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_100MB_HD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_100MB_HD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_100MB_HD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_100MB_HD_GENERIC 316
+#define OF_PORT_FEATURE_FLAG_100MB_HD_GENERIC 318
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_10GB_FD
@@ -3922,7 +3924,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_10GB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_10GB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_10GB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_10GB_FD_GENERIC 317
+#define OF_PORT_FEATURE_FLAG_10GB_FD_GENERIC 319
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_10MB_FD
@@ -3938,7 +3940,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_10MB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_10MB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_10MB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_10MB_FD_GENERIC 318
+#define OF_PORT_FEATURE_FLAG_10MB_FD_GENERIC 320
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_10MB_HD
@@ -3954,7 +3956,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_10MB_HD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_10MB_HD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_10MB_HD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_10MB_HD_GENERIC 319
+#define OF_PORT_FEATURE_FLAG_10MB_HD_GENERIC 321
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_1GB_FD
@@ -3970,7 +3972,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_1GB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_1GB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_1GB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_1GB_FD_GENERIC 320
+#define OF_PORT_FEATURE_FLAG_1GB_FD_GENERIC 322
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_1GB_HD
@@ -3986,7 +3988,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_1GB_HD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_1GB_HD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_1GB_HD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_1GB_HD_GENERIC 321
+#define OF_PORT_FEATURE_FLAG_1GB_HD_GENERIC 323
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_1TB_FD
@@ -4005,7 +4007,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_1TB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_1TB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_1TB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_1TB_FD_GENERIC 322
+#define OF_PORT_FEATURE_FLAG_1TB_FD_GENERIC 324
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_40GB_FD
@@ -4024,7 +4026,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_40GB_FD_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_40GB_FD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_40GB_FD_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_40GB_FD_GENERIC 323
+#define OF_PORT_FEATURE_FLAG_40GB_FD_GENERIC 325
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_AUTONEG
@@ -4040,7 +4042,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_AUTONEG_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_AUTONEG_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_AUTONEG_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_AUTONEG_GENERIC 324
+#define OF_PORT_FEATURE_FLAG_AUTONEG_GENERIC 326
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_COPPER
@@ -4056,7 +4058,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_COPPER_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_COPPER_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_COPPER_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_COPPER_GENERIC 325
+#define OF_PORT_FEATURE_FLAG_COPPER_GENERIC 327
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_FIBER
@@ -4072,7 +4074,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_FIBER_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_FIBER_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_FIBER_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_FIBER_GENERIC 326
+#define OF_PORT_FEATURE_FLAG_FIBER_GENERIC 328
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_OTHER
@@ -4091,7 +4093,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_OTHER_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_OTHER_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_OTHER_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_OTHER_GENERIC 327
+#define OF_PORT_FEATURE_FLAG_OTHER_GENERIC 329
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_PAUSE
@@ -4107,7 +4109,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_PAUSE_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_PAUSE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_PAUSE_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_PAUSE_GENERIC 328
+#define OF_PORT_FEATURE_FLAG_PAUSE_GENERIC 330
 
 /*
  * Defines for OF_PORT_FEATURE_FLAG_PAUSE_ASYM
@@ -4123,7 +4125,7 @@
     OF_FLAG_TEST(flags, OF_PORT_FEATURE_FLAG_PAUSE_ASYM_BY_VERSION(version))
 #define OF_PORT_FEATURE_FLAG_PAUSE_ASYM_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_FEATURE_FLAG_PAUSE_ASYM_BY_VERSION(version))
-#define OF_PORT_FEATURE_FLAG_PAUSE_ASYM_GENERIC 329
+#define OF_PORT_FEATURE_FLAG_PAUSE_ASYM_GENERIC 331
 
 /****************************************************************
  * Identifiers from ofp_port_mod_failed_code
@@ -4139,7 +4141,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_PORT_MOD_FAILED_BAD_ADVERTISE (0x3)
 #define OF_PORT_MOD_FAILED_BAD_ADVERTISE_BY_VERSION(version) (0x3)
-#define OF_PORT_MOD_FAILED_BAD_ADVERTISE_GENERIC 330
+#define OF_PORT_MOD_FAILED_BAD_ADVERTISE_GENERIC 332
 
 /*
  * Defines for OF_PORT_MOD_FAILED_BAD_CONFIG
@@ -4151,7 +4153,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_PORT_MOD_FAILED_BAD_CONFIG (0x2)
 #define OF_PORT_MOD_FAILED_BAD_CONFIG_BY_VERSION(version) (0x2)
-#define OF_PORT_MOD_FAILED_BAD_CONFIG_GENERIC 331
+#define OF_PORT_MOD_FAILED_BAD_CONFIG_GENERIC 333
 
 /*
  * Defines for OF_PORT_MOD_FAILED_BAD_HW_ADDR
@@ -4160,7 +4162,7 @@
 #define OF_PORT_MOD_FAILED_BAD_HW_ADDR_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_MOD_FAILED_BAD_HW_ADDR (0x1)
 #define OF_PORT_MOD_FAILED_BAD_HW_ADDR_BY_VERSION(version) (0x1)
-#define OF_PORT_MOD_FAILED_BAD_HW_ADDR_GENERIC 332
+#define OF_PORT_MOD_FAILED_BAD_HW_ADDR_GENERIC 334
 
 /*
  * Defines for OF_PORT_MOD_FAILED_BAD_PORT
@@ -4169,7 +4171,7 @@
 #define OF_PORT_MOD_FAILED_BAD_PORT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_MOD_FAILED_BAD_PORT (0x0)
 #define OF_PORT_MOD_FAILED_BAD_PORT_BY_VERSION(version) (0x0)
-#define OF_PORT_MOD_FAILED_BAD_PORT_GENERIC 333
+#define OF_PORT_MOD_FAILED_BAD_PORT_GENERIC 335
 
 /*
  * Defines for OF_PORT_MOD_FAILED_EPERM
@@ -4180,7 +4182,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_PORT_MOD_FAILED_EPERM (0x4)
 #define OF_PORT_MOD_FAILED_EPERM_BY_VERSION(version) (0x4)
-#define OF_PORT_MOD_FAILED_EPERM_GENERIC 334
+#define OF_PORT_MOD_FAILED_EPERM_GENERIC 336
 
 /****************************************************************
  * Identifiers from ofp_port_no
@@ -4196,7 +4198,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_PORT_DEST_WILDCARD (0xffffffff)
 #define OF_PORT_DEST_WILDCARD_BY_VERSION(version) (0xffffffff)
-#define OF_PORT_DEST_WILDCARD_GENERIC 335
+#define OF_PORT_DEST_WILDCARD_GENERIC 337
 
 /****************************************************************
  * Identifiers from ofp_port_reason
@@ -4209,7 +4211,7 @@
 #define OF_PORT_CHANGE_REASON_ADD_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_CHANGE_REASON_ADD (0x0)
 #define OF_PORT_CHANGE_REASON_ADD_BY_VERSION(version) (0x0)
-#define OF_PORT_CHANGE_REASON_ADD_GENERIC 336
+#define OF_PORT_CHANGE_REASON_ADD_GENERIC 338
 
 /*
  * Defines for OF_PORT_CHANGE_REASON_DELETE
@@ -4218,7 +4220,7 @@
 #define OF_PORT_CHANGE_REASON_DELETE_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_CHANGE_REASON_DELETE (0x1)
 #define OF_PORT_CHANGE_REASON_DELETE_BY_VERSION(version) (0x1)
-#define OF_PORT_CHANGE_REASON_DELETE_GENERIC 337
+#define OF_PORT_CHANGE_REASON_DELETE_GENERIC 339
 
 /*
  * Defines for OF_PORT_CHANGE_REASON_MODIFY
@@ -4227,7 +4229,7 @@
 #define OF_PORT_CHANGE_REASON_MODIFY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_PORT_CHANGE_REASON_MODIFY (0x2)
 #define OF_PORT_CHANGE_REASON_MODIFY_BY_VERSION(version) (0x2)
-#define OF_PORT_CHANGE_REASON_MODIFY_GENERIC 338
+#define OF_PORT_CHANGE_REASON_MODIFY_GENERIC 340
 
 /****************************************************************
  * Identifiers from ofp_port_state
@@ -4250,7 +4252,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_BLOCKED_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_BLOCKED_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_BLOCKED_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_BLOCKED_GENERIC 339
+#define OF_PORT_STATE_FLAG_BLOCKED_GENERIC 341
 
 /*
  * Defines for OF_PORT_STATE_FLAG_LINK_DOWN
@@ -4266,7 +4268,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_LINK_DOWN_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_LINK_DOWN_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_LINK_DOWN_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_LINK_DOWN_GENERIC 340
+#define OF_PORT_STATE_FLAG_LINK_DOWN_GENERIC 342
 
 /*
  * Defines for OF_PORT_STATE_FLAG_LIVE
@@ -4285,7 +4287,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_LIVE_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_LIVE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_LIVE_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_LIVE_GENERIC 341
+#define OF_PORT_STATE_FLAG_LIVE_GENERIC 343
 
 /*
  * Defines for OF_PORT_STATE_FLAG_STP_BLOCK
@@ -4302,7 +4304,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_STP_BLOCK_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_STP_BLOCK_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_STP_BLOCK_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_STP_BLOCK_GENERIC 342
+#define OF_PORT_STATE_FLAG_STP_BLOCK_GENERIC 344
 
 /*
  * Defines for OF_PORT_STATE_FLAG_STP_FORWARD
@@ -4319,7 +4321,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_STP_FORWARD_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_STP_FORWARD_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_STP_FORWARD_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_STP_FORWARD_GENERIC 343
+#define OF_PORT_STATE_FLAG_STP_FORWARD_GENERIC 345
 
 /*
  * Defines for OF_PORT_STATE_FLAG_STP_LEARN
@@ -4336,7 +4338,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_STP_LEARN_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_STP_LEARN_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_STP_LEARN_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_STP_LEARN_GENERIC 344
+#define OF_PORT_STATE_FLAG_STP_LEARN_GENERIC 346
 
 /*
  * Defines for OF_PORT_STATE_FLAG_STP_LISTEN
@@ -4346,7 +4348,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_PORT_STATE_FLAG_STP_LISTEN (0x0)
 #define OF_PORT_STATE_FLAG_STP_LISTEN_BY_VERSION(version) (0x0)
-#define OF_PORT_STATE_FLAG_STP_LISTEN_GENERIC 345
+#define OF_PORT_STATE_FLAG_STP_LISTEN_GENERIC 347
 
 /*
  * Defines for OF_PORT_STATE_FLAG_STP_MASK
@@ -4363,7 +4365,7 @@
     OF_FLAG_TEST(flags, OF_PORT_STATE_FLAG_STP_MASK_BY_VERSION(version))
 #define OF_PORT_STATE_FLAG_STP_MASK_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_PORT_STATE_FLAG_STP_MASK_BY_VERSION(version))
-#define OF_PORT_STATE_FLAG_STP_MASK_GENERIC 346
+#define OF_PORT_STATE_FLAG_STP_MASK_GENERIC 348
 
 /****************************************************************
  * Identifiers from ofp_queue_op_failed_code
@@ -4376,7 +4378,7 @@
 #define OF_QUEUE_OP_FAILED_BAD_PORT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_QUEUE_OP_FAILED_BAD_PORT (0x0)
 #define OF_QUEUE_OP_FAILED_BAD_PORT_BY_VERSION(version) (0x0)
-#define OF_QUEUE_OP_FAILED_BAD_PORT_GENERIC 347
+#define OF_QUEUE_OP_FAILED_BAD_PORT_GENERIC 349
 
 /*
  * Defines for OF_QUEUE_OP_FAILED_BAD_QUEUE
@@ -4385,7 +4387,7 @@
 #define OF_QUEUE_OP_FAILED_BAD_QUEUE_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_QUEUE_OP_FAILED_BAD_QUEUE (0x1)
 #define OF_QUEUE_OP_FAILED_BAD_QUEUE_BY_VERSION(version) (0x1)
-#define OF_QUEUE_OP_FAILED_BAD_QUEUE_GENERIC 348
+#define OF_QUEUE_OP_FAILED_BAD_QUEUE_GENERIC 350
 
 /*
  * Defines for OF_QUEUE_OP_FAILED_EPERM
@@ -4394,7 +4396,7 @@
 #define OF_QUEUE_OP_FAILED_EPERM_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_QUEUE_OP_FAILED_EPERM (0x2)
 #define OF_QUEUE_OP_FAILED_EPERM_BY_VERSION(version) (0x2)
-#define OF_QUEUE_OP_FAILED_EPERM_GENERIC 349
+#define OF_QUEUE_OP_FAILED_EPERM_GENERIC 351
 
 /****************************************************************
  * Identifiers from ofp_queue_properties
@@ -4409,7 +4411,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_QUEUE_PROPERTY_EXPERIMENTER (0xffff)
 #define OF_QUEUE_PROPERTY_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_QUEUE_PROPERTY_EXPERIMENTER_GENERIC 350
+#define OF_QUEUE_PROPERTY_EXPERIMENTER_GENERIC 352
 
 /*
  * Defines for OF_QUEUE_PROPERTY_MAX_RATE
@@ -4420,7 +4422,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_QUEUE_PROPERTY_MAX_RATE (0x2)
 #define OF_QUEUE_PROPERTY_MAX_RATE_BY_VERSION(version) (0x2)
-#define OF_QUEUE_PROPERTY_MAX_RATE_GENERIC 351
+#define OF_QUEUE_PROPERTY_MAX_RATE_GENERIC 353
 
 /*
  * Defines for OF_QUEUE_PROPERTY_MIN_RATE
@@ -4429,7 +4431,7 @@
 #define OF_QUEUE_PROPERTY_MIN_RATE_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_QUEUE_PROPERTY_MIN_RATE (0x1)
 #define OF_QUEUE_PROPERTY_MIN_RATE_BY_VERSION(version) (0x1)
-#define OF_QUEUE_PROPERTY_MIN_RATE_GENERIC 352
+#define OF_QUEUE_PROPERTY_MIN_RATE_GENERIC 354
 
 /*
  * Defines for OF_QUEUE_PROPERTY_NONE
@@ -4440,7 +4442,7 @@
      ((version) == OF_VERSION_1_1))
 #define OF_QUEUE_PROPERTY_NONE (0x0)
 #define OF_QUEUE_PROPERTY_NONE_BY_VERSION(version) (0x0)
-#define OF_QUEUE_PROPERTY_NONE_GENERIC 353
+#define OF_QUEUE_PROPERTY_NONE_GENERIC 355
 
 /****************************************************************
  * Identifiers from ofp_role_request_failed_code
@@ -4455,7 +4457,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_ROLE_REQUEST_FAILED_BAD_ROLE (0x2)
 #define OF_ROLE_REQUEST_FAILED_BAD_ROLE_BY_VERSION(version) (0x2)
-#define OF_ROLE_REQUEST_FAILED_BAD_ROLE_GENERIC 354
+#define OF_ROLE_REQUEST_FAILED_BAD_ROLE_GENERIC 356
 
 /*
  * Defines for OF_ROLE_REQUEST_FAILED_STALE
@@ -4466,7 +4468,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_ROLE_REQUEST_FAILED_STALE (0x0)
 #define OF_ROLE_REQUEST_FAILED_STALE_BY_VERSION(version) (0x0)
-#define OF_ROLE_REQUEST_FAILED_STALE_GENERIC 355
+#define OF_ROLE_REQUEST_FAILED_STALE_GENERIC 357
 
 /*
  * Defines for OF_ROLE_REQUEST_FAILED_UNSUP
@@ -4477,7 +4479,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_ROLE_REQUEST_FAILED_UNSUP (0x1)
 #define OF_ROLE_REQUEST_FAILED_UNSUP_BY_VERSION(version) (0x1)
-#define OF_ROLE_REQUEST_FAILED_UNSUP_GENERIC 356
+#define OF_ROLE_REQUEST_FAILED_UNSUP_GENERIC 358
 
 /****************************************************************
  * Identifiers from ofp_stats_reply_flags
@@ -4500,7 +4502,7 @@
     OF_FLAG_TEST(flags, OF_STATS_REPLY_FLAG_REPLY_MORE_BY_VERSION(version))
 #define OF_STATS_REPLY_FLAG_REPLY_MORE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_STATS_REPLY_FLAG_REPLY_MORE_BY_VERSION(version))
-#define OF_STATS_REPLY_FLAG_REPLY_MORE_GENERIC 357
+#define OF_STATS_REPLY_FLAG_REPLY_MORE_GENERIC 359
 
 /****************************************************************
  * Identifiers from ofp_stats_types
@@ -4516,7 +4518,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_AGGREGATE (0x2)
 #define OF_STATS_TYPE_AGGREGATE_BY_VERSION(version) (0x2)
-#define OF_STATS_TYPE_AGGREGATE_GENERIC 358
+#define OF_STATS_TYPE_AGGREGATE_GENERIC 360
 
 /*
  * Defines for OF_STATS_TYPE_DESC
@@ -4528,7 +4530,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_DESC (0x0)
 #define OF_STATS_TYPE_DESC_BY_VERSION(version) (0x0)
-#define OF_STATS_TYPE_DESC_GENERIC 359
+#define OF_STATS_TYPE_DESC_GENERIC 361
 
 /*
  * Defines for OF_STATS_TYPE_EXPERIMENTER
@@ -4539,7 +4541,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_EXPERIMENTER (0xffff)
 #define OF_STATS_TYPE_EXPERIMENTER_BY_VERSION(version) (0xffff)
-#define OF_STATS_TYPE_EXPERIMENTER_GENERIC 360
+#define OF_STATS_TYPE_EXPERIMENTER_GENERIC 362
 
 /*
  * Defines for OF_STATS_TYPE_FLOW
@@ -4551,7 +4553,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_FLOW (0x1)
 #define OF_STATS_TYPE_FLOW_BY_VERSION(version) (0x1)
-#define OF_STATS_TYPE_FLOW_GENERIC 361
+#define OF_STATS_TYPE_FLOW_GENERIC 363
 
 /*
  * Defines for OF_STATS_TYPE_GROUP
@@ -4562,7 +4564,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_GROUP (0x6)
 #define OF_STATS_TYPE_GROUP_BY_VERSION(version) (0x6)
-#define OF_STATS_TYPE_GROUP_GENERIC 362
+#define OF_STATS_TYPE_GROUP_GENERIC 364
 
 /*
  * Defines for OF_STATS_TYPE_GROUP_DESC
@@ -4573,7 +4575,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_GROUP_DESC (0x7)
 #define OF_STATS_TYPE_GROUP_DESC_BY_VERSION(version) (0x7)
-#define OF_STATS_TYPE_GROUP_DESC_GENERIC 363
+#define OF_STATS_TYPE_GROUP_DESC_GENERIC 365
 
 /*
  * Defines for OF_STATS_TYPE_GROUP_FEATURES
@@ -4583,7 +4585,7 @@
     (((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_GROUP_FEATURES (0x8)
 #define OF_STATS_TYPE_GROUP_FEATURES_BY_VERSION(version) (0x8)
-#define OF_STATS_TYPE_GROUP_FEATURES_GENERIC 364
+#define OF_STATS_TYPE_GROUP_FEATURES_GENERIC 366
 
 /*
  * Defines for OF_STATS_TYPE_PORT
@@ -4595,7 +4597,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_PORT (0x4)
 #define OF_STATS_TYPE_PORT_BY_VERSION(version) (0x4)
-#define OF_STATS_TYPE_PORT_GENERIC 365
+#define OF_STATS_TYPE_PORT_GENERIC 367
 
 /*
  * Defines for OF_STATS_TYPE_QUEUE
@@ -4607,7 +4609,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_QUEUE (0x5)
 #define OF_STATS_TYPE_QUEUE_BY_VERSION(version) (0x5)
-#define OF_STATS_TYPE_QUEUE_GENERIC 366
+#define OF_STATS_TYPE_QUEUE_GENERIC 368
 
 /*
  * Defines for OF_STATS_TYPE_TABLE
@@ -4619,7 +4621,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_STATS_TYPE_TABLE (0x3)
 #define OF_STATS_TYPE_TABLE_BY_VERSION(version) (0x3)
-#define OF_STATS_TYPE_TABLE_GENERIC 367
+#define OF_STATS_TYPE_TABLE_GENERIC 369
 
 /*
  * Defines for OF_STATS_TYPE_VENDOR
@@ -4629,7 +4631,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_STATS_TYPE_VENDOR (0xffff)
 #define OF_STATS_TYPE_VENDOR_BY_VERSION(version) (0xffff)
-#define OF_STATS_TYPE_VENDOR_GENERIC 368
+#define OF_STATS_TYPE_VENDOR_GENERIC 370
 
 /****************************************************************
  * Identifiers from ofp_switch_config_failed_code
@@ -4645,7 +4647,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_SWITCH_CONFIG_FAILED_BAD_FLAGS (0x0)
 #define OF_SWITCH_CONFIG_FAILED_BAD_FLAGS_BY_VERSION(version) (0x0)
-#define OF_SWITCH_CONFIG_FAILED_BAD_FLAGS_GENERIC 369
+#define OF_SWITCH_CONFIG_FAILED_BAD_FLAGS_GENERIC 371
 
 /*
  * Defines for OF_SWITCH_CONFIG_FAILED_BAD_LEN
@@ -4657,7 +4659,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_SWITCH_CONFIG_FAILED_BAD_LEN (0x1)
 #define OF_SWITCH_CONFIG_FAILED_BAD_LEN_BY_VERSION(version) (0x1)
-#define OF_SWITCH_CONFIG_FAILED_BAD_LEN_GENERIC 370
+#define OF_SWITCH_CONFIG_FAILED_BAD_LEN_GENERIC 372
 
 /*
  * Defines for OF_SWITCH_CONFIG_FAILED_EPERM
@@ -4668,7 +4670,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_SWITCH_CONFIG_FAILED_EPERM (0x2)
 #define OF_SWITCH_CONFIG_FAILED_EPERM_BY_VERSION(version) (0x2)
-#define OF_SWITCH_CONFIG_FAILED_EPERM_GENERIC 371
+#define OF_SWITCH_CONFIG_FAILED_EPERM_GENERIC 373
 
 /****************************************************************
  * Identifiers from ofp_table
@@ -4683,7 +4685,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_TABLE_ALL (0xff)
 #define OF_TABLE_ALL_BY_VERSION(version) (0xff)
-#define OF_TABLE_ALL_GENERIC 372
+#define OF_TABLE_ALL_GENERIC 374
 
 /*
  * Defines for OF_TABLE_MAX
@@ -4694,7 +4696,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_TABLE_MAX (0xfe)
 #define OF_TABLE_MAX_BY_VERSION(version) (0xfe)
-#define OF_TABLE_MAX_GENERIC 373
+#define OF_TABLE_MAX_GENERIC 375
 
 /****************************************************************
  * Identifiers from ofp_table_config
@@ -4715,7 +4717,7 @@
     OF_FLAG_TEST(flags, OF_TABLE_CONFIG_DEPRECATED_MASK_BY_VERSION(version))
 #define OF_TABLE_CONFIG_DEPRECATED_MASK_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_TABLE_CONFIG_DEPRECATED_MASK_BY_VERSION(version))
-#define OF_TABLE_CONFIG_DEPRECATED_MASK_GENERIC 374
+#define OF_TABLE_CONFIG_DEPRECATED_MASK_GENERIC 376
 
 /*
  * Defines for OF_TABLE_CONFIG_TABLE_MISS_CONTINUE
@@ -4733,7 +4735,7 @@
     OF_FLAG_TEST(flags, OF_TABLE_CONFIG_TABLE_MISS_CONTINUE_BY_VERSION(version))
 #define OF_TABLE_CONFIG_TABLE_MISS_CONTINUE_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_TABLE_CONFIG_TABLE_MISS_CONTINUE_BY_VERSION(version))
-#define OF_TABLE_CONFIG_TABLE_MISS_CONTINUE_GENERIC 375
+#define OF_TABLE_CONFIG_TABLE_MISS_CONTINUE_GENERIC 377
 
 /*
  * Defines for OF_TABLE_CONFIG_TABLE_MISS_CONTROLLER
@@ -4744,7 +4746,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_TABLE_CONFIG_TABLE_MISS_CONTROLLER (0x0)
 #define OF_TABLE_CONFIG_TABLE_MISS_CONTROLLER_BY_VERSION(version) (0x0)
-#define OF_TABLE_CONFIG_TABLE_MISS_CONTROLLER_GENERIC 376
+#define OF_TABLE_CONFIG_TABLE_MISS_CONTROLLER_GENERIC 378
 
 /*
  * Defines for OF_TABLE_CONFIG_TABLE_MISS_DROP
@@ -4762,7 +4764,7 @@
     OF_FLAG_TEST(flags, OF_TABLE_CONFIG_TABLE_MISS_DROP_BY_VERSION(version))
 #define OF_TABLE_CONFIG_TABLE_MISS_DROP_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_TABLE_CONFIG_TABLE_MISS_DROP_BY_VERSION(version))
-#define OF_TABLE_CONFIG_TABLE_MISS_DROP_GENERIC 377
+#define OF_TABLE_CONFIG_TABLE_MISS_DROP_GENERIC 379
 
 /*
  * Defines for OF_TABLE_CONFIG_TABLE_MISS_MASK
@@ -4780,7 +4782,7 @@
     OF_FLAG_TEST(flags, OF_TABLE_CONFIG_TABLE_MISS_MASK_BY_VERSION(version))
 #define OF_TABLE_CONFIG_TABLE_MISS_MASK_CLEAR(flags, version)   \
     OF_FLAG_CLEAR(flags, OF_TABLE_CONFIG_TABLE_MISS_MASK_BY_VERSION(version))
-#define OF_TABLE_CONFIG_TABLE_MISS_MASK_GENERIC 378
+#define OF_TABLE_CONFIG_TABLE_MISS_MASK_GENERIC 380
 
 /****************************************************************
  * Identifiers from ofp_table_feature_prop_type
@@ -4794,7 +4796,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_APPLY_ACTIONS (0x6)
 #define OF_TABLE_FEATURE_APPLY_ACTIONS_BY_VERSION(version) (0x6)
-#define OF_TABLE_FEATURE_APPLY_ACTIONS_GENERIC 379
+#define OF_TABLE_FEATURE_APPLY_ACTIONS_GENERIC 381
 
 /*
  * Defines for OF_TABLE_FEATURE_APPLY_ACTIONS_MISS
@@ -4804,7 +4806,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_APPLY_ACTIONS_MISS (0x7)
 #define OF_TABLE_FEATURE_APPLY_ACTIONS_MISS_BY_VERSION(version) (0x7)
-#define OF_TABLE_FEATURE_APPLY_ACTIONS_MISS_GENERIC 380
+#define OF_TABLE_FEATURE_APPLY_ACTIONS_MISS_GENERIC 382
 
 /*
  * Defines for OF_TABLE_FEATURE_APPLY_SETFIELD
@@ -4814,7 +4816,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_APPLY_SETFIELD (0xe)
 #define OF_TABLE_FEATURE_APPLY_SETFIELD_BY_VERSION(version) (0xe)
-#define OF_TABLE_FEATURE_APPLY_SETFIELD_GENERIC 381
+#define OF_TABLE_FEATURE_APPLY_SETFIELD_GENERIC 383
 
 /*
  * Defines for OF_TABLE_FEATURE_APPLY_SETFIELD_MISS
@@ -4824,7 +4826,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_APPLY_SETFIELD_MISS (0xf)
 #define OF_TABLE_FEATURE_APPLY_SETFIELD_MISS_BY_VERSION(version) (0xf)
-#define OF_TABLE_FEATURE_APPLY_SETFIELD_MISS_GENERIC 382
+#define OF_TABLE_FEATURE_APPLY_SETFIELD_MISS_GENERIC 384
 
 /*
  * Defines for OF_TABLE_FEATURE_EXPERIMENTER
@@ -4834,7 +4836,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_EXPERIMENTER (0xfffe)
 #define OF_TABLE_FEATURE_EXPERIMENTER_BY_VERSION(version) (0xfffe)
-#define OF_TABLE_FEATURE_EXPERIMENTER_GENERIC 383
+#define OF_TABLE_FEATURE_EXPERIMENTER_GENERIC 385
 
 /*
  * Defines for OF_TABLE_FEATURE_EXPERIMENTER_MISS
@@ -4844,7 +4846,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_EXPERIMENTER_MISS (0xffff)
 #define OF_TABLE_FEATURE_EXPERIMENTER_MISS_BY_VERSION(version) (0xffff)
-#define OF_TABLE_FEATURE_EXPERIMENTER_MISS_GENERIC 384
+#define OF_TABLE_FEATURE_EXPERIMENTER_MISS_GENERIC 386
 
 /*
  * Defines for OF_TABLE_FEATURE_INSTRUCTIONS
@@ -4854,7 +4856,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_INSTRUCTIONS (0x0)
 #define OF_TABLE_FEATURE_INSTRUCTIONS_BY_VERSION(version) (0x0)
-#define OF_TABLE_FEATURE_INSTRUCTIONS_GENERIC 385
+#define OF_TABLE_FEATURE_INSTRUCTIONS_GENERIC 387
 
 /*
  * Defines for OF_TABLE_FEATURE_INSTRUCTIONS_MISS
@@ -4864,7 +4866,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_INSTRUCTIONS_MISS (0x1)
 #define OF_TABLE_FEATURE_INSTRUCTIONS_MISS_BY_VERSION(version) (0x1)
-#define OF_TABLE_FEATURE_INSTRUCTIONS_MISS_GENERIC 386
+#define OF_TABLE_FEATURE_INSTRUCTIONS_MISS_GENERIC 388
 
 /*
  * Defines for OF_TABLE_FEATURE_MATCH
@@ -4874,7 +4876,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_MATCH (0x8)
 #define OF_TABLE_FEATURE_MATCH_BY_VERSION(version) (0x8)
-#define OF_TABLE_FEATURE_MATCH_GENERIC 387
+#define OF_TABLE_FEATURE_MATCH_GENERIC 389
 
 /*
  * Defines for OF_TABLE_FEATURE_NEXT_TABLES
@@ -4884,7 +4886,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_NEXT_TABLES (0x2)
 #define OF_TABLE_FEATURE_NEXT_TABLES_BY_VERSION(version) (0x2)
-#define OF_TABLE_FEATURE_NEXT_TABLES_GENERIC 388
+#define OF_TABLE_FEATURE_NEXT_TABLES_GENERIC 390
 
 /*
  * Defines for OF_TABLE_FEATURE_NEXT_TABLES_MISS
@@ -4894,7 +4896,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_NEXT_TABLES_MISS (0x3)
 #define OF_TABLE_FEATURE_NEXT_TABLES_MISS_BY_VERSION(version) (0x3)
-#define OF_TABLE_FEATURE_NEXT_TABLES_MISS_GENERIC 389
+#define OF_TABLE_FEATURE_NEXT_TABLES_MISS_GENERIC 391
 
 /*
  * Defines for OF_TABLE_FEATURE_WILDCARDS
@@ -4904,7 +4906,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_WILDCARDS (0xa)
 #define OF_TABLE_FEATURE_WILDCARDS_BY_VERSION(version) (0xa)
-#define OF_TABLE_FEATURE_WILDCARDS_GENERIC 390
+#define OF_TABLE_FEATURE_WILDCARDS_GENERIC 392
 
 /*
  * Defines for OF_TABLE_FEATURE_WRITE_ACTIONS
@@ -4914,7 +4916,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_WRITE_ACTIONS (0x4)
 #define OF_TABLE_FEATURE_WRITE_ACTIONS_BY_VERSION(version) (0x4)
-#define OF_TABLE_FEATURE_WRITE_ACTIONS_GENERIC 391
+#define OF_TABLE_FEATURE_WRITE_ACTIONS_GENERIC 393
 
 /*
  * Defines for OF_TABLE_FEATURE_WRITE_ACTIONS_MISS
@@ -4924,7 +4926,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_WRITE_ACTIONS_MISS (0x5)
 #define OF_TABLE_FEATURE_WRITE_ACTIONS_MISS_BY_VERSION(version) (0x5)
-#define OF_TABLE_FEATURE_WRITE_ACTIONS_MISS_GENERIC 392
+#define OF_TABLE_FEATURE_WRITE_ACTIONS_MISS_GENERIC 394
 
 /*
  * Defines for OF_TABLE_FEATURE_WRITE_SETFIELD
@@ -4934,7 +4936,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_WRITE_SETFIELD (0xc)
 #define OF_TABLE_FEATURE_WRITE_SETFIELD_BY_VERSION(version) (0xc)
-#define OF_TABLE_FEATURE_WRITE_SETFIELD_GENERIC 393
+#define OF_TABLE_FEATURE_WRITE_SETFIELD_GENERIC 395
 
 /*
  * Defines for OF_TABLE_FEATURE_WRITE_SETFIELD_MISS
@@ -4944,7 +4946,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_FEATURE_WRITE_SETFIELD_MISS (0xd)
 #define OF_TABLE_FEATURE_WRITE_SETFIELD_MISS_BY_VERSION(version) (0xd)
-#define OF_TABLE_FEATURE_WRITE_SETFIELD_MISS_GENERIC 394
+#define OF_TABLE_FEATURE_WRITE_SETFIELD_MISS_GENERIC 396
 
 /****************************************************************
  * Identifiers from ofp_table_features_failed_code
@@ -4958,7 +4960,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_BAD_ARGUMENT (0x4)
 #define OF_TABLE_REQUEST_FAILED_BAD_ARGUMENT_BY_VERSION(version) (0x4)
-#define OF_TABLE_REQUEST_FAILED_BAD_ARGUMENT_GENERIC 395
+#define OF_TABLE_REQUEST_FAILED_BAD_ARGUMENT_GENERIC 397
 
 /*
  * Defines for OF_TABLE_REQUEST_FAILED_BAD_LEN
@@ -4968,7 +4970,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_BAD_LEN (0x3)
 #define OF_TABLE_REQUEST_FAILED_BAD_LEN_BY_VERSION(version) (0x3)
-#define OF_TABLE_REQUEST_FAILED_BAD_LEN_GENERIC 396
+#define OF_TABLE_REQUEST_FAILED_BAD_LEN_GENERIC 398
 
 /*
  * Defines for OF_TABLE_REQUEST_FAILED_BAD_METADATA
@@ -4978,7 +4980,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_BAD_METADATA (0x1)
 #define OF_TABLE_REQUEST_FAILED_BAD_METADATA_BY_VERSION(version) (0x1)
-#define OF_TABLE_REQUEST_FAILED_BAD_METADATA_GENERIC 397
+#define OF_TABLE_REQUEST_FAILED_BAD_METADATA_GENERIC 399
 
 /*
  * Defines for OF_TABLE_REQUEST_FAILED_BAD_TABLE
@@ -4988,7 +4990,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_BAD_TABLE (0x0)
 #define OF_TABLE_REQUEST_FAILED_BAD_TABLE_BY_VERSION(version) (0x0)
-#define OF_TABLE_REQUEST_FAILED_BAD_TABLE_GENERIC 398
+#define OF_TABLE_REQUEST_FAILED_BAD_TABLE_GENERIC 400
 
 /*
  * Defines for OF_TABLE_REQUEST_FAILED_BAD_TYPE
@@ -4998,7 +5000,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_BAD_TYPE (0x2)
 #define OF_TABLE_REQUEST_FAILED_BAD_TYPE_BY_VERSION(version) (0x2)
-#define OF_TABLE_REQUEST_FAILED_BAD_TYPE_GENERIC 399
+#define OF_TABLE_REQUEST_FAILED_BAD_TYPE_GENERIC 401
 
 /*
  * Defines for OF_TABLE_REQUEST_FAILED_EPERM
@@ -5008,7 +5010,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_TABLE_REQUEST_FAILED_EPERM (0x5)
 #define OF_TABLE_REQUEST_FAILED_EPERM_BY_VERSION(version) (0x5)
-#define OF_TABLE_REQUEST_FAILED_EPERM_GENERIC 400
+#define OF_TABLE_REQUEST_FAILED_EPERM_GENERIC 402
 
 /****************************************************************
  * Identifiers from ofp_table_mod_failed_code
@@ -5024,7 +5026,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_TABLE_MOD_FAILED_BAD_CONFIG (0x1)
 #define OF_TABLE_MOD_FAILED_BAD_CONFIG_BY_VERSION(version) (0x1)
-#define OF_TABLE_MOD_FAILED_BAD_CONFIG_GENERIC 401
+#define OF_TABLE_MOD_FAILED_BAD_CONFIG_GENERIC 403
 
 /*
  * Defines for OF_TABLE_MOD_FAILED_BAD_TABLE
@@ -5036,7 +5038,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_TABLE_MOD_FAILED_BAD_TABLE (0x0)
 #define OF_TABLE_MOD_FAILED_BAD_TABLE_BY_VERSION(version) (0x0)
-#define OF_TABLE_MOD_FAILED_BAD_TABLE_GENERIC 402
+#define OF_TABLE_MOD_FAILED_BAD_TABLE_GENERIC 404
 
 /*
  * Defines for OF_TABLE_MOD_FAILED_EPERM
@@ -5047,7 +5049,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_TABLE_MOD_FAILED_EPERM (0x2)
 #define OF_TABLE_MOD_FAILED_EPERM_BY_VERSION(version) (0x2)
-#define OF_TABLE_MOD_FAILED_EPERM_GENERIC 403
+#define OF_TABLE_MOD_FAILED_EPERM_GENERIC 405
 
 /****************************************************************
  * Identifiers from ofp_type
@@ -5060,7 +5062,7 @@
 #define OF_OBJ_TYPE_BARRIER_REPLY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_BARRIER_REPLY_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x13, 0x15, 0x15, 0x15)
-#define OF_OBJ_TYPE_BARRIER_REPLY_GENERIC 404
+#define OF_OBJ_TYPE_BARRIER_REPLY_GENERIC 406
 
 /*
  * Defines for OF_OBJ_TYPE_BARRIER_REQUEST
@@ -5069,7 +5071,7 @@
 #define OF_OBJ_TYPE_BARRIER_REQUEST_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_BARRIER_REQUEST_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x12, 0x14, 0x14, 0x14)
-#define OF_OBJ_TYPE_BARRIER_REQUEST_GENERIC 405
+#define OF_OBJ_TYPE_BARRIER_REQUEST_GENERIC 407
 
 /*
  * Defines for OF_OBJ_TYPE_ECHO_REPLY
@@ -5078,7 +5080,7 @@
 #define OF_OBJ_TYPE_ECHO_REPLY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_ECHO_REPLY (0x3)
 #define OF_OBJ_TYPE_ECHO_REPLY_BY_VERSION(version) (0x3)
-#define OF_OBJ_TYPE_ECHO_REPLY_GENERIC 406
+#define OF_OBJ_TYPE_ECHO_REPLY_GENERIC 408
 
 /*
  * Defines for OF_OBJ_TYPE_ECHO_REQUEST
@@ -5087,7 +5089,7 @@
 #define OF_OBJ_TYPE_ECHO_REQUEST_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_ECHO_REQUEST (0x2)
 #define OF_OBJ_TYPE_ECHO_REQUEST_BY_VERSION(version) (0x2)
-#define OF_OBJ_TYPE_ECHO_REQUEST_GENERIC 407
+#define OF_OBJ_TYPE_ECHO_REQUEST_GENERIC 409
 
 /*
  * Defines for OF_OBJ_TYPE_ERROR
@@ -5096,7 +5098,7 @@
 #define OF_OBJ_TYPE_ERROR_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_ERROR (0x1)
 #define OF_OBJ_TYPE_ERROR_BY_VERSION(version) (0x1)
-#define OF_OBJ_TYPE_ERROR_GENERIC 408
+#define OF_OBJ_TYPE_ERROR_GENERIC 410
 
 /*
  * Defines for OF_OBJ_TYPE_EXPERIMENTER
@@ -5108,7 +5110,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_EXPERIMENTER (0x4)
 #define OF_OBJ_TYPE_EXPERIMENTER_BY_VERSION(version) (0x4)
-#define OF_OBJ_TYPE_EXPERIMENTER_GENERIC 409
+#define OF_OBJ_TYPE_EXPERIMENTER_GENERIC 411
 
 /*
  * Defines for OF_OBJ_TYPE_FEATURES_REPLY
@@ -5117,7 +5119,7 @@
 #define OF_OBJ_TYPE_FEATURES_REPLY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_FEATURES_REPLY (0x6)
 #define OF_OBJ_TYPE_FEATURES_REPLY_BY_VERSION(version) (0x6)
-#define OF_OBJ_TYPE_FEATURES_REPLY_GENERIC 410
+#define OF_OBJ_TYPE_FEATURES_REPLY_GENERIC 412
 
 /*
  * Defines for OF_OBJ_TYPE_FEATURES_REQUEST
@@ -5126,7 +5128,7 @@
 #define OF_OBJ_TYPE_FEATURES_REQUEST_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_FEATURES_REQUEST (0x5)
 #define OF_OBJ_TYPE_FEATURES_REQUEST_BY_VERSION(version) (0x5)
-#define OF_OBJ_TYPE_FEATURES_REQUEST_GENERIC 411
+#define OF_OBJ_TYPE_FEATURES_REQUEST_GENERIC 413
 
 /*
  * Defines for OF_OBJ_TYPE_FLOW_MOD
@@ -5135,7 +5137,7 @@
 #define OF_OBJ_TYPE_FLOW_MOD_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_FLOW_MOD (0xe)
 #define OF_OBJ_TYPE_FLOW_MOD_BY_VERSION(version) (0xe)
-#define OF_OBJ_TYPE_FLOW_MOD_GENERIC 412
+#define OF_OBJ_TYPE_FLOW_MOD_GENERIC 414
 
 /*
  * Defines for OF_OBJ_TYPE_FLOW_REMOVED
@@ -5144,7 +5146,7 @@
 #define OF_OBJ_TYPE_FLOW_REMOVED_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_FLOW_REMOVED (0xb)
 #define OF_OBJ_TYPE_FLOW_REMOVED_BY_VERSION(version) (0xb)
-#define OF_OBJ_TYPE_FLOW_REMOVED_GENERIC 413
+#define OF_OBJ_TYPE_FLOW_REMOVED_GENERIC 415
 
 /*
  * Defines for OF_OBJ_TYPE_GET_ASYNC_REPLY
@@ -5154,7 +5156,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_GET_ASYNC_REPLY (0x1b)
 #define OF_OBJ_TYPE_GET_ASYNC_REPLY_BY_VERSION(version) (0x1b)
-#define OF_OBJ_TYPE_GET_ASYNC_REPLY_GENERIC 414
+#define OF_OBJ_TYPE_GET_ASYNC_REPLY_GENERIC 416
 
 /*
  * Defines for OF_OBJ_TYPE_GET_ASYNC_REQUEST
@@ -5164,7 +5166,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_GET_ASYNC_REQUEST (0x1a)
 #define OF_OBJ_TYPE_GET_ASYNC_REQUEST_BY_VERSION(version) (0x1a)
-#define OF_OBJ_TYPE_GET_ASYNC_REQUEST_GENERIC 415
+#define OF_OBJ_TYPE_GET_ASYNC_REQUEST_GENERIC 417
 
 /*
  * Defines for OF_OBJ_TYPE_GET_CONFIG_REPLY
@@ -5173,7 +5175,7 @@
 #define OF_OBJ_TYPE_GET_CONFIG_REPLY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_GET_CONFIG_REPLY (0x8)
 #define OF_OBJ_TYPE_GET_CONFIG_REPLY_BY_VERSION(version) (0x8)
-#define OF_OBJ_TYPE_GET_CONFIG_REPLY_GENERIC 416
+#define OF_OBJ_TYPE_GET_CONFIG_REPLY_GENERIC 418
 
 /*
  * Defines for OF_OBJ_TYPE_GET_CONFIG_REQUEST
@@ -5182,7 +5184,7 @@
 #define OF_OBJ_TYPE_GET_CONFIG_REQUEST_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_GET_CONFIG_REQUEST (0x7)
 #define OF_OBJ_TYPE_GET_CONFIG_REQUEST_BY_VERSION(version) (0x7)
-#define OF_OBJ_TYPE_GET_CONFIG_REQUEST_GENERIC 417
+#define OF_OBJ_TYPE_GET_CONFIG_REQUEST_GENERIC 419
 
 /*
  * Defines for OF_OBJ_TYPE_GROUP_MOD
@@ -5194,7 +5196,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_GROUP_MOD (0xf)
 #define OF_OBJ_TYPE_GROUP_MOD_BY_VERSION(version) (0xf)
-#define OF_OBJ_TYPE_GROUP_MOD_GENERIC 418
+#define OF_OBJ_TYPE_GROUP_MOD_GENERIC 420
 
 /*
  * Defines for OF_OBJ_TYPE_HELLO
@@ -5203,7 +5205,7 @@
 #define OF_OBJ_TYPE_HELLO_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_HELLO (0x0)
 #define OF_OBJ_TYPE_HELLO_BY_VERSION(version) (0x0)
-#define OF_OBJ_TYPE_HELLO_GENERIC 419
+#define OF_OBJ_TYPE_HELLO_GENERIC 421
 
 /*
  * Defines for OF_OBJ_TYPE_METER_MOD
@@ -5213,7 +5215,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_METER_MOD (0x1d)
 #define OF_OBJ_TYPE_METER_MOD_BY_VERSION(version) (0x1d)
-#define OF_OBJ_TYPE_METER_MOD_GENERIC 420
+#define OF_OBJ_TYPE_METER_MOD_GENERIC 422
 
 /*
  * Defines for OF_OBJ_TYPE_MULTIPART_REPLY
@@ -5223,7 +5225,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_MULTIPART_REPLY (0x13)
 #define OF_OBJ_TYPE_MULTIPART_REPLY_BY_VERSION(version) (0x13)
-#define OF_OBJ_TYPE_MULTIPART_REPLY_GENERIC 421
+#define OF_OBJ_TYPE_MULTIPART_REPLY_GENERIC 423
 
 /*
  * Defines for OF_OBJ_TYPE_MULTIPART_REQUEST
@@ -5233,7 +5235,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_MULTIPART_REQUEST (0x12)
 #define OF_OBJ_TYPE_MULTIPART_REQUEST_BY_VERSION(version) (0x12)
-#define OF_OBJ_TYPE_MULTIPART_REQUEST_GENERIC 422
+#define OF_OBJ_TYPE_MULTIPART_REQUEST_GENERIC 424
 
 /*
  * Defines for OF_OBJ_TYPE_PACKET_IN
@@ -5242,7 +5244,7 @@
 #define OF_OBJ_TYPE_PACKET_IN_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_PACKET_IN (0xa)
 #define OF_OBJ_TYPE_PACKET_IN_BY_VERSION(version) (0xa)
-#define OF_OBJ_TYPE_PACKET_IN_GENERIC 423
+#define OF_OBJ_TYPE_PACKET_IN_GENERIC 425
 
 /*
  * Defines for OF_OBJ_TYPE_PACKET_OUT
@@ -5251,7 +5253,7 @@
 #define OF_OBJ_TYPE_PACKET_OUT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_PACKET_OUT (0xd)
 #define OF_OBJ_TYPE_PACKET_OUT_BY_VERSION(version) (0xd)
-#define OF_OBJ_TYPE_PACKET_OUT_GENERIC 424
+#define OF_OBJ_TYPE_PACKET_OUT_GENERIC 426
 
 /*
  * Defines for OF_OBJ_TYPE_PORT_MOD
@@ -5260,7 +5262,7 @@
 #define OF_OBJ_TYPE_PORT_MOD_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_PORT_MOD_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0xf, 0x10, 0x10, 0x10)
-#define OF_OBJ_TYPE_PORT_MOD_GENERIC 425
+#define OF_OBJ_TYPE_PORT_MOD_GENERIC 427
 
 /*
  * Defines for OF_OBJ_TYPE_PORT_STATUS
@@ -5269,7 +5271,7 @@
 #define OF_OBJ_TYPE_PORT_STATUS_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_PORT_STATUS (0xc)
 #define OF_OBJ_TYPE_PORT_STATUS_BY_VERSION(version) (0xc)
-#define OF_OBJ_TYPE_PORT_STATUS_GENERIC 426
+#define OF_OBJ_TYPE_PORT_STATUS_GENERIC 428
 
 /*
  * Defines for OF_OBJ_TYPE_QUEUE_GET_CONFIG_REPLY
@@ -5278,7 +5280,7 @@
 #define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REPLY_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REPLY_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x15, 0x17, 0x17, 0x17)
-#define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REPLY_GENERIC 427
+#define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REPLY_GENERIC 429
 
 /*
  * Defines for OF_OBJ_TYPE_QUEUE_GET_CONFIG_REQUEST
@@ -5287,7 +5289,7 @@
 #define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REQUEST_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REQUEST_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x14, 0x16, 0x16, 0x16)
-#define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REQUEST_GENERIC 428
+#define OF_OBJ_TYPE_QUEUE_GET_CONFIG_REQUEST_GENERIC 430
 
 /*
  * Defines for OF_OBJ_TYPE_ROLE_REPLY
@@ -5298,7 +5300,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_ROLE_REPLY (0x19)
 #define OF_OBJ_TYPE_ROLE_REPLY_BY_VERSION(version) (0x19)
-#define OF_OBJ_TYPE_ROLE_REPLY_GENERIC 429
+#define OF_OBJ_TYPE_ROLE_REPLY_GENERIC 431
 
 /*
  * Defines for OF_OBJ_TYPE_ROLE_REQUEST
@@ -5309,7 +5311,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_ROLE_REQUEST (0x18)
 #define OF_OBJ_TYPE_ROLE_REQUEST_BY_VERSION(version) (0x18)
-#define OF_OBJ_TYPE_ROLE_REQUEST_GENERIC 430
+#define OF_OBJ_TYPE_ROLE_REQUEST_GENERIC 432
 
 /*
  * Defines for OF_OBJ_TYPE_SET_ASYNC
@@ -5319,7 +5321,7 @@
     (((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_SET_ASYNC (0x1c)
 #define OF_OBJ_TYPE_SET_ASYNC_BY_VERSION(version) (0x1c)
-#define OF_OBJ_TYPE_SET_ASYNC_GENERIC 431
+#define OF_OBJ_TYPE_SET_ASYNC_GENERIC 433
 
 /*
  * Defines for OF_OBJ_TYPE_SET_CONFIG
@@ -5328,7 +5330,7 @@
 #define OF_OBJ_TYPE_SET_CONFIG_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
 #define OF_OBJ_TYPE_SET_CONFIG (0x9)
 #define OF_OBJ_TYPE_SET_CONFIG_BY_VERSION(version) (0x9)
-#define OF_OBJ_TYPE_SET_CONFIG_GENERIC 432
+#define OF_OBJ_TYPE_SET_CONFIG_GENERIC 434
 
 /*
  * Defines for OF_OBJ_TYPE_STATS_REPLY
@@ -5340,7 +5342,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_OBJ_TYPE_STATS_REPLY_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x11, 0x13, 0x13, 0x0)
-#define OF_OBJ_TYPE_STATS_REPLY_GENERIC 433
+#define OF_OBJ_TYPE_STATS_REPLY_GENERIC 435
 
 /*
  * Defines for OF_OBJ_TYPE_STATS_REQUEST
@@ -5352,7 +5354,7 @@
      ((version) == OF_VERSION_1_2))
 #define OF_OBJ_TYPE_STATS_REQUEST_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x10, 0x12, 0x12, 0x0)
-#define OF_OBJ_TYPE_STATS_REQUEST_GENERIC 434
+#define OF_OBJ_TYPE_STATS_REQUEST_GENERIC 436
 
 /*
  * Defines for OF_OBJ_TYPE_TABLE_MOD
@@ -5364,7 +5366,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_OBJ_TYPE_TABLE_MOD (0x11)
 #define OF_OBJ_TYPE_TABLE_MOD_BY_VERSION(version) (0x11)
-#define OF_OBJ_TYPE_TABLE_MOD_GENERIC 435
+#define OF_OBJ_TYPE_TABLE_MOD_GENERIC 437
 
 /*
  * Defines for OF_OBJ_TYPE_VENDOR
@@ -5374,7 +5376,7 @@
     (((version) == OF_VERSION_1_0))
 #define OF_OBJ_TYPE_VENDOR (0x4)
 #define OF_OBJ_TYPE_VENDOR_BY_VERSION(version) (0x4)
-#define OF_OBJ_TYPE_VENDOR_GENERIC 436
+#define OF_OBJ_TYPE_VENDOR_GENERIC 438
 
 /****************************************************************
  * Identifiers from ofp_vlan_id
@@ -5388,7 +5390,7 @@
     (((version) == OF_VERSION_1_1))
 #define OF_VLAN_TAG_ANY (0xfffe)
 #define OF_VLAN_TAG_ANY_BY_VERSION(version) (0xfffe)
-#define OF_VLAN_TAG_ANY_GENERIC 437
+#define OF_VLAN_TAG_ANY_GENERIC 439
 
 /*
  * Defines for OF_VLAN_TAG_NONE
@@ -5400,7 +5402,7 @@
      ((version) == OF_VERSION_1_3))
 #define OF_VLAN_TAG_NONE_BY_VERSION(version)     \
     OF_VALUE_BY_VERSION(version, 0x0, 0xffff, 0x0, 0x0)
-#define OF_VLAN_TAG_NONE_GENERIC 438
+#define OF_VLAN_TAG_NONE_GENERIC 440
 
 /*
  * Defines for OF_VLAN_TAG_PRESENT
@@ -5411,6 +5413,6 @@
      ((version) == OF_VERSION_1_3))
 #define OF_VLAN_TAG_PRESENT (0x1000)
 #define OF_VLAN_TAG_PRESENT_BY_VERSION(version) (0x1000)
-#define OF_VLAN_TAG_PRESENT_GENERIC 439
+#define OF_VLAN_TAG_PRESENT_GENERIC 441
 
 #endif /* Loci identifiers header file */

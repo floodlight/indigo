@@ -1,25 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /****************************************************************
  * File: of_match.h
@@ -50,13 +32,13 @@
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_SLL)\
     | ((uint64_t)1 << OF_OXM_INDEX_MPLS_TC)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_OP)\
-    | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TARGET)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_THA)\
     | ((uint64_t)1 << OF_OXM_INDEX_SCTP_DST)\
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV4_CODE)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_SPA)\
     | ((uint64_t)1 << OF_OXM_INDEX_IP_ECN)\
     | ((uint64_t)1 << OF_OXM_INDEX_UDP_DST)\
+    | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TARGET)\
     | ((uint64_t)1 << OF_OXM_INDEX_IN_PHY_PORT)\
     | ((uint64_t)1 << OF_OXM_INDEX_UDP_SRC)\
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TLL)\
@@ -75,13 +57,15 @@
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV6_CODE)\
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_SLL)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_OP)\
-    | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TARGET)\
+    | ((uint64_t)1 << OF_OXM_INDEX_DST_META_ID)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_THA)\
     | ((uint64_t)1 << OF_OXM_INDEX_SCTP_DST)\
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV4_CODE)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_SPA)\
     | ((uint64_t)1 << OF_OXM_INDEX_IP_ECN)\
+    | ((uint64_t)1 << OF_OXM_INDEX_SRC_META_ID)\
     | ((uint64_t)1 << OF_OXM_INDEX_UDP_DST)\
+    | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TARGET)\
     | ((uint64_t)1 << OF_OXM_INDEX_IN_PHY_PORT)\
     | ((uint64_t)1 << OF_OXM_INDEX_UDP_SRC)\
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_ND_TLL)\
@@ -128,6 +112,8 @@ typedef struct of_match_fields_s {
     of_mac_addr_t        ipv6_nd_tll;
     uint32_t             mpls_label;
     uint8_t              mpls_tc;
+    uint8_t              src_meta_id;
+    uint8_t              dst_meta_id;
 
 } of_match_fields_t;
 
@@ -518,12 +504,12 @@ of_match_more_specific(of_match_t *entry, of_match_t *query)
         return 0;
     }
 
-    /* Mask and values for ipv6_nd_target */
-    if (!OF_MORE_SPECIFIC_IPV6(&e_m->ipv6_nd_target, &q_m->ipv6_nd_target)) {
+    /* Mask and values for dst_meta_id */
+    if (!OF_MORE_SPECIFIC_INT(e_m->dst_meta_id, q_m->dst_meta_id)) {
         return 0;
     }
-    if (!OF_RESTRICTED_MATCH_IPV6(&e_f->ipv6_nd_target, &q_f->ipv6_nd_target,
-            &q_m->ipv6_nd_target)) {
+    if (!OF_RESTRICTED_MATCH_INT(e_f->dst_meta_id, q_f->dst_meta_id,
+            q_m->dst_meta_id)) {
         return 0;
     }
 
@@ -608,12 +594,30 @@ of_match_more_specific(of_match_t *entry, of_match_t *query)
         return 0;
     }
 
+    /* Mask and values for src_meta_id */
+    if (!OF_MORE_SPECIFIC_INT(e_m->src_meta_id, q_m->src_meta_id)) {
+        return 0;
+    }
+    if (!OF_RESTRICTED_MATCH_INT(e_f->src_meta_id, q_f->src_meta_id,
+            q_m->src_meta_id)) {
+        return 0;
+    }
+
     /* Mask and values for udp_dst */
     if (!OF_MORE_SPECIFIC_INT(e_m->udp_dst, q_m->udp_dst)) {
         return 0;
     }
     if (!OF_RESTRICTED_MATCH_INT(e_f->udp_dst, q_f->udp_dst,
             q_m->udp_dst)) {
+        return 0;
+    }
+
+    /* Mask and values for ipv6_nd_target */
+    if (!OF_MORE_SPECIFIC_IPV6(&e_m->ipv6_nd_target, &q_m->ipv6_nd_target)) {
+        return 0;
+    }
+    if (!OF_RESTRICTED_MATCH_IPV6(&e_f->ipv6_nd_target, &q_f->ipv6_nd_target,
+            &q_m->ipv6_nd_target)) {
         return 0;
     }
 
@@ -820,9 +824,9 @@ of_match_overlap(of_match_t *match1, of_match_t *match2)
         return 0; /* This field differentiates; all done */
     }
 
-    /* Check overlap for ipv6_nd_target */
-    if (!OF_OVERLAP_IPV6(&f1->ipv6_nd_target, &f2->ipv6_nd_target,
-        &m2->ipv6_nd_target, &m1->ipv6_nd_target)) {
+    /* Check overlap for dst_meta_id */
+    if (!OF_OVERLAP_INT(f1->dst_meta_id, f2->dst_meta_id,
+        m2->dst_meta_id, m1->dst_meta_id)) {
         return 0; /* This field differentiates; all done */
     }
 
@@ -880,9 +884,21 @@ of_match_overlap(of_match_t *match1, of_match_t *match2)
         return 0; /* This field differentiates; all done */
     }
 
+    /* Check overlap for src_meta_id */
+    if (!OF_OVERLAP_INT(f1->src_meta_id, f2->src_meta_id,
+        m2->src_meta_id, m1->src_meta_id)) {
+        return 0; /* This field differentiates; all done */
+    }
+
     /* Check overlap for udp_dst */
     if (!OF_OVERLAP_INT(f1->udp_dst, f2->udp_dst,
         m2->udp_dst, m1->udp_dst)) {
+        return 0; /* This field differentiates; all done */
+    }
+
+    /* Check overlap for ipv6_nd_target */
+    if (!OF_OVERLAP_IPV6(&f1->ipv6_nd_target, &f2->ipv6_nd_target,
+        &m2->ipv6_nd_target, &m1->ipv6_nd_target)) {
         return 0; /* This field differentiates; all done */
     }
 
