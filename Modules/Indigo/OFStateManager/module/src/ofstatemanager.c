@@ -306,7 +306,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
-    case OF_BSN_SET_PKTIN_SUPPRESSION:
+    case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 

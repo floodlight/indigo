@@ -843,7 +843,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_SET_CONFIG:
     case OF_BSN_SET_IP_MASK:
     case OF_BSN_SET_MIRRORING:
-    case OF_BSN_SET_PKTIN_SUPPRESSION:
+    case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
         if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
             LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
                         of_object_id_str[obj->object_id]);

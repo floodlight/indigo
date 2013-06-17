@@ -1,26 +1,7 @@
-/****************************************************************
- *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
- * Licensed under the Eclipse Public License, Version 1.0 (the
- * "License"); you may not use this file except in compliance
- * with the License. You may obtain a copy of the License at
- * 
- *        http://www.eclipse.org/legal/epl-v10.html
- * 
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific
- * language governing permissions and limitations under the
- * License.
- *
- ****************************************************************/
-
 /* Copyright (c) 2008 The Board of Trustees of The Leland Stanford Junior University */
 /* Copyright (c) 2011, 2012 Open Networking Foundation */
 /* Copyright (c) 2012, 2013 Big Switch Networks, Inc. */
-
+/* See the file LICENSE.loci which should have been included in the source distribution */
 
 /**
  *
@@ -868,15 +849,53 @@ test_of_bsn_set_mirroring_OF_VERSION_1_0(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_OF_VERSION_1_0(void)
+test_of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_0);
+    of_bsn_set_pktin_suppression_reply_t *obj;
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_0(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
     TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -888,18 +907,18 @@ test_of_bsn_set_pktin_suppression_OF_VERSION_1_0(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_0_populate(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_0_check(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_0_check(
         obj, 1) != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -1026,7 +1045,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_0(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -1034,7 +1053,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_0(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 24);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -1096,15 +1115,15 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_0(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_OF_VERSION_1_0(void)
+test_of_bsn_virtual_port_remove_reply_OF_VERSION_1_0(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_0);
+    of_bsn_virtual_port_remove_reply_t *obj;
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -1116,18 +1135,56 @@ test_of_bsn_virtual_port_remove_OF_VERSION_1_0(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_0_populate(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_0_check(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_check(
         obj, 1) != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_OF_VERSION_1_0(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -4508,15 +4565,53 @@ test_of_bsn_set_mirroring_OF_VERSION_1_1(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_OF_VERSION_1_1(void)
+test_of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_1);
+    of_bsn_set_pktin_suppression_reply_t *obj;
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_1(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
     TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -4528,18 +4623,18 @@ test_of_bsn_set_pktin_suppression_OF_VERSION_1_1(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_1_populate(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_1_check(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_check(
         obj, 1) != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -4552,7 +4647,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_1(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -4560,7 +4655,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_1(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 24);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -4622,15 +4717,15 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_1(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_OF_VERSION_1_1(void)
+test_of_bsn_virtual_port_remove_reply_OF_VERSION_1_1(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_1);
+    of_bsn_virtual_port_remove_reply_t *obj;
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -4642,18 +4737,56 @@ test_of_bsn_virtual_port_remove_OF_VERSION_1_1(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_1_populate(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_1_check(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_check(
         obj, 1) != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_OF_VERSION_1_1(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -9229,15 +9362,53 @@ test_of_bsn_set_mirroring_OF_VERSION_1_2(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_OF_VERSION_1_2(void)
+test_of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_2);
+    of_bsn_set_pktin_suppression_reply_t *obj;
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_2(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
     TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -9249,18 +9420,18 @@ test_of_bsn_set_pktin_suppression_OF_VERSION_1_2(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_2_populate(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_2_check(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_check(
         obj, 1) != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -9273,7 +9444,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_2(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -9281,7 +9452,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_2(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 24);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -9343,15 +9514,15 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_2(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_OF_VERSION_1_2(void)
+test_of_bsn_virtual_port_remove_reply_OF_VERSION_1_2(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_2);
+    of_bsn_virtual_port_remove_reply_t *obj;
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -9363,18 +9534,56 @@ test_of_bsn_virtual_port_remove_OF_VERSION_1_2(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_2_populate(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_2_check(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_check(
         obj, 1) != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_OF_VERSION_1_2(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -12717,6 +12926,82 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_oxm_dst_meta_id_OF_VERSION_1_2(void)
+{
+    of_oxm_dst_meta_id_t *obj;
+    obj = of_oxm_dst_meta_id_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 5);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 5);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_dst_meta_id_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_dst_meta_id_masked_OF_VERSION_1_2(void)
+{
+    of_oxm_dst_meta_id_masked_t *obj;
+    obj = of_oxm_dst_meta_id_masked_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 6);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 6);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_dst_meta_id_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_oxm_eth_dst_OF_VERSION_1_2(void)
 {
     of_oxm_eth_dst_t *obj;
@@ -14628,6 +14913,82 @@ test_of_oxm_sctp_src_masked_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_oxm_sctp_src_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_src_meta_id_OF_VERSION_1_2(void)
+{
+    of_oxm_src_meta_id_t *obj;
+    obj = of_oxm_src_meta_id_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 5);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 5);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_src_meta_id_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_src_meta_id_masked_OF_VERSION_1_2(void)
+{
+    of_oxm_src_meta_id_masked_t *obj;
+    obj = of_oxm_src_meta_id_masked_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 6);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 6);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_src_meta_id_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16665,15 +17026,53 @@ test_of_bsn_set_mirroring_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_bsn_set_pktin_suppression_OF_VERSION_1_3(void)
+test_of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3(void)
 {
-    of_bsn_set_pktin_suppression_t *obj;
-    obj = of_bsn_set_pktin_suppression_new(OF_VERSION_1_3);
+    of_bsn_set_pktin_suppression_reply_t *obj;
+    obj = of_bsn_set_pktin_suppression_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_set_pktin_suppression_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_3(void)
+{
+    of_bsn_set_pktin_suppression_request_t *obj;
+    obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
     TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -16685,18 +17084,18 @@ test_of_bsn_set_pktin_suppression_OF_VERSION_1_3(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION);
+        TEST_ASSERT(obj_id == OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_3_populate(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_set_pktin_suppression_OF_VERSION_1_3_check(
+    TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_check(
         obj, 1) != 0);
 
-    of_bsn_set_pktin_suppression_delete(obj);
+    of_bsn_set_pktin_suppression_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16709,7 +17108,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_3(void)
     obj = of_bsn_virtual_port_create_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REPLY);
 
@@ -16717,7 +17116,7 @@ test_of_bsn_virtual_port_create_reply_OF_VERSION_1_3(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 24);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -16779,15 +17178,15 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_bsn_virtual_port_remove_OF_VERSION_1_3(void)
+test_of_bsn_virtual_port_remove_reply_OF_VERSION_1_3(void)
 {
-    of_bsn_virtual_port_remove_t *obj;
-    obj = of_bsn_virtual_port_remove_new(OF_VERSION_1_3);
+    of_bsn_virtual_port_remove_reply_t *obj;
+    obj = of_bsn_virtual_port_remove_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
     TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
 
     if (obj->wire_length_get != NULL) {
         int length;
@@ -16799,18 +17198,56 @@ test_of_bsn_virtual_port_remove_OF_VERSION_1_3(void)
         of_object_id_t obj_id;
 
         obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REPLY);
     }
 
     /* Set up incrementing values for members */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_3_populate(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_populate(
         obj, 1) != 0);
 
     /* Check values just set */
-    TEST_ASSERT(of_bsn_virtual_port_remove_OF_VERSION_1_3_check(
+    TEST_ASSERT(of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_check(
         obj, 1) != 0);
 
-    of_bsn_virtual_port_remove_delete(obj);
+    of_bsn_virtual_port_remove_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_virtual_port_remove_request_OF_VERSION_1_3(void)
+{
+    of_bsn_virtual_port_remove_request_t *obj;
+    obj = of_bsn_virtual_port_remove_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_virtual_port_remove_request_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_virtual_port_remove_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -21741,6 +22178,82 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_oxm_dst_meta_id_OF_VERSION_1_3(void)
+{
+    of_oxm_dst_meta_id_t *obj;
+    obj = of_oxm_dst_meta_id_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 5);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 5);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_dst_meta_id_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_dst_meta_id_masked_OF_VERSION_1_3(void)
+{
+    of_oxm_dst_meta_id_masked_t *obj;
+    obj = of_oxm_dst_meta_id_masked_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 6);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 6);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_dst_meta_id_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_oxm_eth_dst_OF_VERSION_1_3(void)
 {
     of_oxm_eth_dst_t *obj;
@@ -23652,6 +24165,82 @@ test_of_oxm_sctp_src_masked_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_oxm_sctp_src_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_src_meta_id_OF_VERSION_1_3(void)
+{
+    of_oxm_src_meta_id_t *obj;
+    obj = of_oxm_src_meta_id_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 5);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 5);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_src_meta_id_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_src_meta_id_masked_OF_VERSION_1_3(void)
+{
+    of_oxm_src_meta_id_masked_t *obj;
+    obj = of_oxm_src_meta_id_masked_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 6);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 6);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_src_meta_id_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -26072,13 +26661,15 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_set_l2_table_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_request_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_0);
-    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_command_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_output_OF_VERSION_1_0);
     RUN_TEST(of_bsn_shell_status_OF_VERSION_1_0);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_0);
-    RUN_TEST(of_bsn_virtual_port_remove_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_virtual_port_remove_request_OF_VERSION_1_0);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_0);
     RUN_TEST(of_echo_reply_OF_VERSION_1_0);
@@ -26170,10 +26761,12 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_1);
-    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_1);
-    RUN_TEST(of_bsn_virtual_port_remove_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_virtual_port_remove_request_OF_VERSION_1_1);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_echo_reply_OF_VERSION_1_1);
@@ -26297,10 +26890,12 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_2);
-    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_2);
-    RUN_TEST(of_bsn_virtual_port_remove_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_virtual_port_remove_request_OF_VERSION_1_2);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_echo_reply_OF_VERSION_1_2);
@@ -26391,6 +26986,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_dst_meta_id_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_dst_meta_id_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_2);
@@ -26442,6 +27039,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_sctp_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_sctp_src_OF_VERSION_1_2);
     RUN_TEST(of_oxm_sctp_src_masked_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_src_meta_id_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_src_meta_id_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_dst_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_src_OF_VERSION_1_2);
@@ -26496,10 +27095,12 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_3);
-    RUN_TEST(of_bsn_set_pktin_suppression_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_3);
-    RUN_TEST(of_bsn_virtual_port_remove_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_virtual_port_remove_request_OF_VERSION_1_3);
     RUN_TEST(of_desc_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_desc_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_echo_reply_OF_VERSION_1_3);
@@ -26634,6 +27235,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_dst_meta_id_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_dst_meta_id_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_3);
@@ -26685,6 +27288,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_sctp_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_sctp_src_OF_VERSION_1_3);
     RUN_TEST(of_oxm_sctp_src_masked_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_src_meta_id_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_src_meta_id_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_dst_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_src_OF_VERSION_1_3);
