@@ -253,6 +253,37 @@ indigo_error_t ind_soc_timer_event_unregister(
     ind_soc_timer_callback_f callback,
     void *cookie);
 
+/****************************************************************
+ * Task functions
+ ****************************************************************/
+
+typedef enum ind_soc_task_status {
+    IND_SOC_TASK_CONTINUE,
+    IND_SOC_TASK_FINISHED,
+} ind_soc_task_status_t;
+
+/**
+ * Callback for task
+ *
+ * @param task Task handle (used to unregister)
+ * @param cookie Data passed to ind_soc_task_register
+ * @returns Whether the task is finished
+ */
+
+typedef ind_soc_task_status_t (*ind_soc_task_callback_f)(void *cookie);
+
+/**
+ * Register a task
+ *
+ * @param callback Task callback function
+ * @param cookie Opaque data passed to callback
+ * @param priority Priority level
+ */
+
+indigo_error_t ind_soc_task_register(
+    ind_soc_task_callback_f callback,
+    void *cookie, int priority);
+
 
 typedef struct ind_soc_config_s {
     uint32_t flags; /* Ignored */

@@ -53,6 +53,8 @@
 
 #include <indigo/assert.h>
 #include <indigo/time.h>
+#include <indigo/memory.h>
+#include <AIM/aim_list.h>
 
 #include <poll.h>
 #include <unistd.h>
@@ -114,6 +116,19 @@ static timer_event_t timer_event[TIMER_EVENT_MAX];
     for ((idx) = 0; (idx) < TIMER_EVENT_MAX; (idx)++)   \
         if (TIMER_EVENT_VALID(idx))
 
+/*
+ * Task structure
+ */
+typedef struct ind_soc_task_s {
+    list_links_t links; /* global tasks */
+    ind_soc_task_callback_f callback;
+    void *cookie;
+    int priority;
+} ind_soc_task_t;
+
+static list_head_t tasks;
+
+
 /* Return index for timer; -1 if not found.  Use only with valid callback */
 static int
 timer_event_find(ind_soc_timer_callback_f callback, void *cookie)
@@ -156,6 +171,8 @@ soc_mgr_init(void)
     for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
         timer_event[idx].callback = NULL;
     }
+
+    list_init(&tasks);
 }
 
 
@@ -498,6 +515,31 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
 
 
 indigo_error_t
+ind_soc_task_register(ind_soc_task_callback_f callback,
+                      void *cookie, int priority)
+{
+    ind_soc_task_t *task = INDIGO_MEM_ALLOC(sizeof(*task));
+    if (task == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+
+    task->callback = callback;
+    task->cookie = cookie;
+    task->priority = priority;
+
+    list_push(&tasks, &task->links);
+
+    return INDIGO_ERROR_NONE;
+}
+
+
+void
+ind_soc_task_unregister(ind_soc_task_t *task)
+{
+}
+
+
+indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
     LOG_INFO("Initializing socket manager");
@@ -585,6 +627,25 @@ process_sockets(int priority)
 }
 
 /*
+ * Run callbacks for each task.
+ */
+static void
+process_tasks(int priority)
+{
+    struct list_links *cur, *next;
+    LIST_FOREACH_SAFE(&tasks, cur, next) {
+        ind_soc_task_t *task = container_of(cur, links, ind_soc_task_t);
+        if (task->priority != priority) {
+            continue;
+        }
+        if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
+            list_remove(&task->links);
+            INDIGO_MEM_FREE(task);
+        }
+    }
+}
+
+/*
  * This function returns the priority level the event loop should process
  * on the current iteration. It assumes poll() has been called on the global
  * pollfds array.
@@ -596,6 +657,7 @@ find_highest_ready_priority(void)
     indigo_time_t now;
     int elapsed, tmp_ms;
     int priority = INT_MIN;
+    struct list_links *cur;
 
     now = INDIGO_CURRENT_TIME;
 
@@ -619,6 +681,11 @@ find_highest_ready_priority(void)
         if (tmp_ms <= 0) {
             priority = timer_event[idx].priority;
         }
+    }
+
+    LIST_FOREACH(&tasks, cur) {
+        ind_soc_task_t *task = container_of(cur, links, ind_soc_task_t);
+        priority = aim_imax(priority, task->priority);
     }
 
     return priority;
@@ -663,6 +730,7 @@ ind_soc_select_and_run(int run_for_ms)
 
         process_sockets(priority);
         process_timers(priority);
+        process_tasks(priority);
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             return INDIGO_ERROR_NONE;
