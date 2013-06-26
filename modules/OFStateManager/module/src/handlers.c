@@ -622,7 +622,6 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_flow_modify_t *obj; /* Coerce to modify object */
     indigo_cookie_t cookie;
     of_meta_match_t query;
-    int count;
     uint16_t flags;
     of_version_t ver;
     uint32_t xid = 0;
@@ -675,9 +674,9 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto done;
     }
 
-    count = flows_delete(&query, INDIGO_FLOW_REMOVED_OVERWRITE);
-    if (count > 1) {
-       LOG_WARN("Matched %d > 1 entries for replace on flow_add", count);
+    /* Delete existing flow if any */
+    if (FT_FIRST_MATCH(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
     }
 
     /* No match found, add as normal */
@@ -930,8 +929,6 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     indigo_error_t result = INDIGO_ERROR_NONE;
     of_flow_modify_strict_t *obj;
-    biglist_t *list = 0;
-    int count;
     int rv;
     of_meta_match_t query;
     ft_entry_t        *entry;
@@ -946,19 +943,13 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_object_delete(_obj);
         return rv;
     }
-    list = FT_QUERY(ind_core_ft, &query);
-    if ((count = biglist_length(list)) == 0) {
+
+    rv = FT_FIRST_MATCH(ind_core_ft, &query, &entry);
+    if (rv == INDIGO_ERROR_NOT_FOUND) {
         LOG_TRACE("No entries to modify strict, treat as add: %p", obj);
-        biglist_free(list);
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
         return ind_core_flow_add_handler(_obj, cxn_id);
     }
-    /* Should match at most one entry in flow table */
-    if (count > 1) {
-        LOG_ERROR("Match strict matched more than %d > 1 entry", count);
-    }
-
-    entry = FT_LIST_TO_ENTRY(list);
 
     if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
        LOG_TRACE("Flow being deleted -- skipping modify");
@@ -976,7 +967,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
         entry->state = FT_FLOW_STATE_MODIFYING;
 
-       indigo_fwd_flow_modify(FT_LIST_TO_FLOW_ID(list),
+       indigo_fwd_flow_modify(entry->id,
                               obj,
                               INDIGO_POINTER_TO_COOKIE(ptr_cxn)
           );
@@ -991,8 +982,6 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         if (ptr_cxn)  INDIGO_MEM_FREE(ptr_cxn);
         of_object_delete(_obj);
     }
-
-    if (list)  biglist_free(list);
 
     return (result);
 }
@@ -1083,8 +1072,8 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     of_flow_delete_strict_t *obj;
     int rv;
-    int count;
     of_meta_match_t query;
+    ft_entry_t *entry;
 
     obj = (of_flow_delete_strict_t *)_obj;
     LOG_TRACE("Handling of_flow_delete_strict message: %p.", obj);
@@ -1096,11 +1085,8 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    count = flows_delete(&query, INDIGO_FLOW_REMOVED_DELETE);
-
-    LOG_TRACE("Marked %d entries to be deleted", count);
-    if (count > 1) {
-        LOG_ERROR("Strict delete matched %d > 1 entry", count);
+    if (FT_FIRST_MATCH(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
     }
 
     of_object_delete(_obj);
