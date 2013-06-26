@@ -133,3 +133,112 @@ ft_flow_query(ft_instance_t instance, of_meta_match_t *query)
     LOG_TRACE("Query generated %d entries", count);
     return list;
 }
+
+
+/*
+ * Flowtable iterator task
+ *
+ * Several operations follow a pattern of iterating over the entire flowtable
+ * to make calls to Forwarding. Since the flowtable can be very large we need
+ * to break up the work to allow processing higher priority events in between.
+ *
+ * These functions wrap the SocketManager task API to provide a simple method
+ * for iterating over the flowtable without delaying higher priority events.
+ */
+
+struct ft_iter_task_state {
+    ft_iter_task_callback_f callback;
+    void *cookie;
+    ft_instance_t flowtable;
+    of_meta_match_t query;
+    int use_query;
+    int idx;
+};
+
+static ind_soc_task_status_t
+ft_iter_task_callback(void *cookie)
+{
+    struct ft_iter_task_state *state = cookie;
+
+    /*
+     * Loop until we make a callback or finish the iteration.
+     */
+    while (1) {
+        if (state->idx == state->flowtable->config.max_entries) {
+            /* Finished */
+            state->callback(state->cookie, NULL);
+            INDIGO_MEM_FREE(state);
+            return IND_SOC_TASK_FINISHED;
+        } else {
+            ft_entry_t *entry = &state->flowtable->flow_entries[state->idx++];
+
+            if (entry->state == FT_FLOW_STATE_FREE ||
+                FT_FLOW_STATE_IS_DELETED(entry->state)) {
+                continue;
+            }
+
+            if (state->use_query && !ft_flow_meta_match(&state->query, entry)) {
+                continue;
+            }
+
+            state->callback(state->cookie, entry);
+            break;
+        }
+    }
+
+    return IND_SOC_TASK_CONTINUE;
+}
+
+/**
+ * Spawn a task that iterates over the flowtable
+ *
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query (or NULL)
+ * @param callback Function called for each flowtable entry
+ * @returns An error code
+ *
+ * This function does not guarantee a consistent view of the
+ * flowtable over the course of the task.
+ *
+ * This function does not use any indexes on the flowtable.
+ *
+ * The callback function will be called with a NULL entry argument at
+ * the end of the iteration.
+ *
+ * Deleted entries are skipped.
+ */
+
+indigo_error_t
+ft_spawn_iter_task(ft_instance_t instance,
+                   of_meta_match_t *query,
+                   ft_iter_task_callback_f callback,
+                   void *cookie,
+                   int priority)
+{
+    indigo_error_t rv;
+
+    struct ft_iter_task_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    if (state == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+
+    state->callback = callback;
+    state->cookie = cookie;
+    state->flowtable = instance;
+    state->idx = 0;
+
+    if (query != NULL) {
+        state->query = *query;
+        state->use_query = 1;
+    } else {
+        state->use_query = 0;
+    }
+
+    rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
+    if (rv != INDIGO_ERROR_NONE) {
+        INDIGO_MEM_FREE(state);
+        return rv;
+    }
+
+    return INDIGO_ERROR_NONE;
+}

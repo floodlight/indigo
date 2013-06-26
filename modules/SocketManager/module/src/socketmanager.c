@@ -549,12 +549,6 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
 }
 
 
-void
-ind_soc_task_unregister(ind_soc_task_t *task)
-{
-}
-
-
 indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
