@@ -993,6 +993,20 @@ indigo_core_flow_modify_callback(indigo_error_t result,
 
 /****************************************************************/
 
+/* Flowtable iterator for ind_core_flow_delete_handler */
+static void
+delete_iter_cb(void *cookie, ft_entry_t *entry)
+{
+    of_object_t *obj = cookie;
+    if (entry != NULL) {
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+    } else {
+        LOG_TRACE("Finished flow delete task");
+        of_object_delete(obj);
+    }
+}
+
+
 /**
  * Handle a flow_delete message
  * @param cxn_id Connection handler for the owning connection
@@ -1006,7 +1020,6 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_flow_delete_t *flow_del;
     of_meta_match_t query;
     indigo_error_t rv;
-    biglist_t *list, *ble;
 
     flow_del = (of_flow_delete_t *)_obj;
     LOG_TRACE("Handling of_flow_delete message: %p.", flow_del);
@@ -1019,16 +1032,14 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    list = FT_QUERY(ind_core_ft, &query);
-
-    for (ble = list; ble; ble = biglist_next(ble)) {
-        ind_core_flow_entry_delete((ft_entry_t *)(ble->data),
-                                   INDIGO_FLOW_REMOVED_DELETE);
+    rv = ft_spawn_iter_task(ind_core_ft, &query, delete_iter_cb, _obj,
+                            IND_SOC_DEFAULT_PRIORITY);
+    if (rv != INDIGO_ERROR_NONE) {
+        of_object_delete(_obj);
+        return rv;
     }
 
-    biglist_free(list);
-
-    of_object_delete(_obj);
+    /* Ownership of _obj is passed to the iterator for barrier tracking */
     return INDIGO_ERROR_NONE;
 }
 
