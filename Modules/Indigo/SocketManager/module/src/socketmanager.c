@@ -126,6 +126,7 @@ typedef struct ind_soc_task_s {
     int priority;
 } ind_soc_task_t;
 
+/* Sorted in descending priority order */
 static list_head_t tasks;
 
 
@@ -518,6 +519,8 @@ indigo_error_t
 ind_soc_task_register(ind_soc_task_callback_f callback,
                       void *cookie, int priority)
 {
+    list_links_t *cur;
+
     ind_soc_task_t *task = INDIGO_MEM_ALLOC(sizeof(*task));
     if (task == NULL) {
         return INDIGO_ERROR_RESOURCE;
@@ -527,7 +530,20 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
     task->cookie = cookie;
     task->priority = priority;
 
-    list_push(&tasks, &task->links);
+    /* Maintain descending priority order */
+    LIST_FOREACH(&tasks, cur) {
+        ind_soc_task_t *cur_task = container_of(cur, links, ind_soc_task_t);
+        if (cur_task->priority <= priority) {
+            break;
+        }
+    }
+
+    /*
+     * If we're inserting the new lowest priority task then cur will be left
+     * pointing to the list head. Otherwise it points to the first task with
+     * lower priority. In both cases we insert the new task before cur.
+     */
+    list_insert_before(cur, &task->links);
 
     return INDIGO_ERROR_NONE;
 }
@@ -635,8 +651,8 @@ process_tasks(int priority)
     struct list_links *cur, *next;
     LIST_FOREACH_SAFE(&tasks, cur, next) {
         ind_soc_task_t *task = container_of(cur, links, ind_soc_task_t);
-        if (task->priority != priority) {
-            continue;
+        if (task->priority < priority) {
+            break;
         }
         if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
             list_remove(&task->links);
@@ -657,7 +673,6 @@ find_highest_ready_priority(void)
     indigo_time_t now;
     int elapsed, tmp_ms;
     int priority = INT_MIN;
-    struct list_links *cur;
 
     now = INDIGO_CURRENT_TIME;
 
@@ -683,8 +698,8 @@ find_highest_ready_priority(void)
         }
     }
 
-    LIST_FOREACH(&tasks, cur) {
-        ind_soc_task_t *task = container_of(cur, links, ind_soc_task_t);
+    if (!list_empty(&tasks)) {
+        ind_soc_task_t *task = container_of(tasks.links.next, links, ind_soc_task_t);
         priority = aim_imax(priority, task->priority);
     }
 
