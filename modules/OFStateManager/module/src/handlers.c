@@ -513,39 +513,6 @@ queued_req_service(ft_entry_t *entry)
                            INDIGO_POINTER_TO_COOKIE(ptr_cxn));
 }
 
-/**
- * Delete a set of flows with the given reason
- * @param query The specification of the set of flows to delete
- * @param reason The reason to use when deleting
- * @returns The number of flows deleted
- *
- * Iterates across the flows from the given query and calls
- * core_flow_entry_delete on each.
- *
- * Note that the delete is an async process and multiple
- * outstanding delete operations may be pending after this call
- * is completed.
- */
-
-static unsigned
-flows_delete(of_meta_match_t *query, indigo_fi_flow_removed_t reason)
-{
-    biglist_t *list, *ble;
-    unsigned result = 0;
-
-    list = ft_flow_query(ind_core_ft, query);
-
-    for (ble = list; ble; ble = biglist_next(ble)) {
-        ind_core_flow_entry_delete((ft_entry_t *)(ble->data), reason);
-        result += 1;
-    }
-    LOG_TRACE("Pending deletes now %d ", ind_core_ft->status.pending_deletes);
-
-    biglist_free(list);
-
-    return result;
-}
-
 /****************************************************************/
 
 static indigo_error_t
@@ -1037,9 +1004,9 @@ indigo_error_t
 ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     of_flow_delete_t *flow_del;
-    int count;
     of_meta_match_t query;
     indigo_error_t rv;
+    biglist_t *list, *ble;
 
     flow_del = (of_flow_delete_t *)_obj;
     LOG_TRACE("Handling of_flow_delete message: %p.", flow_del);
@@ -1052,9 +1019,14 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    count = flows_delete(&query, INDIGO_FLOW_REMOVED_DELETE);
+    list = FT_QUERY(ind_core_ft, &query);
 
-    LOG_TRACE("Marked %d entries to be deleted", count);
+    for (ble = list; ble; ble = biglist_next(ble)) {
+        ind_core_flow_entry_delete((ft_entry_t *)(ble->data),
+                                   INDIGO_FLOW_REMOVED_DELETE);
+    }
+
+    biglist_free(list);
 
     of_object_delete(_obj);
     return INDIGO_ERROR_NONE;
