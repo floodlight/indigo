@@ -38,6 +38,7 @@
 
 #include <indigo/error.h>
 #include <stdint.h>
+#include <limits.h>
 
 /****************************************************************
  * Socket register functions
@@ -47,6 +48,8 @@
  * Priorities are signed integers. Higher priority events are handled first.
  */
 #define IND_SOC_DEFAULT_PRIORITY 0
+#define IND_SOC_HIGHEST_PRIORITY INT_MAX
+#define IND_SOC_LOWEST_PRIORITY  INT_MIN
 
 /**
  * Run status.
