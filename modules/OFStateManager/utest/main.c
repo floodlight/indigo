@@ -824,6 +824,9 @@ delete_all_entries(ft_instance_t ft)
     of_flow_delete_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
     TEST_OK(of_flow_delete_match_set(flow_del, &match));
     TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_del));
+    while (ft->status.current_count > 0) {
+        ind_soc_select_and_run(0);
+    }
 
     TEST_OK(depopulate_table(ft));
 
