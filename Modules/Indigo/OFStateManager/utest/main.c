@@ -652,6 +652,71 @@ test_ft_hash(void)
     return TEST_PASS;
 }
 
+struct iter_task_state {
+    ft_instance_t ft;
+    int finished;
+    int entries_seen;
+};
+
+static void
+iter_task_cb(void *cookie, ft_entry_t *entry)
+{
+    struct iter_task_state *state = cookie;
+    if (entry != NULL) {
+        state->finished = 0;
+        state->entries_seen++;
+        ASSERT(ft_hash_flow_delete(state->ft, entry, 1) == 0);
+    } else {
+        state->finished = 1;
+    }
+}
+
+static int
+test_ft_iter_task(void)
+{
+    ft_instance_t ft;
+    ft_config_t config = {
+        16, /* Max entries */
+        1024, /* prio buckets */
+        1024, /* match buckets */
+        1024, /* flow_id buckets */
+        entry_deleted, /* callback */
+        NULL /* cookie */
+    };
+    of_flow_add_t *flow_add1, *flow_add2;
+    ft_entry_t *entry1, *entry2;
+    struct iter_task_state state;
+
+    ft = ft_hash_create(&config);
+
+    flow_add1 = of_flow_add_new(OF_VERSION_1_0);
+    of_flow_add_OF_VERSION_1_0_populate(flow_add1, 1);
+    of_flow_add_flags_set(flow_add1, 0);
+
+    flow_add2 = of_flow_add_new(OF_VERSION_1_0);
+    of_flow_add_OF_VERSION_1_0_populate(flow_add2, 2);
+    of_flow_add_flags_set(flow_add2, 0);
+
+    TEST_INDIGO_OK(FT_ADD(ft, 1, flow_add1, &entry1));
+    TEST_INDIGO_OK(FT_ADD(ft, 2, flow_add2, &entry2));
+
+    state = (struct iter_task_state) { .ft = ft, .finished = -1, .entries_seen = 0 };
+    ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_DEFAULT_PRIORITY);
+    TEST_ASSERT(state.finished == -1);
+    TEST_ASSERT(state.entries_seen == 0);
+    TEST_ASSERT(ft->status.current_count == 2);
+    while (state.finished != 1) {
+        ind_soc_select_and_run(0);
+    }
+    TEST_ASSERT(state.finished == 1);
+    TEST_ASSERT(state.entries_seen == 2);
+    TEST_ASSERT(ft->status.current_count == 0);
+
+    ft_hash_delete(ft);
+
+    return TEST_PASS;
+}
+
 static int
 test_hello(void)
 {
@@ -936,8 +1001,13 @@ int
 aim_main(int argc, char* argv[])
 {
     ind_core_config_t core;
+    ind_soc_config_t soc_cfg = { 0 };
+
+    ind_soc_init(&soc_cfg);
+    ind_soc_enable_set(1);
 
     RUN_TEST(ft_hash);
+    RUN_TEST(ft_iter_task);
 
     /* Init Core */
     MEMSET(&core, 0, sizeof(core));
