@@ -62,8 +62,16 @@
 #include <string.h>
 #include <limits.h>
 
+static void before_callback(void);
+static void after_callback(void);
+
 static int init_done = 0;
 static int module_enabled = 0;
+
+/*
+ * Milliseconds before ind_soc_should_yield() returns true.
+ */
+#define TIMESLICE_MS 10
 
 /* Short hand logging macros */
 #define LOG_ERROR AIM_LOG_ERROR
@@ -407,7 +415,9 @@ process_timers(int priority)
                 timer_event[idx].callback = NULL;
             }
 
+            before_callback();
             callback(timer_event[idx].cookie);
+            after_callback();
         }
     }
 }
@@ -606,6 +616,34 @@ ind_soc_finish(void)
     return INDIGO_ERROR_NONE;
 }
 
+/* Time since the current callback started */
+static indigo_time_t callback_start_time;
+
+static void
+before_callback(void)
+{
+    callback_start_time = INDIGO_CURRENT_TIME;
+}
+
+static void
+after_callback(void)
+{
+    indigo_time_t elapsed =
+        INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
+    if (elapsed > TIMESLICE_MS * 2) {
+        LOG_WARN("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
+                 elapsed, TIMESLICE_MS);
+    }
+}
+
+int
+ind_soc_should_yield(void)
+{
+    indigo_time_t elapsed =
+        INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
+    return elapsed > TIMESLICE_MS;
+}
+
 /*
  * Run callbacks for each ready socket.
  */
@@ -629,9 +667,10 @@ process_sockets(int priority)
         write_ready = (pfd->revents & POLLOUT) != 0;
         error_seen = (pfd->revents & POLLERR) != 0;
         if (read_ready || write_ready || error_seen) {
+            before_callback();
             soc_map[pfd->fd].callback(pfd->fd, soc_map[pfd->fd].cookie,
                     read_ready, write_ready, error_seen);
-
+            after_callback();
         }
     }
 }
@@ -648,10 +687,12 @@ process_tasks(int priority)
         if (task->priority < priority) {
             break;
         }
+        before_callback();
         if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
             list_remove(&task->links);
             INDIGO_MEM_FREE(task);
         }
+        after_callback();
     }
 }
 
