@@ -160,10 +160,7 @@ ft_iter_task_callback(void *cookie)
 {
     struct ft_iter_task_state *state = cookie;
 
-    /*
-     * Loop until we make a callback or finish the iteration.
-     */
-    while (1) {
+    do {
         if (state->idx == state->flowtable->config.max_entries) {
             /* Finished */
             state->callback(state->cookie, NULL);
@@ -182,9 +179,8 @@ ft_iter_task_callback(void *cookie)
             }
 
             state->callback(state->cookie, entry);
-            break;
         }
-    }
+    } while (!ind_soc_should_yield());
 
     return IND_SOC_TASK_CONTINUE;
 }

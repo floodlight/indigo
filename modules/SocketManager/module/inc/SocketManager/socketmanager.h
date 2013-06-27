@@ -338,6 +338,23 @@ extern indigo_error_t ind_soc_select_and_run(int run_for_ms);
 extern void ind_soc_run_status_set(ind_soc_run_status_t status);
 
 /**
+ * Check whether the current callback should yield
+ *
+ * This function will return true if too much time has passed
+ * since the callback began.
+ *
+ * This should be only called after the callback has done some
+ * minimal amount of work to ensure forward progress.
+ *
+ * Only valid from a SocketManager callback.
+ *
+ * @returns Boolean
+ */
+
+int ind_soc_should_yield(void);
+
+
+/**
  * Enable the socket manager
  */
 
