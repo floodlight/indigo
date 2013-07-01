@@ -631,8 +631,8 @@ after_callback(void)
     indigo_time_t elapsed =
         INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
     if (elapsed > TIMESLICE_MS * 2) {
-        LOG_WARN("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
-                 elapsed, TIMESLICE_MS);
+        LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
+                    elapsed, TIMESLICE_MS);
     }
 }
 
