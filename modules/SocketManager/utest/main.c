@@ -414,13 +414,17 @@ task_callback_yield(void *cookie)
     int *count_ptr = cookie;
     printf("Task callback called\n");
 
-    do {
+    while (*count_ptr < 100) {
         usleep(1000);
         (*count_ptr)++;
         printf("Task callback working count=%d\n", *count_ptr);
-    } while (!ind_soc_should_yield());
 
-    return IND_SOC_TASK_FINISHED;
+        if (ind_soc_should_yield()) {
+            break;
+        }
+    }
+
+    return *count_ptr == 100 ? IND_SOC_TASK_FINISHED : IND_SOC_TASK_CONTINUE;
 }
 
 static ind_soc_task_status_t
@@ -475,8 +479,17 @@ test_task(void)
     /* Task should yield after 10 ms */
     INDIGO_ASSERT(ind_soc_task_register(task_callback_yield, &counters[0], 0) == INDIGO_ERROR_NONE);
     memset(counters, 0, sizeof(counters));
-    ind_soc_select_and_run(0);
-    INDIGO_ASSERT(counters[0] > 5 && counters[0] < 15);
+    i = 0;
+    while (counters[0] < 100) {
+        int tmp;
+        tmp = counters[0];
+        ind_soc_select_and_run(0);
+        tmp = counters[0] - tmp;
+        INDIGO_ASSERT(tmp <= 10); /* 10 ms/timeslice / 1+ ms/unit <= 10 units/timeslice */
+        i++;
+    }
+    INDIGO_ASSERT(i >= 10); /* (100 units * 1+ ms/unit) / 10 ms/timeslice >= 10 timeslices */
+    INDIGO_ASSERT(100 / i >= 5); /* average at least 5 units per timeslice */
 
     /* Excessively long callback should trigger a warning (not checked) */
     INDIGO_ASSERT(ind_soc_task_register(task_callback_long, &counters[0], 0) == INDIGO_ERROR_NONE);
