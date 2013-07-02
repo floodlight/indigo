@@ -401,4 +401,14 @@ extern indigo_error_t ft_flow_first_match(ft_instance_t instance,
 extern biglist_t *ft_flow_query(ft_instance_t instance,
                                 of_meta_match_t *query);
 
+
+typedef void (*ft_iter_task_callback_f)(void *cookie, ft_entry_t *entry);
+
+indigo_error_t
+ft_spawn_iter_task(ft_instance_t instance,
+                   of_meta_match_t *query,
+                   ft_iter_task_callback_f callback,
+                   void *cookie,
+                   int priority);
+
 #endif /* _OFSTATEMANAGER_FT_UTILS_H_ */
