@@ -290,31 +290,19 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_bsn_get_ip_mask_request_handler(obj, cxn);
         break;
 
+    /* These all use the experimenter handler */
     case OF_BSN_GET_MIRRORING_REQUEST:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_SET_MIRRORING:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_SHELL_COMMAND:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_GET_INTERFACES_REQUEST:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_SET_L2_TABLE_REQUEST:
-        rv = ind_core_experimenter_handler(obj, cxn);
-        break;
-
     case OF_BSN_GET_L2_TABLE_REQUEST:
+    case OF_BSN_VIRTUAL_PORT_CREATE_REQUEST:
+    case OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST:
+    case OF_BSN_BW_CLEAR_DATA_REQUEST:
+    case OF_BSN_BW_ENABLE_GET_REQUEST:
+    case OF_BSN_BW_ENABLE_SET_REQUEST:
         rv = ind_core_experimenter_handler(obj, cxn);
         break;
 
