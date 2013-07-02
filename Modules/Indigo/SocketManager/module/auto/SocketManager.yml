@@ -45,6 +45,9 @@ cdefs: &cdefs
 - SOCKETMANAGER_CONFIG_INCLUDE_UCLI:
     doc: "Include generic uCli support."
     default: 0
+- SOCKETMANAGER_CONFIG_TIMESLICE_MS:
+    doc: "Milliseconds before ind_soc_should_yield() returns true."
+    default: 10
 
 
 definitions:
