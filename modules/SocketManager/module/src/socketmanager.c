@@ -68,11 +68,6 @@ static void after_callback(void);
 static int init_done = 0;
 static int module_enabled = 0;
 
-/*
- * Milliseconds before ind_soc_should_yield() returns true.
- */
-#define TIMESLICE_MS 10
-
 /* Short hand logging macros */
 #define LOG_ERROR AIM_LOG_ERROR
 #define LOG_WARN AIM_LOG_WARN
@@ -630,9 +625,9 @@ after_callback(void)
 {
     indigo_time_t elapsed =
         INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
-    if (elapsed >= TIMESLICE_MS * 2) {
+    if (elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS * 2) {
         LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
-                    elapsed, TIMESLICE_MS);
+                    elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
     }
 }
 
@@ -641,7 +636,7 @@ ind_soc_should_yield(void)
 {
     indigo_time_t elapsed =
         INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
-    return elapsed >= TIMESLICE_MS;
+    return elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS;
 }
 
 /*

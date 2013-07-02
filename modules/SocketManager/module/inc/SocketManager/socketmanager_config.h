@@ -113,6 +113,16 @@
 #define SOCKETMANAGER_CONFIG_INCLUDE_UCLI 0
 #endif
 
+/**
+ * SOCKETMANAGER_CONFIG_TIMESLICE_MS
+ *
+ * Milliseconds before ind_soc_should_yield() returns true. */
+
+
+#ifndef SOCKETMANAGER_CONFIG_TIMESLICE_MS
+#define SOCKETMANAGER_CONFIG_TIMESLICE_MS 10
+#endif
+
 
 
 /**
