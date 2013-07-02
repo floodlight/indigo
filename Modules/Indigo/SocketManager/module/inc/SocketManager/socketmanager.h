@@ -253,6 +253,37 @@ indigo_error_t ind_soc_timer_event_unregister(
     ind_soc_timer_callback_f callback,
     void *cookie);
 
+/****************************************************************
+ * Task functions
+ ****************************************************************/
+
+typedef enum ind_soc_task_status {
+    IND_SOC_TASK_CONTINUE,
+    IND_SOC_TASK_FINISHED,
+} ind_soc_task_status_t;
+
+/**
+ * Callback for task
+ *
+ * @param task Task handle (used to unregister)
+ * @param cookie Data passed to ind_soc_task_register
+ * @returns Whether the task is finished
+ */
+
+typedef ind_soc_task_status_t (*ind_soc_task_callback_f)(void *cookie);
+
+/**
+ * Register a task
+ *
+ * @param callback Task callback function
+ * @param cookie Opaque data passed to callback
+ * @param priority Priority level
+ */
+
+indigo_error_t ind_soc_task_register(
+    ind_soc_task_callback_f callback,
+    void *cookie, int priority);
+
 
 typedef struct ind_soc_config_s {
     uint32_t flags; /* Ignored */
@@ -305,6 +336,23 @@ extern indigo_error_t ind_soc_select_and_run(int run_for_ms);
  */
 
 extern void ind_soc_run_status_set(ind_soc_run_status_t status);
+
+/**
+ * Check whether the current callback should yield
+ *
+ * This function will return true if too much time has passed
+ * since the callback began.
+ *
+ * This should be only called after the callback has done some
+ * minimal amount of work to ensure forward progress.
+ *
+ * Only valid from a SocketManager callback.
+ *
+ * @returns Boolean
+ */
+
+int ind_soc_should_yield(void);
+
 
 /**
  * Enable the socket manager

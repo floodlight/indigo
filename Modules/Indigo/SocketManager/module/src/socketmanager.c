@@ -53,12 +53,17 @@
 
 #include <indigo/assert.h>
 #include <indigo/time.h>
+#include <indigo/memory.h>
+#include <AIM/aim_list.h>
 
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <limits.h>
+
+static void before_callback(void);
+static void after_callback(void);
 
 static int init_done = 0;
 static int module_enabled = 0;
@@ -114,6 +119,20 @@ static timer_event_t timer_event[TIMER_EVENT_MAX];
     for ((idx) = 0; (idx) < TIMER_EVENT_MAX; (idx)++)   \
         if (TIMER_EVENT_VALID(idx))
 
+/*
+ * Task structure
+ */
+typedef struct ind_soc_task_s {
+    list_links_t links; /* global tasks */
+    ind_soc_task_callback_f callback;
+    void *cookie;
+    int priority;
+} ind_soc_task_t;
+
+/* Sorted in descending priority order */
+static list_head_t tasks;
+
+
 /* Return index for timer; -1 if not found.  Use only with valid callback */
 static int
 timer_event_find(ind_soc_timer_callback_f callback, void *cookie)
@@ -156,6 +175,8 @@ soc_mgr_init(void)
     for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
         timer_event[idx].callback = NULL;
     }
+
+    list_init(&tasks);
 }
 
 
@@ -389,7 +410,9 @@ process_timers(int priority)
                 timer_event[idx].callback = NULL;
             }
 
+            before_callback();
             callback(timer_event[idx].cookie);
+            after_callback();
         }
     }
 }
@@ -498,6 +521,40 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
 
 
 indigo_error_t
+ind_soc_task_register(ind_soc_task_callback_f callback,
+                      void *cookie, int priority)
+{
+    list_links_t *cur;
+
+    ind_soc_task_t *task = INDIGO_MEM_ALLOC(sizeof(*task));
+    if (task == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+
+    task->callback = callback;
+    task->cookie = cookie;
+    task->priority = priority;
+
+    /* Maintain descending priority order */
+    LIST_FOREACH(&tasks, cur) {
+        ind_soc_task_t *cur_task = container_of(cur, links, ind_soc_task_t);
+        if (cur_task->priority <= priority) {
+            break;
+        }
+    }
+
+    /*
+     * If we're inserting the new lowest priority task then cur will be left
+     * pointing to the list head. Otherwise it points to the first task with
+     * lower priority. In both cases we insert the new task before cur.
+     */
+    list_insert_before(cur, &task->links);
+
+    return INDIGO_ERROR_NONE;
+}
+
+
+indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
     LOG_INFO("Initializing socket manager");
@@ -554,6 +611,34 @@ ind_soc_finish(void)
     return INDIGO_ERROR_NONE;
 }
 
+/* Time since the current callback started */
+static indigo_time_t callback_start_time;
+
+static void
+before_callback(void)
+{
+    callback_start_time = INDIGO_CURRENT_TIME;
+}
+
+static void
+after_callback(void)
+{
+    indigo_time_t elapsed =
+        INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
+    if (elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS * 2) {
+        LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
+                    elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
+    }
+}
+
+int
+ind_soc_should_yield(void)
+{
+    indigo_time_t elapsed =
+        INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
+    return elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS;
+}
+
 /*
  * Run callbacks for each ready socket.
  */
@@ -577,10 +662,32 @@ process_sockets(int priority)
         write_ready = (pfd->revents & POLLOUT) != 0;
         error_seen = (pfd->revents & POLLERR) != 0;
         if (read_ready || write_ready || error_seen) {
+            before_callback();
             soc_map[pfd->fd].callback(pfd->fd, soc_map[pfd->fd].cookie,
                     read_ready, write_ready, error_seen);
-
+            after_callback();
         }
+    }
+}
+
+/*
+ * Run callbacks for each task.
+ */
+static void
+process_tasks(int priority)
+{
+    struct list_links *cur, *next;
+    LIST_FOREACH_SAFE(&tasks, cur, next) {
+        ind_soc_task_t *task = container_of(cur, links, ind_soc_task_t);
+        if (task->priority < priority) {
+            break;
+        }
+        before_callback();
+        if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
+            list_remove(&task->links);
+            INDIGO_MEM_FREE(task);
+        }
+        after_callback();
     }
 }
 
@@ -619,6 +726,11 @@ find_highest_ready_priority(void)
         if (tmp_ms <= 0) {
             priority = timer_event[idx].priority;
         }
+    }
+
+    if (!list_empty(&tasks)) {
+        ind_soc_task_t *task = container_of(tasks.links.next, links, ind_soc_task_t);
+        priority = aim_imax(priority, task->priority);
     }
 
     return priority;
@@ -663,6 +775,7 @@ ind_soc_select_and_run(int run_for_ms)
 
         process_sockets(priority);
         process_timers(priority);
+        process_tasks(priority);
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             return INDIGO_ERROR_NONE;

@@ -44,6 +44,7 @@
 #include "socketmanager_log.h"
 
 static int sigalrm_write_fd = -1;
+static int task_counter_limit = 1;
 
 struct sock_counters {
     int read;
@@ -398,13 +399,115 @@ test_timer_mgmt(void)
     }
 }
 
+static ind_soc_task_status_t
+task_callback(void *cookie)
+{
+    int *count_ptr = cookie;
+    (*count_ptr)++;
+    printf("Task callback called count=%d\n", *count_ptr);
+    return *count_ptr >= task_counter_limit ? IND_SOC_TASK_FINISHED : IND_SOC_TASK_CONTINUE;
+}
+
+static ind_soc_task_status_t
+task_callback_yield(void *cookie)
+{
+    int *count_ptr = cookie;
+    printf("Task callback called\n");
+
+    while (*count_ptr < 100) {
+        usleep(1000);
+        (*count_ptr)++;
+        printf("Task callback working count=%d\n", *count_ptr);
+
+        if (ind_soc_should_yield()) {
+            break;
+        }
+    }
+
+    return *count_ptr == 100 ? IND_SOC_TASK_FINISHED : IND_SOC_TASK_CONTINUE;
+}
+
+static ind_soc_task_status_t
+task_callback_long(void *cookie)
+{
+    int i;
+    int *count_ptr = cookie;
+    printf("Task callback (long) called\n");
+    for (i = 0; i < 100; i++) {
+        usleep(1000);
+    }
+    (*count_ptr)++;
+    return IND_SOC_TASK_FINISHED;
+}
+
+static void
+test_task(void)
+{
+    int counters[2];
+    int i;
+
+    task_counter_limit = 3;
+
+    INDIGO_ASSERT(ind_soc_task_register(task_callback, &counters[0], 0) == INDIGO_ERROR_NONE);
+
+    /* Task should immediately run */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0] == 1);
+
+    /* Task should keep running */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0] == 1);
+
+    INDIGO_ASSERT(ind_soc_task_register(task_callback, &counters[1], 0) == INDIGO_ERROR_NONE);
+
+    /* Both tasks should run until the counter == 3 */
+    memset(counters, 0, sizeof(counters));
+    for (i = 1; i <= 3; i++) {
+        ind_soc_select_and_run(0);
+        INDIGO_ASSERT(counters[0] == i);
+        INDIGO_ASSERT(counters[1] == i);
+    }
+
+    /* No tasks should run after finishing */
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0] == 0);
+    INDIGO_ASSERT(counters[1] == 0);
+
+    /* Task should yield after 10 ms */
+    INDIGO_ASSERT(ind_soc_task_register(task_callback_yield, &counters[0], 0) == INDIGO_ERROR_NONE);
+    memset(counters, 0, sizeof(counters));
+    i = 0;
+    while (counters[0] < 100) {
+        int tmp;
+        tmp = counters[0];
+        ind_soc_select_and_run(0);
+        tmp = counters[0] - tmp;
+        INDIGO_ASSERT(tmp <= 10); /* 10 ms/timeslice / 1+ ms/unit <= 10 units/timeslice */
+        i++;
+    }
+    INDIGO_ASSERT(i >= 10); /* (100 units * 1+ ms/unit) / 10 ms/timeslice >= 10 timeslices */
+    INDIGO_ASSERT(100 / i >= 5); /* average at least 5 units per timeslice */
+
+    /* Excessively long callback should trigger a warning (not checked) */
+    INDIGO_ASSERT(ind_soc_task_register(task_callback_long, &counters[0], 0) == INDIGO_ERROR_NONE);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(0);
+    INDIGO_ASSERT(counters[0] == 1);
+}
+
 static void
 test_priority(void)
 {
     int read_fds[3], write_fds[3];
     struct sock_counters counters[3];
     int timer_counters[3];
+    int task_counters[3];
     int i;
+
+    task_counter_limit = 1;
 
     for (i = 0; i < 3; i++) {
         int fds[2];
@@ -423,6 +526,9 @@ test_priority(void)
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
         timer_callback, &timer_counters[0], IND_SOC_TIMER_IMMEDIATE, 1) == 0);
 
+    INDIGO_ASSERT(ind_soc_task_register(
+        task_callback, &task_counters[0], 1) == 0);
+
     /* Medium priority */
     INDIGO_ASSERT(ind_soc_socket_register_with_priority(
         read_fds[1], socket_callback, &counters[1], 0) == 0);
@@ -430,12 +536,18 @@ test_priority(void)
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
         timer_callback, &timer_counters[1], IND_SOC_TIMER_IMMEDIATE, 0) == 0);
 
+    INDIGO_ASSERT(ind_soc_task_register(
+        task_callback, &task_counters[1], 0) == 0);
+
     /* Low priority */
     INDIGO_ASSERT(ind_soc_socket_register_with_priority(
         read_fds[2], socket_callback, &counters[2], -1) == 0);
 
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
         timer_callback, &timer_counters[2], IND_SOC_TIMER_IMMEDIATE, -1) == 0);
+
+    INDIGO_ASSERT(ind_soc_task_register(
+        task_callback, &task_counters[2], -1) == 0);
 
     /* Make all sockets ready */
     for (i = 0; i < 3; i++) {
@@ -445,6 +557,7 @@ test_priority(void)
     /* Higher priority events should run first */
     memset(counters, 0, sizeof(counters));
     memset(timer_counters, 0, sizeof(timer_counters));
+    memset(task_counters, 0, sizeof(task_counters));
     ind_soc_select_and_run(0);
     INDIGO_ASSERT(counters[0].read == 1);
     INDIGO_ASSERT(counters[1].read == 0);
@@ -452,10 +565,14 @@ test_priority(void)
     INDIGO_ASSERT(timer_counters[0] == 1);
     INDIGO_ASSERT(timer_counters[1] == 0);
     INDIGO_ASSERT(timer_counters[2] == 0);
+    INDIGO_ASSERT(task_counters[0] == 1);
+    INDIGO_ASSERT(task_counters[1] == 0);
+    INDIGO_ASSERT(task_counters[2] == 0);
 
     /* Medium priority events should run next */
     memset(counters, 0, sizeof(counters));
     memset(timer_counters, 0, sizeof(timer_counters));
+    memset(task_counters, 0, sizeof(task_counters));
     ind_soc_select_and_run(0);
     INDIGO_ASSERT(counters[0].read == 0);
     INDIGO_ASSERT(counters[1].read == 1);
@@ -463,11 +580,17 @@ test_priority(void)
     INDIGO_ASSERT(timer_counters[0] == 0);
     INDIGO_ASSERT(timer_counters[1] == 1);
     INDIGO_ASSERT(timer_counters[2] == 0);
+    INDIGO_ASSERT(task_counters[0] == 0);
+    INDIGO_ASSERT(task_counters[1] == 1);
+    INDIGO_ASSERT(task_counters[2] == 0);
 
     /* New high priority events should run next */
     write(write_fds[0], "x", 1);
+    INDIGO_ASSERT(ind_soc_task_register(
+        task_callback, &task_counters[0], 1) == 0);
     memset(counters, 0, sizeof(counters));
     memset(timer_counters, 0, sizeof(timer_counters));
+    memset(task_counters, 0, sizeof(task_counters));
     ind_soc_select_and_run(0);
     INDIGO_ASSERT(counters[0].read == 1);
     INDIGO_ASSERT(counters[1].read == 0);
@@ -475,10 +598,14 @@ test_priority(void)
     INDIGO_ASSERT(timer_counters[0] == 0);
     INDIGO_ASSERT(timer_counters[1] == 0);
     INDIGO_ASSERT(timer_counters[2] == 0);
+    INDIGO_ASSERT(task_counters[0] == 1);
+    INDIGO_ASSERT(task_counters[1] == 0);
+    INDIGO_ASSERT(task_counters[2] == 0);
 
     /* Low priority events should run last */
     memset(counters, 0, sizeof(counters));
     memset(timer_counters, 0, sizeof(timer_counters));
+    memset(task_counters, 0, sizeof(task_counters));
     ind_soc_select_and_run(0);
     INDIGO_ASSERT(counters[0].read == 0);
     INDIGO_ASSERT(counters[1].read == 0);
@@ -486,6 +613,9 @@ test_priority(void)
     INDIGO_ASSERT(timer_counters[0] == 0);
     INDIGO_ASSERT(timer_counters[1] == 0);
     INDIGO_ASSERT(timer_counters[2] == 1);
+    INDIGO_ASSERT(task_counters[0] == 0);
+    INDIGO_ASSERT(task_counters[1] == 0);
+    INDIGO_ASSERT(task_counters[2] == 1);
 
     INDIGO_ASSERT(ind_soc_socket_unregister(read_fds[0]) == 0);
     INDIGO_ASSERT(ind_soc_socket_unregister(read_fds[1]) == 0);
@@ -517,6 +647,7 @@ main(int argc, char* argv[])
     test_immediate_timer();
     test_socket();
     test_socket_mgmt();
+    test_task();
     test_priority();
 
     return 0;
