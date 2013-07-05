@@ -847,179 +847,7 @@ of_oxm_type_to_id_v1[OF_OXM_ITEM_COUNT] = {
     OF_OBJECT_INVALID,             /* 68 (Invalid) */
     OF_OBJECT_INVALID,             /* 69 (Invalid) */
     OF_OBJECT_INVALID,             /* 70 (Invalid) */
-    OF_OBJECT_INVALID,             /* 71 (Invalid) */
-    OF_OBJECT_INVALID,             /* 72 (Invalid) */
-    OF_OBJECT_INVALID,             /* 73 (Invalid) */
-    OF_OBJECT_INVALID,             /* 74 (Invalid) */
-    OF_OBJECT_INVALID,             /* 75 (Invalid) */
-    OF_OBJECT_INVALID,             /* 76 (Invalid) */
-    OF_OBJECT_INVALID,             /* 77 (Invalid) */
-    OF_OBJECT_INVALID,             /* 78 (Invalid) */
-    OF_OBJECT_INVALID,             /* 79 (Invalid) */
-    OF_OBJECT_INVALID,             /* 80 (Invalid) */
-    OF_OBJECT_INVALID,             /* 81 (Invalid) */
-    OF_OBJECT_INVALID,             /* 82 (Invalid) */
-    OF_OBJECT_INVALID,             /* 83 (Invalid) */
-    OF_OBJECT_INVALID,             /* 84 (Invalid) */
-    OF_OBJECT_INVALID,             /* 85 (Invalid) */
-    OF_OBJECT_INVALID,             /* 86 (Invalid) */
-    OF_OBJECT_INVALID,             /* 87 (Invalid) */
-    OF_OBJECT_INVALID,             /* 88 (Invalid) */
-    OF_OBJECT_INVALID,             /* 89 (Invalid) */
-    OF_OBJECT_INVALID,             /* 90 (Invalid) */
-    OF_OBJECT_INVALID,             /* 91 (Invalid) */
-    OF_OBJECT_INVALID,             /* 92 (Invalid) */
-    OF_OBJECT_INVALID,             /* 93 (Invalid) */
-    OF_OBJECT_INVALID,             /* 94 (Invalid) */
-    OF_OBJECT_INVALID,             /* 95 (Invalid) */
-    OF_OBJECT_INVALID,             /* 96 (Invalid) */
-    OF_OBJECT_INVALID,             /* 97 (Invalid) */
-    OF_OBJECT_INVALID,             /* 98 (Invalid) */
-    OF_OBJECT_INVALID,             /* 99 (Invalid) */
-    OF_OBJECT_INVALID,             /* 100 (Invalid) */
-    OF_OBJECT_INVALID,             /* 101 (Invalid) */
-    OF_OBJECT_INVALID,             /* 102 (Invalid) */
-    OF_OBJECT_INVALID,             /* 103 (Invalid) */
-    OF_OBJECT_INVALID,             /* 104 (Invalid) */
-    OF_OBJECT_INVALID,             /* 105 (Invalid) */
-    OF_OBJECT_INVALID,             /* 106 (Invalid) */
-    OF_OBJECT_INVALID,             /* 107 (Invalid) */
-    OF_OBJECT_INVALID,             /* 108 (Invalid) */
-    OF_OBJECT_INVALID,             /* 109 (Invalid) */
-    OF_OBJECT_INVALID,             /* 110 (Invalid) */
-    OF_OBJECT_INVALID,             /* 111 (Invalid) */
-    OF_OBJECT_INVALID,             /* 112 (Invalid) */
-    OF_OBJECT_INVALID,             /* 113 (Invalid) */
-    OF_OBJECT_INVALID,             /* 114 (Invalid) */
-    OF_OBJECT_INVALID,             /* 115 (Invalid) */
-    OF_OBJECT_INVALID,             /* 116 (Invalid) */
-    OF_OBJECT_INVALID,             /* 117 (Invalid) */
-    OF_OBJECT_INVALID,             /* 118 (Invalid) */
-    OF_OBJECT_INVALID,             /* 119 (Invalid) */
-    OF_OBJECT_INVALID,             /* 120 (Invalid) */
-    OF_OBJECT_INVALID,             /* 121 (Invalid) */
-    OF_OBJECT_INVALID,             /* 122 (Invalid) */
-    OF_OBJECT_INVALID,             /* 123 (Invalid) */
-    OF_OBJECT_INVALID,             /* 124 (Invalid) */
-    OF_OBJECT_INVALID,             /* 125 (Invalid) */
-    OF_OBJECT_INVALID,             /* 126 (Invalid) */
-    OF_OBJECT_INVALID,             /* 127 (Invalid) */
-    OF_OBJECT_INVALID,             /* 128 (Invalid) */
-    OF_OBJECT_INVALID,             /* 129 (Invalid) */
-    OF_OBJECT_INVALID,             /* 130 (Invalid) */
-    OF_OBJECT_INVALID,             /* 131 (Invalid) */
-    OF_OBJECT_INVALID,             /* 132 (Invalid) */
-    OF_OBJECT_INVALID,             /* 133 (Invalid) */
-    OF_OBJECT_INVALID,             /* 134 (Invalid) */
-    OF_OBJECT_INVALID,             /* 135 (Invalid) */
-    OF_OBJECT_INVALID,             /* 136 (Invalid) */
-    OF_OBJECT_INVALID,             /* 137 (Invalid) */
-    OF_OBJECT_INVALID,             /* 138 (Invalid) */
-    OF_OBJECT_INVALID,             /* 139 (Invalid) */
-    OF_OBJECT_INVALID,             /* 140 (Invalid) */
-    OF_OBJECT_INVALID,             /* 141 (Invalid) */
-    OF_OBJECT_INVALID,             /* 142 (Invalid) */
-    OF_OBJECT_INVALID,             /* 143 (Invalid) */
-    OF_OBJECT_INVALID,             /* 144 (Invalid) */
-    OF_OBJECT_INVALID,             /* 145 (Invalid) */
-    OF_OBJECT_INVALID,             /* 146 (Invalid) */
-    OF_OBJECT_INVALID,             /* 147 (Invalid) */
-    OF_OBJECT_INVALID,             /* 148 (Invalid) */
-    OF_OBJECT_INVALID,             /* 149 (Invalid) */
-    OF_OBJECT_INVALID,             /* 150 (Invalid) */
-    OF_OBJECT_INVALID,             /* 151 (Invalid) */
-    OF_OBJECT_INVALID,             /* 152 (Invalid) */
-    OF_OBJECT_INVALID,             /* 153 (Invalid) */
-    OF_OBJECT_INVALID,             /* 154 (Invalid) */
-    OF_OBJECT_INVALID,             /* 155 (Invalid) */
-    OF_OBJECT_INVALID,             /* 156 (Invalid) */
-    OF_OBJECT_INVALID,             /* 157 (Invalid) */
-    OF_OBJECT_INVALID,             /* 158 (Invalid) */
-    OF_OBJECT_INVALID,             /* 159 (Invalid) */
-    OF_OBJECT_INVALID,             /* 160 (Invalid) */
-    OF_OBJECT_INVALID,             /* 161 (Invalid) */
-    OF_OBJECT_INVALID,             /* 162 (Invalid) */
-    OF_OBJECT_INVALID,             /* 163 (Invalid) */
-    OF_OBJECT_INVALID,             /* 164 (Invalid) */
-    OF_OBJECT_INVALID,             /* 165 (Invalid) */
-    OF_OBJECT_INVALID,             /* 166 (Invalid) */
-    OF_OBJECT_INVALID,             /* 167 (Invalid) */
-    OF_OBJECT_INVALID,             /* 168 (Invalid) */
-    OF_OBJECT_INVALID,             /* 169 (Invalid) */
-    OF_OBJECT_INVALID,             /* 170 (Invalid) */
-    OF_OBJECT_INVALID,             /* 171 (Invalid) */
-    OF_OBJECT_INVALID,             /* 172 (Invalid) */
-    OF_OBJECT_INVALID,             /* 173 (Invalid) */
-    OF_OBJECT_INVALID,             /* 174 (Invalid) */
-    OF_OBJECT_INVALID,             /* 175 (Invalid) */
-    OF_OBJECT_INVALID,             /* 176 (Invalid) */
-    OF_OBJECT_INVALID,             /* 177 (Invalid) */
-    OF_OBJECT_INVALID,             /* 178 (Invalid) */
-    OF_OBJECT_INVALID,             /* 179 (Invalid) */
-    OF_OBJECT_INVALID,             /* 180 (Invalid) */
-    OF_OBJECT_INVALID,             /* 181 (Invalid) */
-    OF_OBJECT_INVALID,             /* 182 (Invalid) */
-    OF_OBJECT_INVALID,             /* 183 (Invalid) */
-    OF_OBJECT_INVALID,             /* 184 (Invalid) */
-    OF_OBJECT_INVALID,             /* 185 (Invalid) */
-    OF_OBJECT_INVALID,             /* 186 (Invalid) */
-    OF_OBJECT_INVALID,             /* 187 (Invalid) */
-    OF_OBJECT_INVALID,             /* 188 (Invalid) */
-    OF_OBJECT_INVALID,             /* 189 (Invalid) */
-    OF_OBJECT_INVALID,             /* 190 (Invalid) */
-    OF_OBJECT_INVALID,             /* 191 (Invalid) */
-    OF_OBJECT_INVALID,             /* 192 (Invalid) */
-    OF_OBJECT_INVALID,             /* 193 (Invalid) */
-    OF_OBJECT_INVALID,             /* 194 (Invalid) */
-    OF_OBJECT_INVALID,             /* 195 (Invalid) */
-    OF_OBJECT_INVALID,             /* 196 (Invalid) */
-    OF_OBJECT_INVALID,             /* 197 (Invalid) */
-    OF_OBJECT_INVALID,             /* 198 (Invalid) */
-    OF_OBJECT_INVALID,             /* 199 (Invalid) */
-    OF_OBJECT_INVALID,             /* 200 (Invalid) */
-    OF_OBJECT_INVALID,             /* 201 (Invalid) */
-    OF_OBJECT_INVALID,             /* 202 (Invalid) */
-    OF_OBJECT_INVALID,             /* 203 (Invalid) */
-    OF_OBJECT_INVALID,             /* 204 (Invalid) */
-    OF_OBJECT_INVALID,             /* 205 (Invalid) */
-    OF_OBJECT_INVALID,             /* 206 (Invalid) */
-    OF_OBJECT_INVALID,             /* 207 (Invalid) */
-    OF_OBJECT_INVALID,             /* 208 (Invalid) */
-    OF_OBJECT_INVALID,             /* 209 (Invalid) */
-    OF_OBJECT_INVALID,             /* 210 (Invalid) */
-    OF_OBJECT_INVALID,             /* 211 (Invalid) */
-    OF_OBJECT_INVALID,             /* 212 (Invalid) */
-    OF_OBJECT_INVALID,             /* 213 (Invalid) */
-    OF_OBJECT_INVALID,             /* 214 (Invalid) */
-    OF_OBJECT_INVALID,             /* 215 (Invalid) */
-    OF_OBJECT_INVALID,             /* 216 (Invalid) */
-    OF_OBJECT_INVALID,             /* 217 (Invalid) */
-    OF_OBJECT_INVALID,             /* 218 (Invalid) */
-    OF_OBJECT_INVALID,             /* 219 (Invalid) */
-    OF_OBJECT_INVALID,             /* 220 (Invalid) */
-    OF_OBJECT_INVALID,             /* 221 (Invalid) */
-    OF_OBJECT_INVALID,             /* 222 (Invalid) */
-    OF_OBJECT_INVALID,             /* 223 (Invalid) */
-    OF_OBJECT_INVALID,             /* 224 (Invalid) */
-    OF_OBJECT_INVALID,             /* 225 (Invalid) */
-    OF_OBJECT_INVALID,             /* 226 (Invalid) */
-    OF_OBJECT_INVALID,             /* 227 (Invalid) */
-    OF_OBJECT_INVALID,             /* 228 (Invalid) */
-    OF_OBJECT_INVALID,             /* 229 (Invalid) */
-    OF_OBJECT_INVALID,             /* 230 (Invalid) */
-    OF_OBJECT_INVALID,             /* 231 (Invalid) */
-    OF_OBJECT_INVALID,             /* 232 (Invalid) */
-    OF_OBJECT_INVALID,             /* 233 (Invalid) */
-    OF_OBJECT_INVALID,             /* 234 (Invalid) */
-    OF_OBJECT_INVALID,             /* 235 (Invalid) */
-    OF_OBJECT_INVALID,             /* 236 (Invalid) */
-    OF_OBJECT_INVALID,             /* 237 (Invalid) */
-    OF_OBJECT_INVALID,             /* 238 (Invalid) */
-    OF_OBJECT_INVALID,             /* 239 (Invalid) */
-    OF_OBJECT_INVALID,             /* 240 (Invalid) */
-    OF_OBJECT_INVALID,             /* 241 (Invalid) */
-    OF_OBJECT_INVALID,             /* 242 (Invalid) */
-    OF_OBJECT_INVALID              /* 243 (Invalid) */
+    OF_OBJECT_INVALID              /* 71 (Invalid) */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v2[OF_OXM_ITEM_COUNT] = {
@@ -1094,179 +922,7 @@ of_oxm_type_to_id_v2[OF_OXM_ITEM_COUNT] = {
     OF_OBJECT_INVALID,             /* 68 (Invalid) */
     OF_OBJECT_INVALID,             /* 69 (Invalid) */
     OF_OBJECT_INVALID,             /* 70 (Invalid) */
-    OF_OBJECT_INVALID,             /* 71 (Invalid) */
-    OF_OBJECT_INVALID,             /* 72 (Invalid) */
-    OF_OBJECT_INVALID,             /* 73 (Invalid) */
-    OF_OBJECT_INVALID,             /* 74 (Invalid) */
-    OF_OBJECT_INVALID,             /* 75 (Invalid) */
-    OF_OBJECT_INVALID,             /* 76 (Invalid) */
-    OF_OBJECT_INVALID,             /* 77 (Invalid) */
-    OF_OBJECT_INVALID,             /* 78 (Invalid) */
-    OF_OBJECT_INVALID,             /* 79 (Invalid) */
-    OF_OBJECT_INVALID,             /* 80 (Invalid) */
-    OF_OBJECT_INVALID,             /* 81 (Invalid) */
-    OF_OBJECT_INVALID,             /* 82 (Invalid) */
-    OF_OBJECT_INVALID,             /* 83 (Invalid) */
-    OF_OBJECT_INVALID,             /* 84 (Invalid) */
-    OF_OBJECT_INVALID,             /* 85 (Invalid) */
-    OF_OBJECT_INVALID,             /* 86 (Invalid) */
-    OF_OBJECT_INVALID,             /* 87 (Invalid) */
-    OF_OBJECT_INVALID,             /* 88 (Invalid) */
-    OF_OBJECT_INVALID,             /* 89 (Invalid) */
-    OF_OBJECT_INVALID,             /* 90 (Invalid) */
-    OF_OBJECT_INVALID,             /* 91 (Invalid) */
-    OF_OBJECT_INVALID,             /* 92 (Invalid) */
-    OF_OBJECT_INVALID,             /* 93 (Invalid) */
-    OF_OBJECT_INVALID,             /* 94 (Invalid) */
-    OF_OBJECT_INVALID,             /* 95 (Invalid) */
-    OF_OBJECT_INVALID,             /* 96 (Invalid) */
-    OF_OBJECT_INVALID,             /* 97 (Invalid) */
-    OF_OBJECT_INVALID,             /* 98 (Invalid) */
-    OF_OBJECT_INVALID,             /* 99 (Invalid) */
-    OF_OBJECT_INVALID,             /* 100 (Invalid) */
-    OF_OBJECT_INVALID,             /* 101 (Invalid) */
-    OF_OBJECT_INVALID,             /* 102 (Invalid) */
-    OF_OBJECT_INVALID,             /* 103 (Invalid) */
-    OF_OBJECT_INVALID,             /* 104 (Invalid) */
-    OF_OBJECT_INVALID,             /* 105 (Invalid) */
-    OF_OBJECT_INVALID,             /* 106 (Invalid) */
-    OF_OBJECT_INVALID,             /* 107 (Invalid) */
-    OF_OBJECT_INVALID,             /* 108 (Invalid) */
-    OF_OBJECT_INVALID,             /* 109 (Invalid) */
-    OF_OBJECT_INVALID,             /* 110 (Invalid) */
-    OF_OBJECT_INVALID,             /* 111 (Invalid) */
-    OF_OBJECT_INVALID,             /* 112 (Invalid) */
-    OF_OBJECT_INVALID,             /* 113 (Invalid) */
-    OF_OBJECT_INVALID,             /* 114 (Invalid) */
-    OF_OBJECT_INVALID,             /* 115 (Invalid) */
-    OF_OBJECT_INVALID,             /* 116 (Invalid) */
-    OF_OBJECT_INVALID,             /* 117 (Invalid) */
-    OF_OBJECT_INVALID,             /* 118 (Invalid) */
-    OF_OBJECT_INVALID,             /* 119 (Invalid) */
-    OF_OBJECT_INVALID,             /* 120 (Invalid) */
-    OF_OBJECT_INVALID,             /* 121 (Invalid) */
-    OF_OBJECT_INVALID,             /* 122 (Invalid) */
-    OF_OBJECT_INVALID,             /* 123 (Invalid) */
-    OF_OBJECT_INVALID,             /* 124 (Invalid) */
-    OF_OBJECT_INVALID,             /* 125 (Invalid) */
-    OF_OBJECT_INVALID,             /* 126 (Invalid) */
-    OF_OBJECT_INVALID,             /* 127 (Invalid) */
-    OF_OBJECT_INVALID,             /* 128 (Invalid) */
-    OF_OBJECT_INVALID,             /* 129 (Invalid) */
-    OF_OBJECT_INVALID,             /* 130 (Invalid) */
-    OF_OBJECT_INVALID,             /* 131 (Invalid) */
-    OF_OBJECT_INVALID,             /* 132 (Invalid) */
-    OF_OBJECT_INVALID,             /* 133 (Invalid) */
-    OF_OBJECT_INVALID,             /* 134 (Invalid) */
-    OF_OBJECT_INVALID,             /* 135 (Invalid) */
-    OF_OBJECT_INVALID,             /* 136 (Invalid) */
-    OF_OBJECT_INVALID,             /* 137 (Invalid) */
-    OF_OBJECT_INVALID,             /* 138 (Invalid) */
-    OF_OBJECT_INVALID,             /* 139 (Invalid) */
-    OF_OBJECT_INVALID,             /* 140 (Invalid) */
-    OF_OBJECT_INVALID,             /* 141 (Invalid) */
-    OF_OBJECT_INVALID,             /* 142 (Invalid) */
-    OF_OBJECT_INVALID,             /* 143 (Invalid) */
-    OF_OBJECT_INVALID,             /* 144 (Invalid) */
-    OF_OBJECT_INVALID,             /* 145 (Invalid) */
-    OF_OBJECT_INVALID,             /* 146 (Invalid) */
-    OF_OBJECT_INVALID,             /* 147 (Invalid) */
-    OF_OBJECT_INVALID,             /* 148 (Invalid) */
-    OF_OBJECT_INVALID,             /* 149 (Invalid) */
-    OF_OBJECT_INVALID,             /* 150 (Invalid) */
-    OF_OBJECT_INVALID,             /* 151 (Invalid) */
-    OF_OBJECT_INVALID,             /* 152 (Invalid) */
-    OF_OBJECT_INVALID,             /* 153 (Invalid) */
-    OF_OBJECT_INVALID,             /* 154 (Invalid) */
-    OF_OBJECT_INVALID,             /* 155 (Invalid) */
-    OF_OBJECT_INVALID,             /* 156 (Invalid) */
-    OF_OBJECT_INVALID,             /* 157 (Invalid) */
-    OF_OBJECT_INVALID,             /* 158 (Invalid) */
-    OF_OBJECT_INVALID,             /* 159 (Invalid) */
-    OF_OBJECT_INVALID,             /* 160 (Invalid) */
-    OF_OBJECT_INVALID,             /* 161 (Invalid) */
-    OF_OBJECT_INVALID,             /* 162 (Invalid) */
-    OF_OBJECT_INVALID,             /* 163 (Invalid) */
-    OF_OBJECT_INVALID,             /* 164 (Invalid) */
-    OF_OBJECT_INVALID,             /* 165 (Invalid) */
-    OF_OBJECT_INVALID,             /* 166 (Invalid) */
-    OF_OBJECT_INVALID,             /* 167 (Invalid) */
-    OF_OBJECT_INVALID,             /* 168 (Invalid) */
-    OF_OBJECT_INVALID,             /* 169 (Invalid) */
-    OF_OBJECT_INVALID,             /* 170 (Invalid) */
-    OF_OBJECT_INVALID,             /* 171 (Invalid) */
-    OF_OBJECT_INVALID,             /* 172 (Invalid) */
-    OF_OBJECT_INVALID,             /* 173 (Invalid) */
-    OF_OBJECT_INVALID,             /* 174 (Invalid) */
-    OF_OBJECT_INVALID,             /* 175 (Invalid) */
-    OF_OBJECT_INVALID,             /* 176 (Invalid) */
-    OF_OBJECT_INVALID,             /* 177 (Invalid) */
-    OF_OBJECT_INVALID,             /* 178 (Invalid) */
-    OF_OBJECT_INVALID,             /* 179 (Invalid) */
-    OF_OBJECT_INVALID,             /* 180 (Invalid) */
-    OF_OBJECT_INVALID,             /* 181 (Invalid) */
-    OF_OBJECT_INVALID,             /* 182 (Invalid) */
-    OF_OBJECT_INVALID,             /* 183 (Invalid) */
-    OF_OBJECT_INVALID,             /* 184 (Invalid) */
-    OF_OBJECT_INVALID,             /* 185 (Invalid) */
-    OF_OBJECT_INVALID,             /* 186 (Invalid) */
-    OF_OBJECT_INVALID,             /* 187 (Invalid) */
-    OF_OBJECT_INVALID,             /* 188 (Invalid) */
-    OF_OBJECT_INVALID,             /* 189 (Invalid) */
-    OF_OBJECT_INVALID,             /* 190 (Invalid) */
-    OF_OBJECT_INVALID,             /* 191 (Invalid) */
-    OF_OBJECT_INVALID,             /* 192 (Invalid) */
-    OF_OBJECT_INVALID,             /* 193 (Invalid) */
-    OF_OBJECT_INVALID,             /* 194 (Invalid) */
-    OF_OBJECT_INVALID,             /* 195 (Invalid) */
-    OF_OBJECT_INVALID,             /* 196 (Invalid) */
-    OF_OBJECT_INVALID,             /* 197 (Invalid) */
-    OF_OBJECT_INVALID,             /* 198 (Invalid) */
-    OF_OBJECT_INVALID,             /* 199 (Invalid) */
-    OF_OBJECT_INVALID,             /* 200 (Invalid) */
-    OF_OBJECT_INVALID,             /* 201 (Invalid) */
-    OF_OBJECT_INVALID,             /* 202 (Invalid) */
-    OF_OBJECT_INVALID,             /* 203 (Invalid) */
-    OF_OBJECT_INVALID,             /* 204 (Invalid) */
-    OF_OBJECT_INVALID,             /* 205 (Invalid) */
-    OF_OBJECT_INVALID,             /* 206 (Invalid) */
-    OF_OBJECT_INVALID,             /* 207 (Invalid) */
-    OF_OBJECT_INVALID,             /* 208 (Invalid) */
-    OF_OBJECT_INVALID,             /* 209 (Invalid) */
-    OF_OBJECT_INVALID,             /* 210 (Invalid) */
-    OF_OBJECT_INVALID,             /* 211 (Invalid) */
-    OF_OBJECT_INVALID,             /* 212 (Invalid) */
-    OF_OBJECT_INVALID,             /* 213 (Invalid) */
-    OF_OBJECT_INVALID,             /* 214 (Invalid) */
-    OF_OBJECT_INVALID,             /* 215 (Invalid) */
-    OF_OBJECT_INVALID,             /* 216 (Invalid) */
-    OF_OBJECT_INVALID,             /* 217 (Invalid) */
-    OF_OBJECT_INVALID,             /* 218 (Invalid) */
-    OF_OBJECT_INVALID,             /* 219 (Invalid) */
-    OF_OBJECT_INVALID,             /* 220 (Invalid) */
-    OF_OBJECT_INVALID,             /* 221 (Invalid) */
-    OF_OBJECT_INVALID,             /* 222 (Invalid) */
-    OF_OBJECT_INVALID,             /* 223 (Invalid) */
-    OF_OBJECT_INVALID,             /* 224 (Invalid) */
-    OF_OBJECT_INVALID,             /* 225 (Invalid) */
-    OF_OBJECT_INVALID,             /* 226 (Invalid) */
-    OF_OBJECT_INVALID,             /* 227 (Invalid) */
-    OF_OBJECT_INVALID,             /* 228 (Invalid) */
-    OF_OBJECT_INVALID,             /* 229 (Invalid) */
-    OF_OBJECT_INVALID,             /* 230 (Invalid) */
-    OF_OBJECT_INVALID,             /* 231 (Invalid) */
-    OF_OBJECT_INVALID,             /* 232 (Invalid) */
-    OF_OBJECT_INVALID,             /* 233 (Invalid) */
-    OF_OBJECT_INVALID,             /* 234 (Invalid) */
-    OF_OBJECT_INVALID,             /* 235 (Invalid) */
-    OF_OBJECT_INVALID,             /* 236 (Invalid) */
-    OF_OBJECT_INVALID,             /* 237 (Invalid) */
-    OF_OBJECT_INVALID,             /* 238 (Invalid) */
-    OF_OBJECT_INVALID,             /* 239 (Invalid) */
-    OF_OBJECT_INVALID,             /* 240 (Invalid) */
-    OF_OBJECT_INVALID,             /* 241 (Invalid) */
-    OF_OBJECT_INVALID,             /* 242 (Invalid) */
-    OF_OBJECT_INVALID              /* 243 (Invalid) */
+    OF_OBJECT_INVALID              /* 71 (Invalid) */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v3[OF_OXM_ITEM_COUNT] = {
@@ -1341,179 +997,7 @@ of_oxm_type_to_id_v3[OF_OXM_ITEM_COUNT] = {
     OF_OXM_MPLS_LABEL,             /* 68 */
     OF_OXM_MPLS_LABEL_MASKED,      /* 69 */
     OF_OXM_MPLS_TC,                /* 70 */
-    OF_OXM_MPLS_TC_MASKED,         /* 71 */
-    OF_OBJECT_INVALID,             /* 72 (Invalid) */
-    OF_OBJECT_INVALID,             /* 73 (Invalid) */
-    OF_OBJECT_INVALID,             /* 74 (Invalid) */
-    OF_OBJECT_INVALID,             /* 75 (Invalid) */
-    OF_OBJECT_INVALID,             /* 76 (Invalid) */
-    OF_OBJECT_INVALID,             /* 77 (Invalid) */
-    OF_OBJECT_INVALID,             /* 78 (Invalid) */
-    OF_OBJECT_INVALID,             /* 79 (Invalid) */
-    OF_OBJECT_INVALID,             /* 80 (Invalid) */
-    OF_OBJECT_INVALID,             /* 81 (Invalid) */
-    OF_OBJECT_INVALID,             /* 82 (Invalid) */
-    OF_OBJECT_INVALID,             /* 83 (Invalid) */
-    OF_OBJECT_INVALID,             /* 84 (Invalid) */
-    OF_OBJECT_INVALID,             /* 85 (Invalid) */
-    OF_OBJECT_INVALID,             /* 86 (Invalid) */
-    OF_OBJECT_INVALID,             /* 87 (Invalid) */
-    OF_OBJECT_INVALID,             /* 88 (Invalid) */
-    OF_OBJECT_INVALID,             /* 89 (Invalid) */
-    OF_OBJECT_INVALID,             /* 90 (Invalid) */
-    OF_OBJECT_INVALID,             /* 91 (Invalid) */
-    OF_OBJECT_INVALID,             /* 92 (Invalid) */
-    OF_OBJECT_INVALID,             /* 93 (Invalid) */
-    OF_OBJECT_INVALID,             /* 94 (Invalid) */
-    OF_OBJECT_INVALID,             /* 95 (Invalid) */
-    OF_OBJECT_INVALID,             /* 96 (Invalid) */
-    OF_OBJECT_INVALID,             /* 97 (Invalid) */
-    OF_OBJECT_INVALID,             /* 98 (Invalid) */
-    OF_OBJECT_INVALID,             /* 99 (Invalid) */
-    OF_OBJECT_INVALID,             /* 100 (Invalid) */
-    OF_OBJECT_INVALID,             /* 101 (Invalid) */
-    OF_OBJECT_INVALID,             /* 102 (Invalid) */
-    OF_OBJECT_INVALID,             /* 103 (Invalid) */
-    OF_OBJECT_INVALID,             /* 104 (Invalid) */
-    OF_OBJECT_INVALID,             /* 105 (Invalid) */
-    OF_OBJECT_INVALID,             /* 106 (Invalid) */
-    OF_OBJECT_INVALID,             /* 107 (Invalid) */
-    OF_OBJECT_INVALID,             /* 108 (Invalid) */
-    OF_OBJECT_INVALID,             /* 109 (Invalid) */
-    OF_OBJECT_INVALID,             /* 110 (Invalid) */
-    OF_OBJECT_INVALID,             /* 111 (Invalid) */
-    OF_OBJECT_INVALID,             /* 112 (Invalid) */
-    OF_OBJECT_INVALID,             /* 113 (Invalid) */
-    OF_OBJECT_INVALID,             /* 114 (Invalid) */
-    OF_OBJECT_INVALID,             /* 115 (Invalid) */
-    OF_OBJECT_INVALID,             /* 116 (Invalid) */
-    OF_OBJECT_INVALID,             /* 117 (Invalid) */
-    OF_OBJECT_INVALID,             /* 118 (Invalid) */
-    OF_OBJECT_INVALID,             /* 119 (Invalid) */
-    OF_OBJECT_INVALID,             /* 120 (Invalid) */
-    OF_OBJECT_INVALID,             /* 121 (Invalid) */
-    OF_OBJECT_INVALID,             /* 122 (Invalid) */
-    OF_OBJECT_INVALID,             /* 123 (Invalid) */
-    OF_OBJECT_INVALID,             /* 124 (Invalid) */
-    OF_OBJECT_INVALID,             /* 125 (Invalid) */
-    OF_OBJECT_INVALID,             /* 126 (Invalid) */
-    OF_OBJECT_INVALID,             /* 127 (Invalid) */
-    OF_OBJECT_INVALID,             /* 128 (Invalid) */
-    OF_OBJECT_INVALID,             /* 129 (Invalid) */
-    OF_OBJECT_INVALID,             /* 130 (Invalid) */
-    OF_OBJECT_INVALID,             /* 131 (Invalid) */
-    OF_OBJECT_INVALID,             /* 132 (Invalid) */
-    OF_OBJECT_INVALID,             /* 133 (Invalid) */
-    OF_OBJECT_INVALID,             /* 134 (Invalid) */
-    OF_OBJECT_INVALID,             /* 135 (Invalid) */
-    OF_OBJECT_INVALID,             /* 136 (Invalid) */
-    OF_OBJECT_INVALID,             /* 137 (Invalid) */
-    OF_OBJECT_INVALID,             /* 138 (Invalid) */
-    OF_OBJECT_INVALID,             /* 139 (Invalid) */
-    OF_OBJECT_INVALID,             /* 140 (Invalid) */
-    OF_OBJECT_INVALID,             /* 141 (Invalid) */
-    OF_OBJECT_INVALID,             /* 142 (Invalid) */
-    OF_OBJECT_INVALID,             /* 143 (Invalid) */
-    OF_OBJECT_INVALID,             /* 144 (Invalid) */
-    OF_OBJECT_INVALID,             /* 145 (Invalid) */
-    OF_OBJECT_INVALID,             /* 146 (Invalid) */
-    OF_OBJECT_INVALID,             /* 147 (Invalid) */
-    OF_OBJECT_INVALID,             /* 148 (Invalid) */
-    OF_OBJECT_INVALID,             /* 149 (Invalid) */
-    OF_OBJECT_INVALID,             /* 150 (Invalid) */
-    OF_OBJECT_INVALID,             /* 151 (Invalid) */
-    OF_OBJECT_INVALID,             /* 152 (Invalid) */
-    OF_OBJECT_INVALID,             /* 153 (Invalid) */
-    OF_OBJECT_INVALID,             /* 154 (Invalid) */
-    OF_OBJECT_INVALID,             /* 155 (Invalid) */
-    OF_OBJECT_INVALID,             /* 156 (Invalid) */
-    OF_OBJECT_INVALID,             /* 157 (Invalid) */
-    OF_OBJECT_INVALID,             /* 158 (Invalid) */
-    OF_OBJECT_INVALID,             /* 159 (Invalid) */
-    OF_OBJECT_INVALID,             /* 160 (Invalid) */
-    OF_OBJECT_INVALID,             /* 161 (Invalid) */
-    OF_OBJECT_INVALID,             /* 162 (Invalid) */
-    OF_OBJECT_INVALID,             /* 163 (Invalid) */
-    OF_OBJECT_INVALID,             /* 164 (Invalid) */
-    OF_OBJECT_INVALID,             /* 165 (Invalid) */
-    OF_OBJECT_INVALID,             /* 166 (Invalid) */
-    OF_OBJECT_INVALID,             /* 167 (Invalid) */
-    OF_OBJECT_INVALID,             /* 168 (Invalid) */
-    OF_OBJECT_INVALID,             /* 169 (Invalid) */
-    OF_OBJECT_INVALID,             /* 170 (Invalid) */
-    OF_OBJECT_INVALID,             /* 171 (Invalid) */
-    OF_OBJECT_INVALID,             /* 172 (Invalid) */
-    OF_OBJECT_INVALID,             /* 173 (Invalid) */
-    OF_OBJECT_INVALID,             /* 174 (Invalid) */
-    OF_OBJECT_INVALID,             /* 175 (Invalid) */
-    OF_OBJECT_INVALID,             /* 176 (Invalid) */
-    OF_OBJECT_INVALID,             /* 177 (Invalid) */
-    OF_OBJECT_INVALID,             /* 178 (Invalid) */
-    OF_OBJECT_INVALID,             /* 179 (Invalid) */
-    OF_OBJECT_INVALID,             /* 180 (Invalid) */
-    OF_OBJECT_INVALID,             /* 181 (Invalid) */
-    OF_OBJECT_INVALID,             /* 182 (Invalid) */
-    OF_OBJECT_INVALID,             /* 183 (Invalid) */
-    OF_OBJECT_INVALID,             /* 184 (Invalid) */
-    OF_OBJECT_INVALID,             /* 185 (Invalid) */
-    OF_OBJECT_INVALID,             /* 186 (Invalid) */
-    OF_OBJECT_INVALID,             /* 187 (Invalid) */
-    OF_OBJECT_INVALID,             /* 188 (Invalid) */
-    OF_OBJECT_INVALID,             /* 189 (Invalid) */
-    OF_OBJECT_INVALID,             /* 190 (Invalid) */
-    OF_OBJECT_INVALID,             /* 191 (Invalid) */
-    OF_OBJECT_INVALID,             /* 192 (Invalid) */
-    OF_OBJECT_INVALID,             /* 193 (Invalid) */
-    OF_OBJECT_INVALID,             /* 194 (Invalid) */
-    OF_OBJECT_INVALID,             /* 195 (Invalid) */
-    OF_OBJECT_INVALID,             /* 196 (Invalid) */
-    OF_OBJECT_INVALID,             /* 197 (Invalid) */
-    OF_OBJECT_INVALID,             /* 198 (Invalid) */
-    OF_OBJECT_INVALID,             /* 199 (Invalid) */
-    OF_OBJECT_INVALID,             /* 200 (Invalid) */
-    OF_OBJECT_INVALID,             /* 201 (Invalid) */
-    OF_OBJECT_INVALID,             /* 202 (Invalid) */
-    OF_OBJECT_INVALID,             /* 203 (Invalid) */
-    OF_OBJECT_INVALID,             /* 204 (Invalid) */
-    OF_OBJECT_INVALID,             /* 205 (Invalid) */
-    OF_OBJECT_INVALID,             /* 206 (Invalid) */
-    OF_OBJECT_INVALID,             /* 207 (Invalid) */
-    OF_OBJECT_INVALID,             /* 208 (Invalid) */
-    OF_OBJECT_INVALID,             /* 209 (Invalid) */
-    OF_OBJECT_INVALID,             /* 210 (Invalid) */
-    OF_OBJECT_INVALID,             /* 211 (Invalid) */
-    OF_OBJECT_INVALID,             /* 212 (Invalid) */
-    OF_OBJECT_INVALID,             /* 213 (Invalid) */
-    OF_OBJECT_INVALID,             /* 214 (Invalid) */
-    OF_OBJECT_INVALID,             /* 215 (Invalid) */
-    OF_OBJECT_INVALID,             /* 216 (Invalid) */
-    OF_OBJECT_INVALID,             /* 217 (Invalid) */
-    OF_OBJECT_INVALID,             /* 218 (Invalid) */
-    OF_OBJECT_INVALID,             /* 219 (Invalid) */
-    OF_OBJECT_INVALID,             /* 220 (Invalid) */
-    OF_OBJECT_INVALID,             /* 221 (Invalid) */
-    OF_OBJECT_INVALID,             /* 222 (Invalid) */
-    OF_OBJECT_INVALID,             /* 223 (Invalid) */
-    OF_OBJECT_INVALID,             /* 224 (Invalid) */
-    OF_OBJECT_INVALID,             /* 225 (Invalid) */
-    OF_OBJECT_INVALID,             /* 226 (Invalid) */
-    OF_OBJECT_INVALID,             /* 227 (Invalid) */
-    OF_OBJECT_INVALID,             /* 228 (Invalid) */
-    OF_OBJECT_INVALID,             /* 229 (Invalid) */
-    OF_OBJECT_INVALID,             /* 230 (Invalid) */
-    OF_OBJECT_INVALID,             /* 231 (Invalid) */
-    OF_OBJECT_INVALID,             /* 232 (Invalid) */
-    OF_OBJECT_INVALID,             /* 233 (Invalid) */
-    OF_OBJECT_INVALID,             /* 234 (Invalid) */
-    OF_OBJECT_INVALID,             /* 235 (Invalid) */
-    OF_OBJECT_INVALID,             /* 236 (Invalid) */
-    OF_OBJECT_INVALID,             /* 237 (Invalid) */
-    OF_OBJECT_INVALID,             /* 238 (Invalid) */
-    OF_OBJECT_INVALID,             /* 239 (Invalid) */
-    OF_OXM_SRC_META_ID,            /* 240 */
-    OF_OXM_SRC_META_ID_MASKED,     /* 241 */
-    OF_OXM_DST_META_ID,            /* 242 */
-    OF_OXM_DST_META_ID_MASKED      /* 243 */
+    OF_OXM_MPLS_TC_MASKED          /* 71 */
 };
 static const of_object_id_t
 of_oxm_type_to_id_v4[OF_OXM_ITEM_COUNT] = {
@@ -1588,179 +1072,7 @@ of_oxm_type_to_id_v4[OF_OXM_ITEM_COUNT] = {
     OF_OXM_MPLS_LABEL,             /* 68 */
     OF_OXM_MPLS_LABEL_MASKED,      /* 69 */
     OF_OXM_MPLS_TC,                /* 70 */
-    OF_OXM_MPLS_TC_MASKED,         /* 71 */
-    OF_OBJECT_INVALID,             /* 72 (Invalid) */
-    OF_OBJECT_INVALID,             /* 73 (Invalid) */
-    OF_OBJECT_INVALID,             /* 74 (Invalid) */
-    OF_OBJECT_INVALID,             /* 75 (Invalid) */
-    OF_OBJECT_INVALID,             /* 76 (Invalid) */
-    OF_OBJECT_INVALID,             /* 77 (Invalid) */
-    OF_OBJECT_INVALID,             /* 78 (Invalid) */
-    OF_OBJECT_INVALID,             /* 79 (Invalid) */
-    OF_OBJECT_INVALID,             /* 80 (Invalid) */
-    OF_OBJECT_INVALID,             /* 81 (Invalid) */
-    OF_OBJECT_INVALID,             /* 82 (Invalid) */
-    OF_OBJECT_INVALID,             /* 83 (Invalid) */
-    OF_OBJECT_INVALID,             /* 84 (Invalid) */
-    OF_OBJECT_INVALID,             /* 85 (Invalid) */
-    OF_OBJECT_INVALID,             /* 86 (Invalid) */
-    OF_OBJECT_INVALID,             /* 87 (Invalid) */
-    OF_OBJECT_INVALID,             /* 88 (Invalid) */
-    OF_OBJECT_INVALID,             /* 89 (Invalid) */
-    OF_OBJECT_INVALID,             /* 90 (Invalid) */
-    OF_OBJECT_INVALID,             /* 91 (Invalid) */
-    OF_OBJECT_INVALID,             /* 92 (Invalid) */
-    OF_OBJECT_INVALID,             /* 93 (Invalid) */
-    OF_OBJECT_INVALID,             /* 94 (Invalid) */
-    OF_OBJECT_INVALID,             /* 95 (Invalid) */
-    OF_OBJECT_INVALID,             /* 96 (Invalid) */
-    OF_OBJECT_INVALID,             /* 97 (Invalid) */
-    OF_OBJECT_INVALID,             /* 98 (Invalid) */
-    OF_OBJECT_INVALID,             /* 99 (Invalid) */
-    OF_OBJECT_INVALID,             /* 100 (Invalid) */
-    OF_OBJECT_INVALID,             /* 101 (Invalid) */
-    OF_OBJECT_INVALID,             /* 102 (Invalid) */
-    OF_OBJECT_INVALID,             /* 103 (Invalid) */
-    OF_OBJECT_INVALID,             /* 104 (Invalid) */
-    OF_OBJECT_INVALID,             /* 105 (Invalid) */
-    OF_OBJECT_INVALID,             /* 106 (Invalid) */
-    OF_OBJECT_INVALID,             /* 107 (Invalid) */
-    OF_OBJECT_INVALID,             /* 108 (Invalid) */
-    OF_OBJECT_INVALID,             /* 109 (Invalid) */
-    OF_OBJECT_INVALID,             /* 110 (Invalid) */
-    OF_OBJECT_INVALID,             /* 111 (Invalid) */
-    OF_OBJECT_INVALID,             /* 112 (Invalid) */
-    OF_OBJECT_INVALID,             /* 113 (Invalid) */
-    OF_OBJECT_INVALID,             /* 114 (Invalid) */
-    OF_OBJECT_INVALID,             /* 115 (Invalid) */
-    OF_OBJECT_INVALID,             /* 116 (Invalid) */
-    OF_OBJECT_INVALID,             /* 117 (Invalid) */
-    OF_OBJECT_INVALID,             /* 118 (Invalid) */
-    OF_OBJECT_INVALID,             /* 119 (Invalid) */
-    OF_OBJECT_INVALID,             /* 120 (Invalid) */
-    OF_OBJECT_INVALID,             /* 121 (Invalid) */
-    OF_OBJECT_INVALID,             /* 122 (Invalid) */
-    OF_OBJECT_INVALID,             /* 123 (Invalid) */
-    OF_OBJECT_INVALID,             /* 124 (Invalid) */
-    OF_OBJECT_INVALID,             /* 125 (Invalid) */
-    OF_OBJECT_INVALID,             /* 126 (Invalid) */
-    OF_OBJECT_INVALID,             /* 127 (Invalid) */
-    OF_OBJECT_INVALID,             /* 128 (Invalid) */
-    OF_OBJECT_INVALID,             /* 129 (Invalid) */
-    OF_OBJECT_INVALID,             /* 130 (Invalid) */
-    OF_OBJECT_INVALID,             /* 131 (Invalid) */
-    OF_OBJECT_INVALID,             /* 132 (Invalid) */
-    OF_OBJECT_INVALID,             /* 133 (Invalid) */
-    OF_OBJECT_INVALID,             /* 134 (Invalid) */
-    OF_OBJECT_INVALID,             /* 135 (Invalid) */
-    OF_OBJECT_INVALID,             /* 136 (Invalid) */
-    OF_OBJECT_INVALID,             /* 137 (Invalid) */
-    OF_OBJECT_INVALID,             /* 138 (Invalid) */
-    OF_OBJECT_INVALID,             /* 139 (Invalid) */
-    OF_OBJECT_INVALID,             /* 140 (Invalid) */
-    OF_OBJECT_INVALID,             /* 141 (Invalid) */
-    OF_OBJECT_INVALID,             /* 142 (Invalid) */
-    OF_OBJECT_INVALID,             /* 143 (Invalid) */
-    OF_OBJECT_INVALID,             /* 144 (Invalid) */
-    OF_OBJECT_INVALID,             /* 145 (Invalid) */
-    OF_OBJECT_INVALID,             /* 146 (Invalid) */
-    OF_OBJECT_INVALID,             /* 147 (Invalid) */
-    OF_OBJECT_INVALID,             /* 148 (Invalid) */
-    OF_OBJECT_INVALID,             /* 149 (Invalid) */
-    OF_OBJECT_INVALID,             /* 150 (Invalid) */
-    OF_OBJECT_INVALID,             /* 151 (Invalid) */
-    OF_OBJECT_INVALID,             /* 152 (Invalid) */
-    OF_OBJECT_INVALID,             /* 153 (Invalid) */
-    OF_OBJECT_INVALID,             /* 154 (Invalid) */
-    OF_OBJECT_INVALID,             /* 155 (Invalid) */
-    OF_OBJECT_INVALID,             /* 156 (Invalid) */
-    OF_OBJECT_INVALID,             /* 157 (Invalid) */
-    OF_OBJECT_INVALID,             /* 158 (Invalid) */
-    OF_OBJECT_INVALID,             /* 159 (Invalid) */
-    OF_OBJECT_INVALID,             /* 160 (Invalid) */
-    OF_OBJECT_INVALID,             /* 161 (Invalid) */
-    OF_OBJECT_INVALID,             /* 162 (Invalid) */
-    OF_OBJECT_INVALID,             /* 163 (Invalid) */
-    OF_OBJECT_INVALID,             /* 164 (Invalid) */
-    OF_OBJECT_INVALID,             /* 165 (Invalid) */
-    OF_OBJECT_INVALID,             /* 166 (Invalid) */
-    OF_OBJECT_INVALID,             /* 167 (Invalid) */
-    OF_OBJECT_INVALID,             /* 168 (Invalid) */
-    OF_OBJECT_INVALID,             /* 169 (Invalid) */
-    OF_OBJECT_INVALID,             /* 170 (Invalid) */
-    OF_OBJECT_INVALID,             /* 171 (Invalid) */
-    OF_OBJECT_INVALID,             /* 172 (Invalid) */
-    OF_OBJECT_INVALID,             /* 173 (Invalid) */
-    OF_OBJECT_INVALID,             /* 174 (Invalid) */
-    OF_OBJECT_INVALID,             /* 175 (Invalid) */
-    OF_OBJECT_INVALID,             /* 176 (Invalid) */
-    OF_OBJECT_INVALID,             /* 177 (Invalid) */
-    OF_OBJECT_INVALID,             /* 178 (Invalid) */
-    OF_OBJECT_INVALID,             /* 179 (Invalid) */
-    OF_OBJECT_INVALID,             /* 180 (Invalid) */
-    OF_OBJECT_INVALID,             /* 181 (Invalid) */
-    OF_OBJECT_INVALID,             /* 182 (Invalid) */
-    OF_OBJECT_INVALID,             /* 183 (Invalid) */
-    OF_OBJECT_INVALID,             /* 184 (Invalid) */
-    OF_OBJECT_INVALID,             /* 185 (Invalid) */
-    OF_OBJECT_INVALID,             /* 186 (Invalid) */
-    OF_OBJECT_INVALID,             /* 187 (Invalid) */
-    OF_OBJECT_INVALID,             /* 188 (Invalid) */
-    OF_OBJECT_INVALID,             /* 189 (Invalid) */
-    OF_OBJECT_INVALID,             /* 190 (Invalid) */
-    OF_OBJECT_INVALID,             /* 191 (Invalid) */
-    OF_OBJECT_INVALID,             /* 192 (Invalid) */
-    OF_OBJECT_INVALID,             /* 193 (Invalid) */
-    OF_OBJECT_INVALID,             /* 194 (Invalid) */
-    OF_OBJECT_INVALID,             /* 195 (Invalid) */
-    OF_OBJECT_INVALID,             /* 196 (Invalid) */
-    OF_OBJECT_INVALID,             /* 197 (Invalid) */
-    OF_OBJECT_INVALID,             /* 198 (Invalid) */
-    OF_OBJECT_INVALID,             /* 199 (Invalid) */
-    OF_OBJECT_INVALID,             /* 200 (Invalid) */
-    OF_OBJECT_INVALID,             /* 201 (Invalid) */
-    OF_OBJECT_INVALID,             /* 202 (Invalid) */
-    OF_OBJECT_INVALID,             /* 203 (Invalid) */
-    OF_OBJECT_INVALID,             /* 204 (Invalid) */
-    OF_OBJECT_INVALID,             /* 205 (Invalid) */
-    OF_OBJECT_INVALID,             /* 206 (Invalid) */
-    OF_OBJECT_INVALID,             /* 207 (Invalid) */
-    OF_OBJECT_INVALID,             /* 208 (Invalid) */
-    OF_OBJECT_INVALID,             /* 209 (Invalid) */
-    OF_OBJECT_INVALID,             /* 210 (Invalid) */
-    OF_OBJECT_INVALID,             /* 211 (Invalid) */
-    OF_OBJECT_INVALID,             /* 212 (Invalid) */
-    OF_OBJECT_INVALID,             /* 213 (Invalid) */
-    OF_OBJECT_INVALID,             /* 214 (Invalid) */
-    OF_OBJECT_INVALID,             /* 215 (Invalid) */
-    OF_OBJECT_INVALID,             /* 216 (Invalid) */
-    OF_OBJECT_INVALID,             /* 217 (Invalid) */
-    OF_OBJECT_INVALID,             /* 218 (Invalid) */
-    OF_OBJECT_INVALID,             /* 219 (Invalid) */
-    OF_OBJECT_INVALID,             /* 220 (Invalid) */
-    OF_OBJECT_INVALID,             /* 221 (Invalid) */
-    OF_OBJECT_INVALID,             /* 222 (Invalid) */
-    OF_OBJECT_INVALID,             /* 223 (Invalid) */
-    OF_OBJECT_INVALID,             /* 224 (Invalid) */
-    OF_OBJECT_INVALID,             /* 225 (Invalid) */
-    OF_OBJECT_INVALID,             /* 226 (Invalid) */
-    OF_OBJECT_INVALID,             /* 227 (Invalid) */
-    OF_OBJECT_INVALID,             /* 228 (Invalid) */
-    OF_OBJECT_INVALID,             /* 229 (Invalid) */
-    OF_OBJECT_INVALID,             /* 230 (Invalid) */
-    OF_OBJECT_INVALID,             /* 231 (Invalid) */
-    OF_OBJECT_INVALID,             /* 232 (Invalid) */
-    OF_OBJECT_INVALID,             /* 233 (Invalid) */
-    OF_OBJECT_INVALID,             /* 234 (Invalid) */
-    OF_OBJECT_INVALID,             /* 235 (Invalid) */
-    OF_OBJECT_INVALID,             /* 236 (Invalid) */
-    OF_OBJECT_INVALID,             /* 237 (Invalid) */
-    OF_OBJECT_INVALID,             /* 238 (Invalid) */
-    OF_OBJECT_INVALID,             /* 239 (Invalid) */
-    OF_OXM_SRC_META_ID,            /* 240 */
-    OF_OXM_SRC_META_ID_MASKED,     /* 241 */
-    OF_OXM_DST_META_ID,            /* 242 */
-    OF_OXM_DST_META_ID_MASKED      /* 243 */
+    OF_OXM_MPLS_TC_MASKED          /* 71 */
 };
 
 /**
@@ -2133,8 +1445,6 @@ of_object_to_type_map_v1[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_arp_tha_masked (invalid) */
     -1, /* of_oxm_arp_tpa (invalid) */
     -1, /* of_oxm_arp_tpa_masked (invalid) */
-    -1, /* of_oxm_dst_meta_id (invalid) */
-    -1, /* of_oxm_dst_meta_id_masked (invalid) */
     -1, /* of_oxm_eth_dst (invalid) */
     -1, /* of_oxm_eth_dst_masked (invalid) */
     -1, /* of_oxm_eth_src (invalid) */
@@ -2186,8 +1496,6 @@ of_object_to_type_map_v1[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_sctp_dst_masked (invalid) */
     -1, /* of_oxm_sctp_src (invalid) */
     -1, /* of_oxm_sctp_src_masked (invalid) */
-    -1, /* of_oxm_src_meta_id (invalid) */
-    -1, /* of_oxm_src_meta_id_masked (invalid) */
     -1, /* of_oxm_tcp_dst (invalid) */
     -1, /* of_oxm_tcp_dst_masked (invalid) */
     -1, /* of_oxm_tcp_src (invalid) */
@@ -2457,8 +1765,6 @@ of_object_to_type_map_v2[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_arp_tha_masked (invalid) */
     -1, /* of_oxm_arp_tpa (invalid) */
     -1, /* of_oxm_arp_tpa_masked (invalid) */
-    -1, /* of_oxm_dst_meta_id (invalid) */
-    -1, /* of_oxm_dst_meta_id_masked (invalid) */
     -1, /* of_oxm_eth_dst (invalid) */
     -1, /* of_oxm_eth_dst_masked (invalid) */
     -1, /* of_oxm_eth_src (invalid) */
@@ -2510,8 +1816,6 @@ of_object_to_type_map_v2[OF_OBJECT_COUNT] = {
     -1, /* of_oxm_sctp_dst_masked (invalid) */
     -1, /* of_oxm_sctp_src (invalid) */
     -1, /* of_oxm_sctp_src_masked (invalid) */
-    -1, /* of_oxm_src_meta_id (invalid) */
-    -1, /* of_oxm_src_meta_id_masked (invalid) */
     -1, /* of_oxm_tcp_dst (invalid) */
     -1, /* of_oxm_tcp_dst_masked (invalid) */
     -1, /* of_oxm_tcp_src (invalid) */
@@ -2781,8 +2085,6 @@ of_object_to_type_map_v3[OF_OBJECT_COUNT] = {
     51, /* of_oxm_arp_tha_masked */
     46, /* of_oxm_arp_tpa */
     47, /* of_oxm_arp_tpa_masked */
-    242, /* of_oxm_dst_meta_id */
-    243, /* of_oxm_dst_meta_id_masked */
     6, /* of_oxm_eth_dst */
     7, /* of_oxm_eth_dst_masked */
     8, /* of_oxm_eth_src */
@@ -2834,8 +2136,6 @@ of_object_to_type_map_v3[OF_OBJECT_COUNT] = {
     37, /* of_oxm_sctp_dst_masked */
     34, /* of_oxm_sctp_src */
     35, /* of_oxm_sctp_src_masked */
-    240, /* of_oxm_src_meta_id */
-    241, /* of_oxm_src_meta_id_masked */
     28, /* of_oxm_tcp_dst */
     29, /* of_oxm_tcp_dst_masked */
     26, /* of_oxm_tcp_src */
@@ -3105,8 +2405,6 @@ of_object_to_type_map_v4[OF_OBJECT_COUNT] = {
     51, /* of_oxm_arp_tha_masked */
     46, /* of_oxm_arp_tpa */
     47, /* of_oxm_arp_tpa_masked */
-    242, /* of_oxm_dst_meta_id */
-    243, /* of_oxm_dst_meta_id_masked */
     6, /* of_oxm_eth_dst */
     7, /* of_oxm_eth_dst_masked */
     8, /* of_oxm_eth_src */
@@ -3158,8 +2456,6 @@ of_object_to_type_map_v4[OF_OBJECT_COUNT] = {
     37, /* of_oxm_sctp_dst_masked */
     34, /* of_oxm_sctp_src */
     35, /* of_oxm_sctp_src_masked */
-    240, /* of_oxm_src_meta_id */
-    241, /* of_oxm_src_meta_id_masked */
     28, /* of_oxm_tcp_dst */
     29, /* of_oxm_tcp_dst_masked */
     26, /* of_oxm_tcp_src */
@@ -3447,8 +2743,6 @@ of_object_to_extension_data_v1[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -3500,8 +2794,6 @@ of_object_to_extension_data_v1[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -3772,8 +3064,6 @@ of_object_to_extension_data_v2[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -3825,8 +3115,6 @@ of_object_to_extension_data_v2[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -4097,8 +3385,6 @@ of_object_to_extension_data_v3[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -4150,8 +3436,6 @@ of_object_to_extension_data_v3[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -4422,8 +3706,6 @@ of_object_to_extension_data_v4[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_arp_tha_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa (non-extension) */
     {0, 0, 0}, /* of_oxm_arp_tpa_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_dst_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_eth_src (non-extension) */
@@ -4475,8 +3757,6 @@ of_object_to_extension_data_v4[OF_OBJECT_COUNT] = {
     {0, 0, 0}, /* of_oxm_sctp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src (non-extension) */
     {0, 0, 0}, /* of_oxm_sctp_src_masked (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id (non-extension) */
-    {0, 0, 0}, /* of_oxm_src_meta_id_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_dst_masked (non-extension) */
     {0, 0, 0}, /* of_oxm_tcp_src (non-extension) */
@@ -4764,130 +4044,126 @@ of_object_fixed_len_v1[OF_OBJECT_COUNT] = {
     -1,   /* 193: of_oxm_arp_tha_masked */
     -1,   /* 194: of_oxm_arp_tpa */
     -1,   /* 195: of_oxm_arp_tpa_masked */
-    -1,   /* 196: of_oxm_dst_meta_id */
-    -1,   /* 197: of_oxm_dst_meta_id_masked */
-    -1,   /* 198: of_oxm_eth_dst */
-    -1,   /* 199: of_oxm_eth_dst_masked */
-    -1,   /* 200: of_oxm_eth_src */
-    -1,   /* 201: of_oxm_eth_src_masked */
-    -1,   /* 202: of_oxm_eth_type */
-    -1,   /* 203: of_oxm_eth_type_masked */
-    -1,   /* 204: of_oxm_header */
-    -1,   /* 205: of_oxm_icmpv4_code */
-    -1,   /* 206: of_oxm_icmpv4_code_masked */
-    -1,   /* 207: of_oxm_icmpv4_type */
-    -1,   /* 208: of_oxm_icmpv4_type_masked */
-    -1,   /* 209: of_oxm_icmpv6_code */
-    -1,   /* 210: of_oxm_icmpv6_code_masked */
-    -1,   /* 211: of_oxm_icmpv6_type */
-    -1,   /* 212: of_oxm_icmpv6_type_masked */
-    -1,   /* 213: of_oxm_in_phy_port */
-    -1,   /* 214: of_oxm_in_phy_port_masked */
-    -1,   /* 215: of_oxm_in_port */
-    -1,   /* 216: of_oxm_in_port_masked */
-    -1,   /* 217: of_oxm_ip_dscp */
-    -1,   /* 218: of_oxm_ip_dscp_masked */
-    -1,   /* 219: of_oxm_ip_ecn */
-    -1,   /* 220: of_oxm_ip_ecn_masked */
-    -1,   /* 221: of_oxm_ip_proto */
-    -1,   /* 222: of_oxm_ip_proto_masked */
-    -1,   /* 223: of_oxm_ipv4_dst */
-    -1,   /* 224: of_oxm_ipv4_dst_masked */
-    -1,   /* 225: of_oxm_ipv4_src */
-    -1,   /* 226: of_oxm_ipv4_src_masked */
-    -1,   /* 227: of_oxm_ipv6_dst */
-    -1,   /* 228: of_oxm_ipv6_dst_masked */
-    -1,   /* 229: of_oxm_ipv6_flabel */
-    -1,   /* 230: of_oxm_ipv6_flabel_masked */
-    -1,   /* 231: of_oxm_ipv6_nd_sll */
-    -1,   /* 232: of_oxm_ipv6_nd_sll_masked */
-    -1,   /* 233: of_oxm_ipv6_nd_target */
-    -1,   /* 234: of_oxm_ipv6_nd_target_masked */
-    -1,   /* 235: of_oxm_ipv6_nd_tll */
-    -1,   /* 236: of_oxm_ipv6_nd_tll_masked */
-    -1,   /* 237: of_oxm_ipv6_src */
-    -1,   /* 238: of_oxm_ipv6_src_masked */
-    -1,   /* 239: of_oxm_metadata */
-    -1,   /* 240: of_oxm_metadata_masked */
-    -1,   /* 241: of_oxm_mpls_label */
-    -1,   /* 242: of_oxm_mpls_label_masked */
-    -1,   /* 243: of_oxm_mpls_tc */
-    -1,   /* 244: of_oxm_mpls_tc_masked */
-    -1,   /* 245: of_oxm_sctp_dst */
-    -1,   /* 246: of_oxm_sctp_dst_masked */
-    -1,   /* 247: of_oxm_sctp_src */
-    -1,   /* 248: of_oxm_sctp_src_masked */
-    -1,   /* 249: of_oxm_src_meta_id */
-    -1,   /* 250: of_oxm_src_meta_id_masked */
-    -1,   /* 251: of_oxm_tcp_dst */
-    -1,   /* 252: of_oxm_tcp_dst_masked */
-    -1,   /* 253: of_oxm_tcp_src */
-    -1,   /* 254: of_oxm_tcp_src_masked */
-    -1,   /* 255: of_oxm_udp_dst */
-    -1,   /* 256: of_oxm_udp_dst_masked */
-    -1,   /* 257: of_oxm_udp_src */
-    -1,   /* 258: of_oxm_udp_src_masked */
-    -1,   /* 259: of_oxm_vlan_pcp */
-    -1,   /* 260: of_oxm_vlan_pcp_masked */
-    -1,   /* 261: of_oxm_vlan_vid */
-    -1,   /* 262: of_oxm_vlan_vid_masked */
-    8,    /* 263: of_packet_queue */
-    48,   /* 264: of_port_desc */
-    104,  /* 265: of_port_stats_entry */
-    8,    /* 266: of_queue_prop */
-    -1,   /* 267: of_queue_prop_experimenter */
-    8,    /* 268: of_queue_prop_header */
-    -1,   /* 269: of_queue_prop_max_rate */
-    16,   /* 270: of_queue_prop_min_rate */
-    32,   /* 271: of_queue_stats_entry */
-    -1,   /* 272: of_table_feature_prop */
-    -1,   /* 273: of_table_feature_prop_apply_actions */
-    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 275: of_table_feature_prop_apply_setfield */
-    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 277: of_table_feature_prop_experimenter */
-    -1,   /* 278: of_table_feature_prop_header */
-    -1,   /* 279: of_table_feature_prop_instructions */
-    -1,   /* 280: of_table_feature_prop_instructions_miss */
-    -1,   /* 281: of_table_feature_prop_match */
-    -1,   /* 282: of_table_feature_prop_next_tables */
-    -1,   /* 283: of_table_feature_prop_next_tables_miss */
-    -1,   /* 284: of_table_feature_prop_wildcards */
-    -1,   /* 285: of_table_feature_prop_write_actions */
-    -1,   /* 286: of_table_feature_prop_write_actions_miss */
-    -1,   /* 287: of_table_feature_prop_write_setfield */
-    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 289: of_table_features */
-    64,   /* 290: of_table_stats_entry */
-    -1,   /* 291: of_uint32 */
-    -1,   /* 292: of_uint8 */
-    0,    /* 293: of_list_action */
-    -1,   /* 294: of_list_action_id */
-    0,    /* 295: of_list_bsn_interface */
-    -1,   /* 296: of_list_bucket */
-    -1,   /* 297: of_list_bucket_counter */
-    0,    /* 298: of_list_flow_stats_entry */
-    -1,   /* 299: of_list_group_desc_stats_entry */
-    -1,   /* 300: of_list_group_stats_entry */
-    -1,   /* 301: of_list_hello_elem */
-    -1,   /* 302: of_list_instruction */
-    -1,   /* 303: of_list_meter_band */
-    -1,   /* 304: of_list_meter_band_stats */
-    -1,   /* 305: of_list_meter_stats */
-    -1,   /* 306: of_list_oxm */
-    0,    /* 307: of_list_packet_queue */
-    0,    /* 308: of_list_port_desc */
-    0,    /* 309: of_list_port_stats_entry */
-    0,    /* 310: of_list_queue_prop */
-    0,    /* 311: of_list_queue_stats_entry */
-    -1,   /* 312: of_list_table_feature_prop */
-    -1,   /* 313: of_list_table_features */
-    0,    /* 314: of_list_table_stats_entry */
-    -1,   /* 315: of_list_uint32 */
-    -1,   /* 316: of_list_uint8 */
-    -1,   /* 317: of_flow_mod */
-    -1,   /* 318: of_stats_reply */
-    -1    /* 319: of_stats_request */
+    -1,   /* 196: of_oxm_eth_dst */
+    -1,   /* 197: of_oxm_eth_dst_masked */
+    -1,   /* 198: of_oxm_eth_src */
+    -1,   /* 199: of_oxm_eth_src_masked */
+    -1,   /* 200: of_oxm_eth_type */
+    -1,   /* 201: of_oxm_eth_type_masked */
+    -1,   /* 202: of_oxm_header */
+    -1,   /* 203: of_oxm_icmpv4_code */
+    -1,   /* 204: of_oxm_icmpv4_code_masked */
+    -1,   /* 205: of_oxm_icmpv4_type */
+    -1,   /* 206: of_oxm_icmpv4_type_masked */
+    -1,   /* 207: of_oxm_icmpv6_code */
+    -1,   /* 208: of_oxm_icmpv6_code_masked */
+    -1,   /* 209: of_oxm_icmpv6_type */
+    -1,   /* 210: of_oxm_icmpv6_type_masked */
+    -1,   /* 211: of_oxm_in_phy_port */
+    -1,   /* 212: of_oxm_in_phy_port_masked */
+    -1,   /* 213: of_oxm_in_port */
+    -1,   /* 214: of_oxm_in_port_masked */
+    -1,   /* 215: of_oxm_ip_dscp */
+    -1,   /* 216: of_oxm_ip_dscp_masked */
+    -1,   /* 217: of_oxm_ip_ecn */
+    -1,   /* 218: of_oxm_ip_ecn_masked */
+    -1,   /* 219: of_oxm_ip_proto */
+    -1,   /* 220: of_oxm_ip_proto_masked */
+    -1,   /* 221: of_oxm_ipv4_dst */
+    -1,   /* 222: of_oxm_ipv4_dst_masked */
+    -1,   /* 223: of_oxm_ipv4_src */
+    -1,   /* 224: of_oxm_ipv4_src_masked */
+    -1,   /* 225: of_oxm_ipv6_dst */
+    -1,   /* 226: of_oxm_ipv6_dst_masked */
+    -1,   /* 227: of_oxm_ipv6_flabel */
+    -1,   /* 228: of_oxm_ipv6_flabel_masked */
+    -1,   /* 229: of_oxm_ipv6_nd_sll */
+    -1,   /* 230: of_oxm_ipv6_nd_sll_masked */
+    -1,   /* 231: of_oxm_ipv6_nd_target */
+    -1,   /* 232: of_oxm_ipv6_nd_target_masked */
+    -1,   /* 233: of_oxm_ipv6_nd_tll */
+    -1,   /* 234: of_oxm_ipv6_nd_tll_masked */
+    -1,   /* 235: of_oxm_ipv6_src */
+    -1,   /* 236: of_oxm_ipv6_src_masked */
+    -1,   /* 237: of_oxm_metadata */
+    -1,   /* 238: of_oxm_metadata_masked */
+    -1,   /* 239: of_oxm_mpls_label */
+    -1,   /* 240: of_oxm_mpls_label_masked */
+    -1,   /* 241: of_oxm_mpls_tc */
+    -1,   /* 242: of_oxm_mpls_tc_masked */
+    -1,   /* 243: of_oxm_sctp_dst */
+    -1,   /* 244: of_oxm_sctp_dst_masked */
+    -1,   /* 245: of_oxm_sctp_src */
+    -1,   /* 246: of_oxm_sctp_src_masked */
+    -1,   /* 247: of_oxm_tcp_dst */
+    -1,   /* 248: of_oxm_tcp_dst_masked */
+    -1,   /* 249: of_oxm_tcp_src */
+    -1,   /* 250: of_oxm_tcp_src_masked */
+    -1,   /* 251: of_oxm_udp_dst */
+    -1,   /* 252: of_oxm_udp_dst_masked */
+    -1,   /* 253: of_oxm_udp_src */
+    -1,   /* 254: of_oxm_udp_src_masked */
+    -1,   /* 255: of_oxm_vlan_pcp */
+    -1,   /* 256: of_oxm_vlan_pcp_masked */
+    -1,   /* 257: of_oxm_vlan_vid */
+    -1,   /* 258: of_oxm_vlan_vid_masked */
+    8,    /* 259: of_packet_queue */
+    48,   /* 260: of_port_desc */
+    104,  /* 261: of_port_stats_entry */
+    8,    /* 262: of_queue_prop */
+    -1,   /* 263: of_queue_prop_experimenter */
+    8,    /* 264: of_queue_prop_header */
+    -1,   /* 265: of_queue_prop_max_rate */
+    16,   /* 266: of_queue_prop_min_rate */
+    32,   /* 267: of_queue_stats_entry */
+    -1,   /* 268: of_table_feature_prop */
+    -1,   /* 269: of_table_feature_prop_apply_actions */
+    -1,   /* 270: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 271: of_table_feature_prop_apply_setfield */
+    -1,   /* 272: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 273: of_table_feature_prop_experimenter */
+    -1,   /* 274: of_table_feature_prop_header */
+    -1,   /* 275: of_table_feature_prop_instructions */
+    -1,   /* 276: of_table_feature_prop_instructions_miss */
+    -1,   /* 277: of_table_feature_prop_match */
+    -1,   /* 278: of_table_feature_prop_next_tables */
+    -1,   /* 279: of_table_feature_prop_next_tables_miss */
+    -1,   /* 280: of_table_feature_prop_wildcards */
+    -1,   /* 281: of_table_feature_prop_write_actions */
+    -1,   /* 282: of_table_feature_prop_write_actions_miss */
+    -1,   /* 283: of_table_feature_prop_write_setfield */
+    -1,   /* 284: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 285: of_table_features */
+    64,   /* 286: of_table_stats_entry */
+    -1,   /* 287: of_uint32 */
+    -1,   /* 288: of_uint8 */
+    0,    /* 289: of_list_action */
+    -1,   /* 290: of_list_action_id */
+    0,    /* 291: of_list_bsn_interface */
+    -1,   /* 292: of_list_bucket */
+    -1,   /* 293: of_list_bucket_counter */
+    0,    /* 294: of_list_flow_stats_entry */
+    -1,   /* 295: of_list_group_desc_stats_entry */
+    -1,   /* 296: of_list_group_stats_entry */
+    -1,   /* 297: of_list_hello_elem */
+    -1,   /* 298: of_list_instruction */
+    -1,   /* 299: of_list_meter_band */
+    -1,   /* 300: of_list_meter_band_stats */
+    -1,   /* 301: of_list_meter_stats */
+    -1,   /* 302: of_list_oxm */
+    0,    /* 303: of_list_packet_queue */
+    0,    /* 304: of_list_port_desc */
+    0,    /* 305: of_list_port_stats_entry */
+    0,    /* 306: of_list_queue_prop */
+    0,    /* 307: of_list_queue_stats_entry */
+    -1,   /* 308: of_list_table_feature_prop */
+    -1,   /* 309: of_list_table_features */
+    0,    /* 310: of_list_table_stats_entry */
+    -1,   /* 311: of_list_uint32 */
+    -1,   /* 312: of_list_uint8 */
+    -1,   /* 313: of_flow_mod */
+    -1,   /* 314: of_stats_reply */
+    -1    /* 315: of_stats_request */
 };
 
 static const int
@@ -5088,130 +4364,126 @@ of_object_fixed_len_v2[OF_OBJECT_COUNT] = {
     -1,   /* 193: of_oxm_arp_tha_masked */
     -1,   /* 194: of_oxm_arp_tpa */
     -1,   /* 195: of_oxm_arp_tpa_masked */
-    -1,   /* 196: of_oxm_dst_meta_id */
-    -1,   /* 197: of_oxm_dst_meta_id_masked */
-    -1,   /* 198: of_oxm_eth_dst */
-    -1,   /* 199: of_oxm_eth_dst_masked */
-    -1,   /* 200: of_oxm_eth_src */
-    -1,   /* 201: of_oxm_eth_src_masked */
-    -1,   /* 202: of_oxm_eth_type */
-    -1,   /* 203: of_oxm_eth_type_masked */
-    -1,   /* 204: of_oxm_header */
-    -1,   /* 205: of_oxm_icmpv4_code */
-    -1,   /* 206: of_oxm_icmpv4_code_masked */
-    -1,   /* 207: of_oxm_icmpv4_type */
-    -1,   /* 208: of_oxm_icmpv4_type_masked */
-    -1,   /* 209: of_oxm_icmpv6_code */
-    -1,   /* 210: of_oxm_icmpv6_code_masked */
-    -1,   /* 211: of_oxm_icmpv6_type */
-    -1,   /* 212: of_oxm_icmpv6_type_masked */
-    -1,   /* 213: of_oxm_in_phy_port */
-    -1,   /* 214: of_oxm_in_phy_port_masked */
-    -1,   /* 215: of_oxm_in_port */
-    -1,   /* 216: of_oxm_in_port_masked */
-    -1,   /* 217: of_oxm_ip_dscp */
-    -1,   /* 218: of_oxm_ip_dscp_masked */
-    -1,   /* 219: of_oxm_ip_ecn */
-    -1,   /* 220: of_oxm_ip_ecn_masked */
-    -1,   /* 221: of_oxm_ip_proto */
-    -1,   /* 222: of_oxm_ip_proto_masked */
-    -1,   /* 223: of_oxm_ipv4_dst */
-    -1,   /* 224: of_oxm_ipv4_dst_masked */
-    -1,   /* 225: of_oxm_ipv4_src */
-    -1,   /* 226: of_oxm_ipv4_src_masked */
-    -1,   /* 227: of_oxm_ipv6_dst */
-    -1,   /* 228: of_oxm_ipv6_dst_masked */
-    -1,   /* 229: of_oxm_ipv6_flabel */
-    -1,   /* 230: of_oxm_ipv6_flabel_masked */
-    -1,   /* 231: of_oxm_ipv6_nd_sll */
-    -1,   /* 232: of_oxm_ipv6_nd_sll_masked */
-    -1,   /* 233: of_oxm_ipv6_nd_target */
-    -1,   /* 234: of_oxm_ipv6_nd_target_masked */
-    -1,   /* 235: of_oxm_ipv6_nd_tll */
-    -1,   /* 236: of_oxm_ipv6_nd_tll_masked */
-    -1,   /* 237: of_oxm_ipv6_src */
-    -1,   /* 238: of_oxm_ipv6_src_masked */
-    -1,   /* 239: of_oxm_metadata */
-    -1,   /* 240: of_oxm_metadata_masked */
-    -1,   /* 241: of_oxm_mpls_label */
-    -1,   /* 242: of_oxm_mpls_label_masked */
-    -1,   /* 243: of_oxm_mpls_tc */
-    -1,   /* 244: of_oxm_mpls_tc_masked */
-    -1,   /* 245: of_oxm_sctp_dst */
-    -1,   /* 246: of_oxm_sctp_dst_masked */
-    -1,   /* 247: of_oxm_sctp_src */
-    -1,   /* 248: of_oxm_sctp_src_masked */
-    -1,   /* 249: of_oxm_src_meta_id */
-    -1,   /* 250: of_oxm_src_meta_id_masked */
-    -1,   /* 251: of_oxm_tcp_dst */
-    -1,   /* 252: of_oxm_tcp_dst_masked */
-    -1,   /* 253: of_oxm_tcp_src */
-    -1,   /* 254: of_oxm_tcp_src_masked */
-    -1,   /* 255: of_oxm_udp_dst */
-    -1,   /* 256: of_oxm_udp_dst_masked */
-    -1,   /* 257: of_oxm_udp_src */
-    -1,   /* 258: of_oxm_udp_src_masked */
-    -1,   /* 259: of_oxm_vlan_pcp */
-    -1,   /* 260: of_oxm_vlan_pcp_masked */
-    -1,   /* 261: of_oxm_vlan_vid */
-    -1,   /* 262: of_oxm_vlan_vid_masked */
-    8,    /* 263: of_packet_queue */
-    64,   /* 264: of_port_desc */
-    104,  /* 265: of_port_stats_entry */
-    8,    /* 266: of_queue_prop */
-    -1,   /* 267: of_queue_prop_experimenter */
-    8,    /* 268: of_queue_prop_header */
-    -1,   /* 269: of_queue_prop_max_rate */
-    16,   /* 270: of_queue_prop_min_rate */
-    32,   /* 271: of_queue_stats_entry */
-    -1,   /* 272: of_table_feature_prop */
-    -1,   /* 273: of_table_feature_prop_apply_actions */
-    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 275: of_table_feature_prop_apply_setfield */
-    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 277: of_table_feature_prop_experimenter */
-    -1,   /* 278: of_table_feature_prop_header */
-    -1,   /* 279: of_table_feature_prop_instructions */
-    -1,   /* 280: of_table_feature_prop_instructions_miss */
-    -1,   /* 281: of_table_feature_prop_match */
-    -1,   /* 282: of_table_feature_prop_next_tables */
-    -1,   /* 283: of_table_feature_prop_next_tables_miss */
-    -1,   /* 284: of_table_feature_prop_wildcards */
-    -1,   /* 285: of_table_feature_prop_write_actions */
-    -1,   /* 286: of_table_feature_prop_write_actions_miss */
-    -1,   /* 287: of_table_feature_prop_write_setfield */
-    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 289: of_table_features */
-    88,   /* 290: of_table_stats_entry */
-    -1,   /* 291: of_uint32 */
-    -1,   /* 292: of_uint8 */
-    0,    /* 293: of_list_action */
-    -1,   /* 294: of_list_action_id */
-    0,    /* 295: of_list_bsn_interface */
-    0,    /* 296: of_list_bucket */
-    0,    /* 297: of_list_bucket_counter */
-    0,    /* 298: of_list_flow_stats_entry */
-    0,    /* 299: of_list_group_desc_stats_entry */
-    0,    /* 300: of_list_group_stats_entry */
-    -1,   /* 301: of_list_hello_elem */
-    0,    /* 302: of_list_instruction */
-    -1,   /* 303: of_list_meter_band */
-    -1,   /* 304: of_list_meter_band_stats */
-    -1,   /* 305: of_list_meter_stats */
-    -1,   /* 306: of_list_oxm */
-    0,    /* 307: of_list_packet_queue */
-    0,    /* 308: of_list_port_desc */
-    0,    /* 309: of_list_port_stats_entry */
-    0,    /* 310: of_list_queue_prop */
-    0,    /* 311: of_list_queue_stats_entry */
-    -1,   /* 312: of_list_table_feature_prop */
-    -1,   /* 313: of_list_table_features */
-    0,    /* 314: of_list_table_stats_entry */
-    -1,   /* 315: of_list_uint32 */
-    -1,   /* 316: of_list_uint8 */
-    -1,   /* 317: of_flow_mod */
-    -1,   /* 318: of_stats_reply */
-    -1    /* 319: of_stats_request */
+    -1,   /* 196: of_oxm_eth_dst */
+    -1,   /* 197: of_oxm_eth_dst_masked */
+    -1,   /* 198: of_oxm_eth_src */
+    -1,   /* 199: of_oxm_eth_src_masked */
+    -1,   /* 200: of_oxm_eth_type */
+    -1,   /* 201: of_oxm_eth_type_masked */
+    -1,   /* 202: of_oxm_header */
+    -1,   /* 203: of_oxm_icmpv4_code */
+    -1,   /* 204: of_oxm_icmpv4_code_masked */
+    -1,   /* 205: of_oxm_icmpv4_type */
+    -1,   /* 206: of_oxm_icmpv4_type_masked */
+    -1,   /* 207: of_oxm_icmpv6_code */
+    -1,   /* 208: of_oxm_icmpv6_code_masked */
+    -1,   /* 209: of_oxm_icmpv6_type */
+    -1,   /* 210: of_oxm_icmpv6_type_masked */
+    -1,   /* 211: of_oxm_in_phy_port */
+    -1,   /* 212: of_oxm_in_phy_port_masked */
+    -1,   /* 213: of_oxm_in_port */
+    -1,   /* 214: of_oxm_in_port_masked */
+    -1,   /* 215: of_oxm_ip_dscp */
+    -1,   /* 216: of_oxm_ip_dscp_masked */
+    -1,   /* 217: of_oxm_ip_ecn */
+    -1,   /* 218: of_oxm_ip_ecn_masked */
+    -1,   /* 219: of_oxm_ip_proto */
+    -1,   /* 220: of_oxm_ip_proto_masked */
+    -1,   /* 221: of_oxm_ipv4_dst */
+    -1,   /* 222: of_oxm_ipv4_dst_masked */
+    -1,   /* 223: of_oxm_ipv4_src */
+    -1,   /* 224: of_oxm_ipv4_src_masked */
+    -1,   /* 225: of_oxm_ipv6_dst */
+    -1,   /* 226: of_oxm_ipv6_dst_masked */
+    -1,   /* 227: of_oxm_ipv6_flabel */
+    -1,   /* 228: of_oxm_ipv6_flabel_masked */
+    -1,   /* 229: of_oxm_ipv6_nd_sll */
+    -1,   /* 230: of_oxm_ipv6_nd_sll_masked */
+    -1,   /* 231: of_oxm_ipv6_nd_target */
+    -1,   /* 232: of_oxm_ipv6_nd_target_masked */
+    -1,   /* 233: of_oxm_ipv6_nd_tll */
+    -1,   /* 234: of_oxm_ipv6_nd_tll_masked */
+    -1,   /* 235: of_oxm_ipv6_src */
+    -1,   /* 236: of_oxm_ipv6_src_masked */
+    -1,   /* 237: of_oxm_metadata */
+    -1,   /* 238: of_oxm_metadata_masked */
+    -1,   /* 239: of_oxm_mpls_label */
+    -1,   /* 240: of_oxm_mpls_label_masked */
+    -1,   /* 241: of_oxm_mpls_tc */
+    -1,   /* 242: of_oxm_mpls_tc_masked */
+    -1,   /* 243: of_oxm_sctp_dst */
+    -1,   /* 244: of_oxm_sctp_dst_masked */
+    -1,   /* 245: of_oxm_sctp_src */
+    -1,   /* 246: of_oxm_sctp_src_masked */
+    -1,   /* 247: of_oxm_tcp_dst */
+    -1,   /* 248: of_oxm_tcp_dst_masked */
+    -1,   /* 249: of_oxm_tcp_src */
+    -1,   /* 250: of_oxm_tcp_src_masked */
+    -1,   /* 251: of_oxm_udp_dst */
+    -1,   /* 252: of_oxm_udp_dst_masked */
+    -1,   /* 253: of_oxm_udp_src */
+    -1,   /* 254: of_oxm_udp_src_masked */
+    -1,   /* 255: of_oxm_vlan_pcp */
+    -1,   /* 256: of_oxm_vlan_pcp_masked */
+    -1,   /* 257: of_oxm_vlan_vid */
+    -1,   /* 258: of_oxm_vlan_vid_masked */
+    8,    /* 259: of_packet_queue */
+    64,   /* 260: of_port_desc */
+    104,  /* 261: of_port_stats_entry */
+    8,    /* 262: of_queue_prop */
+    -1,   /* 263: of_queue_prop_experimenter */
+    8,    /* 264: of_queue_prop_header */
+    -1,   /* 265: of_queue_prop_max_rate */
+    16,   /* 266: of_queue_prop_min_rate */
+    32,   /* 267: of_queue_stats_entry */
+    -1,   /* 268: of_table_feature_prop */
+    -1,   /* 269: of_table_feature_prop_apply_actions */
+    -1,   /* 270: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 271: of_table_feature_prop_apply_setfield */
+    -1,   /* 272: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 273: of_table_feature_prop_experimenter */
+    -1,   /* 274: of_table_feature_prop_header */
+    -1,   /* 275: of_table_feature_prop_instructions */
+    -1,   /* 276: of_table_feature_prop_instructions_miss */
+    -1,   /* 277: of_table_feature_prop_match */
+    -1,   /* 278: of_table_feature_prop_next_tables */
+    -1,   /* 279: of_table_feature_prop_next_tables_miss */
+    -1,   /* 280: of_table_feature_prop_wildcards */
+    -1,   /* 281: of_table_feature_prop_write_actions */
+    -1,   /* 282: of_table_feature_prop_write_actions_miss */
+    -1,   /* 283: of_table_feature_prop_write_setfield */
+    -1,   /* 284: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 285: of_table_features */
+    88,   /* 286: of_table_stats_entry */
+    -1,   /* 287: of_uint32 */
+    -1,   /* 288: of_uint8 */
+    0,    /* 289: of_list_action */
+    -1,   /* 290: of_list_action_id */
+    0,    /* 291: of_list_bsn_interface */
+    0,    /* 292: of_list_bucket */
+    0,    /* 293: of_list_bucket_counter */
+    0,    /* 294: of_list_flow_stats_entry */
+    0,    /* 295: of_list_group_desc_stats_entry */
+    0,    /* 296: of_list_group_stats_entry */
+    -1,   /* 297: of_list_hello_elem */
+    0,    /* 298: of_list_instruction */
+    -1,   /* 299: of_list_meter_band */
+    -1,   /* 300: of_list_meter_band_stats */
+    -1,   /* 301: of_list_meter_stats */
+    -1,   /* 302: of_list_oxm */
+    0,    /* 303: of_list_packet_queue */
+    0,    /* 304: of_list_port_desc */
+    0,    /* 305: of_list_port_stats_entry */
+    0,    /* 306: of_list_queue_prop */
+    0,    /* 307: of_list_queue_stats_entry */
+    -1,   /* 308: of_list_table_feature_prop */
+    -1,   /* 309: of_list_table_features */
+    0,    /* 310: of_list_table_stats_entry */
+    -1,   /* 311: of_list_uint32 */
+    -1,   /* 312: of_list_uint8 */
+    -1,   /* 313: of_flow_mod */
+    -1,   /* 314: of_stats_reply */
+    -1    /* 315: of_stats_request */
 };
 
 static const int
@@ -5412,130 +4684,126 @@ of_object_fixed_len_v3[OF_OBJECT_COUNT] = {
     16,   /* 193: of_oxm_arp_tha_masked */
     8,    /* 194: of_oxm_arp_tpa */
     12,   /* 195: of_oxm_arp_tpa_masked */
-    5,    /* 196: of_oxm_dst_meta_id */
-    6,    /* 197: of_oxm_dst_meta_id_masked */
-    10,   /* 198: of_oxm_eth_dst */
-    16,   /* 199: of_oxm_eth_dst_masked */
-    10,   /* 200: of_oxm_eth_src */
-    16,   /* 201: of_oxm_eth_src_masked */
-    6,    /* 202: of_oxm_eth_type */
-    8,    /* 203: of_oxm_eth_type_masked */
-    4,    /* 204: of_oxm_header */
-    5,    /* 205: of_oxm_icmpv4_code */
-    6,    /* 206: of_oxm_icmpv4_code_masked */
-    5,    /* 207: of_oxm_icmpv4_type */
-    6,    /* 208: of_oxm_icmpv4_type_masked */
-    5,    /* 209: of_oxm_icmpv6_code */
-    6,    /* 210: of_oxm_icmpv6_code_masked */
-    5,    /* 211: of_oxm_icmpv6_type */
-    6,    /* 212: of_oxm_icmpv6_type_masked */
-    8,    /* 213: of_oxm_in_phy_port */
-    12,   /* 214: of_oxm_in_phy_port_masked */
-    8,    /* 215: of_oxm_in_port */
-    12,   /* 216: of_oxm_in_port_masked */
-    5,    /* 217: of_oxm_ip_dscp */
-    6,    /* 218: of_oxm_ip_dscp_masked */
-    5,    /* 219: of_oxm_ip_ecn */
-    6,    /* 220: of_oxm_ip_ecn_masked */
-    5,    /* 221: of_oxm_ip_proto */
-    6,    /* 222: of_oxm_ip_proto_masked */
-    8,    /* 223: of_oxm_ipv4_dst */
-    12,   /* 224: of_oxm_ipv4_dst_masked */
-    8,    /* 225: of_oxm_ipv4_src */
-    12,   /* 226: of_oxm_ipv4_src_masked */
-    20,   /* 227: of_oxm_ipv6_dst */
-    36,   /* 228: of_oxm_ipv6_dst_masked */
-    8,    /* 229: of_oxm_ipv6_flabel */
-    12,   /* 230: of_oxm_ipv6_flabel_masked */
-    10,   /* 231: of_oxm_ipv6_nd_sll */
-    16,   /* 232: of_oxm_ipv6_nd_sll_masked */
-    20,   /* 233: of_oxm_ipv6_nd_target */
-    36,   /* 234: of_oxm_ipv6_nd_target_masked */
-    10,   /* 235: of_oxm_ipv6_nd_tll */
-    16,   /* 236: of_oxm_ipv6_nd_tll_masked */
-    20,   /* 237: of_oxm_ipv6_src */
-    36,   /* 238: of_oxm_ipv6_src_masked */
-    12,   /* 239: of_oxm_metadata */
-    20,   /* 240: of_oxm_metadata_masked */
-    8,    /* 241: of_oxm_mpls_label */
-    12,   /* 242: of_oxm_mpls_label_masked */
-    5,    /* 243: of_oxm_mpls_tc */
-    6,    /* 244: of_oxm_mpls_tc_masked */
-    6,    /* 245: of_oxm_sctp_dst */
-    8,    /* 246: of_oxm_sctp_dst_masked */
-    6,    /* 247: of_oxm_sctp_src */
-    8,    /* 248: of_oxm_sctp_src_masked */
-    5,    /* 249: of_oxm_src_meta_id */
-    6,    /* 250: of_oxm_src_meta_id_masked */
-    6,    /* 251: of_oxm_tcp_dst */
-    8,    /* 252: of_oxm_tcp_dst_masked */
-    6,    /* 253: of_oxm_tcp_src */
-    8,    /* 254: of_oxm_tcp_src_masked */
-    6,    /* 255: of_oxm_udp_dst */
-    8,    /* 256: of_oxm_udp_dst_masked */
-    6,    /* 257: of_oxm_udp_src */
-    8,    /* 258: of_oxm_udp_src_masked */
-    5,    /* 259: of_oxm_vlan_pcp */
-    6,    /* 260: of_oxm_vlan_pcp_masked */
-    6,    /* 261: of_oxm_vlan_vid */
-    8,    /* 262: of_oxm_vlan_vid_masked */
-    16,   /* 263: of_packet_queue */
-    64,   /* 264: of_port_desc */
-    104,  /* 265: of_port_stats_entry */
-    8,    /* 266: of_queue_prop */
-    16,   /* 267: of_queue_prop_experimenter */
-    8,    /* 268: of_queue_prop_header */
-    16,   /* 269: of_queue_prop_max_rate */
-    16,   /* 270: of_queue_prop_min_rate */
-    32,   /* 271: of_queue_stats_entry */
-    -1,   /* 272: of_table_feature_prop */
-    -1,   /* 273: of_table_feature_prop_apply_actions */
-    -1,   /* 274: of_table_feature_prop_apply_actions_miss */
-    -1,   /* 275: of_table_feature_prop_apply_setfield */
-    -1,   /* 276: of_table_feature_prop_apply_setfield_miss */
-    -1,   /* 277: of_table_feature_prop_experimenter */
-    -1,   /* 278: of_table_feature_prop_header */
-    -1,   /* 279: of_table_feature_prop_instructions */
-    -1,   /* 280: of_table_feature_prop_instructions_miss */
-    -1,   /* 281: of_table_feature_prop_match */
-    -1,   /* 282: of_table_feature_prop_next_tables */
-    -1,   /* 283: of_table_feature_prop_next_tables_miss */
-    -1,   /* 284: of_table_feature_prop_wildcards */
-    -1,   /* 285: of_table_feature_prop_write_actions */
-    -1,   /* 286: of_table_feature_prop_write_actions_miss */
-    -1,   /* 287: of_table_feature_prop_write_setfield */
-    -1,   /* 288: of_table_feature_prop_write_setfield_miss */
-    -1,   /* 289: of_table_features */
-    128,  /* 290: of_table_stats_entry */
-    -1,   /* 291: of_uint32 */
-    -1,   /* 292: of_uint8 */
-    0,    /* 293: of_list_action */
-    -1,   /* 294: of_list_action_id */
-    0,    /* 295: of_list_bsn_interface */
-    0,    /* 296: of_list_bucket */
-    0,    /* 297: of_list_bucket_counter */
-    0,    /* 298: of_list_flow_stats_entry */
-    0,    /* 299: of_list_group_desc_stats_entry */
-    0,    /* 300: of_list_group_stats_entry */
-    -1,   /* 301: of_list_hello_elem */
-    0,    /* 302: of_list_instruction */
-    -1,   /* 303: of_list_meter_band */
-    -1,   /* 304: of_list_meter_band_stats */
-    -1,   /* 305: of_list_meter_stats */
-    0,    /* 306: of_list_oxm */
-    0,    /* 307: of_list_packet_queue */
-    0,    /* 308: of_list_port_desc */
-    0,    /* 309: of_list_port_stats_entry */
-    0,    /* 310: of_list_queue_prop */
-    0,    /* 311: of_list_queue_stats_entry */
-    -1,   /* 312: of_list_table_feature_prop */
-    -1,   /* 313: of_list_table_features */
-    0,    /* 314: of_list_table_stats_entry */
-    -1,   /* 315: of_list_uint32 */
-    -1,   /* 316: of_list_uint8 */
-    -1,   /* 317: of_flow_mod */
-    -1,   /* 318: of_stats_reply */
-    -1    /* 319: of_stats_request */
+    10,   /* 196: of_oxm_eth_dst */
+    16,   /* 197: of_oxm_eth_dst_masked */
+    10,   /* 198: of_oxm_eth_src */
+    16,   /* 199: of_oxm_eth_src_masked */
+    6,    /* 200: of_oxm_eth_type */
+    8,    /* 201: of_oxm_eth_type_masked */
+    4,    /* 202: of_oxm_header */
+    5,    /* 203: of_oxm_icmpv4_code */
+    6,    /* 204: of_oxm_icmpv4_code_masked */
+    5,    /* 205: of_oxm_icmpv4_type */
+    6,    /* 206: of_oxm_icmpv4_type_masked */
+    5,    /* 207: of_oxm_icmpv6_code */
+    6,    /* 208: of_oxm_icmpv6_code_masked */
+    5,    /* 209: of_oxm_icmpv6_type */
+    6,    /* 210: of_oxm_icmpv6_type_masked */
+    8,    /* 211: of_oxm_in_phy_port */
+    12,   /* 212: of_oxm_in_phy_port_masked */
+    8,    /* 213: of_oxm_in_port */
+    12,   /* 214: of_oxm_in_port_masked */
+    5,    /* 215: of_oxm_ip_dscp */
+    6,    /* 216: of_oxm_ip_dscp_masked */
+    5,    /* 217: of_oxm_ip_ecn */
+    6,    /* 218: of_oxm_ip_ecn_masked */
+    5,    /* 219: of_oxm_ip_proto */
+    6,    /* 220: of_oxm_ip_proto_masked */
+    8,    /* 221: of_oxm_ipv4_dst */
+    12,   /* 222: of_oxm_ipv4_dst_masked */
+    8,    /* 223: of_oxm_ipv4_src */
+    12,   /* 224: of_oxm_ipv4_src_masked */
+    20,   /* 225: of_oxm_ipv6_dst */
+    36,   /* 226: of_oxm_ipv6_dst_masked */
+    8,    /* 227: of_oxm_ipv6_flabel */
+    12,   /* 228: of_oxm_ipv6_flabel_masked */
+    10,   /* 229: of_oxm_ipv6_nd_sll */
+    16,   /* 230: of_oxm_ipv6_nd_sll_masked */
+    20,   /* 231: of_oxm_ipv6_nd_target */
+    36,   /* 232: of_oxm_ipv6_nd_target_masked */
+    10,   /* 233: of_oxm_ipv6_nd_tll */
+    16,   /* 234: of_oxm_ipv6_nd_tll_masked */
+    20,   /* 235: of_oxm_ipv6_src */
+    36,   /* 236: of_oxm_ipv6_src_masked */
+    12,   /* 237: of_oxm_metadata */
+    20,   /* 238: of_oxm_metadata_masked */
+    8,    /* 239: of_oxm_mpls_label */
+    12,   /* 240: of_oxm_mpls_label_masked */
+    5,    /* 241: of_oxm_mpls_tc */
+    6,    /* 242: of_oxm_mpls_tc_masked */
+    6,    /* 243: of_oxm_sctp_dst */
+    8,    /* 244: of_oxm_sctp_dst_masked */
+    6,    /* 245: of_oxm_sctp_src */
+    8,    /* 246: of_oxm_sctp_src_masked */
+    6,    /* 247: of_oxm_tcp_dst */
+    8,    /* 248: of_oxm_tcp_dst_masked */
+    6,    /* 249: of_oxm_tcp_src */
+    8,    /* 250: of_oxm_tcp_src_masked */
+    6,    /* 251: of_oxm_udp_dst */
+    8,    /* 252: of_oxm_udp_dst_masked */
+    6,    /* 253: of_oxm_udp_src */
+    8,    /* 254: of_oxm_udp_src_masked */
+    5,    /* 255: of_oxm_vlan_pcp */
+    6,    /* 256: of_oxm_vlan_pcp_masked */
+    6,    /* 257: of_oxm_vlan_vid */
+    8,    /* 258: of_oxm_vlan_vid_masked */
+    16,   /* 259: of_packet_queue */
+    64,   /* 260: of_port_desc */
+    104,  /* 261: of_port_stats_entry */
+    8,    /* 262: of_queue_prop */
+    16,   /* 263: of_queue_prop_experimenter */
+    8,    /* 264: of_queue_prop_header */
+    16,   /* 265: of_queue_prop_max_rate */
+    16,   /* 266: of_queue_prop_min_rate */
+    32,   /* 267: of_queue_stats_entry */
+    -1,   /* 268: of_table_feature_prop */
+    -1,   /* 269: of_table_feature_prop_apply_actions */
+    -1,   /* 270: of_table_feature_prop_apply_actions_miss */
+    -1,   /* 271: of_table_feature_prop_apply_setfield */
+    -1,   /* 272: of_table_feature_prop_apply_setfield_miss */
+    -1,   /* 273: of_table_feature_prop_experimenter */
+    -1,   /* 274: of_table_feature_prop_header */
+    -1,   /* 275: of_table_feature_prop_instructions */
+    -1,   /* 276: of_table_feature_prop_instructions_miss */
+    -1,   /* 277: of_table_feature_prop_match */
+    -1,   /* 278: of_table_feature_prop_next_tables */
+    -1,   /* 279: of_table_feature_prop_next_tables_miss */
+    -1,   /* 280: of_table_feature_prop_wildcards */
+    -1,   /* 281: of_table_feature_prop_write_actions */
+    -1,   /* 282: of_table_feature_prop_write_actions_miss */
+    -1,   /* 283: of_table_feature_prop_write_setfield */
+    -1,   /* 284: of_table_feature_prop_write_setfield_miss */
+    -1,   /* 285: of_table_features */
+    128,  /* 286: of_table_stats_entry */
+    -1,   /* 287: of_uint32 */
+    -1,   /* 288: of_uint8 */
+    0,    /* 289: of_list_action */
+    -1,   /* 290: of_list_action_id */
+    0,    /* 291: of_list_bsn_interface */
+    0,    /* 292: of_list_bucket */
+    0,    /* 293: of_list_bucket_counter */
+    0,    /* 294: of_list_flow_stats_entry */
+    0,    /* 295: of_list_group_desc_stats_entry */
+    0,    /* 296: of_list_group_stats_entry */
+    -1,   /* 297: of_list_hello_elem */
+    0,    /* 298: of_list_instruction */
+    -1,   /* 299: of_list_meter_band */
+    -1,   /* 300: of_list_meter_band_stats */
+    -1,   /* 301: of_list_meter_stats */
+    0,    /* 302: of_list_oxm */
+    0,    /* 303: of_list_packet_queue */
+    0,    /* 304: of_list_port_desc */
+    0,    /* 305: of_list_port_stats_entry */
+    0,    /* 306: of_list_queue_prop */
+    0,    /* 307: of_list_queue_stats_entry */
+    -1,   /* 308: of_list_table_feature_prop */
+    -1,   /* 309: of_list_table_features */
+    0,    /* 310: of_list_table_stats_entry */
+    -1,   /* 311: of_list_uint32 */
+    -1,   /* 312: of_list_uint8 */
+    -1,   /* 313: of_flow_mod */
+    -1,   /* 314: of_stats_reply */
+    -1    /* 315: of_stats_request */
 };
 
 static const int
@@ -5736,130 +5004,126 @@ of_object_fixed_len_v4[OF_OBJECT_COUNT] = {
     16,   /* 193: of_oxm_arp_tha_masked */
     8,    /* 194: of_oxm_arp_tpa */
     12,   /* 195: of_oxm_arp_tpa_masked */
-    5,    /* 196: of_oxm_dst_meta_id */
-    6,    /* 197: of_oxm_dst_meta_id_masked */
-    10,   /* 198: of_oxm_eth_dst */
-    16,   /* 199: of_oxm_eth_dst_masked */
-    10,   /* 200: of_oxm_eth_src */
-    16,   /* 201: of_oxm_eth_src_masked */
-    6,    /* 202: of_oxm_eth_type */
-    8,    /* 203: of_oxm_eth_type_masked */
-    4,    /* 204: of_oxm_header */
-    5,    /* 205: of_oxm_icmpv4_code */
-    6,    /* 206: of_oxm_icmpv4_code_masked */
-    5,    /* 207: of_oxm_icmpv4_type */
-    6,    /* 208: of_oxm_icmpv4_type_masked */
-    5,    /* 209: of_oxm_icmpv6_code */
-    6,    /* 210: of_oxm_icmpv6_code_masked */
-    5,    /* 211: of_oxm_icmpv6_type */
-    6,    /* 212: of_oxm_icmpv6_type_masked */
-    8,    /* 213: of_oxm_in_phy_port */
-    12,   /* 214: of_oxm_in_phy_port_masked */
-    8,    /* 215: of_oxm_in_port */
-    12,   /* 216: of_oxm_in_port_masked */
-    5,    /* 217: of_oxm_ip_dscp */
-    6,    /* 218: of_oxm_ip_dscp_masked */
-    5,    /* 219: of_oxm_ip_ecn */
-    6,    /* 220: of_oxm_ip_ecn_masked */
-    5,    /* 221: of_oxm_ip_proto */
-    6,    /* 222: of_oxm_ip_proto_masked */
-    8,    /* 223: of_oxm_ipv4_dst */
-    12,   /* 224: of_oxm_ipv4_dst_masked */
-    8,    /* 225: of_oxm_ipv4_src */
-    12,   /* 226: of_oxm_ipv4_src_masked */
-    20,   /* 227: of_oxm_ipv6_dst */
-    36,   /* 228: of_oxm_ipv6_dst_masked */
-    8,    /* 229: of_oxm_ipv6_flabel */
-    12,   /* 230: of_oxm_ipv6_flabel_masked */
-    10,   /* 231: of_oxm_ipv6_nd_sll */
-    16,   /* 232: of_oxm_ipv6_nd_sll_masked */
-    20,   /* 233: of_oxm_ipv6_nd_target */
-    36,   /* 234: of_oxm_ipv6_nd_target_masked */
-    10,   /* 235: of_oxm_ipv6_nd_tll */
-    16,   /* 236: of_oxm_ipv6_nd_tll_masked */
-    20,   /* 237: of_oxm_ipv6_src */
-    36,   /* 238: of_oxm_ipv6_src_masked */
-    12,   /* 239: of_oxm_metadata */
-    20,   /* 240: of_oxm_metadata_masked */
-    8,    /* 241: of_oxm_mpls_label */
-    12,   /* 242: of_oxm_mpls_label_masked */
-    5,    /* 243: of_oxm_mpls_tc */
-    6,    /* 244: of_oxm_mpls_tc_masked */
-    6,    /* 245: of_oxm_sctp_dst */
-    8,    /* 246: of_oxm_sctp_dst_masked */
-    6,    /* 247: of_oxm_sctp_src */
-    8,    /* 248: of_oxm_sctp_src_masked */
-    5,    /* 249: of_oxm_src_meta_id */
-    6,    /* 250: of_oxm_src_meta_id_masked */
-    6,    /* 251: of_oxm_tcp_dst */
-    8,    /* 252: of_oxm_tcp_dst_masked */
-    6,    /* 253: of_oxm_tcp_src */
-    8,    /* 254: of_oxm_tcp_src_masked */
-    6,    /* 255: of_oxm_udp_dst */
-    8,    /* 256: of_oxm_udp_dst_masked */
-    6,    /* 257: of_oxm_udp_src */
-    8,    /* 258: of_oxm_udp_src_masked */
-    5,    /* 259: of_oxm_vlan_pcp */
-    6,    /* 260: of_oxm_vlan_pcp_masked */
-    6,    /* 261: of_oxm_vlan_vid */
-    8,    /* 262: of_oxm_vlan_vid_masked */
-    16,   /* 263: of_packet_queue */
-    64,   /* 264: of_port_desc */
-    112,  /* 265: of_port_stats_entry */
-    8,    /* 266: of_queue_prop */
-    16,   /* 267: of_queue_prop_experimenter */
-    8,    /* 268: of_queue_prop_header */
-    16,   /* 269: of_queue_prop_max_rate */
-    16,   /* 270: of_queue_prop_min_rate */
-    40,   /* 271: of_queue_stats_entry */
-    4,    /* 272: of_table_feature_prop */
-    4,    /* 273: of_table_feature_prop_apply_actions */
-    4,    /* 274: of_table_feature_prop_apply_actions_miss */
-    4,    /* 275: of_table_feature_prop_apply_setfield */
-    4,    /* 276: of_table_feature_prop_apply_setfield_miss */
-    12,   /* 277: of_table_feature_prop_experimenter */
-    4,    /* 278: of_table_feature_prop_header */
-    4,    /* 279: of_table_feature_prop_instructions */
-    4,    /* 280: of_table_feature_prop_instructions_miss */
-    4,    /* 281: of_table_feature_prop_match */
-    4,    /* 282: of_table_feature_prop_next_tables */
-    4,    /* 283: of_table_feature_prop_next_tables_miss */
-    4,    /* 284: of_table_feature_prop_wildcards */
-    4,    /* 285: of_table_feature_prop_write_actions */
-    4,    /* 286: of_table_feature_prop_write_actions_miss */
-    4,    /* 287: of_table_feature_prop_write_setfield */
-    4,    /* 288: of_table_feature_prop_write_setfield_miss */
-    64,   /* 289: of_table_features */
-    24,   /* 290: of_table_stats_entry */
-    4,    /* 291: of_uint32 */
-    1,    /* 292: of_uint8 */
-    0,    /* 293: of_list_action */
-    0,    /* 294: of_list_action_id */
-    0,    /* 295: of_list_bsn_interface */
-    0,    /* 296: of_list_bucket */
-    0,    /* 297: of_list_bucket_counter */
-    0,    /* 298: of_list_flow_stats_entry */
-    0,    /* 299: of_list_group_desc_stats_entry */
-    0,    /* 300: of_list_group_stats_entry */
-    0,    /* 301: of_list_hello_elem */
-    0,    /* 302: of_list_instruction */
-    0,    /* 303: of_list_meter_band */
-    0,    /* 304: of_list_meter_band_stats */
-    0,    /* 305: of_list_meter_stats */
-    0,    /* 306: of_list_oxm */
-    0,    /* 307: of_list_packet_queue */
-    0,    /* 308: of_list_port_desc */
-    0,    /* 309: of_list_port_stats_entry */
-    0,    /* 310: of_list_queue_prop */
-    0,    /* 311: of_list_queue_stats_entry */
-    0,    /* 312: of_list_table_feature_prop */
-    0,    /* 313: of_list_table_features */
-    0,    /* 314: of_list_table_stats_entry */
-    0,    /* 315: of_list_uint32 */
-    0,    /* 316: of_list_uint8 */
-    -1,   /* 317: of_flow_mod */
-    -1,   /* 318: of_stats_reply */
-    -1    /* 319: of_stats_request */
+    10,   /* 196: of_oxm_eth_dst */
+    16,   /* 197: of_oxm_eth_dst_masked */
+    10,   /* 198: of_oxm_eth_src */
+    16,   /* 199: of_oxm_eth_src_masked */
+    6,    /* 200: of_oxm_eth_type */
+    8,    /* 201: of_oxm_eth_type_masked */
+    4,    /* 202: of_oxm_header */
+    5,    /* 203: of_oxm_icmpv4_code */
+    6,    /* 204: of_oxm_icmpv4_code_masked */
+    5,    /* 205: of_oxm_icmpv4_type */
+    6,    /* 206: of_oxm_icmpv4_type_masked */
+    5,    /* 207: of_oxm_icmpv6_code */
+    6,    /* 208: of_oxm_icmpv6_code_masked */
+    5,    /* 209: of_oxm_icmpv6_type */
+    6,    /* 210: of_oxm_icmpv6_type_masked */
+    8,    /* 211: of_oxm_in_phy_port */
+    12,   /* 212: of_oxm_in_phy_port_masked */
+    8,    /* 213: of_oxm_in_port */
+    12,   /* 214: of_oxm_in_port_masked */
+    5,    /* 215: of_oxm_ip_dscp */
+    6,    /* 216: of_oxm_ip_dscp_masked */
+    5,    /* 217: of_oxm_ip_ecn */
+    6,    /* 218: of_oxm_ip_ecn_masked */
+    5,    /* 219: of_oxm_ip_proto */
+    6,    /* 220: of_oxm_ip_proto_masked */
+    8,    /* 221: of_oxm_ipv4_dst */
+    12,   /* 222: of_oxm_ipv4_dst_masked */
+    8,    /* 223: of_oxm_ipv4_src */
+    12,   /* 224: of_oxm_ipv4_src_masked */
+    20,   /* 225: of_oxm_ipv6_dst */
+    36,   /* 226: of_oxm_ipv6_dst_masked */
+    8,    /* 227: of_oxm_ipv6_flabel */
+    12,   /* 228: of_oxm_ipv6_flabel_masked */
+    10,   /* 229: of_oxm_ipv6_nd_sll */
+    16,   /* 230: of_oxm_ipv6_nd_sll_masked */
+    20,   /* 231: of_oxm_ipv6_nd_target */
+    36,   /* 232: of_oxm_ipv6_nd_target_masked */
+    10,   /* 233: of_oxm_ipv6_nd_tll */
+    16,   /* 234: of_oxm_ipv6_nd_tll_masked */
+    20,   /* 235: of_oxm_ipv6_src */
+    36,   /* 236: of_oxm_ipv6_src_masked */
+    12,   /* 237: of_oxm_metadata */
+    20,   /* 238: of_oxm_metadata_masked */
+    8,    /* 239: of_oxm_mpls_label */
+    12,   /* 240: of_oxm_mpls_label_masked */
+    5,    /* 241: of_oxm_mpls_tc */
+    6,    /* 242: of_oxm_mpls_tc_masked */
+    6,    /* 243: of_oxm_sctp_dst */
+    8,    /* 244: of_oxm_sctp_dst_masked */
+    6,    /* 245: of_oxm_sctp_src */
+    8,    /* 246: of_oxm_sctp_src_masked */
+    6,    /* 247: of_oxm_tcp_dst */
+    8,    /* 248: of_oxm_tcp_dst_masked */
+    6,    /* 249: of_oxm_tcp_src */
+    8,    /* 250: of_oxm_tcp_src_masked */
+    6,    /* 251: of_oxm_udp_dst */
+    8,    /* 252: of_oxm_udp_dst_masked */
+    6,    /* 253: of_oxm_udp_src */
+    8,    /* 254: of_oxm_udp_src_masked */
+    5,    /* 255: of_oxm_vlan_pcp */
+    6,    /* 256: of_oxm_vlan_pcp_masked */
+    6,    /* 257: of_oxm_vlan_vid */
+    8,    /* 258: of_oxm_vlan_vid_masked */
+    16,   /* 259: of_packet_queue */
+    64,   /* 260: of_port_desc */
+    112,  /* 261: of_port_stats_entry */
+    8,    /* 262: of_queue_prop */
+    16,   /* 263: of_queue_prop_experimenter */
+    8,    /* 264: of_queue_prop_header */
+    16,   /* 265: of_queue_prop_max_rate */
+    16,   /* 266: of_queue_prop_min_rate */
+    40,   /* 267: of_queue_stats_entry */
+    4,    /* 268: of_table_feature_prop */
+    4,    /* 269: of_table_feature_prop_apply_actions */
+    4,    /* 270: of_table_feature_prop_apply_actions_miss */
+    4,    /* 271: of_table_feature_prop_apply_setfield */
+    4,    /* 272: of_table_feature_prop_apply_setfield_miss */
+    12,   /* 273: of_table_feature_prop_experimenter */
+    4,    /* 274: of_table_feature_prop_header */
+    4,    /* 275: of_table_feature_prop_instructions */
+    4,    /* 276: of_table_feature_prop_instructions_miss */
+    4,    /* 277: of_table_feature_prop_match */
+    4,    /* 278: of_table_feature_prop_next_tables */
+    4,    /* 279: of_table_feature_prop_next_tables_miss */
+    4,    /* 280: of_table_feature_prop_wildcards */
+    4,    /* 281: of_table_feature_prop_write_actions */
+    4,    /* 282: of_table_feature_prop_write_actions_miss */
+    4,    /* 283: of_table_feature_prop_write_setfield */
+    4,    /* 284: of_table_feature_prop_write_setfield_miss */
+    64,   /* 285: of_table_features */
+    24,   /* 286: of_table_stats_entry */
+    4,    /* 287: of_uint32 */
+    1,    /* 288: of_uint8 */
+    0,    /* 289: of_list_action */
+    0,    /* 290: of_list_action_id */
+    0,    /* 291: of_list_bsn_interface */
+    0,    /* 292: of_list_bucket */
+    0,    /* 293: of_list_bucket_counter */
+    0,    /* 294: of_list_flow_stats_entry */
+    0,    /* 295: of_list_group_desc_stats_entry */
+    0,    /* 296: of_list_group_stats_entry */
+    0,    /* 297: of_list_hello_elem */
+    0,    /* 298: of_list_instruction */
+    0,    /* 299: of_list_meter_band */
+    0,    /* 300: of_list_meter_band_stats */
+    0,    /* 301: of_list_meter_stats */
+    0,    /* 302: of_list_oxm */
+    0,    /* 303: of_list_packet_queue */
+    0,    /* 304: of_list_port_desc */
+    0,    /* 305: of_list_port_stats_entry */
+    0,    /* 306: of_list_queue_prop */
+    0,    /* 307: of_list_queue_stats_entry */
+    0,    /* 308: of_list_table_feature_prop */
+    0,    /* 309: of_list_table_features */
+    0,    /* 310: of_list_table_stats_entry */
+    0,    /* 311: of_list_uint32 */
+    0,    /* 312: of_list_uint8 */
+    -1,   /* 313: of_flow_mod */
+    -1,   /* 314: of_stats_reply */
+    -1    /* 315: of_stats_request */
 };
 
 /**

@@ -3191,24 +3191,6 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_populate_scalars(
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 
-extern int of_oxm_dst_meta_id_OF_VERSION_1_2_populate(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_2_check(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_2_populate_scalars(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_2_check_scalars(
-    of_oxm_dst_meta_id_t *obj, int value);
-
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_populate(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_check(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_populate_scalars(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_check_scalars(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-
 extern int of_oxm_eth_dst_OF_VERSION_1_2_populate(
     of_oxm_eth_dst_t *obj, int value);
 extern int of_oxm_eth_dst_OF_VERSION_1_2_check(
@@ -3667,24 +3649,6 @@ extern int of_oxm_sctp_src_masked_OF_VERSION_1_2_populate_scalars(
     of_oxm_sctp_src_masked_t *obj, int value);
 extern int of_oxm_sctp_src_masked_OF_VERSION_1_2_check_scalars(
     of_oxm_sctp_src_masked_t *obj, int value);
-
-extern int of_oxm_src_meta_id_OF_VERSION_1_2_populate(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_2_check(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_2_populate_scalars(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_2_check_scalars(
-    of_oxm_src_meta_id_t *obj, int value);
-
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_2_populate(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_2_check(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_2_populate_scalars(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_2_check_scalars(
-    of_oxm_src_meta_id_masked_t *obj, int value);
 
 extern int of_oxm_tcp_dst_OF_VERSION_1_2_populate(
     of_oxm_tcp_dst_t *obj, int value);
@@ -5432,24 +5396,6 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_populate_scalars(
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 
-extern int of_oxm_dst_meta_id_OF_VERSION_1_3_populate(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_3_check(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_3_populate_scalars(
-    of_oxm_dst_meta_id_t *obj, int value);
-extern int of_oxm_dst_meta_id_OF_VERSION_1_3_check_scalars(
-    of_oxm_dst_meta_id_t *obj, int value);
-
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_populate(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_check(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_populate_scalars(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-extern int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_check_scalars(
-    of_oxm_dst_meta_id_masked_t *obj, int value);
-
 extern int of_oxm_eth_dst_OF_VERSION_1_3_populate(
     of_oxm_eth_dst_t *obj, int value);
 extern int of_oxm_eth_dst_OF_VERSION_1_3_check(
@@ -5908,24 +5854,6 @@ extern int of_oxm_sctp_src_masked_OF_VERSION_1_3_populate_scalars(
     of_oxm_sctp_src_masked_t *obj, int value);
 extern int of_oxm_sctp_src_masked_OF_VERSION_1_3_check_scalars(
     of_oxm_sctp_src_masked_t *obj, int value);
-
-extern int of_oxm_src_meta_id_OF_VERSION_1_3_populate(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_3_check(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_3_populate_scalars(
-    of_oxm_src_meta_id_t *obj, int value);
-extern int of_oxm_src_meta_id_OF_VERSION_1_3_check_scalars(
-    of_oxm_src_meta_id_t *obj, int value);
-
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_3_populate(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_3_check(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_3_populate_scalars(
-    of_oxm_src_meta_id_masked_t *obj, int value);
-extern int of_oxm_src_meta_id_masked_OF_VERSION_1_3_check_scalars(
-    of_oxm_src_meta_id_masked_t *obj, int value);
 
 extern int of_oxm_tcp_dst_OF_VERSION_1_3_populate(
     of_oxm_tcp_dst_t *obj, int value);

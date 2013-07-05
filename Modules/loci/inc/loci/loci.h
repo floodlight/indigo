@@ -314,8 +314,6 @@ typedef of_object_t of_oxm_arp_tha_t;
 typedef of_object_t of_oxm_arp_tha_masked_t;
 typedef of_object_t of_oxm_arp_tpa_t;
 typedef of_object_t of_oxm_arp_tpa_masked_t;
-typedef of_object_t of_oxm_dst_meta_id_t;
-typedef of_object_t of_oxm_dst_meta_id_masked_t;
 typedef of_object_t of_oxm_eth_dst_t;
 typedef of_object_t of_oxm_eth_dst_masked_t;
 typedef of_object_t of_oxm_eth_src_t;
@@ -367,8 +365,6 @@ typedef of_object_t of_oxm_sctp_dst_t;
 typedef of_object_t of_oxm_sctp_dst_masked_t;
 typedef of_object_t of_oxm_sctp_src_t;
 typedef of_object_t of_oxm_sctp_src_masked_t;
-typedef of_object_t of_oxm_src_meta_id_t;
-typedef of_object_t of_oxm_src_meta_id_masked_t;
 typedef of_object_t of_oxm_tcp_dst_t;
 typedef of_object_t of_oxm_tcp_dst_masked_t;
 typedef of_object_t of_oxm_tcp_src_t;
@@ -2403,20 +2399,6 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
-extern of_oxm_dst_meta_id_t *
-    of_oxm_dst_meta_id_new_tracking(of_version_t version,
-        const char *file, int line);
-#define of_oxm_dst_meta_id_new(version) \
-    of_oxm_dst_meta_id_new_tracking(version, \
-        __FILE__, __LINE__)
-
-extern of_oxm_dst_meta_id_masked_t *
-    of_oxm_dst_meta_id_masked_new_tracking(of_version_t version,
-        const char *file, int line);
-#define of_oxm_dst_meta_id_masked_new(version) \
-    of_oxm_dst_meta_id_masked_new_tracking(version, \
-        __FILE__, __LINE__)
-
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_tracking(of_version_t version,
         const char *file, int line);
@@ -2772,20 +2754,6 @@ extern of_oxm_sctp_src_masked_t *
         const char *file, int line);
 #define of_oxm_sctp_src_masked_new(version) \
     of_oxm_sctp_src_masked_new_tracking(version, \
-        __FILE__, __LINE__)
-
-extern of_oxm_src_meta_id_t *
-    of_oxm_src_meta_id_new_tracking(of_version_t version,
-        const char *file, int line);
-#define of_oxm_src_meta_id_new(version) \
-    of_oxm_src_meta_id_new_tracking(version, \
-        __FILE__, __LINE__)
-
-extern of_oxm_src_meta_id_masked_t *
-    of_oxm_src_meta_id_masked_new_tracking(of_version_t version,
-        const char *file, int line);
-#define of_oxm_src_meta_id_masked_new(version) \
-    of_oxm_src_meta_id_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_oxm_tcp_dst_t *
@@ -4019,12 +3987,6 @@ extern of_list_uint8_t *
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_(version)
 
-#define of_oxm_dst_meta_id_new(version) \
-    of_oxm_dst_meta_id_new_(version)
-
-#define of_oxm_dst_meta_id_masked_new(version) \
-    of_oxm_dst_meta_id_masked_new_(version)
-
 #define of_oxm_eth_dst_new(version) \
     of_oxm_eth_dst_new_(version)
 
@@ -4177,12 +4139,6 @@ extern of_list_uint8_t *
 
 #define of_oxm_sctp_src_masked_new(version) \
     of_oxm_sctp_src_masked_new_(version)
-
-#define of_oxm_src_meta_id_new(version) \
-    of_oxm_src_meta_id_new_(version)
-
-#define of_oxm_src_meta_id_masked_new(version) \
-    of_oxm_src_meta_id_masked_new_(version)
 
 #define of_oxm_tcp_dst_new(version) \
     of_oxm_tcp_dst_new_(version)
@@ -5541,16 +5497,6 @@ extern of_oxm_arp_tpa_masked_t *
 extern void of_oxm_arp_tpa_masked_init(
     of_oxm_arp_tpa_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
-extern of_oxm_dst_meta_id_t *
-    of_oxm_dst_meta_id_new_(of_version_t version);
-extern void of_oxm_dst_meta_id_init(
-    of_oxm_dst_meta_id_t *obj, of_version_t version, int bytes, int clean_wire);
-
-extern of_oxm_dst_meta_id_masked_t *
-    of_oxm_dst_meta_id_masked_new_(of_version_t version);
-extern void of_oxm_dst_meta_id_masked_init(
-    of_oxm_dst_meta_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
-
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_(of_version_t version);
 extern void of_oxm_eth_dst_init(
@@ -5805,16 +5751,6 @@ extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_new_(of_version_t version);
 extern void of_oxm_sctp_src_masked_init(
     of_oxm_sctp_src_masked_t *obj, of_version_t version, int bytes, int clean_wire);
-
-extern of_oxm_src_meta_id_t *
-    of_oxm_src_meta_id_new_(of_version_t version);
-extern void of_oxm_src_meta_id_init(
-    of_oxm_src_meta_id_t *obj, of_version_t version, int bytes, int clean_wire);
-
-extern of_oxm_src_meta_id_masked_t *
-    of_oxm_src_meta_id_masked_new_(of_version_t version);
-extern void of_oxm_src_meta_id_masked_init(
-    of_oxm_src_meta_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_new_(of_version_t version);
@@ -8299,28 +8235,6 @@ of_oxm_arp_tpa_masked_delete(of_oxm_arp_tpa_masked_t *obj) {
 }
 
 /**
- * Delete an object of type of_oxm_dst_meta_id_t
- * @param obj An instance of type of_oxm_dst_meta_id_t
- *
- * \ingroup of_oxm_dst_meta_id
- */
-static inline void
-of_oxm_dst_meta_id_delete(of_oxm_dst_meta_id_t *obj) {
-    of_object_delete((of_object_t *)(obj));
-}
-
-/**
- * Delete an object of type of_oxm_dst_meta_id_masked_t
- * @param obj An instance of type of_oxm_dst_meta_id_masked_t
- *
- * \ingroup of_oxm_dst_meta_id_masked
- */
-static inline void
-of_oxm_dst_meta_id_masked_delete(of_oxm_dst_meta_id_masked_t *obj) {
-    of_object_delete((of_object_t *)(obj));
-}
-
-/**
  * Delete an object of type of_oxm_eth_dst_t
  * @param obj An instance of type of_oxm_eth_dst_t
  *
@@ -8878,28 +8792,6 @@ of_oxm_sctp_src_delete(of_oxm_sctp_src_t *obj) {
  */
 static inline void
 of_oxm_sctp_src_masked_delete(of_oxm_sctp_src_masked_t *obj) {
-    of_object_delete((of_object_t *)(obj));
-}
-
-/**
- * Delete an object of type of_oxm_src_meta_id_t
- * @param obj An instance of type of_oxm_src_meta_id_t
- *
- * \ingroup of_oxm_src_meta_id
- */
-static inline void
-of_oxm_src_meta_id_delete(of_oxm_src_meta_id_t *obj) {
-    of_object_delete((of_object_t *)(obj));
-}
-
-/**
- * Delete an object of type of_oxm_src_meta_id_masked_t
- * @param obj An instance of type of_oxm_src_meta_id_masked_t
- *
- * \ingroup of_oxm_src_meta_id_masked
- */
-static inline void
-of_oxm_src_meta_id_masked_delete(of_oxm_src_meta_id_masked_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -13714,20 +13606,6 @@ extern void of_match_v1_ip_proto_get(
     of_match_v1_t *obj,
     uint8_t *ip_proto);
 
-extern void of_match_v1_src_meta_id_set(
-    of_match_v1_t *obj,
-    uint8_t src_meta_id);
-extern void of_match_v1_src_meta_id_get(
-    of_match_v1_t *obj,
-    uint8_t *src_meta_id);
-
-extern void of_match_v1_dst_meta_id_set(
-    of_match_v1_t *obj,
-    uint8_t dst_meta_id);
-extern void of_match_v1_dst_meta_id_get(
-    of_match_v1_t *obj,
-    uint8_t *dst_meta_id);
-
 extern void of_match_v1_ipv4_src_set(
     of_match_v1_t *obj,
     uint32_t ipv4_src);
@@ -14235,31 +14113,6 @@ extern void of_oxm_arp_tpa_masked_value_mask_set(
 extern void of_oxm_arp_tpa_masked_value_mask_get(
     of_oxm_arp_tpa_masked_t *obj,
     uint32_t *value_mask);
-
-/* Unified accessor functions for of_oxm_dst_meta_id */
-
-extern void of_oxm_dst_meta_id_value_set(
-    of_oxm_dst_meta_id_t *obj,
-    uint8_t value);
-extern void of_oxm_dst_meta_id_value_get(
-    of_oxm_dst_meta_id_t *obj,
-    uint8_t *value);
-
-/* Unified accessor functions for of_oxm_dst_meta_id_masked */
-
-extern void of_oxm_dst_meta_id_masked_value_set(
-    of_oxm_dst_meta_id_masked_t *obj,
-    uint8_t value);
-extern void of_oxm_dst_meta_id_masked_value_get(
-    of_oxm_dst_meta_id_masked_t *obj,
-    uint8_t *value);
-
-extern void of_oxm_dst_meta_id_masked_value_mask_set(
-    of_oxm_dst_meta_id_masked_t *obj,
-    uint8_t value_mask);
-extern void of_oxm_dst_meta_id_masked_value_mask_get(
-    of_oxm_dst_meta_id_masked_t *obj,
-    uint8_t *value_mask);
 
 /* Unified accessor functions for of_oxm_eth_dst */
 
@@ -14887,31 +14740,6 @@ extern void of_oxm_sctp_src_masked_value_mask_set(
 extern void of_oxm_sctp_src_masked_value_mask_get(
     of_oxm_sctp_src_masked_t *obj,
     uint16_t *value_mask);
-
-/* Unified accessor functions for of_oxm_src_meta_id */
-
-extern void of_oxm_src_meta_id_value_set(
-    of_oxm_src_meta_id_t *obj,
-    uint8_t value);
-extern void of_oxm_src_meta_id_value_get(
-    of_oxm_src_meta_id_t *obj,
-    uint8_t *value);
-
-/* Unified accessor functions for of_oxm_src_meta_id_masked */
-
-extern void of_oxm_src_meta_id_masked_value_set(
-    of_oxm_src_meta_id_masked_t *obj,
-    uint8_t value);
-extern void of_oxm_src_meta_id_masked_value_get(
-    of_oxm_src_meta_id_masked_t *obj,
-    uint8_t *value);
-
-extern void of_oxm_src_meta_id_masked_value_mask_set(
-    of_oxm_src_meta_id_masked_t *obj,
-    uint8_t value_mask);
-extern void of_oxm_src_meta_id_masked_value_mask_get(
-    of_oxm_src_meta_id_masked_t *obj,
-    uint8_t *value_mask);
 
 /* Unified accessor functions for of_oxm_tcp_dst */
 
@@ -16594,8 +16422,6 @@ union of_generic_u {
     of_oxm_arp_tha_masked_t of_oxm_arp_tha_masked;
     of_oxm_arp_tpa_t of_oxm_arp_tpa;
     of_oxm_arp_tpa_masked_t of_oxm_arp_tpa_masked;
-    of_oxm_dst_meta_id_t of_oxm_dst_meta_id;
-    of_oxm_dst_meta_id_masked_t of_oxm_dst_meta_id_masked;
     of_oxm_eth_dst_t of_oxm_eth_dst;
     of_oxm_eth_dst_masked_t of_oxm_eth_dst_masked;
     of_oxm_eth_src_t of_oxm_eth_src;
@@ -16647,8 +16473,6 @@ union of_generic_u {
     of_oxm_sctp_dst_masked_t of_oxm_sctp_dst_masked;
     of_oxm_sctp_src_t of_oxm_sctp_src;
     of_oxm_sctp_src_masked_t of_oxm_sctp_src_masked;
-    of_oxm_src_meta_id_t of_oxm_src_meta_id;
-    of_oxm_src_meta_id_masked_t of_oxm_src_meta_id_masked;
     of_oxm_tcp_dst_t of_oxm_tcp_dst;
     of_oxm_tcp_dst_masked_t of_oxm_tcp_dst_masked;
     of_oxm_tcp_src_t of_oxm_tcp_src;
@@ -16917,8 +16741,6 @@ union of_oxm_u {
     of_oxm_arp_tha_masked_t arp_tha_masked;
     of_oxm_arp_tpa_t arp_tpa;
     of_oxm_arp_tpa_masked_t arp_tpa_masked;
-    of_oxm_dst_meta_id_t dst_meta_id;
-    of_oxm_dst_meta_id_masked_t dst_meta_id_masked;
     of_oxm_eth_dst_t eth_dst;
     of_oxm_eth_dst_masked_t eth_dst_masked;
     of_oxm_eth_src_t eth_src;
@@ -16969,8 +16791,6 @@ union of_oxm_u {
     of_oxm_sctp_dst_masked_t sctp_dst_masked;
     of_oxm_sctp_src_t sctp_src;
     of_oxm_sctp_src_masked_t sctp_src_masked;
-    of_oxm_src_meta_id_t src_meta_id;
-    of_oxm_src_meta_id_masked_t src_meta_id_masked;
     of_oxm_tcp_dst_t tcp_dst;
     of_oxm_tcp_dst_masked_t tcp_dst_masked;
     of_oxm_tcp_src_t tcp_src;
@@ -17382,7 +17202,7 @@ of_flow_mod_to_object_id(int flow_mod, of_version_t version)
 
 extern const of_object_id_t *const of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
 
-#define OF_OXM_ITEM_COUNT 244
+#define OF_OXM_ITEM_COUNT 72
 
 
 /**
