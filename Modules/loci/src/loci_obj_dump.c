@@ -2949,16 +2949,6 @@ of_match_v1_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_match_v1_
     out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
-    of_match_v1_src_meta_id_get(obj, &val8);
-    out += writer(cookie, "  src_meta_id (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    of_match_v1_dst_meta_id_get(obj, &val8);
-    out += writer(cookie, "  dst_meta_id (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
     of_match_v1_ipv4_src_get(obj, &val32);
     out += writer(cookie, "  ipv4_src (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
@@ -10429,43 +10419,6 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of
 }
 
 int
-of_oxm_dst_meta_id_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_dst_meta_id\n");
-
-    of_oxm_dst_meta_id_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_dst_meta_id_masked\n");
-
-    of_oxm_dst_meta_id_masked_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    of_oxm_dst_meta_id_masked_value_mask_get(obj, &val8);
-    out += writer(cookie, "  value_mask (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
 of_oxm_eth_dst_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -11395,43 +11348,6 @@ of_oxm_sctp_src_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, o
     of_oxm_sctp_src_masked_value_mask_get(obj, &val16);
     out += writer(cookie, "  value_mask (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_src_meta_id_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_src_meta_id\n");
-
-    of_oxm_src_meta_id_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_src_meta_id_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_src_meta_id_masked\n");
-
-    of_oxm_src_meta_id_masked_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    of_oxm_src_meta_id_masked_value_mask_get(obj, &val8);
-    out += writer(cookie, "  value_mask (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
     return out;
@@ -16503,43 +16419,6 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of
 }
 
 int
-of_oxm_dst_meta_id_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_dst_meta_id\n");
-
-    of_oxm_dst_meta_id_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_dst_meta_id_masked\n");
-
-    of_oxm_dst_meta_id_masked_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    of_oxm_dst_meta_id_masked_value_mask_get(obj, &val8);
-    out += writer(cookie, "  value_mask (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
 of_oxm_eth_dst_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -17469,43 +17348,6 @@ of_oxm_sctp_src_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, o
     of_oxm_sctp_src_masked_value_mask_get(obj, &val16);
     out += writer(cookie, "  value_mask (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_src_meta_id_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_src_meta_id\n");
-
-    of_oxm_src_meta_id_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    return out;
-}
-
-int
-of_oxm_src_meta_id_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj)
-{
-    int out = 0;
-    uint8_t val8;
-
-    out += writer(cookie, "Object of type of_oxm_src_meta_id_masked\n");
-
-    of_oxm_src_meta_id_masked_value_get(obj, &val8);
-    out += writer(cookie, "  value (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
-    out += writer(cookie, "\n");
-
-    of_oxm_src_meta_id_masked_value_mask_get(obj, &val8);
-    out += writer(cookie, "  value_mask (uint8_t):  ");
-    out += LOCI_DUMP_u8(writer, cookie, val8);
     out += writer(cookie, "\n");
 
     return out;
@@ -18840,11 +18682,11 @@ loci_dump_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, "\n");
     }
 
-    if (OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(match)) {
-        out += writer(cookie, "  dst_meta_id (uint8_t) active: Value ");
-        out += LOCI_DUMP_u8(writer, cookie, match->fields.dst_meta_id);
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
+        out += writer(cookie, "  ipv6_nd_target (of_ipv6_t) active: Value ");
+        out += LOCI_DUMP_ipv6(writer, cookie, match->fields.ipv6_nd_target);
         out += writer(cookie, "\n    Mask ");
-        out += LOCI_DUMP_u8(writer, cookie, match->masks.dst_meta_id);
+        out += LOCI_DUMP_ipv6(writer, cookie, match->masks.ipv6_nd_target);
         out += writer(cookie, "\n");
     }
 
@@ -18920,27 +18762,11 @@ loci_dump_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, "\n");
     }
 
-    if (OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(match)) {
-        out += writer(cookie, "  src_meta_id (uint8_t) active: Value ");
-        out += LOCI_DUMP_u8(writer, cookie, match->fields.src_meta_id);
-        out += writer(cookie, "\n    Mask ");
-        out += LOCI_DUMP_u8(writer, cookie, match->masks.src_meta_id);
-        out += writer(cookie, "\n");
-    }
-
     if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(match)) {
         out += writer(cookie, "  udp_dst (uint16_t) active: Value ");
         out += LOCI_DUMP_u16(writer, cookie, match->fields.udp_dst);
         out += writer(cookie, "\n    Mask ");
         out += LOCI_DUMP_u16(writer, cookie, match->masks.udp_dst);
-        out += writer(cookie, "\n");
-    }
-
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
-        out += writer(cookie, "  ipv6_nd_target (of_ipv6_t) active: Value ");
-        out += LOCI_DUMP_ipv6(writer, cookie, match->fields.ipv6_nd_target);
-        out += writer(cookie, "\n    Mask ");
-        out += LOCI_DUMP_ipv6(writer, cookie, match->masks.ipv6_nd_target);
         out += writer(cookie, "\n");
     }
 
@@ -19202,10 +19028,6 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_match_v1_OF_VERSION_1_0_dump,
-    unknown_dump,
-    unknown_dump,
-    unknown_dump,
-    unknown_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -19611,10 +19433,6 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
-    unknown_dump,
-    unknown_dump,
-    unknown_dump,
-    unknown_dump,
     of_packet_queue_OF_VERSION_1_1_dump,
     of_port_desc_OF_VERSION_1_1_dump,
     of_port_stats_entry_OF_VERSION_1_1_dump,
@@ -19872,8 +19690,6 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump,
-    of_oxm_dst_meta_id_OF_VERSION_1_2_dump,
-    of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_src_OF_VERSION_1_2_dump,
@@ -19925,8 +19741,6 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_sctp_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_sctp_src_OF_VERSION_1_2_dump,
     of_oxm_sctp_src_masked_OF_VERSION_1_2_dump,
-    of_oxm_src_meta_id_OF_VERSION_1_2_dump,
-    of_oxm_src_meta_id_masked_OF_VERSION_1_2_dump,
     of_oxm_tcp_dst_OF_VERSION_1_2_dump,
     of_oxm_tcp_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_tcp_src_OF_VERSION_1_2_dump,
@@ -20196,8 +20010,6 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump,
-    of_oxm_dst_meta_id_OF_VERSION_1_3_dump,
-    of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_src_OF_VERSION_1_3_dump,
@@ -20249,8 +20061,6 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_sctp_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_sctp_src_OF_VERSION_1_3_dump,
     of_oxm_sctp_src_masked_OF_VERSION_1_3_dump,
-    of_oxm_src_meta_id_OF_VERSION_1_3_dump,
-    of_oxm_src_meta_id_masked_OF_VERSION_1_3_dump,
     of_oxm_tcp_dst_OF_VERSION_1_3_dump,
     of_oxm_tcp_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_tcp_src_OF_VERSION_1_3_dump,

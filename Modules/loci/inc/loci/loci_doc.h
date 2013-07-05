@@ -3314,14 +3314,6 @@ typedef struct of_instruction_write_metadata_s of_instruction_write_metadata_t;
  *   Accessors for ip_proto, a variable of type uint8.  Functions
  *   are of type of_match_v1_uint8_get_f and _set_f.
  *
- * @param src_meta_id_get/set ( OF_1_0).
- *   Accessors for src_meta_id, a variable of type uint8.  Functions
- *   are of type of_match_v1_uint8_get_f and _set_f.
- *
- * @param dst_meta_id_get/set ( OF_1_0).
- *   Accessors for dst_meta_id, a variable of type uint8.  Functions
- *   are of type of_match_v1_uint8_get_f and _set_f.
- *
  * @param ipv4_src_get/set ( OF_1_0).
  *   Accessors for ipv4_src, a variable of type uint32.  Functions
  *   are of type of_match_v1_uint32_get_f and _set_f.
@@ -3742,32 +3734,6 @@ typedef struct of_oxm_arp_tpa_s of_oxm_arp_tpa_t;
  *
  */
 typedef struct of_oxm_arp_tpa_masked_s of_oxm_arp_tpa_masked_t;
-
-/**
- * Structure for of_oxm_dst_meta_id object.  Get/set
- * accessors available in all versions unless noted otherwise
- *
- * @param value_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value, a variable of type uint8.  Functions
- *   are of type of_oxm_dst_meta_id_uint8_get_f and _set_f.
- *
- */
-typedef struct of_oxm_dst_meta_id_s of_oxm_dst_meta_id_t;
-
-/**
- * Structure for of_oxm_dst_meta_id_masked object.  Get/set
- * accessors available in all versions unless noted otherwise
- *
- * @param value_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value, a variable of type uint8.  Functions
- *   are of type of_oxm_dst_meta_id_masked_uint8_get_f and _set_f.
- *
- * @param value_mask_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value_mask, a variable of type uint8.  Functions
- *   are of type of_oxm_dst_meta_id_masked_uint8_get_f and _set_f.
- *
- */
-typedef struct of_oxm_dst_meta_id_masked_s of_oxm_dst_meta_id_masked_t;
 
 /**
  * Structure for of_oxm_eth_dst object.  Get/set
@@ -4425,32 +4391,6 @@ typedef struct of_oxm_sctp_src_s of_oxm_sctp_src_t;
  *
  */
 typedef struct of_oxm_sctp_src_masked_s of_oxm_sctp_src_masked_t;
-
-/**
- * Structure for of_oxm_src_meta_id object.  Get/set
- * accessors available in all versions unless noted otherwise
- *
- * @param value_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value, a variable of type uint8.  Functions
- *   are of type of_oxm_src_meta_id_uint8_get_f and _set_f.
- *
- */
-typedef struct of_oxm_src_meta_id_s of_oxm_src_meta_id_t;
-
-/**
- * Structure for of_oxm_src_meta_id_masked object.  Get/set
- * accessors available in all versions unless noted otherwise
- *
- * @param value_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value, a variable of type uint8.  Functions
- *   are of type of_oxm_src_meta_id_masked_uint8_get_f and _set_f.
- *
- * @param value_mask_get/set ( OF_1_2 OF_1_3).
- *   Accessors for value_mask, a variable of type uint8.  Functions
- *   are of type of_oxm_src_meta_id_masked_uint8_get_f and _set_f.
- *
- */
-typedef struct of_oxm_src_meta_id_masked_s of_oxm_src_meta_id_masked_t;
 
 /**
  * Structure for of_oxm_tcp_dst object.  Get/set

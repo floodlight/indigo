@@ -200,6 +200,10 @@ of_match_v1_compat_check(of_match_t *match)
         return 0;
     }
 
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
+        return 0;
+    }
+
     if (OF_MATCH_MASK_ARP_THA_ACTIVE_TEST(match)) {
         return 0;
     }
@@ -221,10 +225,6 @@ of_match_v1_compat_check(of_match_t *match)
     }
 
     if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(match)) {
-        return 0;
-    }
-
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
         return 0;
     }
 
@@ -280,12 +280,6 @@ of_match_to_wire_match_v1(of_match_t *src, of_match_v1_t *dst)
         of_match_v1_init(dst, OF_VERSION_1_0, 0, 0);
     }
 
-    if (OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(src)) {
-        of_match_v1_dst_meta_id_set(dst, src->fields.dst_meta_id);
-    } else {
-        OF_MATCH_V1_WC_DST_META_ID_SET(wildcards);
-    }
-
     if (OF_MATCH_MASK_ETH_DST_ACTIVE_TEST(src)) {
         of_match_v1_eth_dst_set(dst, src->fields.eth_dst);
     } else {
@@ -337,12 +331,6 @@ of_match_to_wire_match_v1(of_match_t *src, of_match_v1_t *dst)
         ip_mask_index = of_ip_mask_to_index(0);
     }
     OF_MATCH_V1_WC_IPV4_SRC_SET(wildcards, ip_mask_index);
-
-    if (OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(src)) {
-        of_match_v1_src_meta_id_set(dst, src->fields.src_meta_id);
-    } else {
-        OF_MATCH_V1_WC_SRC_META_ID_SET(wildcards);
-    }
 
     if (OF_MATCH_MASK_TCP_DST_ACTIVE_TEST(src)) {
         of_match_v1_tcp_dst_set(dst, src->fields.tcp_dst);
@@ -421,7 +409,7 @@ of_match_v2_compat_check(of_match_t *match)
         return 0;
     }
 
-    if (OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(match)) {
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
         return 0;
     }
 
@@ -445,15 +433,7 @@ of_match_v2_compat_check(of_match_t *match)
         return 0;
     }
 
-    if (OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(match)) {
-        return 0;
-    }
-
     if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(match)) {
-        return 0;
-    }
-
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(match)) {
         return 0;
     }
 
@@ -975,25 +955,25 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_eth_type_value_set(elt, src->fields.eth_type);
         }
     }
-    if (OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_DST_META_ID_EXACT_TEST(src)) {
-            of_oxm_dst_meta_id_masked_t *elt;
-            elt = &oxm_entry.dst_meta_id_masked;
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(src)) {
+            of_oxm_ipv6_nd_target_masked_t *elt;
+            elt = &oxm_entry.ipv6_nd_target_masked;
 
-            of_oxm_dst_meta_id_masked_init(elt,
+            of_oxm_ipv6_nd_target_masked_init(elt,
                 src->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_dst_meta_id_masked_value_set(elt,
-                   src->fields.dst_meta_id);
-            of_oxm_dst_meta_id_masked_value_mask_set(elt,
-                   src->masks.dst_meta_id);
+            of_oxm_ipv6_nd_target_masked_value_set(elt,
+                   src->fields.ipv6_nd_target);
+            of_oxm_ipv6_nd_target_masked_value_mask_set(elt,
+                   src->masks.ipv6_nd_target);
         } else {  /* Active, but not masked */
-            of_oxm_dst_meta_id_t *elt;
-            elt = &oxm_entry.dst_meta_id;
-            of_oxm_dst_meta_id_init(elt,
+            of_oxm_ipv6_nd_target_t *elt;
+            elt = &oxm_entry.ipv6_nd_target;
+            of_oxm_ipv6_nd_target_init(elt,
                 src->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_dst_meta_id_value_set(elt, src->fields.dst_meta_id);
+            of_oxm_ipv6_nd_target_value_set(elt, src->fields.ipv6_nd_target);
         }
     }
     if (OF_MATCH_MASK_VLAN_VID_ACTIVE_TEST(src)) {
@@ -1185,27 +1165,6 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ip_ecn_value_set(elt, src->fields.ip_ecn);
         }
     }
-    if (OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_SRC_META_ID_EXACT_TEST(src)) {
-            of_oxm_src_meta_id_masked_t *elt;
-            elt = &oxm_entry.src_meta_id_masked;
-
-            of_oxm_src_meta_id_masked_init(elt,
-                src->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_src_meta_id_masked_value_set(elt,
-                   src->fields.src_meta_id);
-            of_oxm_src_meta_id_masked_value_mask_set(elt,
-                   src->masks.src_meta_id);
-        } else {  /* Active, but not masked */
-            of_oxm_src_meta_id_t *elt;
-            elt = &oxm_entry.src_meta_id;
-            of_oxm_src_meta_id_init(elt,
-                src->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_src_meta_id_value_set(elt, src->fields.src_meta_id);
-        }
-    }
     if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(src)) {
         if (!OF_MATCH_MASK_UDP_DST_EXACT_TEST(src)) {
             of_oxm_udp_dst_masked_t *elt;
@@ -1225,27 +1184,6 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
                 src->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_udp_dst_value_set(elt, src->fields.udp_dst);
-        }
-    }
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(src)) {
-            of_oxm_ipv6_nd_target_masked_t *elt;
-            elt = &oxm_entry.ipv6_nd_target_masked;
-
-            of_oxm_ipv6_nd_target_masked_init(elt,
-                src->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_target_masked_value_set(elt,
-                   src->fields.ipv6_nd_target);
-            of_oxm_ipv6_nd_target_masked_value_mask_set(elt,
-                   src->masks.ipv6_nd_target);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_nd_target_t *elt;
-            elt = &oxm_entry.ipv6_nd_target;
-            of_oxm_ipv6_nd_target_init(elt,
-                src->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_target_value_set(elt, src->fields.ipv6_nd_target);
         }
     }
     if (OF_MATCH_MASK_IN_PHY_PORT_ACTIVE_TEST(src)) {
@@ -1529,11 +1467,6 @@ of_match_v1_to_match(of_match_v1_t *src, of_match_t *dst)
         }
     }
 
-    if (!(OF_MATCH_V1_WC_DST_META_ID_TEST(wc))) {
-        of_match_v1_dst_meta_id_get(src, &dst->fields.dst_meta_id);
-        OF_MATCH_MASK_DST_META_ID_EXACT_SET(dst);
-    }
-
     if (!(OF_MATCH_V1_WC_ETH_DST_TEST(wc))) {
         of_match_v1_eth_dst_get(src, &dst->fields.eth_dst);
         OF_MATCH_MASK_ETH_DST_EXACT_SET(dst);
@@ -1573,11 +1506,6 @@ of_match_v1_to_match(of_match_v1_t *src, of_match_t *dst)
     dst->masks.ipv4_src = of_ip_index_to_mask(count);
     /* @todo Review if we should only get the addr when masks.ipv4_src != 0 */
     of_match_v1_ipv4_src_get(src, &dst->fields.ipv4_src);
-
-    if (!(OF_MATCH_V1_WC_SRC_META_ID_TEST(wc))) {
-        of_match_v1_src_meta_id_get(src, &dst->fields.src_meta_id);
-        OF_MATCH_MASK_SRC_META_ID_EXACT_SET(dst);
-    }
 
     if (!(OF_MATCH_V1_WC_TCP_DST_TEST(wc))) {
         of_match_v1_tcp_dst_get(src, &dst->fields.tcp_dst);
@@ -1931,19 +1859,19 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
                 &dst->fields.eth_type);
             break;
 
-        case OF_OXM_DST_META_ID_MASKED:
-            of_oxm_dst_meta_id_masked_value_mask_get(
-                &oxm_entry.dst_meta_id_masked,
-                &dst->masks.dst_meta_id);
-            of_oxm_dst_meta_id_masked_value_get(
-                &oxm_entry.dst_meta_id,
-                &dst->fields.dst_meta_id);
+        case OF_OXM_IPV6_ND_TARGET_MASKED:
+            of_oxm_ipv6_nd_target_masked_value_mask_get(
+                &oxm_entry.ipv6_nd_target_masked,
+                &dst->masks.ipv6_nd_target);
+            of_oxm_ipv6_nd_target_masked_value_get(
+                &oxm_entry.ipv6_nd_target,
+                &dst->fields.ipv6_nd_target);
             break;
-        case OF_OXM_DST_META_ID:
-            OF_MATCH_MASK_DST_META_ID_EXACT_SET(dst);
-            of_oxm_dst_meta_id_value_get(
-                &oxm_entry.dst_meta_id,
-                &dst->fields.dst_meta_id);
+        case OF_OXM_IPV6_ND_TARGET:
+            OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_SET(dst);
+            of_oxm_ipv6_nd_target_value_get(
+                &oxm_entry.ipv6_nd_target,
+                &dst->fields.ipv6_nd_target);
             break;
 
         case OF_OXM_VLAN_VID_MASKED:
@@ -2081,21 +2009,6 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
                 &dst->fields.ip_ecn);
             break;
 
-        case OF_OXM_SRC_META_ID_MASKED:
-            of_oxm_src_meta_id_masked_value_mask_get(
-                &oxm_entry.src_meta_id_masked,
-                &dst->masks.src_meta_id);
-            of_oxm_src_meta_id_masked_value_get(
-                &oxm_entry.src_meta_id,
-                &dst->fields.src_meta_id);
-            break;
-        case OF_OXM_SRC_META_ID:
-            OF_MATCH_MASK_SRC_META_ID_EXACT_SET(dst);
-            of_oxm_src_meta_id_value_get(
-                &oxm_entry.src_meta_id,
-                &dst->fields.src_meta_id);
-            break;
-
         case OF_OXM_UDP_DST_MASKED:
             of_oxm_udp_dst_masked_value_mask_get(
                 &oxm_entry.udp_dst_masked,
@@ -2109,21 +2022,6 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
             of_oxm_udp_dst_value_get(
                 &oxm_entry.udp_dst,
                 &dst->fields.udp_dst);
-            break;
-
-        case OF_OXM_IPV6_ND_TARGET_MASKED:
-            of_oxm_ipv6_nd_target_masked_value_mask_get(
-                &oxm_entry.ipv6_nd_target_masked,
-                &dst->masks.ipv6_nd_target);
-            of_oxm_ipv6_nd_target_masked_value_get(
-                &oxm_entry.ipv6_nd_target,
-                &dst->fields.ipv6_nd_target);
-            break;
-        case OF_OXM_IPV6_ND_TARGET:
-            OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_SET(dst);
-            of_oxm_ipv6_nd_target_value_get(
-                &oxm_entry.ipv6_nd_target,
-                &dst->fields.ipv6_nd_target);
             break;
 
         case OF_OXM_IN_PHY_PORT_MASKED:
