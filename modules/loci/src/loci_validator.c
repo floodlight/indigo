@@ -290,8 +290,6 @@ static inline int of_oxm_tcp_src_masked_OF_VERSION_1_2_validate(uint8_t *buf, in
 static inline int of_oxm_tcp_src_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_tcp_dst_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_tcp_dst_OF_VERSION_1_2_validate(uint8_t *buf, int len);
-static inline int of_oxm_src_meta_id_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
-static inline int of_oxm_src_meta_id_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_src_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_src_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_dst_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
@@ -343,8 +341,6 @@ static inline int of_oxm_eth_src_masked_OF_VERSION_1_2_validate(uint8_t *buf, in
 static inline int of_oxm_eth_src_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_dst_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_dst_OF_VERSION_1_2_validate(uint8_t *buf, int len);
-static inline int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
-static inline int of_oxm_dst_meta_id_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tpa_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tpa_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tha_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len);
@@ -520,8 +516,6 @@ static inline int of_oxm_tcp_src_masked_OF_VERSION_1_3_validate(uint8_t *buf, in
 static inline int of_oxm_tcp_src_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_tcp_dst_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_tcp_dst_OF_VERSION_1_3_validate(uint8_t *buf, int len);
-static inline int of_oxm_src_meta_id_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
-static inline int of_oxm_src_meta_id_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_src_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_src_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_sctp_dst_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -573,8 +567,6 @@ static inline int of_oxm_eth_src_masked_OF_VERSION_1_3_validate(uint8_t *buf, in
 static inline int of_oxm_eth_src_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_dst_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_eth_dst_OF_VERSION_1_3_validate(uint8_t *buf, int len);
-static inline int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
-static inline int of_oxm_dst_meta_id_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tpa_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tpa_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_oxm_arp_tha_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -4812,28 +4804,6 @@ of_oxm_tcp_dst_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 }
 
 static inline int
-of_oxm_src_meta_id_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len)
-{
-    if (len < 6) {
-        VALIDATOR_LOG("Class of_oxm_src_meta_id_masked.  Len %d too small, < %d", len, 6);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_src_meta_id_OF_VERSION_1_2_validate(uint8_t *buf, int len)
-{
-    if (len < 5) {
-        VALIDATOR_LOG("Class of_oxm_src_meta_id.  Len %d too small, < %d", len, 5);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
 of_oxm_sctp_src_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 {
     if (len < 8) {
@@ -5388,28 +5358,6 @@ of_oxm_eth_dst_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 {
     if (len < 10) {
         VALIDATOR_LOG("Class of_oxm_eth_dst.  Len %d too small, < %d", len, 10);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_dst_meta_id_masked_OF_VERSION_1_2_validate(uint8_t *buf, int len)
-{
-    if (len < 6) {
-        VALIDATOR_LOG("Class of_oxm_dst_meta_id_masked.  Len %d too small, < %d", len, 6);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_dst_meta_id_OF_VERSION_1_2_validate(uint8_t *buf, int len)
-{
-    if (len < 5) {
-        VALIDATOR_LOG("Class of_oxm_dst_meta_id.  Len %d too small, < %d", len, 5);
         return -1;
     }
 
@@ -8237,28 +8185,6 @@ of_oxm_tcp_dst_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
-of_oxm_src_meta_id_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len)
-{
-    if (len < 6) {
-        VALIDATOR_LOG("Class of_oxm_src_meta_id_masked.  Len %d too small, < %d", len, 6);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_src_meta_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
-{
-    if (len < 5) {
-        VALIDATOR_LOG("Class of_oxm_src_meta_id.  Len %d too small, < %d", len, 5);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
 of_oxm_sctp_src_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 8) {
@@ -8813,28 +8739,6 @@ of_oxm_eth_dst_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 10) {
         VALIDATOR_LOG("Class of_oxm_eth_dst.  Len %d too small, < %d", len, 10);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_dst_meta_id_masked_OF_VERSION_1_3_validate(uint8_t *buf, int len)
-{
-    if (len < 6) {
-        VALIDATOR_LOG("Class of_oxm_dst_meta_id_masked.  Len %d too small, < %d", len, 6);
-        return -1;
-    }
-
-    return 0;
-}
-
-static inline int
-of_oxm_dst_meta_id_OF_VERSION_1_3_validate(uint8_t *buf, int len)
-{
-    if (len < 5) {
-        VALIDATOR_LOG("Class of_oxm_dst_meta_id.  Len %d too small, < %d", len, 5);
         return -1;
     }
 

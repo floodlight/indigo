@@ -487,136 +487,132 @@ typedef enum of_object_id_e {
     OF_OXM_ARP_THA_MASKED = 193,
     OF_OXM_ARP_TPA = 194,
     OF_OXM_ARP_TPA_MASKED = 195,
-    OF_OXM_DST_META_ID = 196,
-    OF_OXM_DST_META_ID_MASKED = 197,
-    OF_OXM_ETH_DST = 198,
-    OF_OXM_ETH_DST_MASKED = 199,
-    OF_OXM_ETH_SRC = 200,
-    OF_OXM_ETH_SRC_MASKED = 201,
-    OF_OXM_ETH_TYPE = 202,
-    OF_OXM_ETH_TYPE_MASKED = 203,
-    OF_OXM_HEADER = 204,
-    OF_OXM_ICMPV4_CODE = 205,
-    OF_OXM_ICMPV4_CODE_MASKED = 206,
-    OF_OXM_ICMPV4_TYPE = 207,
-    OF_OXM_ICMPV4_TYPE_MASKED = 208,
-    OF_OXM_ICMPV6_CODE = 209,
-    OF_OXM_ICMPV6_CODE_MASKED = 210,
-    OF_OXM_ICMPV6_TYPE = 211,
-    OF_OXM_ICMPV6_TYPE_MASKED = 212,
-    OF_OXM_IN_PHY_PORT = 213,
-    OF_OXM_IN_PHY_PORT_MASKED = 214,
-    OF_OXM_IN_PORT = 215,
-    OF_OXM_IN_PORT_MASKED = 216,
-    OF_OXM_IP_DSCP = 217,
-    OF_OXM_IP_DSCP_MASKED = 218,
-    OF_OXM_IP_ECN = 219,
-    OF_OXM_IP_ECN_MASKED = 220,
-    OF_OXM_IP_PROTO = 221,
-    OF_OXM_IP_PROTO_MASKED = 222,
-    OF_OXM_IPV4_DST = 223,
-    OF_OXM_IPV4_DST_MASKED = 224,
-    OF_OXM_IPV4_SRC = 225,
-    OF_OXM_IPV4_SRC_MASKED = 226,
-    OF_OXM_IPV6_DST = 227,
-    OF_OXM_IPV6_DST_MASKED = 228,
-    OF_OXM_IPV6_FLABEL = 229,
-    OF_OXM_IPV6_FLABEL_MASKED = 230,
-    OF_OXM_IPV6_ND_SLL = 231,
-    OF_OXM_IPV6_ND_SLL_MASKED = 232,
-    OF_OXM_IPV6_ND_TARGET = 233,
-    OF_OXM_IPV6_ND_TARGET_MASKED = 234,
-    OF_OXM_IPV6_ND_TLL = 235,
-    OF_OXM_IPV6_ND_TLL_MASKED = 236,
-    OF_OXM_IPV6_SRC = 237,
-    OF_OXM_IPV6_SRC_MASKED = 238,
-    OF_OXM_METADATA = 239,
-    OF_OXM_METADATA_MASKED = 240,
-    OF_OXM_MPLS_LABEL = 241,
-    OF_OXM_MPLS_LABEL_MASKED = 242,
-    OF_OXM_MPLS_TC = 243,
-    OF_OXM_MPLS_TC_MASKED = 244,
-    OF_OXM_SCTP_DST = 245,
-    OF_OXM_SCTP_DST_MASKED = 246,
-    OF_OXM_SCTP_SRC = 247,
-    OF_OXM_SCTP_SRC_MASKED = 248,
-    OF_OXM_SRC_META_ID = 249,
-    OF_OXM_SRC_META_ID_MASKED = 250,
-    OF_OXM_TCP_DST = 251,
-    OF_OXM_TCP_DST_MASKED = 252,
-    OF_OXM_TCP_SRC = 253,
-    OF_OXM_TCP_SRC_MASKED = 254,
-    OF_OXM_UDP_DST = 255,
-    OF_OXM_UDP_DST_MASKED = 256,
-    OF_OXM_UDP_SRC = 257,
-    OF_OXM_UDP_SRC_MASKED = 258,
-    OF_OXM_VLAN_PCP = 259,
-    OF_OXM_VLAN_PCP_MASKED = 260,
-    OF_OXM_VLAN_VID = 261,
-    OF_OXM_VLAN_VID_MASKED = 262,
-    OF_PACKET_QUEUE = 263,
-    OF_PORT_DESC = 264,
-    OF_PORT_STATS_ENTRY = 265,
-    OF_QUEUE_PROP = 266,
-    OF_QUEUE_PROP_EXPERIMENTER = 267,
-    OF_QUEUE_PROP_HEADER = 268,
-    OF_QUEUE_PROP_MAX_RATE = 269,
-    OF_QUEUE_PROP_MIN_RATE = 270,
-    OF_QUEUE_STATS_ENTRY = 271,
-    OF_TABLE_FEATURE_PROP = 272,
-    OF_TABLE_FEATURE_PROP_APPLY_ACTIONS = 273,
-    OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS = 274,
-    OF_TABLE_FEATURE_PROP_APPLY_SETFIELD = 275,
-    OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS = 276,
-    OF_TABLE_FEATURE_PROP_EXPERIMENTER = 277,
-    OF_TABLE_FEATURE_PROP_HEADER = 278,
-    OF_TABLE_FEATURE_PROP_INSTRUCTIONS = 279,
-    OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS = 280,
-    OF_TABLE_FEATURE_PROP_MATCH = 281,
-    OF_TABLE_FEATURE_PROP_NEXT_TABLES = 282,
-    OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS = 283,
-    OF_TABLE_FEATURE_PROP_WILDCARDS = 284,
-    OF_TABLE_FEATURE_PROP_WRITE_ACTIONS = 285,
-    OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS = 286,
-    OF_TABLE_FEATURE_PROP_WRITE_SETFIELD = 287,
-    OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS = 288,
-    OF_TABLE_FEATURES = 289,
-    OF_TABLE_STATS_ENTRY = 290,
-    OF_UINT32 = 291,
-    OF_UINT8 = 292,
+    OF_OXM_ETH_DST = 196,
+    OF_OXM_ETH_DST_MASKED = 197,
+    OF_OXM_ETH_SRC = 198,
+    OF_OXM_ETH_SRC_MASKED = 199,
+    OF_OXM_ETH_TYPE = 200,
+    OF_OXM_ETH_TYPE_MASKED = 201,
+    OF_OXM_HEADER = 202,
+    OF_OXM_ICMPV4_CODE = 203,
+    OF_OXM_ICMPV4_CODE_MASKED = 204,
+    OF_OXM_ICMPV4_TYPE = 205,
+    OF_OXM_ICMPV4_TYPE_MASKED = 206,
+    OF_OXM_ICMPV6_CODE = 207,
+    OF_OXM_ICMPV6_CODE_MASKED = 208,
+    OF_OXM_ICMPV6_TYPE = 209,
+    OF_OXM_ICMPV6_TYPE_MASKED = 210,
+    OF_OXM_IN_PHY_PORT = 211,
+    OF_OXM_IN_PHY_PORT_MASKED = 212,
+    OF_OXM_IN_PORT = 213,
+    OF_OXM_IN_PORT_MASKED = 214,
+    OF_OXM_IP_DSCP = 215,
+    OF_OXM_IP_DSCP_MASKED = 216,
+    OF_OXM_IP_ECN = 217,
+    OF_OXM_IP_ECN_MASKED = 218,
+    OF_OXM_IP_PROTO = 219,
+    OF_OXM_IP_PROTO_MASKED = 220,
+    OF_OXM_IPV4_DST = 221,
+    OF_OXM_IPV4_DST_MASKED = 222,
+    OF_OXM_IPV4_SRC = 223,
+    OF_OXM_IPV4_SRC_MASKED = 224,
+    OF_OXM_IPV6_DST = 225,
+    OF_OXM_IPV6_DST_MASKED = 226,
+    OF_OXM_IPV6_FLABEL = 227,
+    OF_OXM_IPV6_FLABEL_MASKED = 228,
+    OF_OXM_IPV6_ND_SLL = 229,
+    OF_OXM_IPV6_ND_SLL_MASKED = 230,
+    OF_OXM_IPV6_ND_TARGET = 231,
+    OF_OXM_IPV6_ND_TARGET_MASKED = 232,
+    OF_OXM_IPV6_ND_TLL = 233,
+    OF_OXM_IPV6_ND_TLL_MASKED = 234,
+    OF_OXM_IPV6_SRC = 235,
+    OF_OXM_IPV6_SRC_MASKED = 236,
+    OF_OXM_METADATA = 237,
+    OF_OXM_METADATA_MASKED = 238,
+    OF_OXM_MPLS_LABEL = 239,
+    OF_OXM_MPLS_LABEL_MASKED = 240,
+    OF_OXM_MPLS_TC = 241,
+    OF_OXM_MPLS_TC_MASKED = 242,
+    OF_OXM_SCTP_DST = 243,
+    OF_OXM_SCTP_DST_MASKED = 244,
+    OF_OXM_SCTP_SRC = 245,
+    OF_OXM_SCTP_SRC_MASKED = 246,
+    OF_OXM_TCP_DST = 247,
+    OF_OXM_TCP_DST_MASKED = 248,
+    OF_OXM_TCP_SRC = 249,
+    OF_OXM_TCP_SRC_MASKED = 250,
+    OF_OXM_UDP_DST = 251,
+    OF_OXM_UDP_DST_MASKED = 252,
+    OF_OXM_UDP_SRC = 253,
+    OF_OXM_UDP_SRC_MASKED = 254,
+    OF_OXM_VLAN_PCP = 255,
+    OF_OXM_VLAN_PCP_MASKED = 256,
+    OF_OXM_VLAN_VID = 257,
+    OF_OXM_VLAN_VID_MASKED = 258,
+    OF_PACKET_QUEUE = 259,
+    OF_PORT_DESC = 260,
+    OF_PORT_STATS_ENTRY = 261,
+    OF_QUEUE_PROP = 262,
+    OF_QUEUE_PROP_EXPERIMENTER = 263,
+    OF_QUEUE_PROP_HEADER = 264,
+    OF_QUEUE_PROP_MAX_RATE = 265,
+    OF_QUEUE_PROP_MIN_RATE = 266,
+    OF_QUEUE_STATS_ENTRY = 267,
+    OF_TABLE_FEATURE_PROP = 268,
+    OF_TABLE_FEATURE_PROP_APPLY_ACTIONS = 269,
+    OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS = 270,
+    OF_TABLE_FEATURE_PROP_APPLY_SETFIELD = 271,
+    OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS = 272,
+    OF_TABLE_FEATURE_PROP_EXPERIMENTER = 273,
+    OF_TABLE_FEATURE_PROP_HEADER = 274,
+    OF_TABLE_FEATURE_PROP_INSTRUCTIONS = 275,
+    OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS = 276,
+    OF_TABLE_FEATURE_PROP_MATCH = 277,
+    OF_TABLE_FEATURE_PROP_NEXT_TABLES = 278,
+    OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS = 279,
+    OF_TABLE_FEATURE_PROP_WILDCARDS = 280,
+    OF_TABLE_FEATURE_PROP_WRITE_ACTIONS = 281,
+    OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS = 282,
+    OF_TABLE_FEATURE_PROP_WRITE_SETFIELD = 283,
+    OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS = 284,
+    OF_TABLE_FEATURES = 285,
+    OF_TABLE_STATS_ENTRY = 286,
+    OF_UINT32 = 287,
+    OF_UINT8 = 288,
 
     /* List objects */
-    OF_LIST_ACTION = 293,
-    OF_LIST_ACTION_ID = 294,
-    OF_LIST_BSN_INTERFACE = 295,
-    OF_LIST_BUCKET = 296,
-    OF_LIST_BUCKET_COUNTER = 297,
-    OF_LIST_FLOW_STATS_ENTRY = 298,
-    OF_LIST_GROUP_DESC_STATS_ENTRY = 299,
-    OF_LIST_GROUP_STATS_ENTRY = 300,
-    OF_LIST_HELLO_ELEM = 301,
-    OF_LIST_INSTRUCTION = 302,
-    OF_LIST_METER_BAND = 303,
-    OF_LIST_METER_BAND_STATS = 304,
-    OF_LIST_METER_STATS = 305,
-    OF_LIST_OXM = 306,
-    OF_LIST_PACKET_QUEUE = 307,
-    OF_LIST_PORT_DESC = 308,
-    OF_LIST_PORT_STATS_ENTRY = 309,
-    OF_LIST_QUEUE_PROP = 310,
-    OF_LIST_QUEUE_STATS_ENTRY = 311,
-    OF_LIST_TABLE_FEATURE_PROP = 312,
-    OF_LIST_TABLE_FEATURES = 313,
-    OF_LIST_TABLE_STATS_ENTRY = 314,
-    OF_LIST_UINT32 = 315,
-    OF_LIST_UINT8 = 316,
+    OF_LIST_ACTION = 289,
+    OF_LIST_ACTION_ID = 290,
+    OF_LIST_BSN_INTERFACE = 291,
+    OF_LIST_BUCKET = 292,
+    OF_LIST_BUCKET_COUNTER = 293,
+    OF_LIST_FLOW_STATS_ENTRY = 294,
+    OF_LIST_GROUP_DESC_STATS_ENTRY = 295,
+    OF_LIST_GROUP_STATS_ENTRY = 296,
+    OF_LIST_HELLO_ELEM = 297,
+    OF_LIST_INSTRUCTION = 298,
+    OF_LIST_METER_BAND = 299,
+    OF_LIST_METER_BAND_STATS = 300,
+    OF_LIST_METER_STATS = 301,
+    OF_LIST_OXM = 302,
+    OF_LIST_PACKET_QUEUE = 303,
+    OF_LIST_PORT_DESC = 304,
+    OF_LIST_PORT_STATS_ENTRY = 305,
+    OF_LIST_QUEUE_PROP = 306,
+    OF_LIST_QUEUE_STATS_ENTRY = 307,
+    OF_LIST_TABLE_FEATURE_PROP = 308,
+    OF_LIST_TABLE_FEATURES = 309,
+    OF_LIST_TABLE_STATS_ENTRY = 310,
+    OF_LIST_UINT32 = 311,
+    OF_LIST_UINT8 = 312,
 
     /* Generic stats request/reply types; pseudo objects */
-    OF_FLOW_MOD = 317,
-    OF_STATS_REPLY = 318,
-    OF_STATS_REQUEST = 319,
+    OF_FLOW_MOD = 313,
+    OF_STATS_REPLY = 314,
+    OF_STATS_REQUEST = 315,
 
-    OF_OBJECT_COUNT = 320
+    OF_OBJECT_COUNT = 316
 } of_object_id_t;
 
 extern const char *const of_object_id_str[];
@@ -800,18 +796,6 @@ of_wire_id_valid(int object_id, int base_object_id) {
 #define OF_MATCH_V1_WC_VLAN_VID_CLEAR(wc) ((wc) &= ~(1 << 1))
 #define OF_MATCH_V1_WC_VLAN_VID_TEST(wc) ((wc) & (1 << 1))
 
-#define OF_MATCH_V1_WC_SRC_META_ID_SHIFT 23
-#define OF_MATCH_V1_WC_SRC_META_ID_MASK (1 << 23)
-#define OF_MATCH_V1_WC_SRC_META_ID_SET(wc) ((wc) |= (1 << 23))
-#define OF_MATCH_V1_WC_SRC_META_ID_CLEAR(wc) ((wc) &= ~(1 << 23))
-#define OF_MATCH_V1_WC_SRC_META_ID_TEST(wc) ((wc) & (1 << 23))
-
-#define OF_MATCH_V1_WC_DST_META_ID_SHIFT 24
-#define OF_MATCH_V1_WC_DST_META_ID_MASK (1 << 24)
-#define OF_MATCH_V1_WC_DST_META_ID_SET(wc) ((wc) |= (1 << 24))
-#define OF_MATCH_V1_WC_DST_META_ID_CLEAR(wc) ((wc) &= ~(1 << 24))
-#define OF_MATCH_V1_WC_DST_META_ID_TEST(wc) ((wc) & (1 << 24))
-
 
 /**
  * Definitions for wildcard macros for OF_VERSION_1_1
@@ -918,8 +902,6 @@ enum of_oxm_index_e {
     OF_OXM_INDEX_IPV6_ND_TLL    = 33, /* Target link-layer for ND. */
     OF_OXM_INDEX_MPLS_LABEL     = 34, /* MPLS label. */
     OF_OXM_INDEX_MPLS_TC        = 35, /* MPLS TC. */
-    OF_OXM_INDEX_SRC_META_ID = 36,
-    OF_OXM_INDEX_DST_META_ID = 37,
 };
 
 #define OF_OXM_BIT(index) (((uint64_t) 1) << (index))
@@ -1364,33 +1346,33 @@ enum of_oxm_index_e {
     OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).eth_type))
 
 
-/* Mask/value check/set macros for dst_meta_id */
+/* Mask/value check/set macros for ipv6_nd_target */
 
 /**
- * Set the mask for an exact match of dst_meta_id
+ * Set the mask for an exact match of ipv6_nd_target
  */
-#define OF_MATCH_MASK_DST_META_ID_EXACT_SET(_match)   \
-    MEMSET(&(_match)->masks.dst_meta_id, 0xff, \
-        sizeof(((_match)->masks).dst_meta_id))
+#define OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_SET(_match)   \
+    MEMSET(&(_match)->masks.ipv6_nd_target, 0xff, \
+        sizeof(((_match)->masks).ipv6_nd_target))
 
 /**
- * Clear the mask for dst_meta_id making that field inactive for the match
+ * Clear the mask for ipv6_nd_target making that field inactive for the match
  */
-#define OF_MATCH_MASK_DST_META_ID_CLEAR(_match) \
-    MEMSET(&(_match)->masks.dst_meta_id, 0, \
-        sizeof(((_match)->masks).dst_meta_id))
+#define OF_MATCH_MASK_IPV6_ND_TARGET_CLEAR(_match) \
+    MEMSET(&(_match)->masks.ipv6_nd_target, 0, \
+        sizeof(((_match)->masks).ipv6_nd_target))
 
 /**
- * Test whether the match is exact for dst_meta_id
+ * Test whether the match is exact for ipv6_nd_target
  */
-#define OF_MATCH_MASK_DST_META_ID_EXACT_TEST(_match) \
-    OF_VARIABLE_IS_ALL_ONES(&(((_match)->masks).dst_meta_id))
+#define OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(_match) \
+    OF_VARIABLE_IS_ALL_ONES(&(((_match)->masks).ipv6_nd_target))
 
 /**
- * Test whether key dst_meta_id is being checked in the match
+ * Test whether key ipv6_nd_target is being checked in the match
  */
-#define OF_MATCH_MASK_DST_META_ID_ACTIVE_TEST(_match) \
-    OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).dst_meta_id))
+#define OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(_match) \
+    OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).ipv6_nd_target))
 
 
 /* Mask/value check/set macros for vlan_vid */
@@ -1654,35 +1636,6 @@ enum of_oxm_index_e {
     OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).ip_ecn))
 
 
-/* Mask/value check/set macros for src_meta_id */
-
-/**
- * Set the mask for an exact match of src_meta_id
- */
-#define OF_MATCH_MASK_SRC_META_ID_EXACT_SET(_match)   \
-    MEMSET(&(_match)->masks.src_meta_id, 0xff, \
-        sizeof(((_match)->masks).src_meta_id))
-
-/**
- * Clear the mask for src_meta_id making that field inactive for the match
- */
-#define OF_MATCH_MASK_SRC_META_ID_CLEAR(_match) \
-    MEMSET(&(_match)->masks.src_meta_id, 0, \
-        sizeof(((_match)->masks).src_meta_id))
-
-/**
- * Test whether the match is exact for src_meta_id
- */
-#define OF_MATCH_MASK_SRC_META_ID_EXACT_TEST(_match) \
-    OF_VARIABLE_IS_ALL_ONES(&(((_match)->masks).src_meta_id))
-
-/**
- * Test whether key src_meta_id is being checked in the match
- */
-#define OF_MATCH_MASK_SRC_META_ID_ACTIVE_TEST(_match) \
-    OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).src_meta_id))
-
-
 /* Mask/value check/set macros for udp_dst */
 
 /**
@@ -1710,35 +1663,6 @@ enum of_oxm_index_e {
  */
 #define OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(_match) \
     OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).udp_dst))
-
-
-/* Mask/value check/set macros for ipv6_nd_target */
-
-/**
- * Set the mask for an exact match of ipv6_nd_target
- */
-#define OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_SET(_match)   \
-    MEMSET(&(_match)->masks.ipv6_nd_target, 0xff, \
-        sizeof(((_match)->masks).ipv6_nd_target))
-
-/**
- * Clear the mask for ipv6_nd_target making that field inactive for the match
- */
-#define OF_MATCH_MASK_IPV6_ND_TARGET_CLEAR(_match) \
-    MEMSET(&(_match)->masks.ipv6_nd_target, 0, \
-        sizeof(((_match)->masks).ipv6_nd_target))
-
-/**
- * Test whether the match is exact for ipv6_nd_target
- */
-#define OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(_match) \
-    OF_VARIABLE_IS_ALL_ONES(&(((_match)->masks).ipv6_nd_target))
-
-/**
- * Test whether key ipv6_nd_target is being checked in the match
- */
-#define OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(_match) \
-    OF_VARIABLE_IS_NON_ZERO(&(((_match)->masks).ipv6_nd_target))
 
 
 /* Mask/value check/set macros for in_phy_port */

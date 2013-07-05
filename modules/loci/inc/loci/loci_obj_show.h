@@ -389,8 +389,6 @@ int of_oxm_arp_tha_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_ox
 int of_oxm_arp_tha_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_arp_tha_masked_t *obj);
 int of_oxm_arp_tpa_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_t *obj);
 int of_oxm_arp_tpa_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_masked_t *obj);
-int of_oxm_dst_meta_id_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj);
-int of_oxm_dst_meta_id_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj);
 int of_oxm_eth_dst_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj);
 int of_oxm_eth_dst_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_masked_t *obj);
 int of_oxm_eth_src_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_eth_src_t *obj);
@@ -442,8 +440,6 @@ int of_oxm_sctp_dst_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_o
 int of_oxm_sctp_dst_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_sctp_dst_masked_t *obj);
 int of_oxm_sctp_src_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_sctp_src_t *obj);
 int of_oxm_sctp_src_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_sctp_src_masked_t *obj);
-int of_oxm_src_meta_id_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj);
-int of_oxm_src_meta_id_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj);
 int of_oxm_tcp_dst_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_tcp_dst_t *obj);
 int of_oxm_tcp_dst_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_tcp_dst_masked_t *obj);
 int of_oxm_tcp_src_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_tcp_src_t *obj);
@@ -638,8 +634,6 @@ int of_oxm_arp_tha_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_ox
 int of_oxm_arp_tha_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_arp_tha_masked_t *obj);
 int of_oxm_arp_tpa_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_t *obj);
 int of_oxm_arp_tpa_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_masked_t *obj);
-int of_oxm_dst_meta_id_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_t *obj);
-int of_oxm_dst_meta_id_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_dst_meta_id_masked_t *obj);
 int of_oxm_eth_dst_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj);
 int of_oxm_eth_dst_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_masked_t *obj);
 int of_oxm_eth_src_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_eth_src_t *obj);
@@ -691,8 +685,6 @@ int of_oxm_sctp_dst_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_o
 int of_oxm_sctp_dst_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_sctp_dst_masked_t *obj);
 int of_oxm_sctp_src_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_sctp_src_t *obj);
 int of_oxm_sctp_src_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_sctp_src_masked_t *obj);
-int of_oxm_src_meta_id_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_t *obj);
-int of_oxm_src_meta_id_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_src_meta_id_masked_t *obj);
 int of_oxm_tcp_dst_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_tcp_dst_t *obj);
 int of_oxm_tcp_dst_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_tcp_dst_masked_t *obj);
 int of_oxm_tcp_src_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_tcp_src_t *obj);
