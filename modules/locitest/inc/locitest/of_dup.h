@@ -794,14 +794,6 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_dup(
         of_oxm_arp_tpa_masked_t *src);
 
-extern of_oxm_dst_meta_id_t *
-    of_oxm_dst_meta_id_dup(
-        of_oxm_dst_meta_id_t *src);
-
-extern of_oxm_dst_meta_id_masked_t *
-    of_oxm_dst_meta_id_masked_dup(
-        of_oxm_dst_meta_id_masked_t *src);
-
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_dup(
         of_oxm_eth_dst_t *src);
@@ -1005,14 +997,6 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_dup(
         of_oxm_sctp_src_masked_t *src);
-
-extern of_oxm_src_meta_id_t *
-    of_oxm_src_meta_id_dup(
-        of_oxm_src_meta_id_t *src);
-
-extern of_oxm_src_meta_id_masked_t *
-    of_oxm_src_meta_id_masked_dup(
-        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_dup(
@@ -2710,14 +2694,6 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
         of_oxm_arp_tpa_masked_t *src);
 
-extern of_oxm_dst_meta_id_t *
-    of_oxm_dst_meta_id_OF_VERSION_1_2_dup(
-        of_oxm_dst_meta_id_t *src);
-
-extern of_oxm_dst_meta_id_masked_t *
-    of_oxm_dst_meta_id_masked_OF_VERSION_1_2_dup(
-        of_oxm_dst_meta_id_masked_t *src);
-
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_2_dup(
         of_oxm_eth_dst_t *src);
@@ -2921,14 +2897,6 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_OF_VERSION_1_2_dup(
         of_oxm_sctp_src_masked_t *src);
-
-extern of_oxm_src_meta_id_t *
-    of_oxm_src_meta_id_OF_VERSION_1_2_dup(
-        of_oxm_src_meta_id_t *src);
-
-extern of_oxm_src_meta_id_masked_t *
-    of_oxm_src_meta_id_masked_OF_VERSION_1_2_dup(
-        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_OF_VERSION_1_2_dup(
@@ -3738,14 +3706,6 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
         of_oxm_arp_tpa_masked_t *src);
 
-extern of_oxm_dst_meta_id_t *
-    of_oxm_dst_meta_id_OF_VERSION_1_3_dup(
-        of_oxm_dst_meta_id_t *src);
-
-extern of_oxm_dst_meta_id_masked_t *
-    of_oxm_dst_meta_id_masked_OF_VERSION_1_3_dup(
-        of_oxm_dst_meta_id_masked_t *src);
-
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_3_dup(
         of_oxm_eth_dst_t *src);
@@ -3949,14 +3909,6 @@ extern of_oxm_sctp_src_t *
 extern of_oxm_sctp_src_masked_t *
     of_oxm_sctp_src_masked_OF_VERSION_1_3_dup(
         of_oxm_sctp_src_masked_t *src);
-
-extern of_oxm_src_meta_id_t *
-    of_oxm_src_meta_id_OF_VERSION_1_3_dup(
-        of_oxm_src_meta_id_t *src);
-
-extern of_oxm_src_meta_id_masked_t *
-    of_oxm_src_meta_id_masked_OF_VERSION_1_3_dup(
-        of_oxm_src_meta_id_masked_t *src);
 
 extern of_oxm_tcp_dst_t *
     of_oxm_tcp_dst_OF_VERSION_1_3_dup(

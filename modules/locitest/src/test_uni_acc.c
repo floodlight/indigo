@@ -12926,82 +12926,6 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_2(void)
 }
 
 static int
-test_of_oxm_dst_meta_id_OF_VERSION_1_2(void)
-{
-    of_oxm_dst_meta_id_t *obj;
-    obj = of_oxm_dst_meta_id_new(OF_VERSION_1_2);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 5);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 5);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_2_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_2_check(
-        obj, 1) != 0);
-
-    of_oxm_dst_meta_id_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_dst_meta_id_masked_OF_VERSION_1_2(void)
-{
-    of_oxm_dst_meta_id_masked_t *obj;
-    obj = of_oxm_dst_meta_id_masked_new(OF_VERSION_1_2);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 6);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID_MASKED);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 6);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID_MASKED);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_2_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_2_check(
-        obj, 1) != 0);
-
-    of_oxm_dst_meta_id_masked_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
 test_of_oxm_eth_dst_OF_VERSION_1_2(void)
 {
     of_oxm_eth_dst_t *obj;
@@ -14913,82 +14837,6 @@ test_of_oxm_sctp_src_masked_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_oxm_sctp_src_masked_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_src_meta_id_OF_VERSION_1_2(void)
-{
-    of_oxm_src_meta_id_t *obj;
-    obj = of_oxm_src_meta_id_new(OF_VERSION_1_2);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 5);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 5);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_2_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_2_check(
-        obj, 1) != 0);
-
-    of_oxm_src_meta_id_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_src_meta_id_masked_OF_VERSION_1_2(void)
-{
-    of_oxm_src_meta_id_masked_t *obj;
-    obj = of_oxm_src_meta_id_masked_new(OF_VERSION_1_2);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 6);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID_MASKED);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 6);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID_MASKED);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_2_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_2_check(
-        obj, 1) != 0);
-
-    of_oxm_src_meta_id_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -22178,82 +22026,6 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_oxm_dst_meta_id_OF_VERSION_1_3(void)
-{
-    of_oxm_dst_meta_id_t *obj;
-    obj = of_oxm_dst_meta_id_new(OF_VERSION_1_3);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 5);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 5);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_3_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_dst_meta_id_OF_VERSION_1_3_check(
-        obj, 1) != 0);
-
-    of_oxm_dst_meta_id_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_dst_meta_id_masked_OF_VERSION_1_3(void)
-{
-    of_oxm_dst_meta_id_masked_t *obj;
-    obj = of_oxm_dst_meta_id_masked_new(OF_VERSION_1_3);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 6);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_DST_META_ID_MASKED);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 6);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_DST_META_ID_MASKED);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_3_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_dst_meta_id_masked_OF_VERSION_1_3_check(
-        obj, 1) != 0);
-
-    of_oxm_dst_meta_id_masked_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
 test_of_oxm_eth_dst_OF_VERSION_1_3(void)
 {
     of_oxm_eth_dst_t *obj;
@@ -24165,82 +23937,6 @@ test_of_oxm_sctp_src_masked_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_oxm_sctp_src_masked_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_src_meta_id_OF_VERSION_1_3(void)
-{
-    of_oxm_src_meta_id_t *obj;
-    obj = of_oxm_src_meta_id_new(OF_VERSION_1_3);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 5);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 5);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_3_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_src_meta_id_OF_VERSION_1_3_check(
-        obj, 1) != 0);
-
-    of_oxm_src_meta_id_delete(obj);
-
-    /* To do: Check memory */
-    return TEST_PASS;
-}
-
-static int
-test_of_oxm_src_meta_id_masked_OF_VERSION_1_3(void)
-{
-    of_oxm_src_meta_id_masked_t *obj;
-    obj = of_oxm_src_meta_id_masked_new(OF_VERSION_1_3);
-    TEST_ASSERT(obj != NULL);
-    TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 6);
-    TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_OXM_SRC_META_ID_MASKED);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 6);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_OXM_SRC_META_ID_MASKED);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_3_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_oxm_src_meta_id_masked_OF_VERSION_1_3_check(
-        obj, 1) != 0);
-
-    of_oxm_src_meta_id_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -26986,8 +26682,6 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_2);
-    RUN_TEST(of_oxm_dst_meta_id_OF_VERSION_1_2);
-    RUN_TEST(of_oxm_dst_meta_id_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_2);
@@ -27039,8 +26733,6 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_sctp_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_sctp_src_OF_VERSION_1_2);
     RUN_TEST(of_oxm_sctp_src_masked_OF_VERSION_1_2);
-    RUN_TEST(of_oxm_src_meta_id_OF_VERSION_1_2);
-    RUN_TEST(of_oxm_src_meta_id_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_dst_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_tcp_src_OF_VERSION_1_2);
@@ -27235,8 +26927,6 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_3);
-    RUN_TEST(of_oxm_dst_meta_id_OF_VERSION_1_3);
-    RUN_TEST(of_oxm_dst_meta_id_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_3);
@@ -27288,8 +26978,6 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_sctp_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_sctp_src_OF_VERSION_1_3);
     RUN_TEST(of_oxm_sctp_src_masked_OF_VERSION_1_3);
-    RUN_TEST(of_oxm_src_meta_id_OF_VERSION_1_3);
-    RUN_TEST(of_oxm_src_meta_id_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_dst_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_tcp_src_OF_VERSION_1_3);
