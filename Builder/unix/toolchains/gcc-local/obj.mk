@@ -70,7 +70,7 @@ endif
 
 GCC_VERSION_TOOL_BUILD := $(shell $(GCC) -o $(GCC_VERSION_TOOL_NAME) $(THIS_DIR)/gcc-version-tool.c)
 ifeq ($(shell $(GCC_VERSION_TOOL_NAME) gt 4400),true)
-GCC_VERSION_SPECIFIC_WARNING_FLAGS += -Wunused-result
+#GCC_VERSION_SPECIFIC_WARNING_FLAGS += -Wunused-result
 endif
 endif
 endif

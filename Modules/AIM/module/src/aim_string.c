@@ -276,7 +276,7 @@ aim_strsplit(const char* string, const char* delim)
     const char** tokens;
     char* tok;
     int count;
-    char* saveptr;
+    char* saveptr = NULL;
     char* s;
     aim_tokens_t* rv;
 
