@@ -1108,14 +1108,6 @@ process_message(connection_t *cxn)
             return;
         }
     } else {
-        if (obj->version != cxn->status.negotiated_version) {
-            LOG_ERROR(cxn, "Found version %d in message; expecting %d",
-                      obj->version, cxn->status.negotiated_version);
-            /* @fixme Send error? */
-            /* @fixme Should reconnect at this point? */
-            of_object_delete(obj);
-            return;
-        }
         /* Process received message (object); handler owns obj */
         if ((rv = of_msg_process(cxn, obj)) < 0) {
             LOG_ERROR(cxn, "OF message callback returned %d", rv);
