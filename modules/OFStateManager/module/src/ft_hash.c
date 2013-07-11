@@ -154,11 +154,6 @@ ft_hash_flow_add(ft_instance_t ft, indigo_flow_id_t id,
 
     LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
 
-    if (flow_add->version != OF_VERSION_1_0) { /* @fixme */
-        LOG_ERROR("ERROR: bad version in ft_hash_flow_add");
-        return INDIGO_ERROR_VERSION;
-    }
-
     /* If flow ID already exists, error. */
     if (ft_id_lookup(ft, id) != NULL) {
         return INDIGO_ERROR_EXISTS;
