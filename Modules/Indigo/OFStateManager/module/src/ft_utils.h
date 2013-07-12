@@ -49,7 +49,7 @@
  */
 
 static inline biglist_t *
-out_port_list_populate(of_list_action_t *actions)
+out_port_list_populate_from_actions(of_list_action_t *actions)
 {
     of_action_t elt;
     of_action_output_t *output;
@@ -66,6 +66,55 @@ out_port_list_populate(of_list_action_t *actions)
     }
 
     return bl;
+}
+
+static inline biglist_t *
+out_port_list_populate_from_instructions(of_list_instruction_t *instructions)
+{
+    of_instruction_t inst;
+    int loop_rv;
+    biglist_t *bl = NULL;
+
+    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
+        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
+            of_list_action_t actions;
+            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
+            bl = biglist_append_list(bl, out_port_list_populate_from_actions(&actions));
+        }
+    }
+
+    return bl;
+}
+
+/* Populate the output port list and effects */
+static inline indigo_error_t
+ft_flow_set_effects(ft_entry_t *entry,
+                    of_flow_modify_t *flow_mod)
+{
+    if (flow_mod->version == OF_VERSION_1_0)
+    {
+        of_list_action_t *actions;
+        if ((actions = of_flow_modify_actions_get(flow_mod)) == NULL) {
+            LOG_ERROR("Could not get action list");
+            return INDIGO_ERROR_RESOURCE;
+        }
+        biglist_free(entry->output_ports);
+        of_list_action_delete(entry->effects.actions);
+        entry->output_ports = out_port_list_populate_from_actions(actions);
+        entry->effects.actions = actions;
+    } else {
+        of_list_instruction_t *instructions;
+        if ((instructions = of_flow_modify_instructions_get(flow_mod)) == NULL) {
+            LOG_ERROR("Could not get instruction list");
+            return INDIGO_ERROR_RESOURCE;
+        }
+        biglist_free(entry->output_ports);
+        of_list_instruction_delete(entry->effects.instructions);
+        entry->output_ports = out_port_list_populate_from_instructions(instructions);
+        entry->effects.instructions = instructions;
+    }
+
+    return INDIGO_ERROR_NONE;
 }
 
 #define FT_HASH_SEED 0
@@ -229,28 +278,17 @@ ft_flow_modify_effects(ft_instance_t instance,
                        ft_entry_t *entry,
                        of_flow_modify_t *flow_mod)
 {
-    of_list_action_t *actions; /* @fixme VERSION 1.0 specific */
+    indigo_error_t err;
 
     LOG_TRACE("Modifying effects of entry " INDIGO_FLOW_ID_PRINTF_FORMAT,
               entry->id);
-    if (entry->effects.actions) {
-        of_list_action_delete(entry->effects.actions);
-        entry->effects.actions = NULL;
-    }
-    if ((actions = of_flow_modify_actions_get(flow_mod)) == NULL) {
-        LOG_ERROR("Could not get action list, flow mod");
-        return INDIGO_ERROR_NONE;
-    }
-    if (entry->output_ports != NULL) {
-        biglist_free(entry->output_ports);
-    }
-    /* @fixme list_populate could fail. */
-    entry->output_ports = out_port_list_populate(actions);
-    entry->effects.actions = actions;
 
-    instance->status.updates += 1;
+    err = ft_flow_set_effects(entry, flow_mod);
+    if (err == INDIGO_ERROR_NONE) {
+        instance->status.updates += 1;
+    }
 
-    return INDIGO_ERROR_NONE;
+    return err;
 }
 
 /**
@@ -292,8 +330,8 @@ ft_flow_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 static inline indigo_error_t
 ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 {
-    of_list_action_t *actions;
     of_flow_add_t *dup;
+    indigo_error_t err;
 
     INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
 
@@ -316,15 +354,10 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
-    /* Populate the output port list */
-    /* @fixme 1.0 specific */
-    INDIGO_ASSERT(flow_add->version == OF_VERSION_1_0);
-    if ((actions = of_flow_add_actions_get(flow_add)) == NULL) {
-        LOG_ERROR("Could not get action list");
-        return INDIGO_ERROR_RESOURCE;
+    err = ft_flow_set_effects(entry, flow_add);
+    if (err != INDIGO_ERROR_NONE) {
+        return err;
     }
-    entry->output_ports = out_port_list_populate(actions);
-    entry->effects.actions = actions;
 
     entry->insert_time = INDIGO_CURRENT_TIME;
     entry->last_counter_change = entry->insert_time;
