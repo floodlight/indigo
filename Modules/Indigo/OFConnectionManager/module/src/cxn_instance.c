@@ -446,8 +446,8 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
     } else {
         LOG_INFO(cxn, "Received HELLO message from %s", cxn_ip_string(cxn));
 
-        if (obj->version != cxn->config_params.version) {
-            LOG_ERROR(cxn, "Expected version %d but got %d in hello from %s",
+        if (obj->version > cxn->config_params.version) {
+            LOG_ERROR(cxn, "Expected version <= %d but got %d in hello from %s",
                       cxn->config_params.version, obj->version,
                       cxn_ip_string(cxn));
             rv = INDIGO_ERROR_PROTOCOL;
@@ -494,7 +494,7 @@ periodic_keepalive(void *cookie)
         return;
     }
 
-    if ((echo = of_echo_request_new(cxn->config_params.version)) == NULL) {
+    if ((echo = of_echo_request_new(cxn->status.negotiated_version)) == NULL) {
         LOG_TRACE(cxn, "Could not allocate echo request obj");
         return;
     }
@@ -1059,7 +1059,7 @@ process_message(connection_t *cxn)
         /* Get XID from the message; use cxn version */
         xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(new_buf));
         /* Generate error message */
-        if (indigo_cxn_send_error_msg(cxn->config_params.version,
+        if (indigo_cxn_send_error_msg(cxn->status.negotiated_version,
                                       cxn->cxn_id, xid,
                                       OF_ERROR_TYPE_BAD_REQUEST, type,
                                       NULL) < 0) {
