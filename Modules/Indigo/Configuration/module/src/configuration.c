@@ -261,7 +261,7 @@ ind_cfg_lookup(cJSON *root, const char *path_, cJSON **result)
 {
     /* strtok_r mutates its input, need to copy */
     char *path = strdup(path_);
-    char *saveptr;
+    char *saveptr = NULL;
     char *token;
     cJSON *node = root;
     indigo_error_t err = INDIGO_ERROR_NONE;
