@@ -756,7 +756,12 @@ ind_soc_select_and_run(int run_for_ms)
     current = start = INDIGO_CURRENT_TIME;
 
     do {
-        next_timer_ms = find_next_timer_expiration(current);
+        if (list_empty(&tasks)) {
+            next_timer_ms = find_next_timer_expiration(current);
+        } else {
+            /* Do not sleep if a task is ready */
+            next_timer_ms = 0;
+        }
 
         timeout_ms = calculate_next_timeout(start, current,
                                             run_for_ms, next_timer_ms);

@@ -496,6 +496,12 @@ test_task(void)
     memset(counters, 0, sizeof(counters));
     ind_soc_select_and_run(0);
     INDIGO_ASSERT(counters[0] == 1);
+
+    /* Task should be repeatedly rescheduled in the same call to ind_soc_select_and_run */
+    INDIGO_ASSERT(ind_soc_task_register(task_callback_yield, &counters[0], 0) == INDIGO_ERROR_NONE);
+    memset(counters, 0, sizeof(counters));
+    ind_soc_select_and_run(500);
+    INDIGO_ASSERT(counters[0] == 100);
 }
 
 static void
