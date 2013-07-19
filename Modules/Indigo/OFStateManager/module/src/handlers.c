@@ -1222,6 +1222,22 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
     }
 }
 
+/* Flowtable iterator for ind_core_flow_stats_request_handler */
+static void
+stats_iter_cb(void *cookie, ft_entry_t *entry)
+{
+    struct ind_core_flow_stats_state *state = cookie;
+    if (entry != NULL) {
+        state->expected_count++;
+        indigo_fwd_flow_stats_get(entry->id, 
+                                  INDIGO_POINTER_TO_COOKIE(state));
+    } else {
+        LOG_TRACE("Finished flow stats task");
+        indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL, 
+                                            INDIGO_POINTER_TO_COOKIE(state));
+    }
+}
+
 /**
  * Handle a flow_stats_request message
  * @param _obj Generic type object for the message to be coerced
@@ -1236,8 +1252,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
     struct ind_core_flow_stats_state *state;
     struct ind_core_flow_stats_priv *priv;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
+    indigo_error_t rv;
 
     obj = (of_flow_stats_request_t *)_obj;
     LOG_TRACE("Handling of_flow_stats_request message: %p.", obj);
@@ -1245,6 +1260,8 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     if (of_flow_stats_request_match_get(obj, &(query.match)) < 0) {
+        LOG_ERROR("Failed to get flow stats match.");
+        of_object_delete(_obj);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
@@ -1271,23 +1288,16 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     priv->current_time = INDIGO_CURRENT_TIME;
     priv->reply = NULL;
 
-    /*
-     * Iterate over flow table; query stats for each entry.
-     *
-     * indigo_core_flow_stats_get_callback will generate the replies.
-     */
-    FT_ITER(ind_core_ft, entry, cur, next) {
-       if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-               ft_flow_meta_match(&query, entry)) {
-           state->expected_count++;
-           indigo_fwd_flow_stats_get(entry->id,
-                                     INDIGO_POINTER_TO_COOKIE(state));
-        }
+    rv = ft_spawn_iter_task(ind_core_ft, &query, stats_iter_cb, 
+                            state, IND_SOC_DEFAULT_PRIORITY);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to start flow stats iter.");
+        of_object_delete(_obj);
+        INDIGO_MEM_FREE(state);
+        return rv;
     }
 
-    indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL,
-                                        INDIGO_POINTER_TO_COOKIE(state));
-
+    /* Ownership of _obj is passed to the iterator for barrier tracking */
     return INDIGO_ERROR_NONE;
 }
 
@@ -1378,6 +1388,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
         return INDIGO_ERROR_UNKNOWN;
     }
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
+    of_aggregate_stats_request_table_id_get(obj, &(query.table_id));
 
     /* Non strict; do not check priority, cookie or overlap */
     query.mode = OF_MATCH_NON_STRICT;
