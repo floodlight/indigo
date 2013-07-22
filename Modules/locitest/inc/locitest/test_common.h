@@ -66,6 +66,7 @@ extern int run_validator_tests(void);
 extern int run_list_limits_tests(void);
 
 extern int test_ext_objs(void);
+extern int test_datafiles(void);
 
 
 extern int of_aggregate_stats_reply_OF_VERSION_1_0_populate(
