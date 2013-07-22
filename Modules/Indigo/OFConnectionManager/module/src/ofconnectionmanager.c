@@ -1014,7 +1014,7 @@ set_up_send_error_msg(of_error_msg_t *msg, indigo_cxn_id_t cxn_id,
  * @param code Code of error message for this type
  * @param octets If not NULL use this for the data
  *
- * If version is invalid, uses the connection's configured version
+ * If version is invalid, uses the connection's negotiated version
  */
 
 indigo_error_t
@@ -1032,7 +1032,8 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!OF_VERSION_OKAY(version)) {
-        version = cxn->config_params.version;
+        version = cxn->status.negotiated_version;
+        INDIGO_ASSERT(OF_VERSION_OKAY(version));
     }
 
     LOG_TRACE("Sending error msg to %p. type %d. code %d.",

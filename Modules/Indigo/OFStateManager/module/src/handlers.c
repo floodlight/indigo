@@ -1196,7 +1196,7 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         of_list_flow_stats_entry_t list;
         of_flow_stats_entry_t stats_entry;
         of_flow_stats_reply_entries_bind(priv->reply, &list);
-        of_flow_stats_entry_init(&stats_entry, OF_VERSION_1_0, -1, 1);
+        of_flow_stats_entry_init(&stats_entry, priv->reply->version, -1, 1);
         if (of_list_flow_stats_entry_append_bind(&list, &stats_entry)) {
             LOG_ERROR("failed to append to flow stats list during flow_stats callback");
             return;
