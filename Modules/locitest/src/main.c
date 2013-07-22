@@ -44,5 +44,7 @@ main(int argc, char *argv[])
 
     RUN_TEST(ext_objs);
 
+    TEST_ASSERT(test_datafiles() == TEST_PASS);
+
     return global_error;
 }

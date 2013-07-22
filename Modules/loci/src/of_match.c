@@ -646,7 +646,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_flabel_masked;
 
             of_oxm_ipv6_flabel_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_flabel_masked_value_set(elt,
                    src->fields.ipv6_flabel);
@@ -656,7 +656,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_flabel_t *elt;
             elt = &oxm_entry.ipv6_flabel;
             of_oxm_ipv6_flabel_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_flabel_value_set(elt, src->fields.ipv6_flabel);
         }
@@ -667,7 +667,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.vlan_pcp_masked;
 
             of_oxm_vlan_pcp_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_vlan_pcp_masked_value_set(elt,
                    src->fields.vlan_pcp);
@@ -677,7 +677,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_vlan_pcp_t *elt;
             elt = &oxm_entry.vlan_pcp;
             of_oxm_vlan_pcp_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_vlan_pcp_value_set(elt, src->fields.vlan_pcp);
         }
@@ -688,7 +688,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv4_src_masked;
 
             of_oxm_ipv4_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv4_src_masked_value_set(elt,
                    src->fields.ipv4_src);
@@ -698,7 +698,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv4_src_t *elt;
             elt = &oxm_entry.ipv4_src;
             of_oxm_ipv4_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv4_src_value_set(elt, src->fields.ipv4_src);
         }
@@ -709,7 +709,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_dst_masked;
 
             of_oxm_ipv6_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_dst_masked_value_set(elt,
                    src->fields.ipv6_dst);
@@ -719,7 +719,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_dst_t *elt;
             elt = &oxm_entry.ipv6_dst;
             of_oxm_ipv6_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_dst_value_set(elt, src->fields.ipv6_dst);
         }
@@ -730,7 +730,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.arp_tpa_masked;
 
             of_oxm_arp_tpa_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_tpa_masked_value_set(elt,
                    src->fields.arp_tpa);
@@ -740,7 +740,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_arp_tpa_t *elt;
             elt = &oxm_entry.arp_tpa;
             of_oxm_arp_tpa_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_tpa_value_set(elt, src->fields.arp_tpa);
         }
@@ -751,7 +751,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.icmpv6_type_masked;
 
             of_oxm_icmpv6_type_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv6_type_masked_value_set(elt,
                    src->fields.icmpv6_type);
@@ -761,7 +761,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_icmpv6_type_t *elt;
             elt = &oxm_entry.icmpv6_type;
             of_oxm_icmpv6_type_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv6_type_value_set(elt, src->fields.icmpv6_type);
         }
@@ -772,7 +772,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.arp_sha_masked;
 
             of_oxm_arp_sha_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_sha_masked_value_set(elt,
                    src->fields.arp_sha);
@@ -782,7 +782,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_arp_sha_t *elt;
             elt = &oxm_entry.arp_sha;
             of_oxm_arp_sha_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_sha_value_set(elt, src->fields.arp_sha);
         }
@@ -793,7 +793,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_src_masked;
 
             of_oxm_ipv6_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_src_masked_value_set(elt,
                    src->fields.ipv6_src);
@@ -803,7 +803,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_src_t *elt;
             elt = &oxm_entry.ipv6_src;
             of_oxm_ipv6_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_src_value_set(elt, src->fields.ipv6_src);
         }
@@ -814,7 +814,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.sctp_src_masked;
 
             of_oxm_sctp_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_sctp_src_masked_value_set(elt,
                    src->fields.sctp_src);
@@ -824,7 +824,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_sctp_src_t *elt;
             elt = &oxm_entry.sctp_src;
             of_oxm_sctp_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_sctp_src_value_set(elt, src->fields.sctp_src);
         }
@@ -835,7 +835,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.icmpv6_code_masked;
 
             of_oxm_icmpv6_code_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv6_code_masked_value_set(elt,
                    src->fields.icmpv6_code);
@@ -845,7 +845,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_icmpv6_code_t *elt;
             elt = &oxm_entry.icmpv6_code;
             of_oxm_icmpv6_code_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv6_code_value_set(elt, src->fields.icmpv6_code);
         }
@@ -856,7 +856,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.eth_dst_masked;
 
             of_oxm_eth_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_dst_masked_value_set(elt,
                    src->fields.eth_dst);
@@ -866,7 +866,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_eth_dst_t *elt;
             elt = &oxm_entry.eth_dst;
             of_oxm_eth_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_dst_value_set(elt, src->fields.eth_dst);
         }
@@ -877,7 +877,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_nd_sll_masked;
 
             of_oxm_ipv6_nd_sll_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_sll_masked_value_set(elt,
                    src->fields.ipv6_nd_sll);
@@ -887,7 +887,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_nd_sll_t *elt;
             elt = &oxm_entry.ipv6_nd_sll;
             of_oxm_ipv6_nd_sll_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_sll_value_set(elt, src->fields.ipv6_nd_sll);
         }
@@ -898,7 +898,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.mpls_tc_masked;
 
             of_oxm_mpls_tc_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_mpls_tc_masked_value_set(elt,
                    src->fields.mpls_tc);
@@ -908,7 +908,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_mpls_tc_t *elt;
             elt = &oxm_entry.mpls_tc;
             of_oxm_mpls_tc_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_mpls_tc_value_set(elt, src->fields.mpls_tc);
         }
@@ -919,7 +919,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.arp_op_masked;
 
             of_oxm_arp_op_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_op_masked_value_set(elt,
                    src->fields.arp_op);
@@ -929,7 +929,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_arp_op_t *elt;
             elt = &oxm_entry.arp_op;
             of_oxm_arp_op_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_op_value_set(elt, src->fields.arp_op);
         }
@@ -940,7 +940,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.eth_type_masked;
 
             of_oxm_eth_type_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_type_masked_value_set(elt,
                    src->fields.eth_type);
@@ -950,7 +950,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_eth_type_t *elt;
             elt = &oxm_entry.eth_type;
             of_oxm_eth_type_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_type_value_set(elt, src->fields.eth_type);
         }
@@ -961,7 +961,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_nd_target_masked;
 
             of_oxm_ipv6_nd_target_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_target_masked_value_set(elt,
                    src->fields.ipv6_nd_target);
@@ -971,7 +971,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_nd_target_t *elt;
             elt = &oxm_entry.ipv6_nd_target;
             of_oxm_ipv6_nd_target_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_target_value_set(elt, src->fields.ipv6_nd_target);
         }
@@ -982,7 +982,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.vlan_vid_masked;
 
             of_oxm_vlan_vid_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_vlan_vid_masked_value_set(elt,
                    src->fields.vlan_vid);
@@ -992,7 +992,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_vlan_vid_t *elt;
             elt = &oxm_entry.vlan_vid;
             of_oxm_vlan_vid_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_vlan_vid_value_set(elt, src->fields.vlan_vid);
         }
@@ -1003,7 +1003,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.arp_tha_masked;
 
             of_oxm_arp_tha_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_tha_masked_value_set(elt,
                    src->fields.arp_tha);
@@ -1013,7 +1013,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_arp_tha_t *elt;
             elt = &oxm_entry.arp_tha;
             of_oxm_arp_tha_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_tha_value_set(elt, src->fields.arp_tha);
         }
@@ -1024,7 +1024,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.in_port_masked;
 
             of_oxm_in_port_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_in_port_masked_value_set(elt,
                    src->fields.in_port);
@@ -1034,7 +1034,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_in_port_t *elt;
             elt = &oxm_entry.in_port;
             of_oxm_in_port_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_in_port_value_set(elt, src->fields.in_port);
         }
@@ -1045,7 +1045,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ip_dscp_masked;
 
             of_oxm_ip_dscp_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_dscp_masked_value_set(elt,
                    src->fields.ip_dscp);
@@ -1055,7 +1055,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ip_dscp_t *elt;
             elt = &oxm_entry.ip_dscp;
             of_oxm_ip_dscp_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_dscp_value_set(elt, src->fields.ip_dscp);
         }
@@ -1066,7 +1066,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.sctp_dst_masked;
 
             of_oxm_sctp_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_sctp_dst_masked_value_set(elt,
                    src->fields.sctp_dst);
@@ -1076,7 +1076,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_sctp_dst_t *elt;
             elt = &oxm_entry.sctp_dst;
             of_oxm_sctp_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_sctp_dst_value_set(elt, src->fields.sctp_dst);
         }
@@ -1087,7 +1087,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.icmpv4_code_masked;
 
             of_oxm_icmpv4_code_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv4_code_masked_value_set(elt,
                    src->fields.icmpv4_code);
@@ -1097,7 +1097,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_icmpv4_code_t *elt;
             elt = &oxm_entry.icmpv4_code;
             of_oxm_icmpv4_code_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv4_code_value_set(elt, src->fields.icmpv4_code);
         }
@@ -1108,7 +1108,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.tcp_src_masked;
 
             of_oxm_tcp_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_tcp_src_masked_value_set(elt,
                    src->fields.tcp_src);
@@ -1118,7 +1118,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_tcp_src_t *elt;
             elt = &oxm_entry.tcp_src;
             of_oxm_tcp_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_tcp_src_value_set(elt, src->fields.tcp_src);
         }
@@ -1129,7 +1129,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.arp_spa_masked;
 
             of_oxm_arp_spa_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_spa_masked_value_set(elt,
                    src->fields.arp_spa);
@@ -1139,7 +1139,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_arp_spa_t *elt;
             elt = &oxm_entry.arp_spa;
             of_oxm_arp_spa_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_arp_spa_value_set(elt, src->fields.arp_spa);
         }
@@ -1150,7 +1150,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ip_ecn_masked;
 
             of_oxm_ip_ecn_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_ecn_masked_value_set(elt,
                    src->fields.ip_ecn);
@@ -1160,7 +1160,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ip_ecn_t *elt;
             elt = &oxm_entry.ip_ecn;
             of_oxm_ip_ecn_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_ecn_value_set(elt, src->fields.ip_ecn);
         }
@@ -1171,7 +1171,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.udp_dst_masked;
 
             of_oxm_udp_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_udp_dst_masked_value_set(elt,
                    src->fields.udp_dst);
@@ -1181,7 +1181,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_udp_dst_t *elt;
             elt = &oxm_entry.udp_dst;
             of_oxm_udp_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_udp_dst_value_set(elt, src->fields.udp_dst);
         }
@@ -1192,7 +1192,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.in_phy_port_masked;
 
             of_oxm_in_phy_port_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_in_phy_port_masked_value_set(elt,
                    src->fields.in_phy_port);
@@ -1202,7 +1202,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_in_phy_port_t *elt;
             elt = &oxm_entry.in_phy_port;
             of_oxm_in_phy_port_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_in_phy_port_value_set(elt, src->fields.in_phy_port);
         }
@@ -1213,7 +1213,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv4_dst_masked;
 
             of_oxm_ipv4_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv4_dst_masked_value_set(elt,
                    src->fields.ipv4_dst);
@@ -1223,7 +1223,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv4_dst_t *elt;
             elt = &oxm_entry.ipv4_dst;
             of_oxm_ipv4_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv4_dst_value_set(elt, src->fields.ipv4_dst);
         }
@@ -1234,7 +1234,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.eth_src_masked;
 
             of_oxm_eth_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_src_masked_value_set(elt,
                    src->fields.eth_src);
@@ -1244,7 +1244,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_eth_src_t *elt;
             elt = &oxm_entry.eth_src;
             of_oxm_eth_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_eth_src_value_set(elt, src->fields.eth_src);
         }
@@ -1255,7 +1255,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.udp_src_masked;
 
             of_oxm_udp_src_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_udp_src_masked_value_set(elt,
                    src->fields.udp_src);
@@ -1265,7 +1265,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_udp_src_t *elt;
             elt = &oxm_entry.udp_src;
             of_oxm_udp_src_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_udp_src_value_set(elt, src->fields.udp_src);
         }
@@ -1276,7 +1276,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ipv6_nd_tll_masked;
 
             of_oxm_ipv6_nd_tll_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_tll_masked_value_set(elt,
                    src->fields.ipv6_nd_tll);
@@ -1286,7 +1286,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ipv6_nd_tll_t *elt;
             elt = &oxm_entry.ipv6_nd_tll;
             of_oxm_ipv6_nd_tll_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ipv6_nd_tll_value_set(elt, src->fields.ipv6_nd_tll);
         }
@@ -1297,7 +1297,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.icmpv4_type_masked;
 
             of_oxm_icmpv4_type_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv4_type_masked_value_set(elt,
                    src->fields.icmpv4_type);
@@ -1307,7 +1307,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_icmpv4_type_t *elt;
             elt = &oxm_entry.icmpv4_type;
             of_oxm_icmpv4_type_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv4_type_value_set(elt, src->fields.icmpv4_type);
         }
@@ -1318,7 +1318,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.mpls_label_masked;
 
             of_oxm_mpls_label_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_mpls_label_masked_value_set(elt,
                    src->fields.mpls_label);
@@ -1328,7 +1328,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_mpls_label_t *elt;
             elt = &oxm_entry.mpls_label;
             of_oxm_mpls_label_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_mpls_label_value_set(elt, src->fields.mpls_label);
         }
@@ -1339,7 +1339,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.tcp_dst_masked;
 
             of_oxm_tcp_dst_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_tcp_dst_masked_value_set(elt,
                    src->fields.tcp_dst);
@@ -1349,7 +1349,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_tcp_dst_t *elt;
             elt = &oxm_entry.tcp_dst;
             of_oxm_tcp_dst_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_tcp_dst_value_set(elt, src->fields.tcp_dst);
         }
@@ -1360,7 +1360,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.ip_proto_masked;
 
             of_oxm_ip_proto_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_proto_masked_value_set(elt,
                    src->fields.ip_proto);
@@ -1370,7 +1370,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ip_proto_t *elt;
             elt = &oxm_entry.ip_proto;
             of_oxm_ip_proto_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_ip_proto_value_set(elt, src->fields.ip_proto);
         }
@@ -1381,7 +1381,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             elt = &oxm_entry.metadata_masked;
 
             of_oxm_metadata_masked_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_metadata_masked_value_set(elt,
                    src->fields.metadata);
@@ -1391,7 +1391,7 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_metadata_t *elt;
             elt = &oxm_entry.metadata;
             of_oxm_metadata_init(elt,
-                src->version, -1, 1);
+                oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_metadata_value_set(elt, src->fields.metadata);
         }
@@ -1419,9 +1419,9 @@ of_match_to_wire_match_v3(of_match_t *src, of_match_v3_t *dst)
         return OF_ERROR_PARAM;
     }
     if (dst->object_id != OF_MATCH_V3) {
-        of_match_v3_init(dst, src->version, 0, 0);
+        of_match_v3_init(dst, OF_VERSION_1_2, 0, 0);
     }
-    if ((oxm_list = of_list_oxm_new(src->version)) == NULL) {
+    if ((oxm_list = of_list_oxm_new(dst->version)) == NULL) {
         return OF_ERROR_RESOURCE;
     }
 
