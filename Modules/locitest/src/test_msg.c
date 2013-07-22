@@ -7143,7 +7143,7 @@ test_of_packet_in_create_OF_VERSION_1_2(void)
     obj = of_packet_in_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->length == 26);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_PACKET_IN);
 
@@ -10063,7 +10063,7 @@ test_of_packet_in_create_OF_VERSION_1_3(void)
     obj = of_packet_in_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 34);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_PACKET_IN);
 

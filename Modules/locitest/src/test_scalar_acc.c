@@ -8451,7 +8451,7 @@ test_of_packet_in_OF_VERSION_1_2_scalar(void)
     obj = of_packet_in_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->length == 26);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_PACKET_IN);
 
@@ -8459,7 +8459,7 @@ test_of_packet_in_OF_VERSION_1_2_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 24);
+        TEST_ASSERT(length == 26);
     }
 
     /* Set up incrementing values for scalar members */
@@ -14568,7 +14568,7 @@ test_of_packet_in_OF_VERSION_1_3_scalar(void)
     obj = of_packet_in_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 34);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_PACKET_IN);
 
@@ -14576,7 +14576,7 @@ test_of_packet_in_OF_VERSION_1_3_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 32);
+        TEST_ASSERT(length == 34);
     }
 
     /* Set up incrementing values for scalar members */

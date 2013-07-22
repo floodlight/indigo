@@ -6347,11 +6347,14 @@ of_flow_modify_strict_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_2_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_2_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -6367,11 +6370,14 @@ of_flow_modify_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_2_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_2_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -6387,11 +6393,14 @@ of_flow_delete_strict_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_2_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_2_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -6407,11 +6416,14 @@ of_flow_delete_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_2_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_2_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -6427,11 +6439,14 @@ of_flow_add_OF_VERSION_1_2_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_2_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_2_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -10324,11 +10339,14 @@ of_flow_modify_strict_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_3_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_3_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -10344,11 +10362,14 @@ of_flow_modify_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_3_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_3_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -10364,11 +10385,14 @@ of_flow_delete_strict_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_3_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_3_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -10384,11 +10408,14 @@ of_flow_delete_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_3_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_3_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }
@@ -10404,11 +10431,14 @@ of_flow_add_OF_VERSION_1_3_validate(uint8_t *buf, int len)
         return -1;
     }
 
+    {
+        uint16_t instructions_len, instructions_offset;
+        uint16_t match_len;
+        buf_u16_get(buf + 48 + 2, &match_len);
+        instructions_offset = 48 + OF_MATCH_BYTES(match_len);
+        instructions_len = len - instructions_offset;
 
-    {    int instructions_len = len - -1;
-
-
-        if (of_list_instruction_OF_VERSION_1_3_validate(buf + -1, instructions_len) < 0) {
+        if (of_list_instruction_OF_VERSION_1_3_validate(buf + instructions_offset, instructions_len) < 0) {
             return -1;
         }
     }

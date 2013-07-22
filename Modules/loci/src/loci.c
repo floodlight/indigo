@@ -482,28 +482,27 @@ of_object_u16_set(of_object_t *obj, int offset, int value) {
 #define _END_LEN(obj, offset) ((obj)->length - (offset))
 
 /**
+ * Offset of the action_len member in a packet-out object
+ */
+
+#define _PACKET_OUT_ACTION_LEN_OFFSET(obj) \
+    (((obj)->version == OF_VERSION_1_0) ? 14 : 16)
+
+/**
  * Get length of the action list object in a packet_out object
  * @param obj An object of type of_packet_out
- *
- * The length field is just before the end of the fixed length
- * part of the object in all versions.
  */
 
 #define _PACKET_OUT_ACTION_LEN(obj) \
-    (of_object_u16_get((of_object_t *)(obj), \
-     of_object_fixed_len[(obj)->version][OF_PACKET_OUT] - 2))
+    (of_object_u16_get((of_object_t *)(obj), _PACKET_OUT_ACTION_LEN_OFFSET(obj)))
 
 /**
  * Set length of the action list object in a packet_out object
  * @param obj An object of type of_packet_out
- *
- * The length field is just before the end of the fixed length
- * part of the object in all versions.
  */
 
 #define _PACKET_OUT_ACTION_LEN_SET(obj, len) \
-    (of_object_u16_set((of_object_t *)(obj), \
-     of_object_fixed_len[(obj)->version][OF_PACKET_OUT] - 2, len))
+    (of_object_u16_set((of_object_t *)(obj), _PACKET_OUT_ACTION_LEN_OFFSET(obj), len))
 
 /*
  * Match structs in 1.2 come at the end of the fixed length part
@@ -612,10 +611,11 @@ wire_match_len(of_object_t *obj, int match_offset) {
  *
  * Get length of preceding match object and add to fixed length
  * Applies only to version 1.2 and 1.3
+ * The +2 comes from the 2 bytes of padding between the match and packet data.
  */
 
 #define _PACKET_IN_DATA_OFFSET(obj) \
-    _OFFSET_FOLLOWING_MATCH_V3((obj), (obj)->version == OF_VERSION_1_2 ? 24 : 32)
+    (_OFFSET_FOLLOWING_MATCH_V3((obj), (obj)->version == OF_VERSION_1_2 ? 24 : 32) + 2)
 
 /**
  * Macro to calculate variable offset of data (packet) member in packet_out
@@ -71957,7 +71957,7 @@ of_aggregate_stats_reply_new_(of_version_t version)
     of_aggregate_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REPLY] + of_object_extra_len[version][OF_AGGREGATE_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_aggregate_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72020,7 +72020,7 @@ of_aggregate_stats_reply_init(of_aggregate_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REPLY] + of_object_extra_len[version][OF_AGGREGATE_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -72147,7 +72147,7 @@ of_aggregate_stats_request_new_(of_version_t version)
     of_aggregate_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REQUEST] + of_object_extra_len[version][OF_AGGREGATE_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_aggregate_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72216,7 +72216,7 @@ of_aggregate_stats_request_init(of_aggregate_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_AGGREGATE_STATS_REQUEST] + of_object_extra_len[version][OF_AGGREGATE_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -72343,7 +72343,7 @@ of_async_get_reply_new_(of_version_t version)
     of_async_get_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ASYNC_GET_REPLY];
+    bytes = of_object_fixed_len[version][OF_ASYNC_GET_REPLY] + of_object_extra_len[version][OF_ASYNC_GET_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_async_get_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72406,7 +72406,7 @@ of_async_get_reply_init(of_async_get_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ASYNC_GET_REPLY];
+        bytes = of_object_fixed_len[version][OF_ASYNC_GET_REPLY] + of_object_extra_len[version][OF_ASYNC_GET_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -72533,7 +72533,7 @@ of_async_get_request_new_(of_version_t version)
     of_async_get_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ASYNC_GET_REQUEST];
+    bytes = of_object_fixed_len[version][OF_ASYNC_GET_REQUEST] + of_object_extra_len[version][OF_ASYNC_GET_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_async_get_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72596,7 +72596,7 @@ of_async_get_request_init(of_async_get_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ASYNC_GET_REQUEST];
+        bytes = of_object_fixed_len[version][OF_ASYNC_GET_REQUEST] + of_object_extra_len[version][OF_ASYNC_GET_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -72723,7 +72723,7 @@ of_async_set_new_(of_version_t version)
     of_async_set_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ASYNC_SET];
+    bytes = of_object_fixed_len[version][OF_ASYNC_SET] + of_object_extra_len[version][OF_ASYNC_SET];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_async_set_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72786,7 +72786,7 @@ of_async_set_init(of_async_set_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ASYNC_SET];
+        bytes = of_object_fixed_len[version][OF_ASYNC_SET] + of_object_extra_len[version][OF_ASYNC_SET];
     }
     obj->version = version;
     obj->length = bytes;
@@ -72913,7 +72913,7 @@ of_barrier_reply_new_(of_version_t version)
     of_barrier_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BARRIER_REPLY];
+    bytes = of_object_fixed_len[version][OF_BARRIER_REPLY] + of_object_extra_len[version][OF_BARRIER_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_barrier_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -72976,7 +72976,7 @@ of_barrier_reply_init(of_barrier_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BARRIER_REPLY];
+        bytes = of_object_fixed_len[version][OF_BARRIER_REPLY] + of_object_extra_len[version][OF_BARRIER_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -73103,7 +73103,7 @@ of_barrier_request_new_(of_version_t version)
     of_barrier_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BARRIER_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BARRIER_REQUEST] + of_object_extra_len[version][OF_BARRIER_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_barrier_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -73166,7 +73166,7 @@ of_barrier_request_init(of_barrier_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BARRIER_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BARRIER_REQUEST] + of_object_extra_len[version][OF_BARRIER_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -73321,7 +73321,7 @@ of_bsn_bw_clear_data_reply_new_(of_version_t version)
     of_bsn_bw_clear_data_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REPLY] + of_object_extra_len[version][OF_BSN_BW_CLEAR_DATA_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_clear_data_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -73384,7 +73384,7 @@ of_bsn_bw_clear_data_reply_init(of_bsn_bw_clear_data_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REPLY] + of_object_extra_len[version][OF_BSN_BW_CLEAR_DATA_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -73539,7 +73539,7 @@ of_bsn_bw_clear_data_request_new_(of_version_t version)
     of_bsn_bw_clear_data_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST] + of_object_extra_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_clear_data_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -73602,7 +73602,7 @@ of_bsn_bw_clear_data_request_init(of_bsn_bw_clear_data_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST] + of_object_extra_len[version][OF_BSN_BW_CLEAR_DATA_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -73757,7 +73757,7 @@ of_bsn_bw_enable_get_reply_new_(of_version_t version)
     of_bsn_bw_enable_get_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REPLY] + of_object_extra_len[version][OF_BSN_BW_ENABLE_GET_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_enable_get_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -73820,7 +73820,7 @@ of_bsn_bw_enable_get_reply_init(of_bsn_bw_enable_get_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REPLY] + of_object_extra_len[version][OF_BSN_BW_ENABLE_GET_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -73975,7 +73975,7 @@ of_bsn_bw_enable_get_request_new_(of_version_t version)
     of_bsn_bw_enable_get_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REQUEST] + of_object_extra_len[version][OF_BSN_BW_ENABLE_GET_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_enable_get_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -74038,7 +74038,7 @@ of_bsn_bw_enable_get_request_init(of_bsn_bw_enable_get_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_GET_REQUEST] + of_object_extra_len[version][OF_BSN_BW_ENABLE_GET_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -74193,7 +74193,7 @@ of_bsn_bw_enable_set_reply_new_(of_version_t version)
     of_bsn_bw_enable_set_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REPLY] + of_object_extra_len[version][OF_BSN_BW_ENABLE_SET_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_enable_set_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -74256,7 +74256,7 @@ of_bsn_bw_enable_set_reply_init(of_bsn_bw_enable_set_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REPLY] + of_object_extra_len[version][OF_BSN_BW_ENABLE_SET_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -74411,7 +74411,7 @@ of_bsn_bw_enable_set_request_new_(of_version_t version)
     of_bsn_bw_enable_set_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REQUEST] + of_object_extra_len[version][OF_BSN_BW_ENABLE_SET_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_bw_enable_set_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -74474,7 +74474,7 @@ of_bsn_bw_enable_set_request_init(of_bsn_bw_enable_set_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_BW_ENABLE_SET_REQUEST] + of_object_extra_len[version][OF_BSN_BW_ENABLE_SET_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -74629,7 +74629,7 @@ of_bsn_get_interfaces_reply_new_(of_version_t version)
     of_bsn_get_interfaces_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REPLY] + of_object_extra_len[version][OF_BSN_GET_INTERFACES_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_interfaces_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -74692,7 +74692,7 @@ of_bsn_get_interfaces_reply_init(of_bsn_get_interfaces_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REPLY] + of_object_extra_len[version][OF_BSN_GET_INTERFACES_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -74847,7 +74847,7 @@ of_bsn_get_interfaces_request_new_(of_version_t version)
     of_bsn_get_interfaces_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REQUEST] + of_object_extra_len[version][OF_BSN_GET_INTERFACES_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_interfaces_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -74910,7 +74910,7 @@ of_bsn_get_interfaces_request_init(of_bsn_get_interfaces_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_INTERFACES_REQUEST] + of_object_extra_len[version][OF_BSN_GET_INTERFACES_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -75044,7 +75044,7 @@ of_bsn_get_ip_mask_reply_new_(of_version_t version)
     of_bsn_get_ip_mask_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REPLY] + of_object_extra_len[version][OF_BSN_GET_IP_MASK_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_ip_mask_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -75107,7 +75107,7 @@ of_bsn_get_ip_mask_reply_init(of_bsn_get_ip_mask_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REPLY] + of_object_extra_len[version][OF_BSN_GET_IP_MASK_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -75241,7 +75241,7 @@ of_bsn_get_ip_mask_request_new_(of_version_t version)
     of_bsn_get_ip_mask_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REQUEST] + of_object_extra_len[version][OF_BSN_GET_IP_MASK_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_ip_mask_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -75304,7 +75304,7 @@ of_bsn_get_ip_mask_request_init(of_bsn_get_ip_mask_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_IP_MASK_REQUEST] + of_object_extra_len[version][OF_BSN_GET_IP_MASK_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -75438,7 +75438,7 @@ of_bsn_get_l2_table_reply_new_(of_version_t version)
     of_bsn_get_l2_table_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REPLY] + of_object_extra_len[version][OF_BSN_GET_L2_TABLE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_l2_table_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -75501,7 +75501,7 @@ of_bsn_get_l2_table_reply_init(of_bsn_get_l2_table_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REPLY] + of_object_extra_len[version][OF_BSN_GET_L2_TABLE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -75635,7 +75635,7 @@ of_bsn_get_l2_table_request_new_(of_version_t version)
     of_bsn_get_l2_table_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REQUEST] + of_object_extra_len[version][OF_BSN_GET_L2_TABLE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_l2_table_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -75698,7 +75698,7 @@ of_bsn_get_l2_table_request_init(of_bsn_get_l2_table_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_L2_TABLE_REQUEST] + of_object_extra_len[version][OF_BSN_GET_L2_TABLE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -75853,7 +75853,7 @@ of_bsn_get_mirroring_reply_new_(of_version_t version)
     of_bsn_get_mirroring_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REPLY] + of_object_extra_len[version][OF_BSN_GET_MIRRORING_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_mirroring_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -75916,7 +75916,7 @@ of_bsn_get_mirroring_reply_init(of_bsn_get_mirroring_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REPLY] + of_object_extra_len[version][OF_BSN_GET_MIRRORING_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -76071,7 +76071,7 @@ of_bsn_get_mirroring_request_new_(of_version_t version)
     of_bsn_get_mirroring_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REQUEST] + of_object_extra_len[version][OF_BSN_GET_MIRRORING_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_get_mirroring_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -76134,7 +76134,7 @@ of_bsn_get_mirroring_request_init(of_bsn_get_mirroring_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_GET_MIRRORING_REQUEST] + of_object_extra_len[version][OF_BSN_GET_MIRRORING_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -76268,7 +76268,7 @@ of_bsn_set_ip_mask_new_(of_version_t version)
     of_bsn_set_ip_mask_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_IP_MASK];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_IP_MASK] + of_object_extra_len[version][OF_BSN_SET_IP_MASK];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_ip_mask_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -76331,7 +76331,7 @@ of_bsn_set_ip_mask_init(of_bsn_set_ip_mask_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_IP_MASK];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_IP_MASK] + of_object_extra_len[version][OF_BSN_SET_IP_MASK];
     }
     obj->version = version;
     obj->length = bytes;
@@ -76465,7 +76465,7 @@ of_bsn_set_l2_table_reply_new_(of_version_t version)
     of_bsn_set_l2_table_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REPLY] + of_object_extra_len[version][OF_BSN_SET_L2_TABLE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_l2_table_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -76528,7 +76528,7 @@ of_bsn_set_l2_table_reply_init(of_bsn_set_l2_table_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REPLY] + of_object_extra_len[version][OF_BSN_SET_L2_TABLE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -76662,7 +76662,7 @@ of_bsn_set_l2_table_request_new_(of_version_t version)
     of_bsn_set_l2_table_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REQUEST] + of_object_extra_len[version][OF_BSN_SET_L2_TABLE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_l2_table_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -76725,7 +76725,7 @@ of_bsn_set_l2_table_request_init(of_bsn_set_l2_table_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_L2_TABLE_REQUEST] + of_object_extra_len[version][OF_BSN_SET_L2_TABLE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -76880,7 +76880,7 @@ of_bsn_set_mirroring_new_(of_version_t version)
     of_bsn_set_mirroring_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_MIRRORING];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_MIRRORING] + of_object_extra_len[version][OF_BSN_SET_MIRRORING];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_mirroring_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -76943,7 +76943,7 @@ of_bsn_set_mirroring_init(of_bsn_set_mirroring_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_MIRRORING];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_MIRRORING] + of_object_extra_len[version][OF_BSN_SET_MIRRORING];
     }
     obj->version = version;
     obj->length = bytes;
@@ -77098,7 +77098,7 @@ of_bsn_set_pktin_suppression_reply_new_(of_version_t version)
     of_bsn_set_pktin_suppression_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY] + of_object_extra_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_pktin_suppression_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -77161,7 +77161,7 @@ of_bsn_set_pktin_suppression_reply_init(of_bsn_set_pktin_suppression_reply_t *ob
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY] + of_object_extra_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -77316,7 +77316,7 @@ of_bsn_set_pktin_suppression_request_new_(of_version_t version)
     of_bsn_set_pktin_suppression_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST] + of_object_extra_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_set_pktin_suppression_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -77379,7 +77379,7 @@ of_bsn_set_pktin_suppression_request_init(of_bsn_set_pktin_suppression_request_t
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST] + of_object_extra_len[version][OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -77513,7 +77513,7 @@ of_bsn_shell_command_new_(of_version_t version)
     of_bsn_shell_command_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SHELL_COMMAND];
+    bytes = of_object_fixed_len[version][OF_BSN_SHELL_COMMAND] + of_object_extra_len[version][OF_BSN_SHELL_COMMAND];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_shell_command_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -77576,7 +77576,7 @@ of_bsn_shell_command_init(of_bsn_shell_command_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SHELL_COMMAND];
+        bytes = of_object_fixed_len[version][OF_BSN_SHELL_COMMAND] + of_object_extra_len[version][OF_BSN_SHELL_COMMAND];
     }
     obj->version = version;
     obj->length = bytes;
@@ -77710,7 +77710,7 @@ of_bsn_shell_output_new_(of_version_t version)
     of_bsn_shell_output_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SHELL_OUTPUT];
+    bytes = of_object_fixed_len[version][OF_BSN_SHELL_OUTPUT] + of_object_extra_len[version][OF_BSN_SHELL_OUTPUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_shell_output_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -77773,7 +77773,7 @@ of_bsn_shell_output_init(of_bsn_shell_output_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SHELL_OUTPUT];
+        bytes = of_object_fixed_len[version][OF_BSN_SHELL_OUTPUT] + of_object_extra_len[version][OF_BSN_SHELL_OUTPUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -77907,7 +77907,7 @@ of_bsn_shell_status_new_(of_version_t version)
     of_bsn_shell_status_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_SHELL_STATUS];
+    bytes = of_object_fixed_len[version][OF_BSN_SHELL_STATUS] + of_object_extra_len[version][OF_BSN_SHELL_STATUS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_shell_status_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -77970,7 +77970,7 @@ of_bsn_shell_status_init(of_bsn_shell_status_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_SHELL_STATUS];
+        bytes = of_object_fixed_len[version][OF_BSN_SHELL_STATUS] + of_object_extra_len[version][OF_BSN_SHELL_STATUS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -78125,7 +78125,7 @@ of_bsn_virtual_port_create_reply_new_(of_version_t version)
     of_bsn_virtual_port_create_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_virtual_port_create_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -78188,7 +78188,7 @@ of_bsn_virtual_port_create_reply_init(of_bsn_virtual_port_create_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -78343,7 +78343,7 @@ of_bsn_virtual_port_create_request_new_(of_version_t version)
     of_bsn_virtual_port_create_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_virtual_port_create_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -78406,7 +78406,7 @@ of_bsn_virtual_port_create_request_init(of_bsn_virtual_port_create_request_t *ob
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_CREATE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -78561,7 +78561,7 @@ of_bsn_virtual_port_remove_reply_new_(of_version_t version)
     of_bsn_virtual_port_remove_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY];
+    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_virtual_port_remove_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -78624,7 +78624,7 @@ of_bsn_virtual_port_remove_reply_init(of_bsn_virtual_port_remove_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY];
+        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -78779,7 +78779,7 @@ of_bsn_virtual_port_remove_request_new_(of_version_t version)
     of_bsn_virtual_port_remove_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_virtual_port_remove_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -78842,7 +78842,7 @@ of_bsn_virtual_port_remove_request_init(of_bsn_virtual_port_remove_request_t *ob
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST] + of_object_extra_len[version][OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -78969,7 +78969,7 @@ of_desc_stats_reply_new_(of_version_t version)
     of_desc_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_DESC_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_DESC_STATS_REPLY] + of_object_extra_len[version][OF_DESC_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_desc_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79032,7 +79032,7 @@ of_desc_stats_reply_init(of_desc_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_DESC_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_DESC_STATS_REPLY] + of_object_extra_len[version][OF_DESC_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -79159,7 +79159,7 @@ of_desc_stats_request_new_(of_version_t version)
     of_desc_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_DESC_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_DESC_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_desc_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79222,7 +79222,7 @@ of_desc_stats_request_init(of_desc_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_DESC_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_DESC_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -79349,7 +79349,7 @@ of_echo_reply_new_(of_version_t version)
     of_echo_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ECHO_REPLY];
+    bytes = of_object_fixed_len[version][OF_ECHO_REPLY] + of_object_extra_len[version][OF_ECHO_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_echo_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79412,7 +79412,7 @@ of_echo_reply_init(of_echo_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ECHO_REPLY];
+        bytes = of_object_fixed_len[version][OF_ECHO_REPLY] + of_object_extra_len[version][OF_ECHO_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -79539,7 +79539,7 @@ of_echo_request_new_(of_version_t version)
     of_echo_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ECHO_REQUEST];
+    bytes = of_object_fixed_len[version][OF_ECHO_REQUEST] + of_object_extra_len[version][OF_ECHO_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_echo_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79602,7 +79602,7 @@ of_echo_request_init(of_echo_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ECHO_REQUEST];
+        bytes = of_object_fixed_len[version][OF_ECHO_REQUEST] + of_object_extra_len[version][OF_ECHO_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -79729,7 +79729,7 @@ of_error_msg_new_(of_version_t version)
     of_error_msg_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ERROR_MSG];
+    bytes = of_object_fixed_len[version][OF_ERROR_MSG] + of_object_extra_len[version][OF_ERROR_MSG];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79792,7 +79792,7 @@ of_error_msg_init(of_error_msg_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ERROR_MSG];
+        bytes = of_object_fixed_len[version][OF_ERROR_MSG] + of_object_extra_len[version][OF_ERROR_MSG];
     }
     obj->version = version;
     obj->length = bytes;
@@ -79919,7 +79919,7 @@ of_experimenter_new_(of_version_t version)
     of_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER] + of_object_extra_len[version][OF_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -79982,7 +79982,7 @@ of_experimenter_init(of_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER] + of_object_extra_len[version][OF_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -80109,7 +80109,7 @@ of_experimenter_stats_reply_new_(of_version_t version)
     of_experimenter_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REPLY] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_experimenter_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -80172,7 +80172,7 @@ of_experimenter_stats_reply_init(of_experimenter_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REPLY] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -80299,7 +80299,7 @@ of_experimenter_stats_request_new_(of_version_t version)
     of_experimenter_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REQUEST] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_experimenter_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -80362,7 +80362,7 @@ of_experimenter_stats_request_init(of_experimenter_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_REQUEST] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -80489,7 +80489,7 @@ of_features_reply_new_(of_version_t version)
     of_features_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FEATURES_REPLY];
+    bytes = of_object_fixed_len[version][OF_FEATURES_REPLY] + of_object_extra_len[version][OF_FEATURES_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_features_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -80552,7 +80552,7 @@ of_features_reply_init(of_features_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FEATURES_REPLY];
+        bytes = of_object_fixed_len[version][OF_FEATURES_REPLY] + of_object_extra_len[version][OF_FEATURES_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -80679,7 +80679,7 @@ of_features_request_new_(of_version_t version)
     of_features_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FEATURES_REQUEST];
+    bytes = of_object_fixed_len[version][OF_FEATURES_REQUEST] + of_object_extra_len[version][OF_FEATURES_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_features_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -80742,7 +80742,7 @@ of_features_request_init(of_features_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FEATURES_REQUEST];
+        bytes = of_object_fixed_len[version][OF_FEATURES_REQUEST] + of_object_extra_len[version][OF_FEATURES_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -80869,7 +80869,7 @@ of_flow_add_new_(of_version_t version)
     of_flow_add_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_ADD];
+    bytes = of_object_fixed_len[version][OF_FLOW_ADD] + of_object_extra_len[version][OF_FLOW_ADD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_add_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -80938,7 +80938,7 @@ of_flow_add_init(of_flow_add_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_ADD];
+        bytes = of_object_fixed_len[version][OF_FLOW_ADD] + of_object_extra_len[version][OF_FLOW_ADD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -81065,7 +81065,7 @@ of_flow_delete_new_(of_version_t version)
     of_flow_delete_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_DELETE];
+    bytes = of_object_fixed_len[version][OF_FLOW_DELETE] + of_object_extra_len[version][OF_FLOW_DELETE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_delete_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -81134,7 +81134,7 @@ of_flow_delete_init(of_flow_delete_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_DELETE];
+        bytes = of_object_fixed_len[version][OF_FLOW_DELETE] + of_object_extra_len[version][OF_FLOW_DELETE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -81261,7 +81261,7 @@ of_flow_delete_strict_new_(of_version_t version)
     of_flow_delete_strict_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_DELETE_STRICT];
+    bytes = of_object_fixed_len[version][OF_FLOW_DELETE_STRICT] + of_object_extra_len[version][OF_FLOW_DELETE_STRICT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_delete_strict_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -81330,7 +81330,7 @@ of_flow_delete_strict_init(of_flow_delete_strict_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_DELETE_STRICT];
+        bytes = of_object_fixed_len[version][OF_FLOW_DELETE_STRICT] + of_object_extra_len[version][OF_FLOW_DELETE_STRICT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -81457,7 +81457,7 @@ of_flow_modify_new_(of_version_t version)
     of_flow_modify_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_MODIFY];
+    bytes = of_object_fixed_len[version][OF_FLOW_MODIFY] + of_object_extra_len[version][OF_FLOW_MODIFY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_modify_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -81526,7 +81526,7 @@ of_flow_modify_init(of_flow_modify_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_MODIFY];
+        bytes = of_object_fixed_len[version][OF_FLOW_MODIFY] + of_object_extra_len[version][OF_FLOW_MODIFY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -81653,7 +81653,7 @@ of_flow_modify_strict_new_(of_version_t version)
     of_flow_modify_strict_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_MODIFY_STRICT];
+    bytes = of_object_fixed_len[version][OF_FLOW_MODIFY_STRICT] + of_object_extra_len[version][OF_FLOW_MODIFY_STRICT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_modify_strict_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -81722,7 +81722,7 @@ of_flow_modify_strict_init(of_flow_modify_strict_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_MODIFY_STRICT];
+        bytes = of_object_fixed_len[version][OF_FLOW_MODIFY_STRICT] + of_object_extra_len[version][OF_FLOW_MODIFY_STRICT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -81849,7 +81849,7 @@ of_flow_removed_new_(of_version_t version)
     of_flow_removed_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_REMOVED];
+    bytes = of_object_fixed_len[version][OF_FLOW_REMOVED] + of_object_extra_len[version][OF_FLOW_REMOVED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_removed_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -81918,7 +81918,7 @@ of_flow_removed_init(of_flow_removed_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_REMOVED];
+        bytes = of_object_fixed_len[version][OF_FLOW_REMOVED] + of_object_extra_len[version][OF_FLOW_REMOVED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -82045,7 +82045,7 @@ of_flow_stats_reply_new_(of_version_t version)
     of_flow_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_FLOW_STATS_REPLY] + of_object_extra_len[version][OF_FLOW_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -82108,7 +82108,7 @@ of_flow_stats_reply_init(of_flow_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_FLOW_STATS_REPLY] + of_object_extra_len[version][OF_FLOW_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -82235,7 +82235,7 @@ of_flow_stats_request_new_(of_version_t version)
     of_flow_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_FLOW_STATS_REQUEST] + of_object_extra_len[version][OF_FLOW_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -82304,7 +82304,7 @@ of_flow_stats_request_init(of_flow_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_FLOW_STATS_REQUEST] + of_object_extra_len[version][OF_FLOW_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -82431,7 +82431,7 @@ of_get_config_reply_new_(of_version_t version)
     of_get_config_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GET_CONFIG_REPLY];
+    bytes = of_object_fixed_len[version][OF_GET_CONFIG_REPLY] + of_object_extra_len[version][OF_GET_CONFIG_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_get_config_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -82494,7 +82494,7 @@ of_get_config_reply_init(of_get_config_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GET_CONFIG_REPLY];
+        bytes = of_object_fixed_len[version][OF_GET_CONFIG_REPLY] + of_object_extra_len[version][OF_GET_CONFIG_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -82621,7 +82621,7 @@ of_get_config_request_new_(of_version_t version)
     of_get_config_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GET_CONFIG_REQUEST];
+    bytes = of_object_fixed_len[version][OF_GET_CONFIG_REQUEST] + of_object_extra_len[version][OF_GET_CONFIG_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_get_config_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -82684,7 +82684,7 @@ of_get_config_request_init(of_get_config_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GET_CONFIG_REQUEST];
+        bytes = of_object_fixed_len[version][OF_GET_CONFIG_REQUEST] + of_object_extra_len[version][OF_GET_CONFIG_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -82811,7 +82811,7 @@ of_group_desc_stats_reply_new_(of_version_t version)
     of_group_desc_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_DESC_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_desc_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -82874,7 +82874,7 @@ of_group_desc_stats_reply_init(of_group_desc_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_DESC_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83001,7 +83001,7 @@ of_group_desc_stats_request_new_(of_version_t version)
     of_group_desc_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_DESC_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_desc_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -83064,7 +83064,7 @@ of_group_desc_stats_request_init(of_group_desc_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_DESC_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83191,7 +83191,7 @@ of_group_features_stats_reply_new_(of_version_t version)
     of_group_features_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_FEATURES_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_features_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -83254,7 +83254,7 @@ of_group_features_stats_reply_init(of_group_features_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_FEATURES_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83381,7 +83381,7 @@ of_group_features_stats_request_new_(of_version_t version)
     of_group_features_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_FEATURES_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_features_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -83444,7 +83444,7 @@ of_group_features_stats_request_init(of_group_features_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_GROUP_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_FEATURES_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83571,7 +83571,7 @@ of_group_mod_new_(of_version_t version)
     of_group_mod_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_MOD];
+    bytes = of_object_fixed_len[version][OF_GROUP_MOD] + of_object_extra_len[version][OF_GROUP_MOD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_mod_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -83634,7 +83634,7 @@ of_group_mod_init(of_group_mod_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_MOD];
+        bytes = of_object_fixed_len[version][OF_GROUP_MOD] + of_object_extra_len[version][OF_GROUP_MOD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83761,7 +83761,7 @@ of_group_stats_reply_new_(of_version_t version)
     of_group_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_GROUP_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -83824,7 +83824,7 @@ of_group_stats_reply_init(of_group_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_GROUP_STATS_REPLY] + of_object_extra_len[version][OF_GROUP_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -83951,7 +83951,7 @@ of_group_stats_request_new_(of_version_t version)
     of_group_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_GROUP_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84014,7 +84014,7 @@ of_group_stats_request_init(of_group_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_GROUP_STATS_REQUEST] + of_object_extra_len[version][OF_GROUP_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -84141,7 +84141,7 @@ of_hello_new_(of_version_t version)
     of_hello_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_HELLO];
+    bytes = of_object_fixed_len[version][OF_HELLO] + of_object_extra_len[version][OF_HELLO];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_hello_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84204,7 +84204,7 @@ of_hello_init(of_hello_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_HELLO];
+        bytes = of_object_fixed_len[version][OF_HELLO] + of_object_extra_len[version][OF_HELLO];
     }
     obj->version = version;
     obj->length = bytes;
@@ -84331,7 +84331,7 @@ of_meter_config_stats_reply_new_(of_version_t version)
     of_meter_config_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REPLY] + of_object_extra_len[version][OF_METER_CONFIG_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_config_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84394,7 +84394,7 @@ of_meter_config_stats_reply_init(of_meter_config_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REPLY] + of_object_extra_len[version][OF_METER_CONFIG_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -84521,7 +84521,7 @@ of_meter_config_stats_request_new_(of_version_t version)
     of_meter_config_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REQUEST] + of_object_extra_len[version][OF_METER_CONFIG_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_config_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84584,7 +84584,7 @@ of_meter_config_stats_request_init(of_meter_config_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_METER_CONFIG_STATS_REQUEST] + of_object_extra_len[version][OF_METER_CONFIG_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -84711,7 +84711,7 @@ of_meter_features_stats_reply_new_(of_version_t version)
     of_meter_features_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_METER_FEATURES_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_features_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84774,7 +84774,7 @@ of_meter_features_stats_reply_init(of_meter_features_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_METER_FEATURES_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -84901,7 +84901,7 @@ of_meter_features_stats_request_new_(of_version_t version)
     of_meter_features_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_METER_FEATURES_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_features_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -84964,7 +84964,7 @@ of_meter_features_stats_request_init(of_meter_features_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_METER_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_METER_FEATURES_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -85091,7 +85091,7 @@ of_meter_mod_new_(of_version_t version)
     of_meter_mod_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_MOD];
+    bytes = of_object_fixed_len[version][OF_METER_MOD] + of_object_extra_len[version][OF_METER_MOD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_mod_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -85154,7 +85154,7 @@ of_meter_mod_init(of_meter_mod_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_MOD];
+        bytes = of_object_fixed_len[version][OF_METER_MOD] + of_object_extra_len[version][OF_METER_MOD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -85281,7 +85281,7 @@ of_meter_stats_reply_new_(of_version_t version)
     of_meter_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_METER_STATS_REPLY] + of_object_extra_len[version][OF_METER_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -85344,7 +85344,7 @@ of_meter_stats_reply_init(of_meter_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_METER_STATS_REPLY] + of_object_extra_len[version][OF_METER_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -85471,7 +85471,7 @@ of_meter_stats_request_new_(of_version_t version)
     of_meter_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_METER_STATS_REQUEST] + of_object_extra_len[version][OF_METER_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -85534,7 +85534,7 @@ of_meter_stats_request_init(of_meter_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_METER_STATS_REQUEST] + of_object_extra_len[version][OF_METER_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -85668,7 +85668,7 @@ of_nicira_controller_role_reply_new_(of_version_t version)
     of_nicira_controller_role_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY];
+    bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY] + of_object_extra_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_nicira_controller_role_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -85731,7 +85731,7 @@ of_nicira_controller_role_reply_init(of_nicira_controller_role_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY];
+        bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY] + of_object_extra_len[version][OF_NICIRA_CONTROLLER_ROLE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -85865,7 +85865,7 @@ of_nicira_controller_role_request_new_(of_version_t version)
     of_nicira_controller_role_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST] + of_object_extra_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_nicira_controller_role_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -85928,7 +85928,7 @@ of_nicira_controller_role_request_init(of_nicira_controller_role_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST] + of_object_extra_len[version][OF_NICIRA_CONTROLLER_ROLE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -86055,7 +86055,7 @@ of_packet_in_new_(of_version_t version)
     of_packet_in_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PACKET_IN];
+    bytes = of_object_fixed_len[version][OF_PACKET_IN] + of_object_extra_len[version][OF_PACKET_IN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_packet_in_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -86124,7 +86124,7 @@ of_packet_in_init(of_packet_in_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PACKET_IN];
+        bytes = of_object_fixed_len[version][OF_PACKET_IN] + of_object_extra_len[version][OF_PACKET_IN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -86251,7 +86251,7 @@ of_packet_out_new_(of_version_t version)
     of_packet_out_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PACKET_OUT];
+    bytes = of_object_fixed_len[version][OF_PACKET_OUT] + of_object_extra_len[version][OF_PACKET_OUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_packet_out_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -86314,7 +86314,7 @@ of_packet_out_init(of_packet_out_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PACKET_OUT];
+        bytes = of_object_fixed_len[version][OF_PACKET_OUT] + of_object_extra_len[version][OF_PACKET_OUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -86441,7 +86441,7 @@ of_port_desc_stats_reply_new_(of_version_t version)
     of_port_desc_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REPLY] + of_object_extra_len[version][OF_PORT_DESC_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_desc_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -86504,7 +86504,7 @@ of_port_desc_stats_reply_init(of_port_desc_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REPLY] + of_object_extra_len[version][OF_PORT_DESC_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -86631,7 +86631,7 @@ of_port_desc_stats_request_new_(of_version_t version)
     of_port_desc_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_PORT_DESC_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_desc_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -86694,7 +86694,7 @@ of_port_desc_stats_request_init(of_port_desc_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_PORT_DESC_STATS_REQUEST] + of_object_extra_len[version][OF_PORT_DESC_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -86821,7 +86821,7 @@ of_port_mod_new_(of_version_t version)
     of_port_mod_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_MOD];
+    bytes = of_object_fixed_len[version][OF_PORT_MOD] + of_object_extra_len[version][OF_PORT_MOD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_mod_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -86884,7 +86884,7 @@ of_port_mod_init(of_port_mod_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_MOD];
+        bytes = of_object_fixed_len[version][OF_PORT_MOD] + of_object_extra_len[version][OF_PORT_MOD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87011,7 +87011,7 @@ of_port_stats_reply_new_(of_version_t version)
     of_port_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_PORT_STATS_REPLY] + of_object_extra_len[version][OF_PORT_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -87074,7 +87074,7 @@ of_port_stats_reply_init(of_port_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_PORT_STATS_REPLY] + of_object_extra_len[version][OF_PORT_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87201,7 +87201,7 @@ of_port_stats_request_new_(of_version_t version)
     of_port_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_PORT_STATS_REQUEST] + of_object_extra_len[version][OF_PORT_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -87264,7 +87264,7 @@ of_port_stats_request_init(of_port_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_PORT_STATS_REQUEST] + of_object_extra_len[version][OF_PORT_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87391,7 +87391,7 @@ of_port_status_new_(of_version_t version)
     of_port_status_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_STATUS];
+    bytes = of_object_fixed_len[version][OF_PORT_STATUS] + of_object_extra_len[version][OF_PORT_STATUS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_status_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -87454,7 +87454,7 @@ of_port_status_init(of_port_status_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_STATUS];
+        bytes = of_object_fixed_len[version][OF_PORT_STATUS] + of_object_extra_len[version][OF_PORT_STATUS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87581,7 +87581,7 @@ of_queue_get_config_reply_new_(of_version_t version)
     of_queue_get_config_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REPLY];
+    bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REPLY] + of_object_extra_len[version][OF_QUEUE_GET_CONFIG_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_get_config_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -87644,7 +87644,7 @@ of_queue_get_config_reply_init(of_queue_get_config_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REPLY];
+        bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REPLY] + of_object_extra_len[version][OF_QUEUE_GET_CONFIG_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87771,7 +87771,7 @@ of_queue_get_config_request_new_(of_version_t version)
     of_queue_get_config_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REQUEST];
+    bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REQUEST] + of_object_extra_len[version][OF_QUEUE_GET_CONFIG_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_get_config_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -87834,7 +87834,7 @@ of_queue_get_config_request_init(of_queue_get_config_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REQUEST];
+        bytes = of_object_fixed_len[version][OF_QUEUE_GET_CONFIG_REQUEST] + of_object_extra_len[version][OF_QUEUE_GET_CONFIG_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -87961,7 +87961,7 @@ of_queue_stats_reply_new_(of_version_t version)
     of_queue_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REPLY] + of_object_extra_len[version][OF_QUEUE_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88024,7 +88024,7 @@ of_queue_stats_reply_init(of_queue_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REPLY] + of_object_extra_len[version][OF_QUEUE_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -88151,7 +88151,7 @@ of_queue_stats_request_new_(of_version_t version)
     of_queue_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REQUEST] + of_object_extra_len[version][OF_QUEUE_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88214,7 +88214,7 @@ of_queue_stats_request_init(of_queue_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_REQUEST] + of_object_extra_len[version][OF_QUEUE_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -88341,7 +88341,7 @@ of_role_reply_new_(of_version_t version)
     of_role_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ROLE_REPLY];
+    bytes = of_object_fixed_len[version][OF_ROLE_REPLY] + of_object_extra_len[version][OF_ROLE_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_role_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88404,7 +88404,7 @@ of_role_reply_init(of_role_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ROLE_REPLY];
+        bytes = of_object_fixed_len[version][OF_ROLE_REPLY] + of_object_extra_len[version][OF_ROLE_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -88531,7 +88531,7 @@ of_role_request_new_(of_version_t version)
     of_role_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ROLE_REQUEST];
+    bytes = of_object_fixed_len[version][OF_ROLE_REQUEST] + of_object_extra_len[version][OF_ROLE_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_role_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88594,7 +88594,7 @@ of_role_request_init(of_role_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ROLE_REQUEST];
+        bytes = of_object_fixed_len[version][OF_ROLE_REQUEST] + of_object_extra_len[version][OF_ROLE_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -88721,7 +88721,7 @@ of_set_config_new_(of_version_t version)
     of_set_config_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_SET_CONFIG];
+    bytes = of_object_fixed_len[version][OF_SET_CONFIG] + of_object_extra_len[version][OF_SET_CONFIG];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_set_config_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88784,7 +88784,7 @@ of_set_config_init(of_set_config_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_SET_CONFIG];
+        bytes = of_object_fixed_len[version][OF_SET_CONFIG] + of_object_extra_len[version][OF_SET_CONFIG];
     }
     obj->version = version;
     obj->length = bytes;
@@ -88911,7 +88911,7 @@ of_table_features_stats_reply_new_(of_version_t version)
     of_table_features_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_TABLE_FEATURES_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_features_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -88974,7 +88974,7 @@ of_table_features_stats_reply_init(of_table_features_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REPLY] + of_object_extra_len[version][OF_TABLE_FEATURES_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89101,7 +89101,7 @@ of_table_features_stats_request_new_(of_version_t version)
     of_table_features_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_TABLE_FEATURES_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_features_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -89164,7 +89164,7 @@ of_table_features_stats_request_init(of_table_features_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_STATS_REQUEST] + of_object_extra_len[version][OF_TABLE_FEATURES_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89291,7 +89291,7 @@ of_table_mod_new_(of_version_t version)
     of_table_mod_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_MOD];
+    bytes = of_object_fixed_len[version][OF_TABLE_MOD] + of_object_extra_len[version][OF_TABLE_MOD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_mod_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -89354,7 +89354,7 @@ of_table_mod_init(of_table_mod_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_MOD];
+        bytes = of_object_fixed_len[version][OF_TABLE_MOD] + of_object_extra_len[version][OF_TABLE_MOD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89481,7 +89481,7 @@ of_table_stats_reply_new_(of_version_t version)
     of_table_stats_reply_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_STATS_REPLY];
+    bytes = of_object_fixed_len[version][OF_TABLE_STATS_REPLY] + of_object_extra_len[version][OF_TABLE_STATS_REPLY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_stats_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -89544,7 +89544,7 @@ of_table_stats_reply_init(of_table_stats_reply_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_STATS_REPLY];
+        bytes = of_object_fixed_len[version][OF_TABLE_STATS_REPLY] + of_object_extra_len[version][OF_TABLE_STATS_REPLY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89671,7 +89671,7 @@ of_table_stats_request_new_(of_version_t version)
     of_table_stats_request_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_STATS_REQUEST];
+    bytes = of_object_fixed_len[version][OF_TABLE_STATS_REQUEST] + of_object_extra_len[version][OF_TABLE_STATS_REQUEST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_stats_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -89734,7 +89734,7 @@ of_table_stats_request_init(of_table_stats_request_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_STATS_REQUEST];
+        bytes = of_object_fixed_len[version][OF_TABLE_STATS_REQUEST] + of_object_extra_len[version][OF_TABLE_STATS_REQUEST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89841,7 +89841,7 @@ of_action_new_(of_version_t version)
     of_action_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION];
+    bytes = of_object_fixed_len[version][OF_ACTION] + of_object_extra_len[version][OF_ACTION];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -89902,7 +89902,7 @@ of_action_init(of_action_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION];
+        bytes = of_object_fixed_len[version][OF_ACTION] + of_object_extra_len[version][OF_ACTION];
     }
     obj->version = version;
     obj->length = bytes;
@@ -89969,7 +89969,7 @@ of_action_bsn_mirror_new_(of_version_t version)
     of_action_bsn_mirror_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_BSN_MIRROR];
+    bytes = of_object_fixed_len[version][OF_ACTION_BSN_MIRROR] + of_object_extra_len[version][OF_ACTION_BSN_MIRROR];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_bsn_mirror_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90032,7 +90032,7 @@ of_action_bsn_mirror_init(of_action_bsn_mirror_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_BSN_MIRROR];
+        bytes = of_object_fixed_len[version][OF_ACTION_BSN_MIRROR] + of_object_extra_len[version][OF_ACTION_BSN_MIRROR];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90101,7 +90101,7 @@ of_action_bsn_set_tunnel_dst_new_(of_version_t version)
     of_action_bsn_set_tunnel_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_BSN_SET_TUNNEL_DST];
+    bytes = of_object_fixed_len[version][OF_ACTION_BSN_SET_TUNNEL_DST] + of_object_extra_len[version][OF_ACTION_BSN_SET_TUNNEL_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_bsn_set_tunnel_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90164,7 +90164,7 @@ of_action_bsn_set_tunnel_dst_init(of_action_bsn_set_tunnel_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_BSN_SET_TUNNEL_DST];
+        bytes = of_object_fixed_len[version][OF_ACTION_BSN_SET_TUNNEL_DST] + of_object_extra_len[version][OF_ACTION_BSN_SET_TUNNEL_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90230,7 +90230,7 @@ of_action_copy_ttl_in_new_(of_version_t version)
     of_action_copy_ttl_in_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_IN];
+    bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_IN] + of_object_extra_len[version][OF_ACTION_COPY_TTL_IN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_copy_ttl_in_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90293,7 +90293,7 @@ of_action_copy_ttl_in_init(of_action_copy_ttl_in_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_IN];
+        bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_IN] + of_object_extra_len[version][OF_ACTION_COPY_TTL_IN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90359,7 +90359,7 @@ of_action_copy_ttl_out_new_(of_version_t version)
     of_action_copy_ttl_out_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_OUT];
+    bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_OUT] + of_object_extra_len[version][OF_ACTION_COPY_TTL_OUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_copy_ttl_out_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90422,7 +90422,7 @@ of_action_copy_ttl_out_init(of_action_copy_ttl_out_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_OUT];
+        bytes = of_object_fixed_len[version][OF_ACTION_COPY_TTL_OUT] + of_object_extra_len[version][OF_ACTION_COPY_TTL_OUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90488,7 +90488,7 @@ of_action_dec_mpls_ttl_new_(of_version_t version)
     of_action_dec_mpls_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_DEC_MPLS_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_DEC_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_DEC_MPLS_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_dec_mpls_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90551,7 +90551,7 @@ of_action_dec_mpls_ttl_init(of_action_dec_mpls_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_DEC_MPLS_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_DEC_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_DEC_MPLS_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90617,7 +90617,7 @@ of_action_dec_nw_ttl_new_(of_version_t version)
     of_action_dec_nw_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_DEC_NW_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_DEC_NW_TTL] + of_object_extra_len[version][OF_ACTION_DEC_NW_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_dec_nw_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90680,7 +90680,7 @@ of_action_dec_nw_ttl_init(of_action_dec_nw_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_DEC_NW_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_DEC_NW_TTL] + of_object_extra_len[version][OF_ACTION_DEC_NW_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90746,7 +90746,7 @@ of_action_enqueue_new_(of_version_t version)
     of_action_enqueue_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ENQUEUE];
+    bytes = of_object_fixed_len[version][OF_ACTION_ENQUEUE] + of_object_extra_len[version][OF_ACTION_ENQUEUE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_enqueue_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90809,7 +90809,7 @@ of_action_enqueue_init(of_action_enqueue_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ENQUEUE];
+        bytes = of_object_fixed_len[version][OF_ACTION_ENQUEUE] + of_object_extra_len[version][OF_ACTION_ENQUEUE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -90875,7 +90875,7 @@ of_action_experimenter_new_(of_version_t version)
     of_action_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_ACTION_EXPERIMENTER] + of_object_extra_len[version][OF_ACTION_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -90938,7 +90938,7 @@ of_action_experimenter_init(of_action_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_ACTION_EXPERIMENTER] + of_object_extra_len[version][OF_ACTION_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91004,7 +91004,7 @@ of_action_group_new_(of_version_t version)
     of_action_group_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_GROUP];
+    bytes = of_object_fixed_len[version][OF_ACTION_GROUP] + of_object_extra_len[version][OF_ACTION_GROUP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_group_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91067,7 +91067,7 @@ of_action_group_init(of_action_group_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_GROUP];
+        bytes = of_object_fixed_len[version][OF_ACTION_GROUP] + of_object_extra_len[version][OF_ACTION_GROUP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91118,7 +91118,7 @@ of_action_header_new_(of_version_t version)
     of_action_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_HEADER];
+    bytes = of_object_fixed_len[version][OF_ACTION_HEADER] + of_object_extra_len[version][OF_ACTION_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91176,7 +91176,7 @@ of_action_header_init(of_action_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_HEADER];
+        bytes = of_object_fixed_len[version][OF_ACTION_HEADER] + of_object_extra_len[version][OF_ACTION_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91227,7 +91227,7 @@ of_action_id_new_(of_version_t version)
     of_action_id_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID] + of_object_extra_len[version][OF_ACTION_ID];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91288,7 +91288,7 @@ of_action_id_init(of_action_id_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID] + of_object_extra_len[version][OF_ACTION_ID];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91355,7 +91355,7 @@ of_action_id_bsn_mirror_new_(of_version_t version)
     of_action_id_bsn_mirror_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_MIRROR];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_MIRROR] + of_object_extra_len[version][OF_ACTION_ID_BSN_MIRROR];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_bsn_mirror_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91418,7 +91418,7 @@ of_action_id_bsn_mirror_init(of_action_id_bsn_mirror_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_MIRROR];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_MIRROR] + of_object_extra_len[version][OF_ACTION_ID_BSN_MIRROR];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91487,7 +91487,7 @@ of_action_id_bsn_set_tunnel_dst_new_(of_version_t version)
     of_action_id_bsn_set_tunnel_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST] + of_object_extra_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_bsn_set_tunnel_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91550,7 +91550,7 @@ of_action_id_bsn_set_tunnel_dst_init(of_action_id_bsn_set_tunnel_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST] + of_object_extra_len[version][OF_ACTION_ID_BSN_SET_TUNNEL_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91616,7 +91616,7 @@ of_action_id_copy_ttl_in_new_(of_version_t version)
     of_action_id_copy_ttl_in_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_IN];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_IN] + of_object_extra_len[version][OF_ACTION_ID_COPY_TTL_IN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_copy_ttl_in_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91679,7 +91679,7 @@ of_action_id_copy_ttl_in_init(of_action_id_copy_ttl_in_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_IN];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_IN] + of_object_extra_len[version][OF_ACTION_ID_COPY_TTL_IN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91745,7 +91745,7 @@ of_action_id_copy_ttl_out_new_(of_version_t version)
     of_action_id_copy_ttl_out_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_OUT];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_OUT] + of_object_extra_len[version][OF_ACTION_ID_COPY_TTL_OUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_copy_ttl_out_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91808,7 +91808,7 @@ of_action_id_copy_ttl_out_init(of_action_id_copy_ttl_out_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_OUT];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_COPY_TTL_OUT] + of_object_extra_len[version][OF_ACTION_ID_COPY_TTL_OUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -91874,7 +91874,7 @@ of_action_id_dec_mpls_ttl_new_(of_version_t version)
     of_action_id_dec_mpls_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_MPLS_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_ID_DEC_MPLS_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_dec_mpls_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -91937,7 +91937,7 @@ of_action_id_dec_mpls_ttl_init(of_action_id_dec_mpls_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_MPLS_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_ID_DEC_MPLS_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92003,7 +92003,7 @@ of_action_id_dec_nw_ttl_new_(of_version_t version)
     of_action_id_dec_nw_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_NW_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_NW_TTL] + of_object_extra_len[version][OF_ACTION_ID_DEC_NW_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_dec_nw_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92066,7 +92066,7 @@ of_action_id_dec_nw_ttl_init(of_action_id_dec_nw_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_NW_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_DEC_NW_TTL] + of_object_extra_len[version][OF_ACTION_ID_DEC_NW_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92132,7 +92132,7 @@ of_action_id_experimenter_new_(of_version_t version)
     of_action_id_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_EXPERIMENTER] + of_object_extra_len[version][OF_ACTION_ID_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92195,7 +92195,7 @@ of_action_id_experimenter_init(of_action_id_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_EXPERIMENTER] + of_object_extra_len[version][OF_ACTION_ID_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92261,7 +92261,7 @@ of_action_id_group_new_(of_version_t version)
     of_action_id_group_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_GROUP];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_GROUP] + of_object_extra_len[version][OF_ACTION_ID_GROUP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_group_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92324,7 +92324,7 @@ of_action_id_group_init(of_action_id_group_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_GROUP];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_GROUP] + of_object_extra_len[version][OF_ACTION_ID_GROUP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92375,7 +92375,7 @@ of_action_id_header_new_(of_version_t version)
     of_action_id_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_HEADER];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_HEADER] + of_object_extra_len[version][OF_ACTION_ID_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92433,7 +92433,7 @@ of_action_id_header_init(of_action_id_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_HEADER];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_HEADER] + of_object_extra_len[version][OF_ACTION_ID_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92502,7 +92502,7 @@ of_action_id_nicira_dec_ttl_new_(of_version_t version)
     of_action_id_nicira_dec_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_NICIRA_DEC_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_NICIRA_DEC_TTL] + of_object_extra_len[version][OF_ACTION_ID_NICIRA_DEC_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_nicira_dec_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92565,7 +92565,7 @@ of_action_id_nicira_dec_ttl_init(of_action_id_nicira_dec_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_NICIRA_DEC_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_NICIRA_DEC_TTL] + of_object_extra_len[version][OF_ACTION_ID_NICIRA_DEC_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92631,7 +92631,7 @@ of_action_id_output_new_(of_version_t version)
     of_action_id_output_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_OUTPUT];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_OUTPUT] + of_object_extra_len[version][OF_ACTION_ID_OUTPUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_output_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92694,7 +92694,7 @@ of_action_id_output_init(of_action_id_output_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_OUTPUT];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_OUTPUT] + of_object_extra_len[version][OF_ACTION_ID_OUTPUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92760,7 +92760,7 @@ of_action_id_pop_mpls_new_(of_version_t version)
     of_action_id_pop_mpls_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_MPLS];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_MPLS] + of_object_extra_len[version][OF_ACTION_ID_POP_MPLS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_pop_mpls_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92823,7 +92823,7 @@ of_action_id_pop_mpls_init(of_action_id_pop_mpls_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_MPLS];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_MPLS] + of_object_extra_len[version][OF_ACTION_ID_POP_MPLS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -92889,7 +92889,7 @@ of_action_id_pop_pbb_new_(of_version_t version)
     of_action_id_pop_pbb_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_PBB];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_PBB] + of_object_extra_len[version][OF_ACTION_ID_POP_PBB];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_pop_pbb_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -92952,7 +92952,7 @@ of_action_id_pop_pbb_init(of_action_id_pop_pbb_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_PBB];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_PBB] + of_object_extra_len[version][OF_ACTION_ID_POP_PBB];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93018,7 +93018,7 @@ of_action_id_pop_vlan_new_(of_version_t version)
     of_action_id_pop_vlan_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_VLAN];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_VLAN] + of_object_extra_len[version][OF_ACTION_ID_POP_VLAN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_pop_vlan_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93081,7 +93081,7 @@ of_action_id_pop_vlan_init(of_action_id_pop_vlan_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_VLAN];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_POP_VLAN] + of_object_extra_len[version][OF_ACTION_ID_POP_VLAN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93147,7 +93147,7 @@ of_action_id_push_mpls_new_(of_version_t version)
     of_action_id_push_mpls_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_MPLS];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_MPLS] + of_object_extra_len[version][OF_ACTION_ID_PUSH_MPLS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_push_mpls_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93210,7 +93210,7 @@ of_action_id_push_mpls_init(of_action_id_push_mpls_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_MPLS];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_MPLS] + of_object_extra_len[version][OF_ACTION_ID_PUSH_MPLS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93276,7 +93276,7 @@ of_action_id_push_pbb_new_(of_version_t version)
     of_action_id_push_pbb_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_PBB];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_PBB] + of_object_extra_len[version][OF_ACTION_ID_PUSH_PBB];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_push_pbb_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93339,7 +93339,7 @@ of_action_id_push_pbb_init(of_action_id_push_pbb_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_PBB];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_PBB] + of_object_extra_len[version][OF_ACTION_ID_PUSH_PBB];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93405,7 +93405,7 @@ of_action_id_push_vlan_new_(of_version_t version)
     of_action_id_push_vlan_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_VLAN];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_VLAN] + of_object_extra_len[version][OF_ACTION_ID_PUSH_VLAN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_push_vlan_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93468,7 +93468,7 @@ of_action_id_push_vlan_init(of_action_id_push_vlan_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_VLAN];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_PUSH_VLAN] + of_object_extra_len[version][OF_ACTION_ID_PUSH_VLAN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93534,7 +93534,7 @@ of_action_id_set_field_new_(of_version_t version)
     of_action_id_set_field_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_FIELD];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_FIELD] + of_object_extra_len[version][OF_ACTION_ID_SET_FIELD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_set_field_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93597,7 +93597,7 @@ of_action_id_set_field_init(of_action_id_set_field_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_FIELD];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_FIELD] + of_object_extra_len[version][OF_ACTION_ID_SET_FIELD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93663,7 +93663,7 @@ of_action_id_set_mpls_ttl_new_(of_version_t version)
     of_action_id_set_mpls_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_MPLS_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_ID_SET_MPLS_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_set_mpls_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93726,7 +93726,7 @@ of_action_id_set_mpls_ttl_init(of_action_id_set_mpls_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_MPLS_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_ID_SET_MPLS_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93792,7 +93792,7 @@ of_action_id_set_nw_ttl_new_(of_version_t version)
     of_action_id_set_nw_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_NW_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_NW_TTL] + of_object_extra_len[version][OF_ACTION_ID_SET_NW_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_set_nw_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93855,7 +93855,7 @@ of_action_id_set_nw_ttl_init(of_action_id_set_nw_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_NW_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_NW_TTL] + of_object_extra_len[version][OF_ACTION_ID_SET_NW_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -93921,7 +93921,7 @@ of_action_id_set_queue_new_(of_version_t version)
     of_action_id_set_queue_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_QUEUE];
+    bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_QUEUE] + of_object_extra_len[version][OF_ACTION_ID_SET_QUEUE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_id_set_queue_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -93984,7 +93984,7 @@ of_action_id_set_queue_init(of_action_id_set_queue_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_QUEUE];
+        bytes = of_object_fixed_len[version][OF_ACTION_ID_SET_QUEUE] + of_object_extra_len[version][OF_ACTION_ID_SET_QUEUE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94053,7 +94053,7 @@ of_action_nicira_dec_ttl_new_(of_version_t version)
     of_action_nicira_dec_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_NICIRA_DEC_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_NICIRA_DEC_TTL] + of_object_extra_len[version][OF_ACTION_NICIRA_DEC_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_nicira_dec_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94116,7 +94116,7 @@ of_action_nicira_dec_ttl_init(of_action_nicira_dec_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_NICIRA_DEC_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_NICIRA_DEC_TTL] + of_object_extra_len[version][OF_ACTION_NICIRA_DEC_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94182,7 +94182,7 @@ of_action_output_new_(of_version_t version)
     of_action_output_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_OUTPUT];
+    bytes = of_object_fixed_len[version][OF_ACTION_OUTPUT] + of_object_extra_len[version][OF_ACTION_OUTPUT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_output_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94245,7 +94245,7 @@ of_action_output_init(of_action_output_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_OUTPUT];
+        bytes = of_object_fixed_len[version][OF_ACTION_OUTPUT] + of_object_extra_len[version][OF_ACTION_OUTPUT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94311,7 +94311,7 @@ of_action_pop_mpls_new_(of_version_t version)
     of_action_pop_mpls_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_POP_MPLS];
+    bytes = of_object_fixed_len[version][OF_ACTION_POP_MPLS] + of_object_extra_len[version][OF_ACTION_POP_MPLS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_pop_mpls_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94374,7 +94374,7 @@ of_action_pop_mpls_init(of_action_pop_mpls_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_POP_MPLS];
+        bytes = of_object_fixed_len[version][OF_ACTION_POP_MPLS] + of_object_extra_len[version][OF_ACTION_POP_MPLS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94440,7 +94440,7 @@ of_action_pop_pbb_new_(of_version_t version)
     of_action_pop_pbb_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_POP_PBB];
+    bytes = of_object_fixed_len[version][OF_ACTION_POP_PBB] + of_object_extra_len[version][OF_ACTION_POP_PBB];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_pop_pbb_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94503,7 +94503,7 @@ of_action_pop_pbb_init(of_action_pop_pbb_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_POP_PBB];
+        bytes = of_object_fixed_len[version][OF_ACTION_POP_PBB] + of_object_extra_len[version][OF_ACTION_POP_PBB];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94569,7 +94569,7 @@ of_action_pop_vlan_new_(of_version_t version)
     of_action_pop_vlan_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_POP_VLAN];
+    bytes = of_object_fixed_len[version][OF_ACTION_POP_VLAN] + of_object_extra_len[version][OF_ACTION_POP_VLAN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_pop_vlan_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94632,7 +94632,7 @@ of_action_pop_vlan_init(of_action_pop_vlan_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_POP_VLAN];
+        bytes = of_object_fixed_len[version][OF_ACTION_POP_VLAN] + of_object_extra_len[version][OF_ACTION_POP_VLAN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94698,7 +94698,7 @@ of_action_push_mpls_new_(of_version_t version)
     of_action_push_mpls_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_MPLS];
+    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_MPLS] + of_object_extra_len[version][OF_ACTION_PUSH_MPLS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_push_mpls_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94761,7 +94761,7 @@ of_action_push_mpls_init(of_action_push_mpls_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_MPLS];
+        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_MPLS] + of_object_extra_len[version][OF_ACTION_PUSH_MPLS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94827,7 +94827,7 @@ of_action_push_pbb_new_(of_version_t version)
     of_action_push_pbb_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_PBB];
+    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_PBB] + of_object_extra_len[version][OF_ACTION_PUSH_PBB];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_push_pbb_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -94890,7 +94890,7 @@ of_action_push_pbb_init(of_action_push_pbb_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_PBB];
+        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_PBB] + of_object_extra_len[version][OF_ACTION_PUSH_PBB];
     }
     obj->version = version;
     obj->length = bytes;
@@ -94956,7 +94956,7 @@ of_action_push_vlan_new_(of_version_t version)
     of_action_push_vlan_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_VLAN];
+    bytes = of_object_fixed_len[version][OF_ACTION_PUSH_VLAN] + of_object_extra_len[version][OF_ACTION_PUSH_VLAN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_push_vlan_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95019,7 +95019,7 @@ of_action_push_vlan_init(of_action_push_vlan_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_VLAN];
+        bytes = of_object_fixed_len[version][OF_ACTION_PUSH_VLAN] + of_object_extra_len[version][OF_ACTION_PUSH_VLAN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95085,7 +95085,7 @@ of_action_set_dl_dst_new_(of_version_t version)
     of_action_set_dl_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_DST];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_DST] + of_object_extra_len[version][OF_ACTION_SET_DL_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_dl_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95148,7 +95148,7 @@ of_action_set_dl_dst_init(of_action_set_dl_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_DST];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_DST] + of_object_extra_len[version][OF_ACTION_SET_DL_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95214,7 +95214,7 @@ of_action_set_dl_src_new_(of_version_t version)
     of_action_set_dl_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_SRC];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_SRC] + of_object_extra_len[version][OF_ACTION_SET_DL_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_dl_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95277,7 +95277,7 @@ of_action_set_dl_src_init(of_action_set_dl_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_SRC];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_DL_SRC] + of_object_extra_len[version][OF_ACTION_SET_DL_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95343,7 +95343,7 @@ of_action_set_field_new_(of_version_t version)
     of_action_set_field_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_FIELD];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_FIELD] + of_object_extra_len[version][OF_ACTION_SET_FIELD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_field_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95406,7 +95406,7 @@ of_action_set_field_init(of_action_set_field_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_FIELD];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_FIELD] + of_object_extra_len[version][OF_ACTION_SET_FIELD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95472,7 +95472,7 @@ of_action_set_mpls_label_new_(of_version_t version)
     of_action_set_mpls_label_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_LABEL];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_LABEL] + of_object_extra_len[version][OF_ACTION_SET_MPLS_LABEL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_mpls_label_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95535,7 +95535,7 @@ of_action_set_mpls_label_init(of_action_set_mpls_label_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_LABEL];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_LABEL] + of_object_extra_len[version][OF_ACTION_SET_MPLS_LABEL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95601,7 +95601,7 @@ of_action_set_mpls_tc_new_(of_version_t version)
     of_action_set_mpls_tc_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TC];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TC] + of_object_extra_len[version][OF_ACTION_SET_MPLS_TC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_mpls_tc_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95664,7 +95664,7 @@ of_action_set_mpls_tc_init(of_action_set_mpls_tc_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TC];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TC] + of_object_extra_len[version][OF_ACTION_SET_MPLS_TC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95730,7 +95730,7 @@ of_action_set_mpls_ttl_new_(of_version_t version)
     of_action_set_mpls_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_SET_MPLS_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_mpls_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95793,7 +95793,7 @@ of_action_set_mpls_ttl_init(of_action_set_mpls_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_MPLS_TTL] + of_object_extra_len[version][OF_ACTION_SET_MPLS_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95859,7 +95859,7 @@ of_action_set_nw_dst_new_(of_version_t version)
     of_action_set_nw_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_DST];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_DST] + of_object_extra_len[version][OF_ACTION_SET_NW_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_nw_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -95922,7 +95922,7 @@ of_action_set_nw_dst_init(of_action_set_nw_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_DST];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_DST] + of_object_extra_len[version][OF_ACTION_SET_NW_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -95988,7 +95988,7 @@ of_action_set_nw_ecn_new_(of_version_t version)
     of_action_set_nw_ecn_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_ECN];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_ECN] + of_object_extra_len[version][OF_ACTION_SET_NW_ECN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_nw_ecn_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96051,7 +96051,7 @@ of_action_set_nw_ecn_init(of_action_set_nw_ecn_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_ECN];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_ECN] + of_object_extra_len[version][OF_ACTION_SET_NW_ECN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96117,7 +96117,7 @@ of_action_set_nw_src_new_(of_version_t version)
     of_action_set_nw_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_SRC];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_SRC] + of_object_extra_len[version][OF_ACTION_SET_NW_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_nw_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96180,7 +96180,7 @@ of_action_set_nw_src_init(of_action_set_nw_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_SRC];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_SRC] + of_object_extra_len[version][OF_ACTION_SET_NW_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96246,7 +96246,7 @@ of_action_set_nw_tos_new_(of_version_t version)
     of_action_set_nw_tos_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TOS];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TOS] + of_object_extra_len[version][OF_ACTION_SET_NW_TOS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_nw_tos_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96309,7 +96309,7 @@ of_action_set_nw_tos_init(of_action_set_nw_tos_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TOS];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TOS] + of_object_extra_len[version][OF_ACTION_SET_NW_TOS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96375,7 +96375,7 @@ of_action_set_nw_ttl_new_(of_version_t version)
     of_action_set_nw_ttl_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TTL];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TTL] + of_object_extra_len[version][OF_ACTION_SET_NW_TTL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_nw_ttl_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96438,7 +96438,7 @@ of_action_set_nw_ttl_init(of_action_set_nw_ttl_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TTL];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_NW_TTL] + of_object_extra_len[version][OF_ACTION_SET_NW_TTL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96504,7 +96504,7 @@ of_action_set_queue_new_(of_version_t version)
     of_action_set_queue_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_QUEUE];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_QUEUE] + of_object_extra_len[version][OF_ACTION_SET_QUEUE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_queue_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96567,7 +96567,7 @@ of_action_set_queue_init(of_action_set_queue_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_QUEUE];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_QUEUE] + of_object_extra_len[version][OF_ACTION_SET_QUEUE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96633,7 +96633,7 @@ of_action_set_tp_dst_new_(of_version_t version)
     of_action_set_tp_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_DST];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_DST] + of_object_extra_len[version][OF_ACTION_SET_TP_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_tp_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96696,7 +96696,7 @@ of_action_set_tp_dst_init(of_action_set_tp_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_DST];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_DST] + of_object_extra_len[version][OF_ACTION_SET_TP_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96762,7 +96762,7 @@ of_action_set_tp_src_new_(of_version_t version)
     of_action_set_tp_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_SRC];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_SRC] + of_object_extra_len[version][OF_ACTION_SET_TP_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_tp_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96825,7 +96825,7 @@ of_action_set_tp_src_init(of_action_set_tp_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_SRC];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_TP_SRC] + of_object_extra_len[version][OF_ACTION_SET_TP_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -96891,7 +96891,7 @@ of_action_set_vlan_pcp_new_(of_version_t version)
     of_action_set_vlan_pcp_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_PCP];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_PCP] + of_object_extra_len[version][OF_ACTION_SET_VLAN_PCP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_vlan_pcp_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -96954,7 +96954,7 @@ of_action_set_vlan_pcp_init(of_action_set_vlan_pcp_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_PCP];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_PCP] + of_object_extra_len[version][OF_ACTION_SET_VLAN_PCP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97020,7 +97020,7 @@ of_action_set_vlan_vid_new_(of_version_t version)
     of_action_set_vlan_vid_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_VID];
+    bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_VID] + of_object_extra_len[version][OF_ACTION_SET_VLAN_VID];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_set_vlan_vid_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97083,7 +97083,7 @@ of_action_set_vlan_vid_init(of_action_set_vlan_vid_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_VID];
+        bytes = of_object_fixed_len[version][OF_ACTION_SET_VLAN_VID] + of_object_extra_len[version][OF_ACTION_SET_VLAN_VID];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97149,7 +97149,7 @@ of_action_strip_vlan_new_(of_version_t version)
     of_action_strip_vlan_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_ACTION_STRIP_VLAN];
+    bytes = of_object_fixed_len[version][OF_ACTION_STRIP_VLAN] + of_object_extra_len[version][OF_ACTION_STRIP_VLAN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_action_strip_vlan_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97212,7 +97212,7 @@ of_action_strip_vlan_init(of_action_strip_vlan_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_ACTION_STRIP_VLAN];
+        bytes = of_object_fixed_len[version][OF_ACTION_STRIP_VLAN] + of_object_extra_len[version][OF_ACTION_STRIP_VLAN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97273,7 +97273,7 @@ of_bsn_interface_new_(of_version_t version)
     of_bsn_interface_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_INTERFACE];
+    bytes = of_object_fixed_len[version][OF_BSN_INTERFACE] + of_object_extra_len[version][OF_BSN_INTERFACE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_interface_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97336,7 +97336,7 @@ of_bsn_interface_init(of_bsn_interface_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_INTERFACE];
+        bytes = of_object_fixed_len[version][OF_BSN_INTERFACE] + of_object_extra_len[version][OF_BSN_INTERFACE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97381,7 +97381,7 @@ of_bsn_vport_new_(of_version_t version)
     of_bsn_vport_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VPORT];
+    bytes = of_object_fixed_len[version][OF_BSN_VPORT] + of_object_extra_len[version][OF_BSN_VPORT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_vport_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97442,7 +97442,7 @@ of_bsn_vport_init(of_bsn_vport_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VPORT];
+        bytes = of_object_fixed_len[version][OF_BSN_VPORT] + of_object_extra_len[version][OF_BSN_VPORT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97487,7 +97487,7 @@ of_bsn_vport_header_new_(of_version_t version)
     of_bsn_vport_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VPORT_HEADER];
+    bytes = of_object_fixed_len[version][OF_BSN_VPORT_HEADER] + of_object_extra_len[version][OF_BSN_VPORT_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_vport_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97545,7 +97545,7 @@ of_bsn_vport_header_init(of_bsn_vport_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VPORT_HEADER];
+        bytes = of_object_fixed_len[version][OF_BSN_VPORT_HEADER] + of_object_extra_len[version][OF_BSN_VPORT_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97600,7 +97600,7 @@ of_bsn_vport_q_in_q_new_(of_version_t version)
     of_bsn_vport_q_in_q_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BSN_VPORT_Q_IN_Q];
+    bytes = of_object_fixed_len[version][OF_BSN_VPORT_Q_IN_Q] + of_object_extra_len[version][OF_BSN_VPORT_Q_IN_Q];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bsn_vport_q_in_q_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97663,7 +97663,7 @@ of_bsn_vport_q_in_q_init(of_bsn_vport_q_in_q_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BSN_VPORT_Q_IN_Q];
+        bytes = of_object_fixed_len[version][OF_BSN_VPORT_Q_IN_Q] + of_object_extra_len[version][OF_BSN_VPORT_Q_IN_Q];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97720,7 +97720,7 @@ of_bucket_new_(of_version_t version)
     of_bucket_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BUCKET];
+    bytes = of_object_fixed_len[version][OF_BUCKET] + of_object_extra_len[version][OF_BUCKET];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bucket_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97783,7 +97783,7 @@ of_bucket_init(of_bucket_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BUCKET];
+        bytes = of_object_fixed_len[version][OF_BUCKET] + of_object_extra_len[version][OF_BUCKET];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97841,7 +97841,7 @@ of_bucket_counter_new_(of_version_t version)
     of_bucket_counter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_BUCKET_COUNTER];
+    bytes = of_object_fixed_len[version][OF_BUCKET_COUNTER] + of_object_extra_len[version][OF_BUCKET_COUNTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_bucket_counter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -97904,7 +97904,7 @@ of_bucket_counter_init(of_bucket_counter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_BUCKET_COUNTER];
+        bytes = of_object_fixed_len[version][OF_BUCKET_COUNTER] + of_object_extra_len[version][OF_BUCKET_COUNTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -97949,7 +97949,7 @@ of_experimenter_multipart_header_new_(of_version_t version)
     of_experimenter_multipart_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_experimenter_multipart_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98007,7 +98007,7 @@ of_experimenter_multipart_header_init(of_experimenter_multipart_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98064,7 +98064,7 @@ of_flow_stats_entry_new_(of_version_t version)
     of_flow_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_FLOW_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_FLOW_STATS_ENTRY] + of_object_extra_len[version][OF_FLOW_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_flow_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98133,7 +98133,7 @@ of_flow_stats_entry_init(of_flow_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_FLOW_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_FLOW_STATS_ENTRY] + of_object_extra_len[version][OF_FLOW_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98193,7 +98193,7 @@ of_group_desc_stats_entry_new_(of_version_t version)
     of_group_desc_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_ENTRY] + of_object_extra_len[version][OF_GROUP_DESC_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_desc_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98256,7 +98256,7 @@ of_group_desc_stats_entry_init(of_group_desc_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_GROUP_DESC_STATS_ENTRY] + of_object_extra_len[version][OF_GROUP_DESC_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98316,7 +98316,7 @@ of_group_stats_entry_new_(of_version_t version)
     of_group_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_GROUP_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_GROUP_STATS_ENTRY] + of_object_extra_len[version][OF_GROUP_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_group_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98379,7 +98379,7 @@ of_group_stats_entry_init(of_group_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_GROUP_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_GROUP_STATS_ENTRY] + of_object_extra_len[version][OF_GROUP_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98427,7 +98427,7 @@ of_header_new_(of_version_t version)
     of_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_HEADER];
+    bytes = of_object_fixed_len[version][OF_HEADER] + of_object_extra_len[version][OF_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98485,7 +98485,7 @@ of_header_init(of_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_HEADER];
+        bytes = of_object_fixed_len[version][OF_HEADER] + of_object_extra_len[version][OF_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98530,7 +98530,7 @@ of_hello_elem_new_(of_version_t version)
     of_hello_elem_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_HELLO_ELEM];
+    bytes = of_object_fixed_len[version][OF_HELLO_ELEM] + of_object_extra_len[version][OF_HELLO_ELEM];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_hello_elem_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98591,7 +98591,7 @@ of_hello_elem_init(of_hello_elem_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_HELLO_ELEM];
+        bytes = of_object_fixed_len[version][OF_HELLO_ELEM] + of_object_extra_len[version][OF_HELLO_ELEM];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98640,7 +98640,7 @@ of_hello_elem_header_new_(of_version_t version)
     of_hello_elem_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_HELLO_ELEM_HEADER];
+    bytes = of_object_fixed_len[version][OF_HELLO_ELEM_HEADER] + of_object_extra_len[version][OF_HELLO_ELEM_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_hello_elem_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98698,7 +98698,7 @@ of_hello_elem_header_init(of_hello_elem_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_HELLO_ELEM_HEADER];
+        bytes = of_object_fixed_len[version][OF_HELLO_ELEM_HEADER] + of_object_extra_len[version][OF_HELLO_ELEM_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98764,7 +98764,7 @@ of_hello_elem_versionbitmap_new_(of_version_t version)
     of_hello_elem_versionbitmap_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_HELLO_ELEM_VERSIONBITMAP];
+    bytes = of_object_fixed_len[version][OF_HELLO_ELEM_VERSIONBITMAP] + of_object_extra_len[version][OF_HELLO_ELEM_VERSIONBITMAP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_hello_elem_versionbitmap_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98827,7 +98827,7 @@ of_hello_elem_versionbitmap_init(of_hello_elem_versionbitmap_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_HELLO_ELEM_VERSIONBITMAP];
+        bytes = of_object_fixed_len[version][OF_HELLO_ELEM_VERSIONBITMAP] + of_object_extra_len[version][OF_HELLO_ELEM_VERSIONBITMAP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -98878,7 +98878,7 @@ of_instruction_new_(of_version_t version)
     of_instruction_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION] + of_object_extra_len[version][OF_INSTRUCTION];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -98939,7 +98939,7 @@ of_instruction_init(of_instruction_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION] + of_object_extra_len[version][OF_INSTRUCTION];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99003,7 +99003,7 @@ of_instruction_apply_actions_new_(of_version_t version)
     of_instruction_apply_actions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_APPLY_ACTIONS];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_APPLY_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_APPLY_ACTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_apply_actions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99066,7 +99066,7 @@ of_instruction_apply_actions_init(of_instruction_apply_actions_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_APPLY_ACTIONS];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_APPLY_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_APPLY_ACTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99132,7 +99132,7 @@ of_instruction_clear_actions_new_(of_version_t version)
     of_instruction_clear_actions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_CLEAR_ACTIONS];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_CLEAR_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_CLEAR_ACTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_clear_actions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99195,7 +99195,7 @@ of_instruction_clear_actions_init(of_instruction_clear_actions_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_CLEAR_ACTIONS];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_CLEAR_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_CLEAR_ACTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99261,7 +99261,7 @@ of_instruction_experimenter_new_(of_version_t version)
     of_instruction_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_EXPERIMENTER] + of_object_extra_len[version][OF_INSTRUCTION_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99324,7 +99324,7 @@ of_instruction_experimenter_init(of_instruction_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_EXPERIMENTER] + of_object_extra_len[version][OF_INSTRUCTION_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99390,7 +99390,7 @@ of_instruction_goto_table_new_(of_version_t version)
     of_instruction_goto_table_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_GOTO_TABLE];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_GOTO_TABLE] + of_object_extra_len[version][OF_INSTRUCTION_GOTO_TABLE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_goto_table_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99453,7 +99453,7 @@ of_instruction_goto_table_init(of_instruction_goto_table_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_GOTO_TABLE];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_GOTO_TABLE] + of_object_extra_len[version][OF_INSTRUCTION_GOTO_TABLE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99504,7 +99504,7 @@ of_instruction_header_new_(of_version_t version)
     of_instruction_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_HEADER];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_HEADER] + of_object_extra_len[version][OF_INSTRUCTION_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99562,7 +99562,7 @@ of_instruction_header_init(of_instruction_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_HEADER];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_HEADER] + of_object_extra_len[version][OF_INSTRUCTION_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99628,7 +99628,7 @@ of_instruction_meter_new_(of_version_t version)
     of_instruction_meter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_METER];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_METER] + of_object_extra_len[version][OF_INSTRUCTION_METER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_meter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99691,7 +99691,7 @@ of_instruction_meter_init(of_instruction_meter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_METER];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_METER] + of_object_extra_len[version][OF_INSTRUCTION_METER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99757,7 +99757,7 @@ of_instruction_write_actions_new_(of_version_t version)
     of_instruction_write_actions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_ACTIONS];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_WRITE_ACTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_write_actions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99820,7 +99820,7 @@ of_instruction_write_actions_init(of_instruction_write_actions_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_ACTIONS];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_ACTIONS] + of_object_extra_len[version][OF_INSTRUCTION_WRITE_ACTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -99886,7 +99886,7 @@ of_instruction_write_metadata_new_(of_version_t version)
     of_instruction_write_metadata_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_METADATA];
+    bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_METADATA] + of_object_extra_len[version][OF_INSTRUCTION_WRITE_METADATA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_instruction_write_metadata_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -99949,7 +99949,7 @@ of_instruction_write_metadata_init(of_instruction_write_metadata_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_METADATA];
+        bytes = of_object_fixed_len[version][OF_INSTRUCTION_WRITE_METADATA] + of_object_extra_len[version][OF_INSTRUCTION_WRITE_METADATA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100010,7 +100010,7 @@ of_match_v1_new_(of_version_t version)
     of_match_v1_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_MATCH_V1];
+    bytes = of_object_fixed_len[version][OF_MATCH_V1] + of_object_extra_len[version][OF_MATCH_V1];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_match_v1_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100073,7 +100073,7 @@ of_match_v1_init(of_match_v1_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_MATCH_V1];
+        bytes = of_object_fixed_len[version][OF_MATCH_V1] + of_object_extra_len[version][OF_MATCH_V1];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100128,7 +100128,7 @@ of_match_v2_new_(of_version_t version)
     of_match_v2_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_MATCH_V2];
+    bytes = of_object_fixed_len[version][OF_MATCH_V2] + of_object_extra_len[version][OF_MATCH_V2];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_match_v2_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100191,7 +100191,7 @@ of_match_v2_init(of_match_v2_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_MATCH_V2];
+        bytes = of_object_fixed_len[version][OF_MATCH_V2] + of_object_extra_len[version][OF_MATCH_V2];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100251,7 +100251,7 @@ of_match_v3_new_(of_version_t version)
     of_match_v3_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_MATCH_V3];
+    bytes = of_object_fixed_len[version][OF_MATCH_V3] + of_object_extra_len[version][OF_MATCH_V3];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_match_v3_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100314,7 +100314,7 @@ of_match_v3_init(of_match_v3_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_MATCH_V3];
+        bytes = of_object_fixed_len[version][OF_MATCH_V3] + of_object_extra_len[version][OF_MATCH_V3];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100363,7 +100363,7 @@ of_meter_band_new_(of_version_t version)
     of_meter_band_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND];
+    bytes = of_object_fixed_len[version][OF_METER_BAND] + of_object_extra_len[version][OF_METER_BAND];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100424,7 +100424,7 @@ of_meter_band_init(of_meter_band_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND];
+        bytes = of_object_fixed_len[version][OF_METER_BAND] + of_object_extra_len[version][OF_METER_BAND];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100488,7 +100488,7 @@ of_meter_band_drop_new_(of_version_t version)
     of_meter_band_drop_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND_DROP];
+    bytes = of_object_fixed_len[version][OF_METER_BAND_DROP] + of_object_extra_len[version][OF_METER_BAND_DROP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_drop_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100551,7 +100551,7 @@ of_meter_band_drop_init(of_meter_band_drop_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND_DROP];
+        bytes = of_object_fixed_len[version][OF_METER_BAND_DROP] + of_object_extra_len[version][OF_METER_BAND_DROP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100617,7 +100617,7 @@ of_meter_band_dscp_remark_new_(of_version_t version)
     of_meter_band_dscp_remark_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND_DSCP_REMARK];
+    bytes = of_object_fixed_len[version][OF_METER_BAND_DSCP_REMARK] + of_object_extra_len[version][OF_METER_BAND_DSCP_REMARK];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_dscp_remark_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100680,7 +100680,7 @@ of_meter_band_dscp_remark_init(of_meter_band_dscp_remark_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND_DSCP_REMARK];
+        bytes = of_object_fixed_len[version][OF_METER_BAND_DSCP_REMARK] + of_object_extra_len[version][OF_METER_BAND_DSCP_REMARK];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100746,7 +100746,7 @@ of_meter_band_experimenter_new_(of_version_t version)
     of_meter_band_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_METER_BAND_EXPERIMENTER] + of_object_extra_len[version][OF_METER_BAND_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100809,7 +100809,7 @@ of_meter_band_experimenter_init(of_meter_band_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_METER_BAND_EXPERIMENTER] + of_object_extra_len[version][OF_METER_BAND_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100860,7 +100860,7 @@ of_meter_band_header_new_(of_version_t version)
     of_meter_band_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND_HEADER];
+    bytes = of_object_fixed_len[version][OF_METER_BAND_HEADER] + of_object_extra_len[version][OF_METER_BAND_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -100918,7 +100918,7 @@ of_meter_band_header_init(of_meter_band_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND_HEADER];
+        bytes = of_object_fixed_len[version][OF_METER_BAND_HEADER] + of_object_extra_len[version][OF_METER_BAND_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -100979,7 +100979,7 @@ of_meter_band_stats_new_(of_version_t version)
     of_meter_band_stats_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_BAND_STATS];
+    bytes = of_object_fixed_len[version][OF_METER_BAND_STATS] + of_object_extra_len[version][OF_METER_BAND_STATS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_band_stats_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101042,7 +101042,7 @@ of_meter_band_stats_init(of_meter_band_stats_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_BAND_STATS];
+        bytes = of_object_fixed_len[version][OF_METER_BAND_STATS] + of_object_extra_len[version][OF_METER_BAND_STATS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101097,7 +101097,7 @@ of_meter_config_new_(of_version_t version)
     of_meter_config_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_CONFIG];
+    bytes = of_object_fixed_len[version][OF_METER_CONFIG] + of_object_extra_len[version][OF_METER_CONFIG];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_config_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101160,7 +101160,7 @@ of_meter_config_init(of_meter_config_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_CONFIG];
+        bytes = of_object_fixed_len[version][OF_METER_CONFIG] + of_object_extra_len[version][OF_METER_CONFIG];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101215,7 +101215,7 @@ of_meter_features_new_(of_version_t version)
     of_meter_features_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_FEATURES];
+    bytes = of_object_fixed_len[version][OF_METER_FEATURES] + of_object_extra_len[version][OF_METER_FEATURES];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_features_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101278,7 +101278,7 @@ of_meter_features_init(of_meter_features_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_FEATURES];
+        bytes = of_object_fixed_len[version][OF_METER_FEATURES] + of_object_extra_len[version][OF_METER_FEATURES];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101335,7 +101335,7 @@ of_meter_stats_new_(of_version_t version)
     of_meter_stats_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_METER_STATS];
+    bytes = of_object_fixed_len[version][OF_METER_STATS] + of_object_extra_len[version][OF_METER_STATS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_meter_stats_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101398,7 +101398,7 @@ of_meter_stats_init(of_meter_stats_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_METER_STATS];
+        bytes = of_object_fixed_len[version][OF_METER_STATS] + of_object_extra_len[version][OF_METER_STATS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101446,7 +101446,7 @@ of_oxm_new_(of_version_t version)
     of_oxm_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM];
+    bytes = of_object_fixed_len[version][OF_OXM] + of_object_extra_len[version][OF_OXM];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101507,7 +101507,7 @@ of_oxm_init(of_oxm_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM];
+        bytes = of_object_fixed_len[version][OF_OXM] + of_object_extra_len[version][OF_OXM];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101570,7 +101570,7 @@ of_oxm_arp_op_new_(of_version_t version)
     of_oxm_arp_op_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_OP];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_OP] + of_object_extra_len[version][OF_OXM_ARP_OP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_op_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101633,7 +101633,7 @@ of_oxm_arp_op_init(of_oxm_arp_op_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_OP];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_OP] + of_object_extra_len[version][OF_OXM_ARP_OP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101696,7 +101696,7 @@ of_oxm_arp_op_masked_new_(of_version_t version)
     of_oxm_arp_op_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_OP_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_OP_MASKED] + of_object_extra_len[version][OF_OXM_ARP_OP_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_op_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101759,7 +101759,7 @@ of_oxm_arp_op_masked_init(of_oxm_arp_op_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_OP_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_OP_MASKED] + of_object_extra_len[version][OF_OXM_ARP_OP_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101822,7 +101822,7 @@ of_oxm_arp_sha_new_(of_version_t version)
     of_oxm_arp_sha_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA] + of_object_extra_len[version][OF_OXM_ARP_SHA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_sha_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -101885,7 +101885,7 @@ of_oxm_arp_sha_init(of_oxm_arp_sha_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA] + of_object_extra_len[version][OF_OXM_ARP_SHA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -101948,7 +101948,7 @@ of_oxm_arp_sha_masked_new_(of_version_t version)
     of_oxm_arp_sha_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_SHA_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_sha_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102011,7 +102011,7 @@ of_oxm_arp_sha_masked_init(of_oxm_arp_sha_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_SHA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_SHA_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102074,7 +102074,7 @@ of_oxm_arp_spa_new_(of_version_t version)
     of_oxm_arp_spa_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA] + of_object_extra_len[version][OF_OXM_ARP_SPA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_spa_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102137,7 +102137,7 @@ of_oxm_arp_spa_init(of_oxm_arp_spa_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA] + of_object_extra_len[version][OF_OXM_ARP_SPA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102200,7 +102200,7 @@ of_oxm_arp_spa_masked_new_(of_version_t version)
     of_oxm_arp_spa_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_SPA_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_spa_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102263,7 +102263,7 @@ of_oxm_arp_spa_masked_init(of_oxm_arp_spa_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_SPA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_SPA_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102326,7 +102326,7 @@ of_oxm_arp_tha_new_(of_version_t version)
     of_oxm_arp_tha_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_THA];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_THA] + of_object_extra_len[version][OF_OXM_ARP_THA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_tha_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102389,7 +102389,7 @@ of_oxm_arp_tha_init(of_oxm_arp_tha_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_THA];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_THA] + of_object_extra_len[version][OF_OXM_ARP_THA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102452,7 +102452,7 @@ of_oxm_arp_tha_masked_new_(of_version_t version)
     of_oxm_arp_tha_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_THA_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_THA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_THA_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_tha_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102515,7 +102515,7 @@ of_oxm_arp_tha_masked_init(of_oxm_arp_tha_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_THA_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_THA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_THA_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102578,7 +102578,7 @@ of_oxm_arp_tpa_new_(of_version_t version)
     of_oxm_arp_tpa_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA] + of_object_extra_len[version][OF_OXM_ARP_TPA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_tpa_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102641,7 +102641,7 @@ of_oxm_arp_tpa_init(of_oxm_arp_tpa_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA] + of_object_extra_len[version][OF_OXM_ARP_TPA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102704,7 +102704,7 @@ of_oxm_arp_tpa_masked_new_(of_version_t version)
     of_oxm_arp_tpa_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_TPA_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_arp_tpa_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102767,7 +102767,7 @@ of_oxm_arp_tpa_masked_init(of_oxm_arp_tpa_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ARP_TPA_MASKED] + of_object_extra_len[version][OF_OXM_ARP_TPA_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102830,7 +102830,7 @@ of_oxm_eth_dst_new_(of_version_t version)
     of_oxm_eth_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_DST] + of_object_extra_len[version][OF_OXM_ETH_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -102893,7 +102893,7 @@ of_oxm_eth_dst_init(of_oxm_eth_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_DST] + of_object_extra_len[version][OF_OXM_ETH_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -102956,7 +102956,7 @@ of_oxm_eth_dst_masked_new_(of_version_t version)
     of_oxm_eth_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_DST_MASKED] + of_object_extra_len[version][OF_OXM_ETH_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103019,7 +103019,7 @@ of_oxm_eth_dst_masked_init(of_oxm_eth_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_DST_MASKED] + of_object_extra_len[version][OF_OXM_ETH_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103082,7 +103082,7 @@ of_oxm_eth_src_new_(of_version_t version)
     of_oxm_eth_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC] + of_object_extra_len[version][OF_OXM_ETH_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103145,7 +103145,7 @@ of_oxm_eth_src_init(of_oxm_eth_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC] + of_object_extra_len[version][OF_OXM_ETH_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103208,7 +103208,7 @@ of_oxm_eth_src_masked_new_(of_version_t version)
     of_oxm_eth_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC_MASKED] + of_object_extra_len[version][OF_OXM_ETH_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103271,7 +103271,7 @@ of_oxm_eth_src_masked_init(of_oxm_eth_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_SRC_MASKED] + of_object_extra_len[version][OF_OXM_ETH_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103334,7 +103334,7 @@ of_oxm_eth_type_new_(of_version_t version)
     of_oxm_eth_type_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE] + of_object_extra_len[version][OF_OXM_ETH_TYPE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_type_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103397,7 +103397,7 @@ of_oxm_eth_type_init(of_oxm_eth_type_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE] + of_object_extra_len[version][OF_OXM_ETH_TYPE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103460,7 +103460,7 @@ of_oxm_eth_type_masked_new_(of_version_t version)
     of_oxm_eth_type_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ETH_TYPE_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_eth_type_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103523,7 +103523,7 @@ of_oxm_eth_type_masked_init(of_oxm_eth_type_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ETH_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ETH_TYPE_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103573,7 +103573,7 @@ of_oxm_header_new_(of_version_t version)
     of_oxm_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_HEADER];
+    bytes = of_object_fixed_len[version][OF_OXM_HEADER] + of_object_extra_len[version][OF_OXM_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103631,7 +103631,7 @@ of_oxm_header_init(of_oxm_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_HEADER];
+        bytes = of_object_fixed_len[version][OF_OXM_HEADER] + of_object_extra_len[version][OF_OXM_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103694,7 +103694,7 @@ of_oxm_icmpv4_code_new_(of_version_t version)
     of_oxm_icmpv4_code_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE] + of_object_extra_len[version][OF_OXM_ICMPV4_CODE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv4_code_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103757,7 +103757,7 @@ of_oxm_icmpv4_code_init(of_oxm_icmpv4_code_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE] + of_object_extra_len[version][OF_OXM_ICMPV4_CODE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103820,7 +103820,7 @@ of_oxm_icmpv4_code_masked_new_(of_version_t version)
     of_oxm_icmpv4_code_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV4_CODE_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv4_code_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -103883,7 +103883,7 @@ of_oxm_icmpv4_code_masked_init(of_oxm_icmpv4_code_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_CODE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV4_CODE_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -103946,7 +103946,7 @@ of_oxm_icmpv4_type_new_(of_version_t version)
     of_oxm_icmpv4_type_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE] + of_object_extra_len[version][OF_OXM_ICMPV4_TYPE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv4_type_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104009,7 +104009,7 @@ of_oxm_icmpv4_type_init(of_oxm_icmpv4_type_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE] + of_object_extra_len[version][OF_OXM_ICMPV4_TYPE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104072,7 +104072,7 @@ of_oxm_icmpv4_type_masked_new_(of_version_t version)
     of_oxm_icmpv4_type_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV4_TYPE_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv4_type_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104135,7 +104135,7 @@ of_oxm_icmpv4_type_masked_init(of_oxm_icmpv4_type_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV4_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV4_TYPE_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104198,7 +104198,7 @@ of_oxm_icmpv6_code_new_(of_version_t version)
     of_oxm_icmpv6_code_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE] + of_object_extra_len[version][OF_OXM_ICMPV6_CODE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv6_code_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104261,7 +104261,7 @@ of_oxm_icmpv6_code_init(of_oxm_icmpv6_code_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE] + of_object_extra_len[version][OF_OXM_ICMPV6_CODE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104324,7 +104324,7 @@ of_oxm_icmpv6_code_masked_new_(of_version_t version)
     of_oxm_icmpv6_code_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV6_CODE_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv6_code_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104387,7 +104387,7 @@ of_oxm_icmpv6_code_masked_init(of_oxm_icmpv6_code_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_CODE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV6_CODE_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104450,7 +104450,7 @@ of_oxm_icmpv6_type_new_(of_version_t version)
     of_oxm_icmpv6_type_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE] + of_object_extra_len[version][OF_OXM_ICMPV6_TYPE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv6_type_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104513,7 +104513,7 @@ of_oxm_icmpv6_type_init(of_oxm_icmpv6_type_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE] + of_object_extra_len[version][OF_OXM_ICMPV6_TYPE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104576,7 +104576,7 @@ of_oxm_icmpv6_type_masked_new_(of_version_t version)
     of_oxm_icmpv6_type_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV6_TYPE_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_icmpv6_type_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104639,7 +104639,7 @@ of_oxm_icmpv6_type_masked_init(of_oxm_icmpv6_type_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_ICMPV6_TYPE_MASKED] + of_object_extra_len[version][OF_OXM_ICMPV6_TYPE_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104702,7 +104702,7 @@ of_oxm_in_phy_port_new_(of_version_t version)
     of_oxm_in_phy_port_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT];
+    bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT] + of_object_extra_len[version][OF_OXM_IN_PHY_PORT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_in_phy_port_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104765,7 +104765,7 @@ of_oxm_in_phy_port_init(of_oxm_in_phy_port_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT];
+        bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT] + of_object_extra_len[version][OF_OXM_IN_PHY_PORT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104828,7 +104828,7 @@ of_oxm_in_phy_port_masked_new_(of_version_t version)
     of_oxm_in_phy_port_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT_MASKED] + of_object_extra_len[version][OF_OXM_IN_PHY_PORT_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_in_phy_port_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -104891,7 +104891,7 @@ of_oxm_in_phy_port_masked_init(of_oxm_in_phy_port_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IN_PHY_PORT_MASKED] + of_object_extra_len[version][OF_OXM_IN_PHY_PORT_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -104954,7 +104954,7 @@ of_oxm_in_port_new_(of_version_t version)
     of_oxm_in_port_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IN_PORT];
+    bytes = of_object_fixed_len[version][OF_OXM_IN_PORT] + of_object_extra_len[version][OF_OXM_IN_PORT];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_in_port_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105017,7 +105017,7 @@ of_oxm_in_port_init(of_oxm_in_port_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IN_PORT];
+        bytes = of_object_fixed_len[version][OF_OXM_IN_PORT] + of_object_extra_len[version][OF_OXM_IN_PORT];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105080,7 +105080,7 @@ of_oxm_in_port_masked_new_(of_version_t version)
     of_oxm_in_port_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IN_PORT_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IN_PORT_MASKED] + of_object_extra_len[version][OF_OXM_IN_PORT_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_in_port_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105143,7 +105143,7 @@ of_oxm_in_port_masked_init(of_oxm_in_port_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IN_PORT_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IN_PORT_MASKED] + of_object_extra_len[version][OF_OXM_IN_PORT_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105206,7 +105206,7 @@ of_oxm_ip_dscp_new_(of_version_t version)
     of_oxm_ip_dscp_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP] + of_object_extra_len[version][OF_OXM_IP_DSCP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_dscp_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105269,7 +105269,7 @@ of_oxm_ip_dscp_init(of_oxm_ip_dscp_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP] + of_object_extra_len[version][OF_OXM_IP_DSCP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105332,7 +105332,7 @@ of_oxm_ip_dscp_masked_new_(of_version_t version)
     of_oxm_ip_dscp_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP_MASKED] + of_object_extra_len[version][OF_OXM_IP_DSCP_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_dscp_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105395,7 +105395,7 @@ of_oxm_ip_dscp_masked_init(of_oxm_ip_dscp_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_DSCP_MASKED] + of_object_extra_len[version][OF_OXM_IP_DSCP_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105458,7 +105458,7 @@ of_oxm_ip_ecn_new_(of_version_t version)
     of_oxm_ip_ecn_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_ECN];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_ECN] + of_object_extra_len[version][OF_OXM_IP_ECN];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_ecn_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105521,7 +105521,7 @@ of_oxm_ip_ecn_init(of_oxm_ip_ecn_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_ECN];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_ECN] + of_object_extra_len[version][OF_OXM_IP_ECN];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105584,7 +105584,7 @@ of_oxm_ip_ecn_masked_new_(of_version_t version)
     of_oxm_ip_ecn_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_ECN_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_ECN_MASKED] + of_object_extra_len[version][OF_OXM_IP_ECN_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_ecn_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105647,7 +105647,7 @@ of_oxm_ip_ecn_masked_init(of_oxm_ip_ecn_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_ECN_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_ECN_MASKED] + of_object_extra_len[version][OF_OXM_IP_ECN_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105710,7 +105710,7 @@ of_oxm_ip_proto_new_(of_version_t version)
     of_oxm_ip_proto_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO] + of_object_extra_len[version][OF_OXM_IP_PROTO];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_proto_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105773,7 +105773,7 @@ of_oxm_ip_proto_init(of_oxm_ip_proto_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO] + of_object_extra_len[version][OF_OXM_IP_PROTO];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105836,7 +105836,7 @@ of_oxm_ip_proto_masked_new_(of_version_t version)
     of_oxm_ip_proto_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO_MASKED] + of_object_extra_len[version][OF_OXM_IP_PROTO_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ip_proto_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -105899,7 +105899,7 @@ of_oxm_ip_proto_masked_init(of_oxm_ip_proto_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IP_PROTO_MASKED] + of_object_extra_len[version][OF_OXM_IP_PROTO_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -105962,7 +105962,7 @@ of_oxm_ipv4_dst_new_(of_version_t version)
     of_oxm_ipv4_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST] + of_object_extra_len[version][OF_OXM_IPV4_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv4_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106025,7 +106025,7 @@ of_oxm_ipv4_dst_init(of_oxm_ipv4_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST] + of_object_extra_len[version][OF_OXM_IPV4_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106088,7 +106088,7 @@ of_oxm_ipv4_dst_masked_new_(of_version_t version)
     of_oxm_ipv4_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST_MASKED] + of_object_extra_len[version][OF_OXM_IPV4_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv4_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106151,7 +106151,7 @@ of_oxm_ipv4_dst_masked_init(of_oxm_ipv4_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV4_DST_MASKED] + of_object_extra_len[version][OF_OXM_IPV4_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106214,7 +106214,7 @@ of_oxm_ipv4_src_new_(of_version_t version)
     of_oxm_ipv4_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC] + of_object_extra_len[version][OF_OXM_IPV4_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv4_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106277,7 +106277,7 @@ of_oxm_ipv4_src_init(of_oxm_ipv4_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC] + of_object_extra_len[version][OF_OXM_IPV4_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106340,7 +106340,7 @@ of_oxm_ipv4_src_masked_new_(of_version_t version)
     of_oxm_ipv4_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC_MASKED] + of_object_extra_len[version][OF_OXM_IPV4_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv4_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106403,7 +106403,7 @@ of_oxm_ipv4_src_masked_init(of_oxm_ipv4_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV4_SRC_MASKED] + of_object_extra_len[version][OF_OXM_IPV4_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106466,7 +106466,7 @@ of_oxm_ipv6_dst_new_(of_version_t version)
     of_oxm_ipv6_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST] + of_object_extra_len[version][OF_OXM_IPV6_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106529,7 +106529,7 @@ of_oxm_ipv6_dst_init(of_oxm_ipv6_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST] + of_object_extra_len[version][OF_OXM_IPV6_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106592,7 +106592,7 @@ of_oxm_ipv6_dst_masked_new_(of_version_t version)
     of_oxm_ipv6_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106655,7 +106655,7 @@ of_oxm_ipv6_dst_masked_init(of_oxm_ipv6_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_DST_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106718,7 +106718,7 @@ of_oxm_ipv6_flabel_new_(of_version_t version)
     of_oxm_ipv6_flabel_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL] + of_object_extra_len[version][OF_OXM_IPV6_FLABEL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_flabel_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106781,7 +106781,7 @@ of_oxm_ipv6_flabel_init(of_oxm_ipv6_flabel_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL] + of_object_extra_len[version][OF_OXM_IPV6_FLABEL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106844,7 +106844,7 @@ of_oxm_ipv6_flabel_masked_new_(of_version_t version)
     of_oxm_ipv6_flabel_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_FLABEL_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_flabel_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -106907,7 +106907,7 @@ of_oxm_ipv6_flabel_masked_init(of_oxm_ipv6_flabel_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_FLABEL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_FLABEL_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -106970,7 +106970,7 @@ of_oxm_ipv6_nd_sll_new_(of_version_t version)
     of_oxm_ipv6_nd_sll_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL] + of_object_extra_len[version][OF_OXM_IPV6_ND_SLL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_sll_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107033,7 +107033,7 @@ of_oxm_ipv6_nd_sll_init(of_oxm_ipv6_nd_sll_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL] + of_object_extra_len[version][OF_OXM_IPV6_ND_SLL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107096,7 +107096,7 @@ of_oxm_ipv6_nd_sll_masked_new_(of_version_t version)
     of_oxm_ipv6_nd_sll_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_SLL_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_sll_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107159,7 +107159,7 @@ of_oxm_ipv6_nd_sll_masked_init(of_oxm_ipv6_nd_sll_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_SLL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_SLL_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107222,7 +107222,7 @@ of_oxm_ipv6_nd_target_new_(of_version_t version)
     of_oxm_ipv6_nd_target_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET] + of_object_extra_len[version][OF_OXM_IPV6_ND_TARGET];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_target_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107285,7 +107285,7 @@ of_oxm_ipv6_nd_target_init(of_oxm_ipv6_nd_target_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET] + of_object_extra_len[version][OF_OXM_IPV6_ND_TARGET];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107348,7 +107348,7 @@ of_oxm_ipv6_nd_target_masked_new_(of_version_t version)
     of_oxm_ipv6_nd_target_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_TARGET_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_target_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107411,7 +107411,7 @@ of_oxm_ipv6_nd_target_masked_init(of_oxm_ipv6_nd_target_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TARGET_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_TARGET_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107474,7 +107474,7 @@ of_oxm_ipv6_nd_tll_new_(of_version_t version)
     of_oxm_ipv6_nd_tll_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL] + of_object_extra_len[version][OF_OXM_IPV6_ND_TLL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_tll_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107537,7 +107537,7 @@ of_oxm_ipv6_nd_tll_init(of_oxm_ipv6_nd_tll_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL] + of_object_extra_len[version][OF_OXM_IPV6_ND_TLL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107600,7 +107600,7 @@ of_oxm_ipv6_nd_tll_masked_new_(of_version_t version)
     of_oxm_ipv6_nd_tll_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_TLL_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_nd_tll_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107663,7 +107663,7 @@ of_oxm_ipv6_nd_tll_masked_init(of_oxm_ipv6_nd_tll_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_ND_TLL_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_ND_TLL_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107726,7 +107726,7 @@ of_oxm_ipv6_src_new_(of_version_t version)
     of_oxm_ipv6_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC] + of_object_extra_len[version][OF_OXM_IPV6_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107789,7 +107789,7 @@ of_oxm_ipv6_src_init(of_oxm_ipv6_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC] + of_object_extra_len[version][OF_OXM_IPV6_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107852,7 +107852,7 @@ of_oxm_ipv6_src_masked_new_(of_version_t version)
     of_oxm_ipv6_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_ipv6_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -107915,7 +107915,7 @@ of_oxm_ipv6_src_masked_init(of_oxm_ipv6_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_IPV6_SRC_MASKED] + of_object_extra_len[version][OF_OXM_IPV6_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -107978,7 +107978,7 @@ of_oxm_metadata_new_(of_version_t version)
     of_oxm_metadata_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_METADATA];
+    bytes = of_object_fixed_len[version][OF_OXM_METADATA] + of_object_extra_len[version][OF_OXM_METADATA];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_metadata_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108041,7 +108041,7 @@ of_oxm_metadata_init(of_oxm_metadata_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_METADATA];
+        bytes = of_object_fixed_len[version][OF_OXM_METADATA] + of_object_extra_len[version][OF_OXM_METADATA];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108104,7 +108104,7 @@ of_oxm_metadata_masked_new_(of_version_t version)
     of_oxm_metadata_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_METADATA_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_METADATA_MASKED] + of_object_extra_len[version][OF_OXM_METADATA_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_metadata_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108167,7 +108167,7 @@ of_oxm_metadata_masked_init(of_oxm_metadata_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_METADATA_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_METADATA_MASKED] + of_object_extra_len[version][OF_OXM_METADATA_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108230,7 +108230,7 @@ of_oxm_mpls_label_new_(of_version_t version)
     of_oxm_mpls_label_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL];
+    bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL] + of_object_extra_len[version][OF_OXM_MPLS_LABEL];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_mpls_label_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108293,7 +108293,7 @@ of_oxm_mpls_label_init(of_oxm_mpls_label_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL];
+        bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL] + of_object_extra_len[version][OF_OXM_MPLS_LABEL];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108356,7 +108356,7 @@ of_oxm_mpls_label_masked_new_(of_version_t version)
     of_oxm_mpls_label_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL_MASKED] + of_object_extra_len[version][OF_OXM_MPLS_LABEL_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_mpls_label_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108419,7 +108419,7 @@ of_oxm_mpls_label_masked_init(of_oxm_mpls_label_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_MPLS_LABEL_MASKED] + of_object_extra_len[version][OF_OXM_MPLS_LABEL_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108482,7 +108482,7 @@ of_oxm_mpls_tc_new_(of_version_t version)
     of_oxm_mpls_tc_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC];
+    bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC] + of_object_extra_len[version][OF_OXM_MPLS_TC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_mpls_tc_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108545,7 +108545,7 @@ of_oxm_mpls_tc_init(of_oxm_mpls_tc_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC];
+        bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC] + of_object_extra_len[version][OF_OXM_MPLS_TC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108608,7 +108608,7 @@ of_oxm_mpls_tc_masked_new_(of_version_t version)
     of_oxm_mpls_tc_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC_MASKED] + of_object_extra_len[version][OF_OXM_MPLS_TC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_mpls_tc_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108671,7 +108671,7 @@ of_oxm_mpls_tc_masked_init(of_oxm_mpls_tc_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_MPLS_TC_MASKED] + of_object_extra_len[version][OF_OXM_MPLS_TC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108734,7 +108734,7 @@ of_oxm_sctp_dst_new_(of_version_t version)
     of_oxm_sctp_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST] + of_object_extra_len[version][OF_OXM_SCTP_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_sctp_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108797,7 +108797,7 @@ of_oxm_sctp_dst_init(of_oxm_sctp_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST] + of_object_extra_len[version][OF_OXM_SCTP_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108860,7 +108860,7 @@ of_oxm_sctp_dst_masked_new_(of_version_t version)
     of_oxm_sctp_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST_MASKED] + of_object_extra_len[version][OF_OXM_SCTP_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_sctp_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -108923,7 +108923,7 @@ of_oxm_sctp_dst_masked_init(of_oxm_sctp_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_SCTP_DST_MASKED] + of_object_extra_len[version][OF_OXM_SCTP_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -108986,7 +108986,7 @@ of_oxm_sctp_src_new_(of_version_t version)
     of_oxm_sctp_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC] + of_object_extra_len[version][OF_OXM_SCTP_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_sctp_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109049,7 +109049,7 @@ of_oxm_sctp_src_init(of_oxm_sctp_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC] + of_object_extra_len[version][OF_OXM_SCTP_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109112,7 +109112,7 @@ of_oxm_sctp_src_masked_new_(of_version_t version)
     of_oxm_sctp_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_SCTP_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_sctp_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109175,7 +109175,7 @@ of_oxm_sctp_src_masked_init(of_oxm_sctp_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_SCTP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_SCTP_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109238,7 +109238,7 @@ of_oxm_tcp_dst_new_(of_version_t version)
     of_oxm_tcp_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_TCP_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_TCP_DST] + of_object_extra_len[version][OF_OXM_TCP_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_tcp_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109301,7 +109301,7 @@ of_oxm_tcp_dst_init(of_oxm_tcp_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_TCP_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_TCP_DST] + of_object_extra_len[version][OF_OXM_TCP_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109364,7 +109364,7 @@ of_oxm_tcp_dst_masked_new_(of_version_t version)
     of_oxm_tcp_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_TCP_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_TCP_DST_MASKED] + of_object_extra_len[version][OF_OXM_TCP_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_tcp_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109427,7 +109427,7 @@ of_oxm_tcp_dst_masked_init(of_oxm_tcp_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_TCP_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_TCP_DST_MASKED] + of_object_extra_len[version][OF_OXM_TCP_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109490,7 +109490,7 @@ of_oxm_tcp_src_new_(of_version_t version)
     of_oxm_tcp_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC] + of_object_extra_len[version][OF_OXM_TCP_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_tcp_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109553,7 +109553,7 @@ of_oxm_tcp_src_init(of_oxm_tcp_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC] + of_object_extra_len[version][OF_OXM_TCP_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109616,7 +109616,7 @@ of_oxm_tcp_src_masked_new_(of_version_t version)
     of_oxm_tcp_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_TCP_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_tcp_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109679,7 +109679,7 @@ of_oxm_tcp_src_masked_init(of_oxm_tcp_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_TCP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_TCP_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109742,7 +109742,7 @@ of_oxm_udp_dst_new_(of_version_t version)
     of_oxm_udp_dst_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_UDP_DST];
+    bytes = of_object_fixed_len[version][OF_OXM_UDP_DST] + of_object_extra_len[version][OF_OXM_UDP_DST];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_udp_dst_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109805,7 +109805,7 @@ of_oxm_udp_dst_init(of_oxm_udp_dst_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_UDP_DST];
+        bytes = of_object_fixed_len[version][OF_OXM_UDP_DST] + of_object_extra_len[version][OF_OXM_UDP_DST];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109868,7 +109868,7 @@ of_oxm_udp_dst_masked_new_(of_version_t version)
     of_oxm_udp_dst_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_UDP_DST_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_UDP_DST_MASKED] + of_object_extra_len[version][OF_OXM_UDP_DST_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_udp_dst_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -109931,7 +109931,7 @@ of_oxm_udp_dst_masked_init(of_oxm_udp_dst_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_UDP_DST_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_UDP_DST_MASKED] + of_object_extra_len[version][OF_OXM_UDP_DST_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -109994,7 +109994,7 @@ of_oxm_udp_src_new_(of_version_t version)
     of_oxm_udp_src_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC];
+    bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC] + of_object_extra_len[version][OF_OXM_UDP_SRC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_udp_src_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110057,7 +110057,7 @@ of_oxm_udp_src_init(of_oxm_udp_src_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC];
+        bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC] + of_object_extra_len[version][OF_OXM_UDP_SRC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110120,7 +110120,7 @@ of_oxm_udp_src_masked_new_(of_version_t version)
     of_oxm_udp_src_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_UDP_SRC_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_udp_src_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110183,7 +110183,7 @@ of_oxm_udp_src_masked_init(of_oxm_udp_src_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_UDP_SRC_MASKED] + of_object_extra_len[version][OF_OXM_UDP_SRC_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110246,7 +110246,7 @@ of_oxm_vlan_pcp_new_(of_version_t version)
     of_oxm_vlan_pcp_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP];
+    bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP] + of_object_extra_len[version][OF_OXM_VLAN_PCP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_vlan_pcp_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110309,7 +110309,7 @@ of_oxm_vlan_pcp_init(of_oxm_vlan_pcp_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP];
+        bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP] + of_object_extra_len[version][OF_OXM_VLAN_PCP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110372,7 +110372,7 @@ of_oxm_vlan_pcp_masked_new_(of_version_t version)
     of_oxm_vlan_pcp_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP_MASKED] + of_object_extra_len[version][OF_OXM_VLAN_PCP_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_vlan_pcp_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110435,7 +110435,7 @@ of_oxm_vlan_pcp_masked_init(of_oxm_vlan_pcp_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_VLAN_PCP_MASKED] + of_object_extra_len[version][OF_OXM_VLAN_PCP_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110498,7 +110498,7 @@ of_oxm_vlan_vid_new_(of_version_t version)
     of_oxm_vlan_vid_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID];
+    bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID] + of_object_extra_len[version][OF_OXM_VLAN_VID];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_vlan_vid_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110561,7 +110561,7 @@ of_oxm_vlan_vid_init(of_oxm_vlan_vid_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID];
+        bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID] + of_object_extra_len[version][OF_OXM_VLAN_VID];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110624,7 +110624,7 @@ of_oxm_vlan_vid_masked_new_(of_version_t version)
     of_oxm_vlan_vid_masked_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID_MASKED];
+    bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID_MASKED] + of_object_extra_len[version][OF_OXM_VLAN_VID_MASKED];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_oxm_vlan_vid_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110687,7 +110687,7 @@ of_oxm_vlan_vid_masked_init(of_oxm_vlan_vid_masked_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID_MASKED];
+        bytes = of_object_fixed_len[version][OF_OXM_VLAN_VID_MASKED] + of_object_extra_len[version][OF_OXM_VLAN_VID_MASKED];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110749,7 +110749,7 @@ of_packet_queue_new_(of_version_t version)
     of_packet_queue_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PACKET_QUEUE];
+    bytes = of_object_fixed_len[version][OF_PACKET_QUEUE] + of_object_extra_len[version][OF_PACKET_QUEUE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_packet_queue_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110812,7 +110812,7 @@ of_packet_queue_init(of_packet_queue_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PACKET_QUEUE];
+        bytes = of_object_fixed_len[version][OF_PACKET_QUEUE] + of_object_extra_len[version][OF_PACKET_QUEUE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110870,7 +110870,7 @@ of_port_desc_new_(of_version_t version)
     of_port_desc_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_DESC];
+    bytes = of_object_fixed_len[version][OF_PORT_DESC] + of_object_extra_len[version][OF_PORT_DESC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_desc_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -110933,7 +110933,7 @@ of_port_desc_init(of_port_desc_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_DESC];
+        bytes = of_object_fixed_len[version][OF_PORT_DESC] + of_object_extra_len[version][OF_PORT_DESC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -110988,7 +110988,7 @@ of_port_stats_entry_new_(of_version_t version)
     of_port_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_PORT_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_PORT_STATS_ENTRY] + of_object_extra_len[version][OF_PORT_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_port_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111051,7 +111051,7 @@ of_port_stats_entry_init(of_port_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_PORT_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_PORT_STATS_ENTRY] + of_object_extra_len[version][OF_PORT_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111096,7 +111096,7 @@ of_queue_prop_new_(of_version_t version)
     of_queue_prop_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_PROP];
+    bytes = of_object_fixed_len[version][OF_QUEUE_PROP] + of_object_extra_len[version][OF_QUEUE_PROP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_prop_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111157,7 +111157,7 @@ of_queue_prop_init(of_queue_prop_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_PROP];
+        bytes = of_object_fixed_len[version][OF_QUEUE_PROP] + of_object_extra_len[version][OF_QUEUE_PROP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111221,7 +111221,7 @@ of_queue_prop_experimenter_new_(of_version_t version)
     of_queue_prop_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_EXPERIMENTER] + of_object_extra_len[version][OF_QUEUE_PROP_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_prop_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111284,7 +111284,7 @@ of_queue_prop_experimenter_init(of_queue_prop_experimenter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_EXPERIMENTER] + of_object_extra_len[version][OF_QUEUE_PROP_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111335,7 +111335,7 @@ of_queue_prop_header_new_(of_version_t version)
     of_queue_prop_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_HEADER];
+    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_HEADER] + of_object_extra_len[version][OF_QUEUE_PROP_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_prop_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111393,7 +111393,7 @@ of_queue_prop_header_init(of_queue_prop_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_HEADER];
+        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_HEADER] + of_object_extra_len[version][OF_QUEUE_PROP_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111459,7 +111459,7 @@ of_queue_prop_max_rate_new_(of_version_t version)
     of_queue_prop_max_rate_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MAX_RATE];
+    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MAX_RATE] + of_object_extra_len[version][OF_QUEUE_PROP_MAX_RATE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_prop_max_rate_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111522,7 +111522,7 @@ of_queue_prop_max_rate_init(of_queue_prop_max_rate_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MAX_RATE];
+        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MAX_RATE] + of_object_extra_len[version][OF_QUEUE_PROP_MAX_RATE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111588,7 +111588,7 @@ of_queue_prop_min_rate_new_(of_version_t version)
     of_queue_prop_min_rate_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MIN_RATE];
+    bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MIN_RATE] + of_object_extra_len[version][OF_QUEUE_PROP_MIN_RATE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_prop_min_rate_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111651,7 +111651,7 @@ of_queue_prop_min_rate_init(of_queue_prop_min_rate_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MIN_RATE];
+        bytes = of_object_fixed_len[version][OF_QUEUE_PROP_MIN_RATE] + of_object_extra_len[version][OF_QUEUE_PROP_MIN_RATE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111712,7 +111712,7 @@ of_queue_stats_entry_new_(of_version_t version)
     of_queue_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_QUEUE_STATS_ENTRY] + of_object_extra_len[version][OF_QUEUE_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_queue_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111775,7 +111775,7 @@ of_queue_stats_entry_init(of_queue_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_QUEUE_STATS_ENTRY] + of_object_extra_len[version][OF_QUEUE_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111820,7 +111820,7 @@ of_table_feature_prop_new_(of_version_t version)
     of_table_feature_prop_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -111881,7 +111881,7 @@ of_table_feature_prop_init(of_table_feature_prop_t *obj_p,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -111945,7 +111945,7 @@ of_table_feature_prop_apply_actions_new_(of_version_t version)
     of_table_feature_prop_apply_actions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_apply_actions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112008,7 +112008,7 @@ of_table_feature_prop_apply_actions_init(of_table_feature_prop_apply_actions_t *
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112074,7 +112074,7 @@ of_table_feature_prop_apply_actions_miss_new_(of_version_t version)
     of_table_feature_prop_apply_actions_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_apply_actions_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112137,7 +112137,7 @@ of_table_feature_prop_apply_actions_miss_init(of_table_feature_prop_apply_action
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_ACTIONS_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112203,7 +112203,7 @@ of_table_feature_prop_apply_setfield_new_(of_version_t version)
     of_table_feature_prop_apply_setfield_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_apply_setfield_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112266,7 +112266,7 @@ of_table_feature_prop_apply_setfield_init(of_table_feature_prop_apply_setfield_t
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112332,7 +112332,7 @@ of_table_feature_prop_apply_setfield_miss_new_(of_version_t version)
     of_table_feature_prop_apply_setfield_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_apply_setfield_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112395,7 +112395,7 @@ of_table_feature_prop_apply_setfield_miss_init(of_table_feature_prop_apply_setfi
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_APPLY_SETFIELD_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112461,7 +112461,7 @@ of_table_feature_prop_experimenter_new_(of_version_t version)
     of_table_feature_prop_experimenter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_experimenter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112524,7 +112524,7 @@ of_table_feature_prop_experimenter_init(of_table_feature_prop_experimenter_t *ob
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_EXPERIMENTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112575,7 +112575,7 @@ of_table_feature_prop_header_new_(of_version_t version)
     of_table_feature_prop_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_HEADER];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_HEADER] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112633,7 +112633,7 @@ of_table_feature_prop_header_init(of_table_feature_prop_header_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_HEADER];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_HEADER] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112699,7 +112699,7 @@ of_table_feature_prop_instructions_new_(of_version_t version)
     of_table_feature_prop_instructions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_instructions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112762,7 +112762,7 @@ of_table_feature_prop_instructions_init(of_table_feature_prop_instructions_t *ob
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112828,7 +112828,7 @@ of_table_feature_prop_instructions_miss_new_(of_version_t version)
     of_table_feature_prop_instructions_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_instructions_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -112891,7 +112891,7 @@ of_table_feature_prop_instructions_miss_init(of_table_feature_prop_instructions_
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_INSTRUCTIONS_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -112957,7 +112957,7 @@ of_table_feature_prop_match_new_(of_version_t version)
     of_table_feature_prop_match_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_MATCH];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_MATCH] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_MATCH];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_match_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113020,7 +113020,7 @@ of_table_feature_prop_match_init(of_table_feature_prop_match_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_MATCH];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_MATCH] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_MATCH];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113086,7 +113086,7 @@ of_table_feature_prop_next_tables_new_(of_version_t version)
     of_table_feature_prop_next_tables_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_next_tables_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113149,7 +113149,7 @@ of_table_feature_prop_next_tables_init(of_table_feature_prop_next_tables_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113215,7 +113215,7 @@ of_table_feature_prop_next_tables_miss_new_(of_version_t version)
     of_table_feature_prop_next_tables_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_next_tables_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113278,7 +113278,7 @@ of_table_feature_prop_next_tables_miss_init(of_table_feature_prop_next_tables_mi
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_NEXT_TABLES_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113344,7 +113344,7 @@ of_table_feature_prop_wildcards_new_(of_version_t version)
     of_table_feature_prop_wildcards_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_wildcards_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113407,7 +113407,7 @@ of_table_feature_prop_wildcards_init(of_table_feature_prop_wildcards_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WILDCARDS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113473,7 +113473,7 @@ of_table_feature_prop_write_actions_new_(of_version_t version)
     of_table_feature_prop_write_actions_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_write_actions_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113536,7 +113536,7 @@ of_table_feature_prop_write_actions_init(of_table_feature_prop_write_actions_t *
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113602,7 +113602,7 @@ of_table_feature_prop_write_actions_miss_new_(of_version_t version)
     of_table_feature_prop_write_actions_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_write_actions_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113665,7 +113665,7 @@ of_table_feature_prop_write_actions_miss_init(of_table_feature_prop_write_action
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_ACTIONS_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113731,7 +113731,7 @@ of_table_feature_prop_write_setfield_new_(of_version_t version)
     of_table_feature_prop_write_setfield_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_write_setfield_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113794,7 +113794,7 @@ of_table_feature_prop_write_setfield_init(of_table_feature_prop_write_setfield_t
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113860,7 +113860,7 @@ of_table_feature_prop_write_setfield_miss_new_(of_version_t version)
     of_table_feature_prop_write_setfield_miss_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_feature_prop_write_setfield_miss_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -113923,7 +113923,7 @@ of_table_feature_prop_write_setfield_miss_init(of_table_feature_prop_write_setfi
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS] + of_object_extra_len[version][OF_TABLE_FEATURE_PROP_WRITE_SETFIELD_MISS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -113986,7 +113986,7 @@ of_table_features_new_(of_version_t version)
     of_table_features_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES];
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES] + of_object_extra_len[version][OF_TABLE_FEATURES];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_features_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114049,7 +114049,7 @@ of_table_features_init(of_table_features_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES];
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES] + of_object_extra_len[version][OF_TABLE_FEATURES];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114107,7 +114107,7 @@ of_table_stats_entry_new_(of_version_t version)
     of_table_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_TABLE_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_TABLE_STATS_ENTRY] + of_object_extra_len[version][OF_TABLE_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_table_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114170,7 +114170,7 @@ of_table_stats_entry_init(of_table_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_TABLE_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_TABLE_STATS_ENTRY] + of_object_extra_len[version][OF_TABLE_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114225,7 +114225,7 @@ of_uint32_new_(of_version_t version)
     of_uint32_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_UINT32];
+    bytes = of_object_fixed_len[version][OF_UINT32] + of_object_extra_len[version][OF_UINT32];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_uint32_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114288,7 +114288,7 @@ of_uint32_init(of_uint32_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_UINT32];
+        bytes = of_object_fixed_len[version][OF_UINT32] + of_object_extra_len[version][OF_UINT32];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114343,7 +114343,7 @@ of_uint8_new_(of_version_t version)
     of_uint8_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_UINT8];
+    bytes = of_object_fixed_len[version][OF_UINT8] + of_object_extra_len[version][OF_UINT8];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_uint8_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114406,7 +114406,7 @@ of_uint8_init(of_uint8_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_UINT8];
+        bytes = of_object_fixed_len[version][OF_UINT8] + of_object_extra_len[version][OF_UINT8];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114451,7 +114451,7 @@ of_list_action_new_(of_version_t version)
     of_list_action_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_ACTION];
+    bytes = of_object_fixed_len[version][OF_LIST_ACTION] + of_object_extra_len[version][OF_LIST_ACTION];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_action_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114509,7 +114509,7 @@ of_list_action_init(of_list_action_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_ACTION];
+        bytes = of_object_fixed_len[version][OF_LIST_ACTION] + of_object_extra_len[version][OF_LIST_ACTION];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114554,7 +114554,7 @@ of_list_action_id_new_(of_version_t version)
     of_list_action_id_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_ACTION_ID];
+    bytes = of_object_fixed_len[version][OF_LIST_ACTION_ID] + of_object_extra_len[version][OF_LIST_ACTION_ID];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_action_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114612,7 +114612,7 @@ of_list_action_id_init(of_list_action_id_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_ACTION_ID];
+        bytes = of_object_fixed_len[version][OF_LIST_ACTION_ID] + of_object_extra_len[version][OF_LIST_ACTION_ID];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114657,7 +114657,7 @@ of_list_bsn_interface_new_(of_version_t version)
     of_list_bsn_interface_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_BSN_INTERFACE];
+    bytes = of_object_fixed_len[version][OF_LIST_BSN_INTERFACE] + of_object_extra_len[version][OF_LIST_BSN_INTERFACE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_bsn_interface_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114715,7 +114715,7 @@ of_list_bsn_interface_init(of_list_bsn_interface_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_BSN_INTERFACE];
+        bytes = of_object_fixed_len[version][OF_LIST_BSN_INTERFACE] + of_object_extra_len[version][OF_LIST_BSN_INTERFACE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114760,7 +114760,7 @@ of_list_bucket_new_(of_version_t version)
     of_list_bucket_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_BUCKET];
+    bytes = of_object_fixed_len[version][OF_LIST_BUCKET] + of_object_extra_len[version][OF_LIST_BUCKET];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_bucket_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114818,7 +114818,7 @@ of_list_bucket_init(of_list_bucket_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_BUCKET];
+        bytes = of_object_fixed_len[version][OF_LIST_BUCKET] + of_object_extra_len[version][OF_LIST_BUCKET];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114863,7 +114863,7 @@ of_list_bucket_counter_new_(of_version_t version)
     of_list_bucket_counter_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_BUCKET_COUNTER];
+    bytes = of_object_fixed_len[version][OF_LIST_BUCKET_COUNTER] + of_object_extra_len[version][OF_LIST_BUCKET_COUNTER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_bucket_counter_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -114921,7 +114921,7 @@ of_list_bucket_counter_init(of_list_bucket_counter_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_BUCKET_COUNTER];
+        bytes = of_object_fixed_len[version][OF_LIST_BUCKET_COUNTER] + of_object_extra_len[version][OF_LIST_BUCKET_COUNTER];
     }
     obj->version = version;
     obj->length = bytes;
@@ -114966,7 +114966,7 @@ of_list_flow_stats_entry_new_(of_version_t version)
     of_list_flow_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_FLOW_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_FLOW_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_FLOW_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_flow_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115024,7 +115024,7 @@ of_list_flow_stats_entry_init(of_list_flow_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_FLOW_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_FLOW_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_FLOW_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115069,7 +115069,7 @@ of_list_group_desc_stats_entry_new_(of_version_t version)
     of_list_group_desc_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_group_desc_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115127,7 +115127,7 @@ of_list_group_desc_stats_entry_init(of_list_group_desc_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_GROUP_DESC_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115172,7 +115172,7 @@ of_list_group_stats_entry_new_(of_version_t version)
     of_list_group_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_GROUP_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_GROUP_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_GROUP_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_group_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115230,7 +115230,7 @@ of_list_group_stats_entry_init(of_list_group_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_GROUP_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_GROUP_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_GROUP_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115275,7 +115275,7 @@ of_list_hello_elem_new_(of_version_t version)
     of_list_hello_elem_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_HELLO_ELEM];
+    bytes = of_object_fixed_len[version][OF_LIST_HELLO_ELEM] + of_object_extra_len[version][OF_LIST_HELLO_ELEM];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_hello_elem_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115333,7 +115333,7 @@ of_list_hello_elem_init(of_list_hello_elem_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_HELLO_ELEM];
+        bytes = of_object_fixed_len[version][OF_LIST_HELLO_ELEM] + of_object_extra_len[version][OF_LIST_HELLO_ELEM];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115378,7 +115378,7 @@ of_list_instruction_new_(of_version_t version)
     of_list_instruction_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_INSTRUCTION];
+    bytes = of_object_fixed_len[version][OF_LIST_INSTRUCTION] + of_object_extra_len[version][OF_LIST_INSTRUCTION];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_instruction_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115436,7 +115436,7 @@ of_list_instruction_init(of_list_instruction_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_INSTRUCTION];
+        bytes = of_object_fixed_len[version][OF_LIST_INSTRUCTION] + of_object_extra_len[version][OF_LIST_INSTRUCTION];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115481,7 +115481,7 @@ of_list_meter_band_new_(of_version_t version)
     of_list_meter_band_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_METER_BAND];
+    bytes = of_object_fixed_len[version][OF_LIST_METER_BAND] + of_object_extra_len[version][OF_LIST_METER_BAND];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_meter_band_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115539,7 +115539,7 @@ of_list_meter_band_init(of_list_meter_band_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_METER_BAND];
+        bytes = of_object_fixed_len[version][OF_LIST_METER_BAND] + of_object_extra_len[version][OF_LIST_METER_BAND];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115584,7 +115584,7 @@ of_list_meter_band_stats_new_(of_version_t version)
     of_list_meter_band_stats_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_METER_BAND_STATS];
+    bytes = of_object_fixed_len[version][OF_LIST_METER_BAND_STATS] + of_object_extra_len[version][OF_LIST_METER_BAND_STATS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_meter_band_stats_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115642,7 +115642,7 @@ of_list_meter_band_stats_init(of_list_meter_band_stats_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_METER_BAND_STATS];
+        bytes = of_object_fixed_len[version][OF_LIST_METER_BAND_STATS] + of_object_extra_len[version][OF_LIST_METER_BAND_STATS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115687,7 +115687,7 @@ of_list_meter_stats_new_(of_version_t version)
     of_list_meter_stats_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_METER_STATS];
+    bytes = of_object_fixed_len[version][OF_LIST_METER_STATS] + of_object_extra_len[version][OF_LIST_METER_STATS];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_meter_stats_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115745,7 +115745,7 @@ of_list_meter_stats_init(of_list_meter_stats_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_METER_STATS];
+        bytes = of_object_fixed_len[version][OF_LIST_METER_STATS] + of_object_extra_len[version][OF_LIST_METER_STATS];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115790,7 +115790,7 @@ of_list_oxm_new_(of_version_t version)
     of_list_oxm_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_OXM];
+    bytes = of_object_fixed_len[version][OF_LIST_OXM] + of_object_extra_len[version][OF_LIST_OXM];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_oxm_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115848,7 +115848,7 @@ of_list_oxm_init(of_list_oxm_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_OXM];
+        bytes = of_object_fixed_len[version][OF_LIST_OXM] + of_object_extra_len[version][OF_LIST_OXM];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115893,7 +115893,7 @@ of_list_packet_queue_new_(of_version_t version)
     of_list_packet_queue_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_PACKET_QUEUE];
+    bytes = of_object_fixed_len[version][OF_LIST_PACKET_QUEUE] + of_object_extra_len[version][OF_LIST_PACKET_QUEUE];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_packet_queue_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -115951,7 +115951,7 @@ of_list_packet_queue_init(of_list_packet_queue_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_PACKET_QUEUE];
+        bytes = of_object_fixed_len[version][OF_LIST_PACKET_QUEUE] + of_object_extra_len[version][OF_LIST_PACKET_QUEUE];
     }
     obj->version = version;
     obj->length = bytes;
@@ -115996,7 +115996,7 @@ of_list_port_desc_new_(of_version_t version)
     of_list_port_desc_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_PORT_DESC];
+    bytes = of_object_fixed_len[version][OF_LIST_PORT_DESC] + of_object_extra_len[version][OF_LIST_PORT_DESC];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_port_desc_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116054,7 +116054,7 @@ of_list_port_desc_init(of_list_port_desc_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_PORT_DESC];
+        bytes = of_object_fixed_len[version][OF_LIST_PORT_DESC] + of_object_extra_len[version][OF_LIST_PORT_DESC];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116099,7 +116099,7 @@ of_list_port_stats_entry_new_(of_version_t version)
     of_list_port_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_PORT_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_PORT_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_PORT_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_port_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116157,7 +116157,7 @@ of_list_port_stats_entry_init(of_list_port_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_PORT_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_PORT_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_PORT_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116202,7 +116202,7 @@ of_list_queue_prop_new_(of_version_t version)
     of_list_queue_prop_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_QUEUE_PROP];
+    bytes = of_object_fixed_len[version][OF_LIST_QUEUE_PROP] + of_object_extra_len[version][OF_LIST_QUEUE_PROP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_queue_prop_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116260,7 +116260,7 @@ of_list_queue_prop_init(of_list_queue_prop_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_QUEUE_PROP];
+        bytes = of_object_fixed_len[version][OF_LIST_QUEUE_PROP] + of_object_extra_len[version][OF_LIST_QUEUE_PROP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116305,7 +116305,7 @@ of_list_queue_stats_entry_new_(of_version_t version)
     of_list_queue_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_QUEUE_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_QUEUE_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_QUEUE_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_queue_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116363,7 +116363,7 @@ of_list_queue_stats_entry_init(of_list_queue_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_QUEUE_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_QUEUE_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_QUEUE_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116408,7 +116408,7 @@ of_list_table_feature_prop_new_(of_version_t version)
     of_list_table_feature_prop_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURE_PROP];
+    bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURE_PROP] + of_object_extra_len[version][OF_LIST_TABLE_FEATURE_PROP];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_table_feature_prop_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116466,7 +116466,7 @@ of_list_table_feature_prop_init(of_list_table_feature_prop_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURE_PROP];
+        bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURE_PROP] + of_object_extra_len[version][OF_LIST_TABLE_FEATURE_PROP];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116511,7 +116511,7 @@ of_list_table_features_new_(of_version_t version)
     of_list_table_features_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURES];
+    bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURES] + of_object_extra_len[version][OF_LIST_TABLE_FEATURES];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_table_features_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116569,7 +116569,7 @@ of_list_table_features_init(of_list_table_features_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURES];
+        bytes = of_object_fixed_len[version][OF_LIST_TABLE_FEATURES] + of_object_extra_len[version][OF_LIST_TABLE_FEATURES];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116614,7 +116614,7 @@ of_list_table_stats_entry_new_(of_version_t version)
     of_list_table_stats_entry_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_TABLE_STATS_ENTRY];
+    bytes = of_object_fixed_len[version][OF_LIST_TABLE_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_TABLE_STATS_ENTRY];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_table_stats_entry_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116672,7 +116672,7 @@ of_list_table_stats_entry_init(of_list_table_stats_entry_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_TABLE_STATS_ENTRY];
+        bytes = of_object_fixed_len[version][OF_LIST_TABLE_STATS_ENTRY] + of_object_extra_len[version][OF_LIST_TABLE_STATS_ENTRY];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116717,7 +116717,7 @@ of_list_uint32_new_(of_version_t version)
     of_list_uint32_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_UINT32];
+    bytes = of_object_fixed_len[version][OF_LIST_UINT32] + of_object_extra_len[version][OF_LIST_UINT32];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_uint32_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116775,7 +116775,7 @@ of_list_uint32_init(of_list_uint32_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_UINT32];
+        bytes = of_object_fixed_len[version][OF_LIST_UINT32] + of_object_extra_len[version][OF_LIST_UINT32];
     }
     obj->version = version;
     obj->length = bytes;
@@ -116820,7 +116820,7 @@ of_list_uint8_new_(of_version_t version)
     of_list_uint8_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_LIST_UINT8];
+    bytes = of_object_fixed_len[version][OF_LIST_UINT8] + of_object_extra_len[version][OF_LIST_UINT8];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
     if ((obj = (of_list_uint8_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
@@ -116878,7 +116878,7 @@ of_list_uint8_init(of_list_uint8_t *obj,
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_LIST_UINT8];
+        bytes = of_object_fixed_len[version][OF_LIST_UINT8] + of_object_extra_len[version][OF_LIST_UINT8];
     }
     obj->version = version;
     obj->length = bytes;
@@ -117227,7 +117227,6 @@ flow_stats_entry_setup_from_flow_add_common(of_flow_stats_entry_t *obj,
                                             int entry_match_offset,
                                             int add_match_offset)
 {
-    of_list_action_t actions;
     int entry_len, add_len;
     of_wire_buffer_t *wbuf;
     int abs_offset;
@@ -117235,15 +117234,6 @@ flow_stats_entry_setup_from_flow_add_common(of_flow_stats_entry_t *obj,
     uint16_t val16;
     uint64_t cookie;
     of_octets_t match_octets;
-
-    /* Effects may come from different places */
-    if (effects != NULL) {
-        OF_TRY(of_flow_stats_entry_actions_set(obj,
-               (of_list_action_t *)effects));
-    } else {
-        of_flow_add_actions_bind(flow_add, &actions);
-        OF_TRY(of_flow_stats_entry_actions_set(obj, &actions));
-    }
 
     /* Transfer the match underlying object from add to stats entry */
     wbuf = OF_OBJECT_TO_WBUF(obj);
@@ -117276,6 +117266,27 @@ flow_stats_entry_setup_from_flow_add_common(of_flow_stats_entry_t *obj,
 
     of_flow_add_hard_timeout_get(flow_add, &val16);
     of_flow_stats_entry_hard_timeout_set(obj, val16);
+
+    /* Effects may come from different places */
+    if (effects != NULL) {
+        if (obj->version == OF_VERSION_1_0) {
+            OF_TRY(of_flow_stats_entry_actions_set(obj,
+                (of_list_action_t *)effects));
+        } else {
+            OF_TRY(of_flow_stats_entry_instructions_set(obj,
+                (of_list_instruction_t *)effects));
+        }
+    } else {
+        if (obj->version == OF_VERSION_1_0) {
+            of_list_action_t actions;
+            of_flow_add_actions_bind(flow_add, &actions);
+            OF_TRY(of_flow_stats_entry_actions_set(obj, &actions));
+        } else {
+            of_list_instruction_t instructions;
+            of_flow_add_instructions_bind(flow_add, &instructions);
+            OF_TRY(of_flow_stats_entry_instructions_set(obj, &instructions));
+        }
+    }
 
     return OF_ERROR_NONE;
 }
