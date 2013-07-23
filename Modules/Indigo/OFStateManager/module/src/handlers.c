@@ -1378,6 +1378,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
         return INDIGO_ERROR_UNKNOWN;
     }
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
+    of_aggregate_stats_request_table_id_get(obj, &(query.table_id));
 
     /* Non strict; do not check priority, cookie or overlap */
     query.mode = OF_MATCH_NON_STRICT;
