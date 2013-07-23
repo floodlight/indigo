@@ -208,7 +208,7 @@ indigo_cxn_socket_ready_callback(
 
     if (read_ready) {
         if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
-            LOG_INFO("Error %d processing read buffer", rv);
+            LOG_VERBOSE("Error %d processing read buffer", rv);
             ++ind_cxn_internal_errors;
         }
     }
@@ -304,8 +304,8 @@ ind_cxn_status_change(connection_t *cxn)
             ++remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
             if (preferred_cxn_id == -1) {
-                LOG_INFO("Setting preferred cxn to %s",
-                         cxn_ip_string(cxn));
+                LOG_VERBOSE("Setting preferred cxn to %s",
+                            cxn_ip_string(cxn));
                 preferred_cxn_id = cxn->cxn_id;
                 LOG_VERBOSE("Clearing IP mask map");
                 of_ip_mask_map_init();
@@ -314,7 +314,7 @@ ind_cxn_status_change(connection_t *cxn)
             --remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
             if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
-                LOG_INFO("Clearing preferred connection");
+                LOG_VERBOSE("Clearing preferred connection");
                 preferred_cxn_id = -1;
             }
         }
@@ -477,8 +477,8 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
                           (char *) &flag, sizeof(int));
     }
 
-    LOG_INFO("Created non-blocking socket %d for %s",
-             cxn->sd, cxn_id_ip_string(*cxn_id));
+    LOG_VERBOSE("Created non-blocking socket %d for %s",
+                cxn->sd, cxn_id_ip_string(*cxn_id));
 
     cxn->active = 1;
     if (sd >= 0) { /* Assume connection is good to go */
@@ -561,7 +561,7 @@ indigo_error_t
 indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 {
     if (!CXN_ID_ACTIVE(cxn_id)) {
-        LOG_INFO("Remove connection id not found %d", cxn_id);
+        LOG_ERROR("Remove connection id not found %d", cxn_id);
         return INDIGO_ERROR_NOT_FOUND;
     }
 
@@ -611,10 +611,10 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
     connection_t *cxn;
     FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
         if (cxn->cxn_id == master_id) {
-            LOG_INFO("Upgrading cxn %d to master", cxn_id);
+            LOG_INFO("Upgrading cxn %s to master", cxn_id_ip_string(cxn_id));
             cxn->status.role = INDIGO_CXN_R_MASTER;
         } else if (cxn->status.role == INDIGO_CXN_R_MASTER) {
-            LOG_INFO("Downgrading cxn %d to slave", cxn_id);
+            LOG_INFO("Downgrading cxn %s to slave", cxn_id_ip_string(cxn_id));
             cxn->status.role = INDIGO_CXN_R_SLAVE;
         }
     }
@@ -653,14 +653,14 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
     if (INDIGO_CXN_INVALID(cxn_id)) {
-        LOG_INFO("Invalid or no active connection: %d", cxn_id);
+        LOG_ERROR("Invalid or no active connection: %d", cxn_id);
         rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!CXN_TCP_CONNECTED(cxn)) {
-        LOG_INFO("Connection id %d is not connected", cxn_id);
+        LOG_ERROR("Connection id %d is not connected", cxn_id);
         rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
@@ -824,8 +824,8 @@ indigo_cxn_status_change_register(indigo_cxn_status_change_f handler,
 {
     int idx;
 
-    LOG_INFO("Register status callback %p, cookie %p",
-             handler, cookie);
+    LOG_TRACE("Register status callback %p, cookie %p",
+              handler, cookie);
     if (handler == NULL) {
         LOG_ERROR("Cannot register NULL status change fn");
         return INDIGO_ERROR_PARAM;
@@ -857,8 +857,8 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
     indigo_cxn_status_change_f fn;
     void *ck;
 
-    LOG_INFO("Unregister status callback %p, cookie %p",
-             handler, cookie);
+    LOG_TRACE("Unregister status callback %p, cookie %p",
+              handler, cookie);
     FOREACH_STATUS_CALLBACK(idx, fn, ck) {
         if ((fn == handler) && (ck == cookie)) {
             status_change[idx].callback = NULL;
@@ -866,7 +866,7 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
         }
     }
 
-    LOG_INFO("Did not find status change callback fn");
+    LOG_TRACE("Did not find status change callback fn");
     return INDIGO_ERROR_NONE;
 }
 
