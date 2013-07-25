@@ -92,6 +92,9 @@ extern indigo_error_t ind_core_desc_stats_request_handler(
 extern indigo_error_t ind_core_table_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
+extern indigo_error_t ind_core_port_desc_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
 extern indigo_error_t ind_core_features_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);

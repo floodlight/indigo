@@ -1539,6 +1539,47 @@ indigo_core_table_stats_get_callback(indigo_error_t result,
 /****************************************************************/
 
 /**
+ * Handle a port_desc_stats_request message
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+indigo_error_t
+ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
+{
+    uint32_t xid;
+    of_port_desc_stats_request_t *obj;
+    of_port_desc_stats_reply_t *reply;
+    int rv;
+
+    obj = (of_port_desc_stats_request_t *)_obj;
+    LOG_TRACE("Handling of_port_desc_stats_request message: %p.", obj);
+
+    /* Generate a port_desc_stats reply and send to controller */
+    if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
+        LOG_ERROR("Failed to create port_desc_stats reply message");
+        of_object_delete(_obj);
+        return INDIGO_ERROR_NONE; /* @fixme Error handling in this case? */
+    }
+
+    of_port_desc_stats_request_xid_get(obj, &xid);
+    of_port_desc_stats_reply_xid_set(reply, xid);
+    indigo_port_desc_stats_get(reply);
+
+    of_port_desc_stats_request_delete(obj);
+
+    if ((rv = IND_CORE_MSG_SEND(cxn_id, reply)) < 0) {
+        LOG_ERROR("Error sending port_desc_stats response to %d", cxn_id);
+        return rv;
+    }
+
+    return INDIGO_ERROR_NONE;
+}
+
+/****************************************************************/
+
+/**
  * Handle a features_request message
  * @param cxn_id Connection handler for the owning connection
  * @param _obj Generic type object for the message to be coerced
