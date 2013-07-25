@@ -279,6 +279,12 @@ indigo_error_t indigo_fwd_expiration_enable_get(int *is_enabled)
     return INDIGO_ERROR_NONE;
 }
 
+indigo_error_t indigo_port_desc_stats_get(
+    of_port_desc_stats_reply_t *port_desc_stats_reply)
+{
+    AIM_LOG_VERBOSE("port desc stats get called");
+    return INDIGO_ERROR_NONE;
+}
 
 
 
