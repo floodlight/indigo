@@ -627,7 +627,7 @@ after_callback(void)
         INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
     if (elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS * 2) {
         LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
-                    elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
+                    (int)elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
     }
 }
 
