@@ -64,6 +64,19 @@ extern indigo_error_t indigo_port_features_get(
     of_features_reply_t *features);
 
 
+/**
+ * @brief Handle a port_desc_stats get request
+ * @param port_desc_stats_reply The port_desc_stats_reply reply message 
+ * to be filled out
+ *
+ * This is a synchronous call.
+ *
+ * Ownership of the port_desc_stats_reply object is maintained by the caller
+ */
+extern indigo_error_t indigo_port_desc_stats_get(
+    of_port_desc_stats_reply_t *port_desc_stats_reply);
+
+
 /****************************************************************
  * Configuration interface routines provided by port manager
  ****************************************************************/

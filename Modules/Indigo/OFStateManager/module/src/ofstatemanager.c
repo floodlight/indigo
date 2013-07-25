@@ -254,6 +254,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_desc_stats_request_handler(obj, cxn);
         break;
 
+    case OF_PORT_DESC_STATS_REQUEST:
+        rv = ind_core_port_desc_stats_request_handler(obj, cxn);
+        break;
+
     case OF_FEATURES_REQUEST:
         rv = ind_core_features_request_handler(obj, cxn);
         break;
