@@ -50,6 +50,8 @@
 /* Short hand logging macros */
 #define LOG_ERROR(cxn, fmt, ...)                                        \
     AIM_LOG_ERROR("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+#define LOG_WARN(cxn, fmt, ...)                                        \
+    AIM_LOG_WARN("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
 #define LOG_INFO(cxn, fmt, ...)                                         \
     AIM_LOG_INFO("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
 #define LOG_VERBOSE(cxn, fmt, ...)                                      \
@@ -237,7 +239,7 @@ cxn_connecting_timeout(void *cookie)
 
     INDIGO_ASSERT(CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING);
 
-    LOG_INFO(cxn, "Timeout in connecting state");
+    LOG_WARN(cxn, "Timeout in connecting state");
 
     ind_cxn_disconnect(cxn);
 }
@@ -259,7 +261,7 @@ cxn_closing_timeout(void *cookie)
 
     INDIGO_ASSERT(CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING);
 
-    LOG_INFO(cxn, "Timeout in closing state");
+    LOG_WARN(cxn, "Timeout in closing state");
 
     cxn_state_set(cxn, INDIGO_CXN_S_DISCONNECTED);
 }
@@ -353,7 +355,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
     switch (new_state) {
     case INDIGO_CXN_S_DISCONNECTED:
         if (cxn->flags & CXN_TO_BE_REMOVED) {
-            LOG_INFO(cxn, "Completing cxn removal");
+            LOG_VERBOSE(cxn, "Completing cxn removal");
             cxn->active = 0;
         } else if (CXN_LOCAL(cxn)) {
             cxn->active = 0;
@@ -444,7 +446,7 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
                   of_object_id_str[obj->object_id], obj->object_id);
         rv = INDIGO_ERROR_PROTOCOL;
     } else {
-        LOG_INFO(cxn, "Received HELLO message from %s", cxn_ip_string(cxn));
+        LOG_VERBOSE(cxn, "Received HELLO message from %s", cxn_ip_string(cxn));
 
         if (obj->version > cxn->config_params.version) {
             LOG_ERROR(cxn, "Expected version <= %d but got %d in hello from %s",
@@ -453,8 +455,8 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
             rv = INDIGO_ERROR_PROTOCOL;
         } else {
             cxn->status.negotiated_version = obj->version;
-            LOG_INFO(cxn, "Set version to %d for %s", obj->version,
-                     cxn_ip_string(cxn));
+            LOG_VERBOSE(cxn, "Set version to %d for %s", obj->version,
+                        cxn_ip_string(cxn));
         }
     }
 
@@ -732,7 +734,7 @@ cxn_object_delete_cb(of_object_t *obj)
               obj, of_object_id_str[obj->object_id]);
 
     if (!cxn->active) {
-        LOG_INFO(cxn, "Cxn no longer active");
+        LOG_VERBOSE(cxn, "Cxn no longer active");
         return;
     }
 
@@ -916,7 +918,6 @@ read_from_cxn(connection_t *cxn)
 
     inbuf_start = &cxn->read_buffer[cxn->read_bytes];
     bytes_in = read(cxn->sd, inbuf_start, cxn->bytes_needed);
-    LOG_TRACE(cxn, "Needed %d.  Read %d", cxn->bytes_needed, (int)bytes_in);
 
     /*
      * Reading 0 bytes indicates connection has closed, although we allow
@@ -925,18 +926,16 @@ read_from_cxn(connection_t *cxn)
 
     if (bytes_in <= 0) {
         if (bytes_in == 0) { /* Socket is closed */
-            LOG_TRACE(cxn, "Socket closed; read returned %d. error no %d.",
-                      (int)bytes_in, errno);
+            LOG_INFO(cxn, "Connection closed by remote host");
             return INDIGO_ERROR_CONNECTION;
         }
 
         if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            LOG_TRACE(cxn, "Read returned %d. error no %d.",
-                      (int)bytes_in, errno);
+            LOG_TRACE(cxn, "Error reading from socket: %s", strerror(errno));
             return 0;
         }
-        LOG_INFO(cxn, "Read returns error %d, error no %d.",
-                 (int)bytes_in, errno);
+
+        LOG_ERROR(cxn, "Error reading from socket: %s", strerror(errno));
         return INDIGO_ERROR_CONNECTION;
     }
 
@@ -1133,7 +1132,6 @@ ind_cxn_process_read_buffer(connection_t *cxn)
 
     /* @fixme Should this be handled by state machine transition? */
     if (rv < 0) { /* Does not include "pending" */
-        LOG_INFO(cxn, "Error %d reading message", rv);
         ind_cxn_disconnect(cxn);
         return rv;
     }
@@ -1147,7 +1145,7 @@ ind_cxn_process_read_buffer(connection_t *cxn)
 
 void ind_cxn_disconnect(connection_t *cxn)
 {
-    LOG_INFO(cxn, "Forcing disconnection");
+    LOG_VERBOSE(cxn, "Forcing disconnection");
 
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
@@ -1414,15 +1412,15 @@ ind_cxn_try_to_connect(connection_t *cxn)
 
     rv = connect(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr));
     if (rv != 0 && errno == EISCONN) {
-        LOG_INFO(cxn, "errno is EISCONN, treating as connected");
+        LOG_VERBOSE(cxn, "errno is EISCONN, treating as connected");
         rv = 0;
     } else if ((rv != 0) &&
                (errno != EAGAIN) &&
                (errno != EINPROGRESS) &&
                (errno != EALREADY)) {
         if ((cxn->fail_count & (cxn->fail_count - 1)) == 0) {
-            LOG_INFO(cxn, "Could not connect in %d tries: %s (%d)",
-                     cxn->fail_count, strerror(errno), errno);
+            LOG_INFO(cxn, "Could not connect in %d tries: %s",
+                     cxn->fail_count, strerror(errno));
         }
         close(cxn->sd);
         cxn->sd = -1;
