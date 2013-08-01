@@ -261,22 +261,6 @@ ft_hash_match_packet(ft_instance_t ft, uint8_t *msg, int len)
  * Free underlying data structures
  */
 
-/* Macro for checking bucket lists are empty */
-#if !defined(FT_NO_ERROR_CHECKING)
-#define CHECK_BUCKETS(type) do {                                           \
-        int idx, cnt;                                                      \
-        for (idx = 0; idx < ft->config.type##_bucket_count; idx++) {       \
-            if ((cnt = list_length(&ft->type##_buckets[idx])) != 0) {      \
-                LOG_ERROR("ERROR: bucket list %s has len %d on delete",    \
-                          #type, cnt);                                     \
-                break;                                                     \
-            }                                                              \
-        }                                                                  \
-    } while (0)
-#else
-#define CHECK_BUCKETS(type)
-#endif
-
 void
 ft_hash_delete(ft_instance_t ft)
 {
