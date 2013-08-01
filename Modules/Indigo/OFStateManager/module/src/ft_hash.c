@@ -117,17 +117,8 @@ ft_hash_create(ft_config_t *config)
         list_init(&ft->match_buckets[idx]);
     }
 
-    bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
-    ft->flow_id_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->flow_id_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
-        ft_hash_delete(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->flow_id_buckets, 0, bytes);
-    for (idx = 0; idx < config->flow_id_bucket_count; idx++) {
-        list_init(&ft->flow_id_buckets[idx]);
-    }
+    ft->flow_id_index = hindex_create(hindex_uint64_hash, hindex_uint64_equality,
+                                  offsetof(struct ft_entry_s, id), 0);
 
     return ft;
 }
@@ -317,10 +308,9 @@ ft_hash_delete(ft_instance_t ft)
         INDIGO_MEM_FREE(ft->match_buckets);
         ft->match_buckets = NULL;
     }
-    if (ft->flow_id_buckets != NULL) {
-        CHECK_BUCKETS(flow_id);
-        INDIGO_MEM_FREE(ft->flow_id_buckets);
-        ft->flow_id_buckets = NULL;
+
+    if (ft->flow_id_index != NULL) {
+        hindex_destroy(ft->flow_id_index);
     }
 
     ft->magic = 0;

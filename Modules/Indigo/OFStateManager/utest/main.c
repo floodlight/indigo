@@ -392,13 +392,8 @@ check_bucket_counts(ft_instance_t ft, int expected)
     for (idx = 0; idx < ft->config.prio_bucket_count; idx++) {
         count += list_length(&ft->prio_buckets[idx]);
     }
-    TEST_ASSERT(count == expected);
 
-    count = 0;
-    for (idx = 0; idx < ft->config.flow_id_bucket_count; idx++) {
-        count += list_length(&ft->flow_id_buckets[idx]);
-    }
-    TEST_ASSERT(count == expected);
+    TEST_ASSERT(hindex_count(ft->flow_id_index) == expected);
 
     count = 0;
     for (idx = 0; idx < ft->config.match_bucket_count; idx++) {

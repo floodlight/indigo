@@ -28,6 +28,7 @@
 #define _OFSTATEMANAGER_FT_UTILS_H_
 
 #include <BigList/biglist.h>
+#include <hindex/hindex.h>
 #include <loci/loci.h>
 #include <indigo/indigo.h>
 
@@ -147,17 +148,6 @@ match_to_bucket_index(ft_instance_t ft, of_match_t *match)
 }
 
 /**
- * Map a flow id to a hash bucket
- */
-
-static inline int
-flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
-{
-    return (murmur_hash(flow_id, sizeof(*flow_id), FT_HASH_SEED) %
-            ft->config.flow_id_bucket_count);
-}
-
-/**
  * Link an entry into the appropriate lists for the FT
  */
 
@@ -182,10 +172,8 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
         idx = match_to_bucket_index(ft, &entry->match);
         list_push(&ft->match_buckets[idx], &entry->match_links);
     }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        idx = flow_id_to_bucket_index(ft, &entry->id);
-        list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
-    }
+
+    hindex_insert(ft->flow_id_index, entry);
 }
 
 /**
@@ -215,11 +203,8 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
             &entry->match)]));
         list_remove(&entry->match_links);
     }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        FT_ASSERT(!list_empty(&ft->flow_id_buckets[flow_id_to_bucket_index(ft,
-            &entry->id)]));
-        list_remove(&entry->flow_id_links);
-    }
+
+    hindex_remove(ft->flow_id_index, entry);
 }
 
 /**
@@ -232,17 +217,7 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 static inline ft_entry_t *
 ft_id_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {
-    int idx;
-    ft_entry_t *entry = NULL, *iter_entry;
-    list_links_t *cur, *next;
-
-    idx = flow_id_to_bucket_index(ft, &id);
-    FT_FLOW_ID_ITER(ft, id, idx, iter_entry, cur, next) {
-        /* Found a match, break */
-        entry = iter_entry;
-        break;
-    }
-    return entry;
+    return hindex_lookup(ft->flow_id_index, &id, NULL);
 }
 
 

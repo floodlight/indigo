@@ -93,7 +93,6 @@ enum ft_flow_state {
  * @param table_links For iterating across the flow table
  * @param prio_links Search by priority
  * @param match_links Search by strict match
- * @param flow_id_links Search by flow id
  *
  * The version of the entry is determined by the value in the match
  * structure.  This is used in determining whether actions or instructions
@@ -159,7 +158,6 @@ typedef struct ft_entry_s {
     list_links_t table_links;      /* For iterating across the flow table */
     list_links_t prio_links;       /* Search by priority */
     list_links_t match_links;      /* Search by strict match */
-    list_links_t flow_id_links;    /* Search by flow id */
 } ft_entry_t;
 
 /**
