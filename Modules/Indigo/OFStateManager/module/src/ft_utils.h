@@ -118,24 +118,6 @@ ft_flow_set_effects(ft_entry_t *entry,
     return INDIGO_ERROR_NONE;
 }
 
-#define FT_HASH_SEED 0
-
-/**
- * @fixme Consider using something other than murmur for small data
- * hash calculations.  Multiplying by a prime is a good option
- */
-
-/**
- * Map a match structure to a hash bucket
- */
-
-static inline int
-match_to_bucket_index(ft_instance_t ft, of_match_t *match)
-{
-    return (murmur_hash(match, sizeof(*match), FT_HASH_SEED) %
-            ft->config.match_bucket_count);
-}
-
 /**
  * Link an entry into the appropriate lists for the FT
  */
@@ -143,8 +125,6 @@ match_to_bucket_index(ft_instance_t ft, of_match_t *match)
 static inline void
 ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
 {
-    int idx;
-
     if (ft == NULL || entry == NULL) {
         FT_ASSERT(!"ft_entry_link called with NULL ft or entry");
         return;
@@ -153,13 +133,9 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->match_buckets) { /* Strict match hash */
-        idx = match_to_bucket_index(ft, &entry->match);
-        list_push(&ft->match_buckets[idx], &entry->match_links);
-    }
-
     hindex_insert(ft->flow_id_index, entry);
     hindex_insert(ft->priority_index, entry);
+    hindex_insert(ft->match_index, entry);
 }
 
 /**
@@ -179,14 +155,9 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->match_buckets) { /* Strict match hash */
-        FT_ASSERT(!list_empty(&ft->match_buckets[match_to_bucket_index(ft,
-            &entry->match)]));
-        list_remove(&entry->match_links);
-    }
-
     hindex_remove(ft->flow_id_index, entry);
     hindex_remove(ft->priority_index, entry);
+    hindex_remove(ft->match_index, entry);
 }
 
 /**

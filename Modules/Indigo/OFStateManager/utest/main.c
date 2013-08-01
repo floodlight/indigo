@@ -379,7 +379,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
     int count = 0;
     ft_entry_t *_entry;
     list_links_t *cur, *next;
-    int idx;
 
     FT_ITER(ft, _entry, cur, next) {
         (void)_entry;
@@ -389,12 +388,7 @@ check_bucket_counts(ft_instance_t ft, int expected)
 
     TEST_ASSERT(hindex_count(ft->priority_index) == expected);
     TEST_ASSERT(hindex_count(ft->flow_id_index) == expected);
-
-    count = 0;
-    for (idx = 0; idx < ft->config.match_bucket_count; idx++) {
-        count += list_length(&ft->match_buckets[idx]);
-    }
-    TEST_ASSERT(count == expected);
+    TEST_ASSERT(hindex_count(ft->match_index) == expected);
 
     return 0;
 }
@@ -420,8 +414,6 @@ test_ft_hash(void)
     uint16_t orig_eth_type;
     int idx;
     ft_entry_t *lookup_entry;
-    int bucket_idx;
-    list_links_t *cur, *next;
     int count;
 
     /* Test edge cases for create/destroy */
@@ -629,10 +621,9 @@ test_ft_hash(void)
         biglist_free(list);
 
         /* Also do a match iteration */
-        count = 0;
-        bucket_idx = match_to_bucket_index(ft, &(query.match));
-        FT_MATCH_ITER(ft, &(query.match), bucket_idx, entry, cur, next) {
-            (void)entry;
+        uint32_t state = 0;
+        while ((entry = hindex_lookup(ft->match_index,
+                                      &query.match, &state)) != NULL) {
             count += 1;
         }
         TEST_ASSERT(count >= 1);

@@ -41,6 +41,24 @@
 #define FT_HASH_MAGIC_NUMBER 0xf005ba11
 
 /**
+ * Hash an of_match_t
+ */
+static uint32_t
+match_hash(const void *key)
+{
+    return murmur_hash(key, sizeof(of_match_t), 0);
+}
+
+/**
+ * Check equality of two of_match_t's
+ */
+static int
+match_equality(const void *key1, const void *key2)
+{
+    return memcmp(key1, key2, sizeof(of_match_t)) == 0;
+}
+
+/**
  * Create a flow table instance
  * @param config Pointer to configuration structure
  * @returns A handle for the flow table instance to be used
@@ -92,19 +110,8 @@ ft_hash_create(ft_config_t *config)
         list_push(&ft->free_list, &ft->flow_entries[idx].table_links);
     }
 
-    /* Allocate and init buckets for each search type */
-
-    bytes = sizeof(list_head_t) * config->match_bucket_count;
-    ft->match_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->match_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, match bucket alloc failed");
-        ft_hash_delete(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->match_buckets, 0, bytes);
-    for (idx = 0; idx < config->match_bucket_count; idx++) {
-        list_init(&ft->match_buckets[idx]);
-    }
+    ft->match_index = hindex_create(match_hash, match_equality,
+                                offsetof(struct ft_entry_s, match), 0);
 
     ft->flow_id_index = hindex_create(hindex_uint64_hash, hindex_uint64_equality,
                                   offsetof(struct ft_entry_s, id), 0);
@@ -290,11 +297,6 @@ ft_hash_delete(ft_instance_t ft)
         INDIGO_MEM_FREE(ft->flow_entries);
         ft->flow_entries = NULL;
     }
-    if (ft->match_buckets != NULL) {
-        CHECK_BUCKETS(match);
-        INDIGO_MEM_FREE(ft->match_buckets);
-        ft->match_buckets = NULL;
-    }
 
     if (ft->flow_id_index != NULL) {
         hindex_destroy(ft->flow_id_index);
@@ -302,6 +304,10 @@ ft_hash_delete(ft_instance_t ft)
 
     if (ft->priority_index != NULL) {
         hindex_destroy(ft->priority_index);
+    }
+
+    if (ft->match_index != NULL) {
+        hindex_destroy(ft->match_index);
     }
 
     ft->magic = 0;
