@@ -65,6 +65,7 @@ utests = [
     'Indigo/SocketManager',
     'loci',
     'locitest',
+    'hindex',
 ]
 for utest in utests:
     build(os.path.join(utestsdir, utest), toolchains=['gcc-local'])
