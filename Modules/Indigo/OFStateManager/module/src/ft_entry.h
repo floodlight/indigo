@@ -91,7 +91,6 @@ enum ft_flow_state {
  * @param last_counter_update When counters were last checked
  * @param last_counter_change Last update when counters changed
  * @param table_links For iterating across the flow table
- * @param prio_links Search by priority
  * @param match_links Search by strict match
  *
  * The version of the entry is determined by the value in the match
@@ -156,7 +155,6 @@ typedef struct ft_entry_s {
 
     /* For linked list maintance */
     list_links_t table_links;      /* For iterating across the flow table */
-    list_links_t prio_links;       /* Search by priority */
     list_links_t match_links;      /* Search by strict match */
 } ft_entry_t;
 

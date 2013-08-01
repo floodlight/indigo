@@ -93,17 +93,6 @@ ft_hash_create(ft_config_t *config)
     }
 
     /* Allocate and init buckets for each search type */
-    bytes = sizeof(list_head_t) * config->prio_bucket_count;
-    ft->prio_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->prio_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, prio bucket alloc failed");
-        ft_hash_delete(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->prio_buckets, 0, bytes);
-    for (idx = 0; idx < config->prio_bucket_count; idx++) {
-        list_init(&ft->prio_buckets[idx]);
-    }
 
     bytes = sizeof(list_head_t) * config->match_bucket_count;
     ft->match_buckets = INDIGO_MEM_ALLOC(bytes);
@@ -119,6 +108,9 @@ ft_hash_create(ft_config_t *config)
 
     ft->flow_id_index = hindex_create(hindex_uint64_hash, hindex_uint64_equality,
                                   offsetof(struct ft_entry_s, id), 0);
+
+    ft->priority_index = hindex_create(hindex_uint16_hash, hindex_uint16_equality,
+                                   offsetof(struct ft_entry_s, priority), 0);
 
     return ft;
 }
@@ -298,11 +290,6 @@ ft_hash_delete(ft_instance_t ft)
         INDIGO_MEM_FREE(ft->flow_entries);
         ft->flow_entries = NULL;
     }
-    if (ft->prio_buckets != NULL) {
-        CHECK_BUCKETS(prio);
-        INDIGO_MEM_FREE(ft->prio_buckets);
-        ft->prio_buckets = NULL;
-    }
     if (ft->match_buckets != NULL) {
         CHECK_BUCKETS(match);
         INDIGO_MEM_FREE(ft->match_buckets);
@@ -311,6 +298,10 @@ ft_hash_delete(ft_instance_t ft)
 
     if (ft->flow_id_index != NULL) {
         hindex_destroy(ft->flow_id_index);
+    }
+
+    if (ft->priority_index != NULL) {
+        hindex_destroy(ft->priority_index);
     }
 
     ft->magic = 0;

@@ -180,10 +180,10 @@ struct ft_public_s {
     list_head_t free_list;         /* List of unused entries */
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *prio_buckets;     /* Array of priority based buckets */
     list_head_t *match_buckets;    /* Array of strict match based buckets */
 
     struct hindex *flow_id_index;  /* hashtable keyed on flow id */
+    struct hindex *priority_index; /* hashtable keyed on priority */
 
     uint32_t magic; /* For debug/error checking */
 };
@@ -233,33 +233,6 @@ struct ft_public_s {
                  _entry = FT_ENTRY_CONTAINER(_cur, table);              \
              _next = _cur->next, _cur != &((_ft)->all_list.links);      \
              _cur = _next, _entry = FT_ENTRY_CONTAINER((_cur), table))
-
-/**
- * Iterate across flows of a given priority (hash value)
- *
- * @param _ft The instance of the flow table being iterated
- * @param _prio The priority of the entries being sought
- * @param _idx Index of the priority bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the priority) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- */
-
-#define FT_PRIO_ITER(_ft, _prio, _idx, _entry, _cur, _next)             \
-    if (!list_empty(&(_ft)->prio_buckets[_idx]))                        \
-        for ((_cur) = (_ft)->prio_buckets[_idx].links.next,             \
-                 _entry = FT_ENTRY_CONTAINER(_cur, prio);               \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->prio_buckets[_idx].links);            \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, prio))     \
-            if ((_entry)->priority == _prio)
 
 /**
  * Iterate across flows with a given match

@@ -387,12 +387,7 @@ check_bucket_counts(ft_instance_t ft, int expected)
     }
     TEST_ASSERT(count == expected);
 
-    /* Check the buckets */
-    count = 0;
-    for (idx = 0; idx < ft->config.prio_bucket_count; idx++) {
-        count += list_length(&ft->prio_buckets[idx]);
-    }
-
+    TEST_ASSERT(hindex_count(ft->priority_index) == expected);
     TEST_ASSERT(hindex_count(ft->flow_id_index) == expected);
 
     count = 0;
