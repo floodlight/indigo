@@ -22,6 +22,7 @@
 #include <string.h>
 #include <assert.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include "hindex_int.h"
 
 struct obj {
@@ -324,6 +325,69 @@ test_reuse_deleted(void)
     hindex_destroy(hindex);
 }
 
+static void
+test_torture(void)
+{
+    int i;
+    const int num_objs = 256, num_iters = 16384;
+    struct obj objs[num_objs];
+    bool membership[num_objs];
+
+    fprintf(stderr, "Running torture test\n");
+
+    struct hindex *hindex =
+        hindex_create(hash_uint32, hindex_uint32_equality,
+                      offsetof(struct obj, key), 1.0); /* note the 1.0 load factor */
+
+    for (i = 0; i < num_objs; i++) {
+        objs[i].key = rand() % (num_objs*4); /* cause many key collisions */
+        hindex_insert(hindex, &objs[i]);
+        membership[i] = true;
+    }
+
+    fprintf(stderr, "initial stats:\n");
+    hindex_stats(hindex);
+
+    /* Perform num_iters random operations, and after each one check that the
+     * hmap contains exactly the objects we expect. */
+    for (i = 0; i < num_iters; i++) {
+        int idx = rand() % num_objs;
+        if (membership[idx]) {
+            //fprintf(stderr, "removing object %d\n", idx);
+            hindex_remove(hindex, &objs[idx]);
+            membership[idx] = false;
+        } else {
+            //fprintf(stderr, "inserting object %d\n", idx);
+            hindex_insert(hindex, &objs[idx]);
+            membership[idx] = true;
+        }
+
+        /* For every object, verify that it exists the correct number of times
+         * in the hindex */
+        int j;
+        for (j = 0; j < num_objs; j++) {
+            uint32_t key = objs[j].key;
+            int count = 0;
+            uint32_t state = 0;
+            struct obj *obj;
+            while ((obj = hindex_lookup(hindex, &key, &state)) != NULL) {
+                if (obj == &objs[j]) {
+                    count++;
+                }
+            }
+            if (count != membership[j]) {
+                fprintf(stderr, "error: object %d count=%d membership=%d\n", j, count, membership[j]);
+            }
+            assert(count == membership[j]);
+        }
+    }
+
+    fprintf(stderr, "final stats:\n");
+    hindex_stats(hindex);
+
+    hindex_destroy(hindex);
+}
+
 int main(int argc, char **argv)
 {
     (void) argc;
@@ -335,5 +399,6 @@ int main(int argc, char **argv)
     test_robin_hood();
     test_robin_hood_deleted();
     test_reuse_deleted();
+    test_torture();
     return 0;
 }
