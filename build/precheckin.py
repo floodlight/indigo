@@ -51,7 +51,8 @@ TESTS = []
 def test(name, cmd):
     TESTS.append({ 'name' : name, 'cmd' : cmd })
 
-# Builds (none yet)
+# Builds
+build('targets/hindex-benchmark')
 
 # Unit tests
 utestsdir = 'targets/utests'
@@ -65,6 +66,7 @@ utests = [
     'Indigo/SocketManager',
     'loci',
     'locitest',
+    'hindex',
 ]
 for utest in utests:
     build(os.path.join(utestsdir, utest), toolchains=['gcc-local'])

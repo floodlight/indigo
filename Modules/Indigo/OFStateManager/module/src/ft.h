@@ -51,6 +51,7 @@
 #include <indigo/fi.h>
 #include <loci/loci.h>
 #include <BigList/biglist.h>
+#include <hindex/hindex.h>
 #include <AIM/aim_list.h>
 #include <indigo/of_connection_manager.h>
 
@@ -179,9 +180,11 @@ struct ft_public_s {
     list_head_t free_list;         /* List of unused entries */
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *prio_buckets;     /* Array of priority based buckets */
     list_head_t *match_buckets;    /* Array of strict match based buckets */
-    list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
+
+    struct hindex *flow_id_index;  /* hashtable keyed on flow id */
+    struct hindex *priority_index; /* hashtable keyed on priority */
+    struct hindex *match_index;    /* hashtable keyed on strict match */
 
     uint32_t magic; /* For debug/error checking */
 };
@@ -231,97 +234,6 @@ struct ft_public_s {
                  _entry = FT_ENTRY_CONTAINER(_cur, table);              \
              _next = _cur->next, _cur != &((_ft)->all_list.links);      \
              _cur = _next, _entry = FT_ENTRY_CONTAINER((_cur), table))
-
-/**
- * Iterate across flows of a given priority (hash value)
- *
- * @param _ft The instance of the flow table being iterated
- * @param _prio The priority of the entries being sought
- * @param _idx Index of the priority bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the priority) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- */
-
-#define FT_PRIO_ITER(_ft, _prio, _idx, _entry, _cur, _next)             \
-    if (!list_empty(&(_ft)->prio_buckets[_idx]))                        \
-        for ((_cur) = (_ft)->prio_buckets[_idx].links.next,             \
-                 _entry = FT_ENTRY_CONTAINER(_cur, prio);               \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->prio_buckets[_idx].links);            \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, prio))     \
-            if ((_entry)->priority == _prio)
-
-/**
- * Iterate across flows with a given match
- *
- * @param _ft The instance of the flow table being iterated
- * @param _match The match of the entries being sought strictly
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the match object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * @fixme of_match_eq may not work on non-canonicalized flows
- *
- * @note Note that this does not check that the priority of the
- * entry matches any particular priority.
- */
-
-#define FT_MATCH_ITER(_ft, _match, _idx, _entry, _cur, _next)           \
-    if (!list_empty(&(_ft)->match_buckets[_idx]))                       \
-        for ((_cur) = (_ft)->match_buckets[_idx].links.next,            \
-                 _entry = FT_ENTRY_CONTAINER(_cur, match);              \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->match_buckets[_idx].links);           \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, match))    \
-            if (of_match_eq((_match), &((_entry)->match)))
-
-/**
- * Iterate across flows of a given flow ID
- *
- * @param _ft The instance of the flow table being iterated
- * @param flow_id The flow ID to match
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the flow_id object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * This is included for completeness and convenience.  In general,
- * there should be at most one match in the table.  Note that entry
- * SHOULD NOT BE REFERENCED OUTSIDE THE LOOP.
- */
-
-#define FT_FLOW_ID_ITER(_ft, _id, _idx, _entry, _cur, _next)            \
-    if (!list_empty(&(_ft)->flow_id_buckets[_idx]))                     \
-        for ((_cur) = (_ft)->flow_id_buckets[_idx].links.next,          \
-                 _entry = FT_ENTRY_CONTAINER(_cur, flow_id);                \
-             _next = (_cur)->next,                                      \
-                 _cur != &((_ft)->flow_id_buckets[_idx].links);         \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
-            if (_id == (_entry)->id)
-
 
 #endif /* _OFSTATEMANAGER_FT_H_ */
 

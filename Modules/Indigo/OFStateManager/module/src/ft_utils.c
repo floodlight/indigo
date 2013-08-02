@@ -40,14 +40,13 @@ ft_flow_first_match(ft_instance_t instance,
                     of_meta_match_t *query,
                     ft_entry_t **entry_ptr)
 {
-    int bucket_idx;
     ft_entry_t *entry;
     list_links_t *cur, *next;
 
     if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
+        uint32_t state = 0;
+        while ((entry = hindex_lookup(instance->match_index,
+                                    &query->match, &state)) != NULL) {
             if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
                     ft_flow_meta_match(query, entry)) {
                 if (entry_ptr) {
@@ -57,8 +56,9 @@ ft_flow_first_match(ft_instance_t instance,
             }
         }
     } else if (query->check_priority) { /* Iterate thru prio hash list */
-        bucket_idx = prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
+        uint32_t state = 0;
+        while ((entry = hindex_lookup(instance->priority_index,
+                                    &query->priority, &state)) != NULL) {
             if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
                     ft_flow_meta_match(query, entry)) {
                 if (entry_ptr) {
@@ -94,16 +94,15 @@ ft_flow_first_match(ft_instance_t instance,
 biglist_t *
 ft_flow_query(ft_instance_t instance, of_meta_match_t *query)
 {
-    int bucket_idx;
     ft_entry_t *entry;
     list_links_t *cur, *next;
     biglist_t *list = NULL;
     int count = 0;
 
     if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
+        uint32_t state = 0;
+        while ((entry = hindex_lookup(instance->match_index,
+                                    &query->match, &state)) != NULL) {
             if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
                     ft_flow_meta_match(query, entry)) {
                 list = biglist_prepend(list, (void *)entry);
@@ -112,8 +111,9 @@ ft_flow_query(ft_instance_t instance, of_meta_match_t *query)
         }
     } else if (query->check_priority) {
         /* Iterate thru prio hash list */
-        bucket_idx = prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
+        uint32_t state = 0;
+        while ((entry = hindex_lookup(instance->priority_index,
+                                    &query->priority, &state)) != NULL) {
             if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
                     ft_flow_meta_match(query, entry)) {
                 list = biglist_prepend(list, (void *)entry);

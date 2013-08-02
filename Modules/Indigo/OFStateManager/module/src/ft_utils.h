@@ -28,6 +28,7 @@
 #define _OFSTATEMANAGER_FT_UTILS_H_
 
 #include <BigList/biglist.h>
+#include <hindex/hindex.h>
 #include <loci/loci.h>
 #include <indigo/indigo.h>
 
@@ -117,46 +118,6 @@ ft_flow_set_effects(ft_entry_t *entry,
     return INDIGO_ERROR_NONE;
 }
 
-#define FT_HASH_SEED 0
-
-/**
- * @fixme Consider using something other than murmur for small data
- * hash calculations.  Multiplying by a prime is a good option
- */
-
-/**
- * Map a priority to a hash bucket
- */
-
-static inline int
-prio_to_bucket_index(ft_instance_t ft, uint16_t priority)
-{
-    return (murmur_hash(&priority, sizeof(priority), FT_HASH_SEED) %
-            ft->config.prio_bucket_count);
-}
-
-/**
- * Map a match structure to a hash bucket
- */
-
-static inline int
-match_to_bucket_index(ft_instance_t ft, of_match_t *match)
-{
-    return (murmur_hash(match, sizeof(*match), FT_HASH_SEED) %
-            ft->config.match_bucket_count);
-}
-
-/**
- * Map a flow id to a hash bucket
- */
-
-static inline int
-flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
-{
-    return (murmur_hash(flow_id, sizeof(*flow_id), FT_HASH_SEED) %
-            ft->config.flow_id_bucket_count);
-}
-
 /**
  * Link an entry into the appropriate lists for the FT
  */
@@ -164,8 +125,6 @@ flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
 static inline void
 ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
 {
-    int idx;
-
     if (ft == NULL || entry == NULL) {
         FT_ASSERT(!"ft_entry_link called with NULL ft or entry");
         return;
@@ -174,18 +133,9 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        idx = prio_to_bucket_index(ft, entry->priority);
-        list_push(&ft->prio_buckets[idx], &entry->prio_links);
-    }
-    if (ft->match_buckets) { /* Strict match hash */
-        idx = match_to_bucket_index(ft, &entry->match);
-        list_push(&ft->match_buckets[idx], &entry->match_links);
-    }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        idx = flow_id_to_bucket_index(ft, &entry->id);
-        list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
-    }
+    hindex_insert(ft->flow_id_index, entry);
+    hindex_insert(ft->priority_index, entry);
+    hindex_insert(ft->match_index, entry);
 }
 
 /**
@@ -205,21 +155,9 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        FT_ASSERT(!list_empty(&ft->prio_buckets[prio_to_bucket_index(ft,
-            entry->priority)]));
-        list_remove(&entry->prio_links);
-    }
-    if (ft->match_buckets) { /* Strict match hash */
-        FT_ASSERT(!list_empty(&ft->match_buckets[match_to_bucket_index(ft,
-            &entry->match)]));
-        list_remove(&entry->match_links);
-    }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        FT_ASSERT(!list_empty(&ft->flow_id_buckets[flow_id_to_bucket_index(ft,
-            &entry->id)]));
-        list_remove(&entry->flow_id_links);
-    }
+    hindex_remove(ft->flow_id_index, entry);
+    hindex_remove(ft->priority_index, entry);
+    hindex_remove(ft->match_index, entry);
 }
 
 /**
@@ -232,17 +170,7 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 static inline ft_entry_t *
 ft_id_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {
-    int idx;
-    ft_entry_t *entry = NULL, *iter_entry;
-    list_links_t *cur, *next;
-
-    idx = flow_id_to_bucket_index(ft, &id);
-    FT_FLOW_ID_ITER(ft, id, idx, iter_entry, cur, next) {
-        /* Found a match, break */
-        entry = iter_entry;
-        break;
-    }
-    return entry;
+    return hindex_lookup(ft->flow_id_index, &id, NULL);
 }
 
 
