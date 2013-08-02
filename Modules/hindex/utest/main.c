@@ -298,6 +298,32 @@ test_robin_hood_deleted(void)
     hindex_destroy(hindex);
 }
 
+static void
+test_reuse_deleted(void)
+{
+    struct hindex *hindex = hindex_create(hash_uint32, hindex_uint32_equality,
+                                    offsetof(struct obj, key), 0.875);
+
+    struct obj *obj1 = make_obj(1);
+
+    hindex_insert(hindex, obj1); /* bucket 1, distance 0 */
+    assert((hindex->hashes[1] & HINDEX_HASH_DELETED_BIT) == 0);
+    assert(hindex->objects[1] == obj1);
+
+    hindex_remove(hindex, obj1);
+    assert((hindex->hashes[1] & HINDEX_HASH_DELETED_BIT) != 0);
+
+    hindex_insert(hindex, obj1); /* bucket 1, distance 0 */
+    assert((hindex->hashes[1] & HINDEX_HASH_DELETED_BIT) == 0);
+    assert(hindex->objects[1] == obj1);
+
+    hindex_remove(hindex, obj1);
+
+    free(obj1);
+
+    hindex_destroy(hindex);
+}
+
 int main(int argc, char **argv)
 {
     (void) argc;
@@ -308,5 +334,6 @@ int main(int argc, char **argv)
     test_collisions();
     test_robin_hood();
     test_robin_hood_deleted();
+    test_reuse_deleted();
     return 0;
 }

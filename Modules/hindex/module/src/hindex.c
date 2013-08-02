@@ -147,15 +147,14 @@ hindex_insert__(struct hindex *hindex, void *object, uint32_t hash)
         uint32_t idx = hindex_index(hindex, hash, distance);
         uint32_t bucket_hash = hindex->hashes[idx];
         uint32_t bucket_distance = hindex_distance(hindex, idx, bucket_hash);
-        bool should_steal = distance > bucket_distance;
 
         if (bucket_hash == HINDEX_HASH_FREE
-            || ((bucket_hash & HINDEX_HASH_DELETED_BIT) && should_steal)) {
+            || ((bucket_hash & HINDEX_HASH_DELETED_BIT) && distance >= bucket_distance)) {
             hindex->hashes[idx] = hash;
             hindex->objects[idx] = object;
             hindex->count++;
             return;
-        } else if (should_steal) {
+        } else if (distance > bucket_distance) {
             /*
              * Swap with the current bucket owner and keep going to find
              * a new bucket for it.
