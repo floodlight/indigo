@@ -51,7 +51,8 @@ TESTS = []
 def test(name, cmd):
     TESTS.append({ 'name' : name, 'cmd' : cmd })
 
-# Builds (none yet)
+# Builds
+build('targets/hindex-benchmark')
 
 # Unit tests
 utestsdir = 'targets/utests'
