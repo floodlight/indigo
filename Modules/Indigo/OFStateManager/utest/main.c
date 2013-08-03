@@ -38,8 +38,6 @@
 
 #include <unistd.h>
 #include <ft.h>
-#include <ft_utils.h>
-#include <ft_hash.h>
 
 #include <loci/loci.h>
 #include <locitest/unittest.h>

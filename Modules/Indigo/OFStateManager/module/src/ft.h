@@ -290,5 +290,120 @@ struct ft_public_s {
              _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
             if (_id == (_entry)->id)
 
+extern ft_instance_t ft_hash_create(ft_config_t *config);
+
+extern void ft_hash_delete(ft_instance_t ft);
+
+extern indigo_error_t ft_hash_flow_add(ft_instance_t ft,
+                                       indigo_flow_id_t id,
+                                       of_flow_add_t *flow_add,
+                                       ft_entry_t **entry_p);
+
+extern indigo_error_t ft_hash_flow_delete(ft_instance_t ft,
+                                          ft_entry_t *entry);
+
+extern indigo_error_t ft_hash_flow_delete_id(ft_instance_t ft,
+                                             indigo_flow_id_t id);
+
+extern indigo_error_t ft_flow_first_match(ft_instance_t instance,
+                                          of_meta_match_t *query,
+                                          ft_entry_t **entry_ptr);
+
+extern biglist_t *ft_flow_query(ft_instance_t instance,
+                                of_meta_match_t *query);
+
+typedef void (*ft_iter_task_callback_f)(void *cookie, ft_entry_t *entry);
+
+indigo_error_t
+ft_spawn_iter_task(ft_instance_t instance,
+                   of_meta_match_t *query,
+                   ft_iter_task_callback_f callback,
+                   void *cookie,
+                   int priority);
+
+/**
+ * Look up a flow in a hash table instance by ID
+ *
+ * @param ft The flow table instance
+ * @param id The flow ID being checked
+ */
+
+ft_entry_t *
+ft_id_lookup(ft_instance_t ft, indigo_flow_id_t id);
+
+/**
+ * Modify the cookie associated with a specific entry in the table
+ * @param ft Handle for a flow table instance
+ * @param entry Pointer to the entry to update
+ * @param cookie Cookie value to use for modify
+ * @param cookie_mask Indicates part of cookie to update
+ */
+
+indigo_error_t
+ft_flow_modify_cookie(ft_instance_t instance, ft_entry_t *entry,
+                      uint64_t cookie, uint64_t cookie_mask);
+
+/**
+ * Modify the effects of a flow entry in the table
+ * @param ft The flow table handle
+ * @param entry Pointer to the entry to update
+ * @param flow_mod The LOCI flow mod object resulting in the modification
+ *
+ * The actions (instructions) and related metadata are updated for the flow
+ */
+
+indigo_error_t
+ft_flow_modify_effects(ft_instance_t instance,
+                       ft_entry_t *entry,
+                       of_flow_modify_t *flow_mod);
+
+/**
+ * Clear the counters associated with a specific entry in the table
+ * @param entry The entry to update
+ * @param packets (out) If non-NULL, store current packet count here
+ * @param bytes (out) If non-NULL, store current byte count here
+ *
+ * The output parameters may be NULL in which case they are ignored.
+ */
+
+indigo_error_t
+ft_flow_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes);
+
+/**
+ * Start the delete process for an entry.
+ * @param ft The flow table instance
+ * @param entry Pointer to the entry
+ * @param reason Reason the flow is being removed
+ *
+ * The delete operation is either started (MARKED) or indicated
+ * as waiting due to an outstanding operation.
+ *
+ * The pending delete count is incremented.
+ */
+
+void
+ft_flow_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
+                     indigo_fi_flow_removed_t reason);
+
+/**
+ * Map a priority to a hash bucket
+ */
+
+int
+prio_to_bucket_index(ft_instance_t ft, uint16_t priority);
+
+/**
+ * Map a match structure to a hash bucket
+ */
+
+int
+match_to_bucket_index(ft_instance_t ft, of_match_t *match);
+
+/**
+ * Map a flow id to a hash bucket
+ */
+
+int
+flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id);
 
 #endif /* _OFSTATEMANAGER_FT_H_ */

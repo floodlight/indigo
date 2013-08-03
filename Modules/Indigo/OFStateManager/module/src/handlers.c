@@ -38,8 +38,6 @@
 #include "ofstatemanager_int.h"
 #include "handlers.h"
 #include "ft.h"
-#include "ft_utils.h"
-#include "ft_hash.h"
 
 typedef struct ptr_cxn_wrapper_s {
     void *req; /**< Generic request pointer, usually a LOXI object */

@@ -39,8 +39,6 @@
 #include "ofstatemanager_decs.h"
 #include "handlers.h"
 #include "ft.h"
-#include "ft_utils.h"
-#include "ft_hash.h"
 
 static void flow_expiration_timer(void *cookie);
 
