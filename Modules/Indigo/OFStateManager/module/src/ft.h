@@ -112,7 +112,7 @@ typedef struct ft_config_s {
  * @param hard_expires Number of hard timeouts
  * @param idle_expires Number of idle timeouts
  * @param updates Number of calls that modified a flow entry including
- * effects_modify, cookie_modify and clear_counters.
+ * effects_modify and clear_counters.
  * @param table_full_errors Number of adds that failed due to no space
  * in the table.
  * @param forwarding_add_errors Number of adds that failed due to a
@@ -170,8 +170,6 @@ struct ft_public_s {
     ft_flow_first_match(_ft, _q, _entry_p)
 #define FT_MODIFY_EFFECTS(_ft, _entry, _flow_mod)                       \
     ft_flow_modify_effects(_ft, _entry, _flow_mod)
-#define FT_MODIFY_COOKIE(_ft, _entry, _cookie, _mask)                   \
-    ft_flow_modify_cookie(_ft, _entry, _cookie, _mask)
 #define FT_CLEAR_COUNTERS(_ft, _entry, _pkts, _bytes)                   \
     ft_flow_clear_counters(_ft, _entry, _pkts, _bytes)
 
@@ -379,18 +377,6 @@ biglist_t *ft_flow_query(ft_instance_t instance,
 
 ft_entry_t *
 ft_id_lookup(ft_instance_t ft, indigo_flow_id_t id);
-
-/**
- * Modify the cookie associated with a specific entry in the table
- * @param ft Handle for a flow table instance
- * @param entry Pointer to the entry to update
- * @param cookie Cookie value to use for modify
- * @param cookie_mask Indicates part of cookie to update
- */
-
-indigo_error_t
-ft_flow_modify_cookie(ft_instance_t instance, ft_entry_t *entry,
-                      uint64_t cookie, uint64_t cookie_mask);
 
 /**
  * Modify the effects of a flow entry in the table

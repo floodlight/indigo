@@ -463,15 +463,6 @@ ft_flow_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
 }
 
 indigo_error_t
-ft_flow_modify_cookie(ft_instance_t instance, ft_entry_t *entry,
-                      uint64_t cookie, uint64_t cookie_mask)
-{
-    entry->cookie = (entry->cookie & cookie_mask) | (cookie & cookie_mask);
-
-    return INDIGO_ERROR_NONE;
-}
-
-indigo_error_t
 ft_flow_modify_effects(ft_instance_t instance,
                        ft_entry_t *entry,
                        of_flow_modify_t *flow_mod)
