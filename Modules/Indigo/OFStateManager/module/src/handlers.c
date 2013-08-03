@@ -1180,7 +1180,7 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         return;
     }
 
-    entry = ft_id_lookup(ind_core_ft, flow_stats->flow_id);
+    entry = ft_lookup(ind_core_ft, flow_stats->flow_id);
     if (entry == NULL) {
         LOG_ERROR("failed to lookup flow during flow_stats callback");
         return;
@@ -1276,7 +1276,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
      */
     FT_ITER(ind_core_ft, entry, cur, next) {
        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-               ft_flow_meta_match(&query, entry)) {
+               ft_entry_meta_match(&query, entry)) {
            state->expected_count++;
            indigo_fwd_flow_stats_get(entry->id,
                                      INDIGO_POINTER_TO_COOKIE(state));
@@ -1407,7 +1407,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
      */
     FT_ITER(ind_core_ft, entry, cur, next) {
        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-              ft_flow_meta_match(&query, entry)) {
+              ft_entry_meta_match(&query, entry)) {
            state->expected_count++;
            indigo_fwd_flow_stats_get(entry->id,
                                      INDIGO_POINTER_TO_COOKIE(state));

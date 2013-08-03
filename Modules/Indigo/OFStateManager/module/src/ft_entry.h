@@ -241,6 +241,6 @@ typedef struct of_meta_match_s {
  * @returns Boolean, true if entry matches meta_match data
  */
 
-extern int ft_flow_meta_match(of_meta_match_t *query, ft_entry_t *entry);
+extern int ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry);
 
 #endif /* _OFSTATEMANAGER_FT_ENTRY_H_ */
