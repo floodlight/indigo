@@ -42,8 +42,4 @@ extern indigo_error_t ft_hash_flow_delete(ft_instance_t ft,
 extern indigo_error_t ft_hash_flow_delete_id(ft_instance_t ft,
                                              indigo_flow_id_t id);
 
-extern ft_entry_t *ft_hash_match_packet(ft_instance_t ft,
-                                        uint8_t *msg,
-                                        int len);
-
 #endif
