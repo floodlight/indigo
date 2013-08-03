@@ -38,8 +38,6 @@
 #include "ft_utils.h"
 #include "ft_hash.h"
 
-#define FT_HASH_MAGIC_NUMBER 0xf005ba11
-
 /**
  * Create a flow table instance
  * @param config Pointer to configuration structure
@@ -72,7 +70,6 @@ ft_hash_create(ft_config_t *config)
     }
     INDIGO_MEM_SET(ft, 0, sizeof(*ft));
     INDIGO_MEM_COPY(&ft->config,  config, sizeof(ft_config_t));
-    ft->magic = FT_HASH_MAGIC_NUMBER;
 
     list_init(&ft->free_list);
     list_init(&ft->all_list);
@@ -150,8 +147,6 @@ ft_hash_flow_add(ft_instance_t ft, indigo_flow_id_t id,
     list_links_t *links;
     indigo_error_t rv;
 
-    INDIGO_ASSERT(ft->magic == FT_HASH_MAGIC_NUMBER);
-
     LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
 
     /* If flow ID already exists, error. */
@@ -190,8 +185,6 @@ ft_hash_flow_add(ft_instance_t ft, indigo_flow_id_t id,
 indigo_error_t
 ft_hash_flow_delete(ft_instance_t ft, ft_entry_t *entry)
 {
-    INDIGO_ASSERT(ft->magic == FT_HASH_MAGIC_NUMBER);
-
     LOG_TRACE("Delete rsn %d flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               entry->removed_reason, entry->id);
 
@@ -268,7 +261,6 @@ ft_hash_delete(ft_instance_t ft)
     if (ft == NULL) {
         return;
     }
-    INDIGO_ASSERT(ft->magic == FT_HASH_MAGIC_NUMBER);
 
     FT_ITER(ft, entry, cur, next) {
         ft_entry_unlink(ft, entry);
@@ -295,6 +287,5 @@ ft_hash_delete(ft_instance_t ft)
         ft->flow_id_buckets = NULL;
     }
 
-    ft->magic = 0;
     INDIGO_MEM_FREE(ft);
 }
