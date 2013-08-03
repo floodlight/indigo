@@ -19,7 +19,7 @@
 
 /**
  * @file
- * @brief Implementation of generic flow table routines
+ * @brief Implementation of flow table routines
  */
 
 #include <OFStateManager/ofstatemanager_config.h>

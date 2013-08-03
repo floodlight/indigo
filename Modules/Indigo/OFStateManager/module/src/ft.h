@@ -52,16 +52,11 @@
 #include <loci/loci.h>
 #include <BigList/biglist.h>
 #include <AIM/aim_list.h>
-#include <indigo/of_connection_manager.h>
 
 #include "ft_entry.h"
 
 /**
- * Need forward declarations of table structure before including driver
- */
-
-/**
- * Forward declaration of connection handle for other typedefs
+ * Forward declaration of flowtable handle for other typedefs
  */
 
 typedef struct ft_public_s ft_public_t;
@@ -297,4 +292,3 @@ struct ft_public_s {
 
 
 #endif /* _OFSTATEMANAGER_FT_H_ */
-
