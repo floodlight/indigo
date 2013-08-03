@@ -157,8 +157,6 @@ struct ft_public_s {
     list_head_t *prio_buckets;     /* Array of priority based buckets */
     list_head_t *match_buckets;    /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
-
-    uint32_t magic; /* For debug/error checking */
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
