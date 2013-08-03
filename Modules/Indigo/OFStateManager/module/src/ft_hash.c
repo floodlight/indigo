@@ -235,25 +235,6 @@ ft_hash_flow_delete_id(ft_instance_t ft,
 }
 
 /**
- * Find the highest priority match in the flow table for a packet
- * @param ft Handle for a flow table instance
- * @param msg Pointer to a buffer containing the packet data
- * @param len The length of the packet in bytes
- * @returns A flow id; INDIGO_FLOW_ID_INVALID if no match is found
- *
- * This is really a convenience function for prototyping.  It is
- * assumed that this interface will generally not implement functions
- * optimized for packet matching.
- */
-
-ft_entry_t *
-ft_hash_match_packet(ft_instance_t ft, uint8_t *msg, int len)
-{
-    /* @fixme */
-    return NULL;
-}
-
-/**
  * Delete a flow table instance and free resources
  * @param ft A handle for the flow table instance to be deleted
  *
