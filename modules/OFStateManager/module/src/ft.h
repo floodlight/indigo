@@ -154,30 +154,8 @@ struct ft_public_s {
 #define FT_CONFIG(_ft) (&(_ft)->config)
 #define FT_STATUS(_ft) (&(_ft)->status)
 
-/* These defines come from the original table driven version */
-/* Redefine FT macros to use hash table or generic calls */
-#define FT_ADD(_ft, _id, _flow_add, _entry_p)                           \
-    ft_add(_ft, _id, _flow_add, _entry_p)
-#define FT_DELETE_ID(_ft, _id)                                          \
-    ft_delete_id(_ft, _id)
-#define FT_MARK_ENTRIES(_ft, _q, _state, _reason)                       \
-    (FT_DRIVER(_ft)->mark_entries((_ft), (_q), (_state), (_reason)))
-#define FT_ENTRY_FREE(_ft, _entry)                                      \
-    ft_delete(_ft, _entry)
-#define FT_QUERY(_ft, _q)                                               \
-    ft_query(_ft, _q)
-#define FT_FIRST_MATCH(_ft, _q, _entry_p)                               \
-    ft_first_match(_ft, _q, _entry_p)
-#define FT_MODIFY_EFFECTS(_ft, _entry, _flow_mod)                       \
-    ft_entry_modify_effects(_ft, _entry, _flow_mod)
-#define FT_CLEAR_COUNTERS(_ft, _entry, _pkts, _bytes)                   \
-    ft_entry_clear_counters(_ft, _entry, _pkts, _bytes)
-
 /**
  * Safe iterator for entire flow table
- *
- * This is a more efficient alternative to using the iter object
- * from the driver.
  *
  * The current entry may be deleted during this iteration.
  * @param _ft The instance of the flow table being iterated

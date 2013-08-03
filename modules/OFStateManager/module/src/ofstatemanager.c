@@ -567,7 +567,7 @@ process_flow_removal(ft_entry_t *entry,
        INDIGO_MEM_FREE(BIGLIST_CAST(void *, ble));
     }
     entry->queued_reqs = NULL;
-    rv = FT_ENTRY_FREE(ind_core_ft, entry);
+    rv = ft_delete(ind_core_ft, entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow from state mgr. id: "
                   INDIGO_FLOW_ID_PRINTF_FORMAT,
