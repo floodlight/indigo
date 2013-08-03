@@ -439,9 +439,6 @@ ind_core_init(ind_core_config_t *config)
     ft_config.match_bucket_count = config->max_flowtable_entries;
     ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
-    ft_config.entry_deleted_cb = NULL;
-    ft_config.deleted_cookie = NULL;
-
     if ((ind_core_ft = ft_hash_create(&ft_config)) == NULL) {
         LOG_ERROR("Unable to allocate flow table\n");
         return INDIGO_ERROR_RESOURCE;
@@ -572,7 +569,7 @@ process_flow_removal(ft_entry_t *entry,
        INDIGO_MEM_FREE(BIGLIST_CAST(void *, ble));
     }
     entry->queued_reqs = NULL;
-    rv = FT_ENTRY_FREE(ind_core_ft, entry, 0);
+    rv = FT_ENTRY_FREE(ind_core_ft, entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow from state mgr. id: "
                   INDIGO_FLOW_ID_PRINTF_FORMAT,

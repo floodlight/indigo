@@ -668,7 +668,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
  done:
     if (result != INDIGO_ERROR_NONE || overlapf) {
         if (ptr_cxn)  INDIGO_MEM_FREE(ptr_cxn);
-        if (entry)    FT_ENTRY_FREE(ind_core_ft, entry, 0);
+        if (entry)    FT_ENTRY_FREE(ind_core_ft, entry);
         of_object_delete(_obj);
     }
 
@@ -767,7 +767,7 @@ indigo_core_flow_create_callback(indigo_error_t result,
                              (of_flow_modify_t *)flow_add);
 
        /* Free entry in local flow table */
-       FT_ENTRY_FREE(ind_core_ft, entry, 0);
+       FT_ENTRY_FREE(ind_core_ft, entry);
     }
 
     INDIGO_MEM_FREE(ptr_cxn);

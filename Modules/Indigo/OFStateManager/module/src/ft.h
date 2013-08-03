@@ -93,34 +93,11 @@ typedef ft_public_t *ft_instance_t;
  ****************************************************************/
 
 /**
- * Callback prototype for notifying of a deleted entry
- * @param ft Handle for a flow table instance
- * @param entry Pointer to the entry that was deleted
- * @param cookie Data passed on flow table create
- *
- * It is required that the table driver will make no reference to the flow_add
- * pointer after this callback returns.
- */
-typedef void (*ft_entry_deleted_f)(ft_instance_t ft,
-                                   ft_entry_t *entry,
-                                   void *cookie);
-
-
-
-/**
  * Flow table configuration structure
  * @param max_entries Maximum number of entries to support
  * @param prio_bucket_count How many buckets for priority hash table
  * @param match_bucket_count How many buckets for match hash table
  * @param flow_id_bucket_count How many buckets for flow_id hash table
- * @param entry_deleted_callback Callback made for async deletes
- * @param deleted_cookie Data passed to entry_deleted_callback
- *
- * If entry_deleted_callback is NULL, no callbacks will be made when table
- * entries are deleted.
- *
- * Note that entry_deleted_callback may be called when the flow_delete
- * driver function is called based on the flags passed to the flow_delete call.
  */
 
 typedef struct ft_config_s {
@@ -128,8 +105,6 @@ typedef struct ft_config_s {
     int prio_bucket_count;
     int match_bucket_count;
     int flow_id_bucket_count;
-    ft_entry_deleted_f entry_deleted_cb;
-    void *deleted_cookie;
 } ft_config_t;
 
 /**
@@ -193,12 +168,12 @@ struct ft_public_s {
 /* Redefine FT macros to use hash table or generic calls */
 #define FT_ADD(_ft, _id, _flow_add, _entry_p)                           \
     ft_hash_flow_add(_ft, _id, _flow_add, _entry_p)
-#define FT_DELETE_ID(_ft, _id, _cb)                                     \
-    ft_hash_flow_delete_id(_ft, _id, _cb)
+#define FT_DELETE_ID(_ft, _id)                                          \
+    ft_hash_flow_delete_id(_ft, _id)
 #define FT_MARK_ENTRIES(_ft, _q, _state, _reason)                       \
     (FT_DRIVER(_ft)->mark_entries((_ft), (_q), (_state), (_reason)))
-#define FT_ENTRY_FREE(_ft, _entry, _cb)                                 \
-    ft_hash_flow_delete(_ft, _entry, _cb)
+#define FT_ENTRY_FREE(_ft, _entry)                                      \
+    ft_hash_flow_delete(_ft, _entry)
 #define FT_QUERY(_ft, _q)                                               \
     ft_flow_query(_ft, _q)
 #define FT_FIRST_MATCH(_ft, _q, _entry_p)                               \
