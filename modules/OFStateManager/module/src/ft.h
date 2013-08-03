@@ -134,9 +134,6 @@ typedef struct ft_status_s {
 /**
  * The public view of the instance for easier dereference
  *
- * With the driver table implementation gone, this exposes more of
- * the internals now.
- *
  * This should be treated as read-only outside of the
  * flow table instance implementation
  */
@@ -290,39 +287,91 @@ struct ft_public_s {
              _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
             if (_id == (_entry)->id)
 
-extern ft_instance_t ft_hash_create(ft_config_t *config);
+/*
+ * Create a flow table instance
+ *
+ * @param config Pointer to configuration structure
+ * @returns A handle for the flow table instance
+ *
+ * If config->max_entries <= 0, use the default size
+ */
 
-extern void ft_hash_delete(ft_instance_t ft);
-
-extern indigo_error_t ft_hash_flow_add(ft_instance_t ft,
-                                       indigo_flow_id_t id,
-                                       of_flow_add_t *flow_add,
-                                       ft_entry_t **entry_p);
-
-extern indigo_error_t ft_hash_flow_delete(ft_instance_t ft,
-                                          ft_entry_t *entry);
-
-extern indigo_error_t ft_hash_flow_delete_id(ft_instance_t ft,
-                                             indigo_flow_id_t id);
-
-extern indigo_error_t ft_flow_first_match(ft_instance_t instance,
-                                          of_meta_match_t *query,
-                                          ft_entry_t **entry_ptr);
-
-extern biglist_t *ft_flow_query(ft_instance_t instance,
-                                of_meta_match_t *query);
-
-typedef void (*ft_iter_task_callback_f)(void *cookie, ft_entry_t *entry);
-
-indigo_error_t
-ft_spawn_iter_task(ft_instance_t instance,
-                   of_meta_match_t *query,
-                   ft_iter_task_callback_f callback,
-                   void *cookie,
-                   int priority);
+ft_instance_t ft_hash_create(ft_config_t *config);
 
 /**
- * Look up a flow in a hash table instance by ID
+ * Delete a flow table instance and free resources
+ * @param ft A handle for the flow table instance to be deleted
+ *
+ * Will call ft_entry_clear on all entries.
+ *
+ * Free underlying data structures
+ */
+
+void ft_hash_delete(ft_instance_t ft);
+
+/**
+ * Add a flow entry to the table
+ * @param ft The flow table handle
+ * @param id The external flow identifier
+ * @param flow_add The LOCI flow mod object resulting in the add
+ * @param entry_p Output; pointer to place to store entry if successful
+ *
+ * If the entry already exists, an error is returned.
+ */
+
+indigo_error_t ft_hash_flow_add(ft_instance_t ft,
+                                indigo_flow_id_t id,
+                                of_flow_add_t *flow_add,
+                                ft_entry_t **entry_p);
+
+/**
+ * Remove a specific flow entry from the table
+ * @param ft The flow table handle
+ * @param entry Pointer to the entry to be removed
+ */
+
+indigo_error_t ft_hash_flow_delete(ft_instance_t ft,
+                                   ft_entry_t *entry);
+
+/**
+ * Remove a flow entry from the table indicated by flow ID
+ * @param ft The flow table handle
+ * @param id Flow ID of the entry to remove
+ *
+ * Just looks up the entry and calls ft_hash_flow_delete.
+ */
+
+indigo_error_t ft_hash_flow_delete_id(ft_instance_t ft,
+                                      indigo_flow_id_t id);
+
+/**
+ * Query the flow table and return the first match if found
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query
+ * @param entry_ptr (out) Pointer to where to store the result if found
+ * @returns INDIGO_ERROR_NONE if found; otherwise INDIGO_ERROR_NOT_FOUND
+ *
+ * entry_ptr may be NULL; Normally this is called with priority checked.
+ */
+
+indigo_error_t ft_flow_first_match(ft_instance_t instance,
+                                   of_meta_match_t *query,
+                                   ft_entry_t **entry_ptr);
+
+/**
+ * Query the flow table and return all matches
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query
+ * @returns A list with pointers to ft_entry_t
+ *
+ * @fixme Currently we don't/can't check for failed alloc in biglist.
+ */
+
+biglist_t *ft_flow_query(ft_instance_t instance,
+                         of_meta_match_t *query);
+
+/**
+ * Look up a flow by ID
  *
  * @param ft The flow table instance
  * @param id The flow ID being checked
@@ -405,5 +454,33 @@ match_to_bucket_index(ft_instance_t ft, of_match_t *match);
 
 int
 flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id);
+
+/*
+ * Spawn a task that iterates over the flowtable
+ *
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query (or NULL)
+ * @param callback Function called for each flowtable entry
+ * @returns An error code
+ *
+ * This function does not guarantee a consistent view of the
+ * flowtable over the course of the task.
+ *
+ * This function does not use any indexes on the flowtable.
+ *
+ * The callback function will be called with a NULL entry argument at
+ * the end of the iteration.
+ *
+ * Deleted entries are skipped.
+ */
+
+typedef void (*ft_iter_task_callback_f)(void *cookie, ft_entry_t *entry);
+
+indigo_error_t
+ft_spawn_iter_task(ft_instance_t instance,
+                   of_meta_match_t *query,
+                   ft_iter_task_callback_f callback,
+                   void *cookie,
+                   int priority);
 
 #endif /* _OFSTATEMANAGER_FT_H_ */
