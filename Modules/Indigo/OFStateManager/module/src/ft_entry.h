@@ -145,7 +145,6 @@ typedef struct ft_entry_s {
 
     /* Updated by implementation */
     uint8_t table_id;
-    biglist_t *output_ports;
     indigo_time_t insert_time;
     uint64_t packets;
     uint64_t bytes;
