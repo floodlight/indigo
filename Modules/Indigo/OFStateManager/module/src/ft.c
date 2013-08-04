@@ -31,12 +31,10 @@
 
 static indigo_error_t ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add);
 static void ft_entry_clear(ft_instance_t ft, ft_entry_t *entry);
-static biglist_t *out_port_list_populate_from_actions(of_list_action_t *actions);
-static biglist_t *out_port_list_populate_from_instructions(of_list_instruction_t *instructions);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
-static inline int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
+static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
 
 #define FT_HASH_SEED 0
 
@@ -708,10 +706,6 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 static void
 ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
 {
-    if (entry->output_ports != NULL) {
-        biglist_free(entry->output_ports);
-        entry->output_ports = NULL;
-    }
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = NULL;
@@ -731,44 +725,6 @@ ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
     entry->state = FT_FLOW_STATE_FREE;
 }
 
-static biglist_t *
-out_port_list_populate_from_actions(of_list_action_t *actions)
-{
-    of_action_t elt;
-    of_action_output_t *output;
-    int loop_rv;
-    of_port_no_t port_no;
-    biglist_t *bl = NULL;
-
-    output = &elt.output;
-    OF_LIST_ACTION_ITER(actions, &elt, loop_rv) {
-        if (output->object_id == OF_ACTION_OUTPUT) {
-            of_action_output_port_get(output, &port_no);
-            bl = biglist_prepend(bl, (void*)((uintptr_t)(port_no)));
-        }
-    }
-
-    return bl;
-}
-
-static biglist_t *
-out_port_list_populate_from_instructions(of_list_instruction_t *instructions)
-{
-    of_instruction_t inst;
-    int loop_rv;
-    biglist_t *bl = NULL;
-
-    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
-            bl = biglist_append_list(bl, out_port_list_populate_from_actions(&actions));
-        }
-    }
-
-    return bl;
-}
-
 /* Populate the output port list and effects */
 static indigo_error_t
 ft_entry_set_effects(ft_entry_t *entry,
@@ -781,9 +737,7 @@ ft_entry_set_effects(ft_entry_t *entry,
             LOG_ERROR("Could not get action list");
             return INDIGO_ERROR_RESOURCE;
         }
-        biglist_free(entry->output_ports);
         of_list_action_delete(entry->effects.actions);
-        entry->output_ports = out_port_list_populate_from_actions(actions);
         entry->effects.actions = actions;
     } else {
         of_list_instruction_t *instructions;
@@ -791,29 +745,61 @@ ft_entry_set_effects(ft_entry_t *entry,
             LOG_ERROR("Could not get instruction list");
             return INDIGO_ERROR_RESOURCE;
         }
-        biglist_free(entry->output_ports);
         of_list_instruction_delete(entry->effects.instructions);
-        entry->output_ports = out_port_list_populate_from_instructions(instructions);
         entry->effects.instructions = instructions;
     }
 
     return INDIGO_ERROR_NONE;
 }
 
+static int
+action_list_has_out_port(of_list_action_t *actions, of_port_no_t port)
+{
+    of_action_t act;
+    int loop_rv;
+    of_port_no_t out_port;
+
+    OF_LIST_ACTION_ITER(actions, &act, loop_rv) {
+        if (act.header.object_id == OF_ACTION_OUTPUT) {
+            of_action_output_port_get(&act.output, &out_port);
+            if (out_port == port) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+static int
+instruction_list_has_out_port(of_list_instruction_t *instructions, of_port_no_t port)
+{
+    of_instruction_t inst;
+    int loop_rv;
+
+    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
+        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
+            of_list_action_t actions;
+            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
+            if (action_list_has_out_port(&actions, port)) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 /**
  * Determine if the given entry has port as an output port
  */
-static inline int
+static int
 ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
 {
-    biglist_t *elt;
-    of_port_no_t chk_port;
-
-    for (elt = entry->output_ports; elt != NULL; elt = elt->next) {
-        chk_port = (uintptr_t)elt->data;
-        if (port == chk_port) {
-            return 1;
-        }
+    if (entry->effects.actions->version == OF_VERSION_1_0) {
+        return action_list_has_out_port(entry->effects.actions, port);
+    } else {
+        return instruction_list_has_out_port(entry->effects.instructions, port);
     }
 
     return 0;
