@@ -39,8 +39,6 @@
 #include "ofstatemanager_decs.h"
 #include "handlers.h"
 #include "ft.h"
-#include "ft_utils.h"
-#include "ft_hash.h"
 
 static void flow_expiration_timer(void *cookie);
 
@@ -439,10 +437,7 @@ ind_core_init(ind_core_config_t *config)
     ft_config.match_bucket_count = config->max_flowtable_entries;
     ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
-    ft_config.entry_deleted_cb = NULL;
-    ft_config.deleted_cookie = NULL;
-
-    if ((ind_core_ft = ft_hash_create(&ft_config)) == NULL) {
+    if ((ind_core_ft = ft_create(&ft_config)) == NULL) {
         LOG_ERROR("Unable to allocate flow table\n");
         return INDIGO_ERROR_RESOURCE;
     }
@@ -521,7 +516,7 @@ void
 ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 {
     /* Mark the flow deleted or pending in OF state mgr table */
-    ft_flow_mark_deleted(ind_core_ft, entry, reason);
+    ft_entry_mark_deleted(ind_core_ft, entry, reason);
 
     /* If it is not pending, notify forwarding; final cleanup occurs in
      * flow deleted callback. */
@@ -572,7 +567,7 @@ process_flow_removal(ft_entry_t *entry,
        INDIGO_MEM_FREE(BIGLIST_CAST(void *, ble));
     }
     entry->queued_reqs = NULL;
-    rv = FT_ENTRY_FREE(ind_core_ft, entry, 0);
+    rv = ft_delete(ind_core_ft, entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow from state mgr. id: "
                   INDIGO_FLOW_ID_PRINTF_FORMAT,
@@ -604,7 +599,7 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
               INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
 
     /* After entry look up, this looks like flow delete callback */
-    entry = ft_id_lookup(ind_core_ft, stats->flow_id);
+    entry = ft_lookup(ind_core_ft, stats->flow_id);
     if (entry == NULL) {
         LOG_TRACE("Async flow removed: did not find entry in SM table. id "
                   INDIGO_FLOW_ID_PRINTF_FORMAT,
@@ -702,7 +697,7 @@ ind_core_finish(void)
         ind_core_enable_set(0);
     }
 
-    ft_hash_delete(ind_core_ft);
+    ft_destroy(ind_core_ft);
 
     ind_core_init_done = 0;
 
@@ -1007,7 +1002,7 @@ flow_expiration_timer_cb(struct ind_core_flow_stats_state *state,
     }
 
     /* @fixme Too bad we have to lookup here */
-    entry = ft_id_lookup(ind_core_ft, flow_stats->flow_id);
+    entry = ft_lookup(ind_core_ft, flow_stats->flow_id);
     if (entry == NULL) {
         LOG_ERROR("failed to lookup flow during flow expiration callback");
         return;

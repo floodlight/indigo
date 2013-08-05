@@ -38,8 +38,6 @@
 #include "ofstatemanager_int.h"
 #include "handlers.h"
 #include "ft.h"
-#include "ft_utils.h"
-#include "ft_hash.h"
 
 typedef struct ptr_cxn_wrapper_s {
     void *req; /**< Generic request pointer, usually a LOXI object */
@@ -552,7 +550,7 @@ overlap_found(of_flow_modify_t *obj)
     indigo_error_t rv;
 
     _TRY(flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1));
-    rv = FT_FIRST_MATCH(ind_core_ft, &query, NULL);
+    rv = ft_first_match(ind_core_ft, &query, NULL);
 
     if (rv == INDIGO_ERROR_NONE) {
         return 1;
@@ -642,7 +640,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     /* Delete existing flow if any */
-    if (FT_FIRST_MATCH(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+    if (ft_first_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
     }
 
@@ -651,9 +649,9 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     flow_id = flow_id_next();
 
-    result = FT_ADD(ind_core_ft, flow_id, obj, &entry);
+    result = ft_add(ind_core_ft, flow_id, obj, &entry);
     if (result != INDIGO_ERROR_NONE) {
-        LOG_ERROR("FT_ADD() failed");
+        LOG_ERROR("ft_add() failed");
         goto done;
     }
 
@@ -668,7 +666,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
  done:
     if (result != INDIGO_ERROR_NONE || overlapf) {
         if (ptr_cxn)  INDIGO_MEM_FREE(ptr_cxn);
-        if (entry)    FT_ENTRY_FREE(ind_core_ft, entry, 0);
+        if (entry)    ft_delete(ind_core_ft, entry);
         of_object_delete(_obj);
     }
 
@@ -767,7 +765,7 @@ indigo_core_flow_create_callback(indigo_error_t result,
                              (of_flow_modify_t *)flow_add);
 
        /* Free entry in local flow table */
-       FT_ENTRY_FREE(ind_core_ft, entry, 0);
+       ft_delete(ind_core_ft, entry);
     }
 
     INDIGO_MEM_FREE(ptr_cxn);
@@ -814,7 +812,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_object_delete(_obj);
         return rv;
     }
-    list = FT_QUERY(ind_core_ft, &query);
+    list = ft_query(ind_core_ft, &query);
     if ((count = biglist_length(list)) == 0) {
         LOG_TRACE("No entries to modify, treat as add: %p", obj);
         biglist_free(list);
@@ -911,7 +909,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    rv = FT_FIRST_MATCH(ind_core_ft, &query, &entry);
+    rv = ft_first_match(ind_core_ft, &query, &entry);
     if (rv == INDIGO_ERROR_NOT_FOUND) {
         LOG_TRACE("No entries to modify strict, treat as add: %p", obj);
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
@@ -975,7 +973,7 @@ indigo_core_flow_modify_callback(indigo_error_t result,
     if (result == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow mod callback id " INDIGO_COOKIE_PRINTF_FORMAT,
                   entry->id);
-        FT_MODIFY_EFFECTS(ind_core_ft, entry, flow_mod);
+        ft_entry_modify_effects(ind_core_ft, entry, flow_mod);
     } else {
         LOG_TRACE("Flow mod callback error, %d", result);
         flow_mod_err_msg_send(result, flow_mod->version, cxn_id, flow_mod);
@@ -1068,7 +1066,7 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    if (FT_FIRST_MATCH(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+    if (ft_first_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
     }
 
@@ -1182,7 +1180,7 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         return;
     }
 
-    entry = ft_id_lookup(ind_core_ft, flow_stats->flow_id);
+    entry = ft_lookup(ind_core_ft, flow_stats->flow_id);
     if (entry == NULL) {
         LOG_ERROR("failed to lookup flow during flow_stats callback");
         return;
@@ -1278,7 +1276,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
      */
     FT_ITER(ind_core_ft, entry, cur, next) {
        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-               ft_flow_meta_match(&query, entry)) {
+               ft_entry_meta_match(&query, entry)) {
            state->expected_count++;
            indigo_fwd_flow_stats_get(entry->id,
                                      INDIGO_POINTER_TO_COOKIE(state));
@@ -1409,7 +1407,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
      */
     FT_ITER(ind_core_ft, entry, cur, next) {
        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-              ft_flow_meta_match(&query, entry)) {
+              ft_entry_meta_match(&query, entry)) {
            state->expected_count++;
            indigo_fwd_flow_stats_get(entry->id,
                                      INDIGO_POINTER_TO_COOKIE(state));

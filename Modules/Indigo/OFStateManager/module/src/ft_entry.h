@@ -20,7 +20,6 @@
 #ifndef _OFSTATEMANAGER_FT_ENTRY_H_
 #define _OFSTATEMANAGER_FT_ENTRY_H_
 
-#include <indigo/of_connection_manager.h>
 #include <AIM/aim_list.h>
 #include <indigo/indigo.h>
 #include <loci/loci.h>
@@ -152,9 +151,6 @@ typedef struct ft_entry_s {
     uint64_t bytes;
     indigo_time_t last_counter_change;
 
-    /* For linear flow table:  DEPRECATED */
-    struct ft_entry_s *id_bucket_next;
-
     /* For linked list maintance */
     list_links_t table_links;      /* For iterating across the flow table */
     list_links_t prio_links;       /* Search by priority */
@@ -245,6 +241,6 @@ typedef struct of_meta_match_s {
  * @returns Boolean, true if entry matches meta_match data
  */
 
-extern int ft_flow_meta_match(of_meta_match_t *query, ft_entry_t *entry);
+extern int ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry);
 
 #endif /* _OFSTATEMANAGER_FT_ENTRY_H_ */

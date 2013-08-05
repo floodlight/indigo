@@ -52,16 +52,11 @@
 #include <loci/loci.h>
 #include <BigList/biglist.h>
 #include <AIM/aim_list.h>
-#include <indigo/of_connection_manager.h>
 
 #include "ft_entry.h"
 
 /**
- * Need forward declarations of table structure before including driver
- */
-
-/**
- * Forward declaration of connection handle for other typedefs
+ * Forward declaration of flowtable handle for other typedefs
  */
 
 typedef struct ft_public_s ft_public_t;
@@ -93,34 +88,11 @@ typedef ft_public_t *ft_instance_t;
  ****************************************************************/
 
 /**
- * Callback prototype for notifying of a deleted entry
- * @param ft Handle for a flow table instance
- * @param entry Pointer to the entry that was deleted
- * @param cookie Data passed on flow table create
- *
- * It is required that the table driver will make no reference to the flow_add
- * pointer after this callback returns.
- */
-typedef void (*ft_entry_deleted_f)(ft_instance_t ft,
-                                   ft_entry_t *entry,
-                                   void *cookie);
-
-
-
-/**
  * Flow table configuration structure
  * @param max_entries Maximum number of entries to support
  * @param prio_bucket_count How many buckets for priority hash table
  * @param match_bucket_count How many buckets for match hash table
  * @param flow_id_bucket_count How many buckets for flow_id hash table
- * @param entry_deleted_callback Callback made for async deletes
- * @param deleted_cookie Data passed to entry_deleted_callback
- *
- * If entry_deleted_callback is NULL, no callbacks will be made when table
- * entries are deleted.
- *
- * Note that entry_deleted_callback may be called when the flow_delete
- * driver function is called based on the flags passed to the flow_delete call.
  */
 
 typedef struct ft_config_s {
@@ -128,8 +100,6 @@ typedef struct ft_config_s {
     int prio_bucket_count;
     int match_bucket_count;
     int flow_id_bucket_count;
-    ft_entry_deleted_f entry_deleted_cb;
-    void *deleted_cookie;
 } ft_config_t;
 
 /**
@@ -142,7 +112,7 @@ typedef struct ft_config_s {
  * @param hard_expires Number of hard timeouts
  * @param idle_expires Number of idle timeouts
  * @param updates Number of calls that modified a flow entry including
- * effects_modify, cookie_modify and clear_counters.
+ * effects_modify and clear_counters.
  * @param table_full_errors Number of adds that failed due to no space
  * in the table.
  * @param forwarding_add_errors Number of adds that failed due to a
@@ -164,9 +134,6 @@ typedef struct ft_status_s {
 /**
  * The public view of the instance for easier dereference
  *
- * With the driver table implementation gone, this exposes more of
- * the internals now.
- *
  * This should be treated as read-only outside of the
  * flow table instance implementation
  */
@@ -182,39 +149,13 @@ struct ft_public_s {
     list_head_t *prio_buckets;     /* Array of priority based buckets */
     list_head_t *match_buckets;    /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
-
-    uint32_t magic; /* For debug/error checking */
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
 #define FT_STATUS(_ft) (&(_ft)->status)
 
-/* These defines come from the original table driven version */
-/* Redefine FT macros to use hash table or generic calls */
-#define FT_ADD(_ft, _id, _flow_add, _entry_p)                           \
-    ft_hash_flow_add(_ft, _id, _flow_add, _entry_p)
-#define FT_DELETE_ID(_ft, _id, _cb)                                     \
-    ft_hash_flow_delete_id(_ft, _id, _cb)
-#define FT_MARK_ENTRIES(_ft, _q, _state, _reason)                       \
-    (FT_DRIVER(_ft)->mark_entries((_ft), (_q), (_state), (_reason)))
-#define FT_ENTRY_FREE(_ft, _entry, _cb)                                 \
-    ft_hash_flow_delete(_ft, _entry, _cb)
-#define FT_QUERY(_ft, _q)                                               \
-    ft_flow_query(_ft, _q)
-#define FT_FIRST_MATCH(_ft, _q, _entry_p)                               \
-    ft_flow_first_match(_ft, _q, _entry_p)
-#define FT_MODIFY_EFFECTS(_ft, _entry, _flow_mod)                       \
-    ft_flow_modify_effects(_ft, _entry, _flow_mod)
-#define FT_MODIFY_COOKIE(_ft, _entry, _cookie, _mask)                   \
-    ft_flow_modify_cookie(_ft, _entry, _cookie, _mask)
-#define FT_CLEAR_COUNTERS(_ft, _entry, _pkts, _bytes)                   \
-    ft_flow_clear_counters(_ft, _entry, _pkts, _bytes)
-
 /**
  * Safe iterator for entire flow table
- *
- * This is a more efficient alternative to using the iter object
- * from the driver.
  *
  * The current entry may be deleted during this iteration.
  * @param _ft The instance of the flow table being iterated
@@ -322,6 +263,188 @@ struct ft_public_s {
              _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
             if (_id == (_entry)->id)
 
+/*
+ * Create a flow table instance
+ *
+ * @param config Pointer to configuration structure
+ * @returns A handle for the flow table instance
+ *
+ * If config->max_entries <= 0, use the default size
+ */
+
+ft_instance_t ft_create(ft_config_t *config);
+
+/**
+ * Delete a flow table instance and free resources
+ * @param ft A handle for the flow table instance to be deleted
+ *
+ * Will call ft_entry_clear on all entries.
+ *
+ * Free underlying data structures
+ */
+
+void ft_destroy(ft_instance_t ft);
+
+/**
+ * Add a flow entry to the table
+ * @param ft The flow table handle
+ * @param id The external flow identifier
+ * @param flow_add The LOCI flow mod object resulting in the add
+ * @param entry_p Output; pointer to place to store entry if successful
+ *
+ * If the entry already exists, an error is returned.
+ */
+
+indigo_error_t ft_add(ft_instance_t ft,
+                      indigo_flow_id_t id,
+                      of_flow_add_t *flow_add,
+                      ft_entry_t **entry_p);
+
+/**
+ * Remove a specific flow entry from the table
+ * @param ft The flow table handle
+ * @param entry Pointer to the entry to be removed
+ */
+
+indigo_error_t ft_delete(ft_instance_t ft,
+                         ft_entry_t *entry);
+
+/**
+ * Remove a flow entry from the table indicated by flow ID
+ * @param ft The flow table handle
+ * @param id Flow ID of the entry to remove
+ *
+ * Just looks up the entry and calls ft_delete.
+ */
+
+indigo_error_t ft_delete_id(ft_instance_t ft,
+                            indigo_flow_id_t id);
+
+/**
+ * Query the flow table and return the first match if found
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query
+ * @param entry_ptr (out) Pointer to where to store the result if found
+ * @returns INDIGO_ERROR_NONE if found; otherwise INDIGO_ERROR_NOT_FOUND
+ *
+ * entry_ptr may be NULL; Normally this is called with priority checked.
+ */
+
+indigo_error_t ft_first_match(ft_instance_t instance,
+                              of_meta_match_t *query,
+                              ft_entry_t **entry_ptr);
+
+/**
+ * Query the flow table and return all matches
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query
+ * @returns A list with pointers to ft_entry_t
+ *
+ * @fixme Currently we don't/can't check for failed alloc in biglist.
+ */
+
+biglist_t *ft_query(ft_instance_t instance,
+                    of_meta_match_t *query);
+
+/**
+ * Look up a flow by ID
+ *
+ * @param ft The flow table instance
+ * @param id The flow ID being checked
+ */
+
+ft_entry_t *
+ft_lookup(ft_instance_t ft, indigo_flow_id_t id);
+
+/**
+ * Modify the effects of a flow entry in the table
+ * @param ft The flow table handle
+ * @param entry Pointer to the entry to update
+ * @param flow_mod The LOCI flow mod object resulting in the modification
+ *
+ * The actions (instructions) and related metadata are updated for the flow
+ */
+
+indigo_error_t
+ft_entry_modify_effects(ft_instance_t instance,
+                        ft_entry_t *entry,
+                        of_flow_modify_t *flow_mod);
+
+/**
+ * Clear the counters associated with a specific entry in the table
+ * @param entry The entry to update
+ * @param packets (out) If non-NULL, store current packet count here
+ * @param bytes (out) If non-NULL, store current byte count here
+ *
+ * The output parameters may be NULL in which case they are ignored.
+ */
+
+indigo_error_t
+ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes);
+
+/**
+ * Start the delete process for an entry.
+ * @param ft The flow table instance
+ * @param entry Pointer to the entry
+ * @param reason Reason the flow is being removed
+ *
+ * The delete operation is either started (MARKED) or indicated
+ * as waiting due to an outstanding operation.
+ *
+ * The pending delete count is incremented.
+ */
+
+void
+ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
+                      indigo_fi_flow_removed_t reason);
+
+/**
+ * Map a priority to a hash bucket
+ */
+
+int
+ft_prio_to_bucket_index(ft_instance_t ft, uint16_t priority);
+
+/**
+ * Map a match structure to a hash bucket
+ */
+
+int
+ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match);
+
+/**
+ * Map a flow id to a hash bucket
+ */
+
+int
+ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id);
+
+/*
+ * Spawn a task that iterates over the flowtable
+ *
+ * @param ft Handle for a flow table instance
+ * @param query The meta-match data for the query (or NULL)
+ * @param callback Function called for each flowtable entry
+ * @returns An error code
+ *
+ * This function does not guarantee a consistent view of the
+ * flowtable over the course of the task.
+ *
+ * This function does not use any indexes on the flowtable.
+ *
+ * The callback function will be called with a NULL entry argument at
+ * the end of the iteration.
+ *
+ * Deleted entries are skipped.
+ */
+
+typedef void (*ft_iter_task_callback_f)(void *cookie, ft_entry_t *entry);
+
+indigo_error_t
+ft_spawn_iter_task(ft_instance_t instance,
+                   of_meta_match_t *query,
+                   ft_iter_task_callback_f callback,
+                   void *cookie,
+                   int priority);
 
 #endif /* _OFSTATEMANAGER_FT_H_ */
-

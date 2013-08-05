@@ -38,8 +38,6 @@
 
 #include <unistd.h>
 #include <ft.h>
-#include <ft_utils.h>
-#include <ft_hash.h>
 
 #include <loci/loci.h>
 #include <locitest/unittest.h>
@@ -74,15 +72,6 @@
 #define TEST_ENT_ID 17
 #define TEST_ETH_TYPE(idx) ((idx) + 1)
 #define TEST_KEY(idx) (2 * ((idx) + 1))
-
-static void
-entry_deleted(ft_instance_t ft, ft_entry_t *entry, void *cookie)
-{
-    (void)cookie;
-    (void)ft;
-    (void)entry;
-    AIM_LOG_VERBOSE("Entry deleted callback");
-}
 
 /****************************************************************
  * Stubs
@@ -341,7 +330,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
                     != NULL);
         match->fields.eth_type = TEST_ETH_TYPE(idx);
         TEST_OK(of_flow_add_match_set(flow_add, match));
-        TEST_INDIGO_OK(FT_ADD(ft, TEST_KEY(idx), flow_add, &entry));
+        TEST_INDIGO_OK(ft_add(ft, TEST_KEY(idx), flow_add, &entry));
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
@@ -363,10 +352,10 @@ depopulate_table(ft_instance_t ft)
 
     count = ft->status.current_count;
     for (idx = 0; idx < count; ++idx) {
-        entry = ft_id_lookup(ft, TEST_KEY(idx));
+        entry = ft_lookup(ft, TEST_KEY(idx));
         TEST_ASSERT(entry != NULL);
         TEST_ASSERT(entry->match.fields.eth_type == TEST_ETH_TYPE(idx));
-        FT_DELETE_ID(ft, TEST_KEY(idx), 1); /* Does callback */
+        ft_delete_id(ft, TEST_KEY(idx));
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
@@ -418,8 +407,6 @@ test_ft_hash(void)
         1024, /* prio buckets */
         1024, /* match buckets */
         1024, /* flow_id buckets */
-        entry_deleted, /* callback */
-        NULL /* cookie */
     };
     of_flow_add_t *flow_add;
     of_meta_match_t query;
@@ -435,30 +422,30 @@ test_ft_hash(void)
     int count;
 
     /* Test edge cases for create/destroy */
-    ft_hash_delete(NULL);
+    ft_destroy(NULL);
 
-    ft = ft_hash_create(&config);
+    ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
-    ft_hash_delete(ft);
+    ft_destroy(ft);
 
     /* Create, add two entries, delete without emptying */
-    ft = ft_hash_create(&config);
+    ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
 
     flow_add = of_flow_add_new(OF_VERSION_1_0);
     TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, 1) != 0);
     of_flow_add_flags_set(flow_add, 0);
 
-    TEST_INDIGO_OK(FT_ADD(ft, TEST_ENT_ID, flow_add, &entry));
-    TEST_INDIGO_OK(FT_ADD(ft, TEST_ENT_ID + 1, flow_add, &entry));
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID + 1, flow_add, &entry));
 
     TEST_ASSERT(ft->status.current_count == 2);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
-    entry = ft_id_lookup(ft, TEST_ENT_ID);
-    ft_hash_delete(ft);
+    entry = ft_lookup(ft, TEST_ENT_ID);
+    ft_destroy(ft);
 
     /* Test simple cases for hash table */
-    ft = ft_hash_create(&config);
+    ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
 
     /* Set up flow add structure */
@@ -468,13 +455,13 @@ test_ft_hash(void)
     of_flow_add_priority_get(flow_add, &orig_prio);
     of_flow_add_cookie_get(flow_add, &orig_cookie);
 
-    TEST_INDIGO_OK(FT_ADD(ft, TEST_ENT_ID, flow_add, &entry));
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
     TEST_ASSERT(ft->status.current_count == 1);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
-    entry = ft_id_lookup(ft, TEST_ENT_ID);
+    entry = ft_lookup(ft, TEST_ENT_ID);
 
     /* Should not find next id */
-    entry = ft_id_lookup(ft, TEST_ENT_ID + 1);
+    entry = ft_lookup(ft, TEST_ENT_ID + 1);
     TEST_ASSERT(entry == NULL);
 
     /* Set up the query structure */
@@ -494,14 +481,14 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     TEST_ASSERT(biglist_length(list) == 1);
     TEST_ASSERT(FT_LIST_TO_FLOW_ID(list) == TEST_ENT_ID);
     TEST_ASSERT(biglist_free(list) == 1);
 
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, &lookup_entry));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, NULL));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
     /* Test success on strict match */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -509,13 +496,13 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     TEST_ASSERT(biglist_length(list) == 1);
     TEST_ASSERT(FT_LIST_TO_FLOW_ID(list) == TEST_ENT_ID);
     biglist_free(list);
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, &lookup_entry));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, NULL));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
     /* Test fail lookup for port, strict */
     query.out_port                      = 1;
@@ -523,12 +510,12 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    list = FT_QUERY(ft, &query);
+    list = ft_query(ft, &query);
     TEST_ASSERT(biglist_length(list) == 0);
     biglist_free(list);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
+    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -536,12 +523,12 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type + 1;
     query.match.masks.eth_type          = 0xffff;
 
-    list = FT_QUERY(ft, &query);
+    list = ft_query(ft, &query);
     TEST_ASSERT(biglist_length(list) == 0);
     biglist_free(list);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
+    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for non-strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -549,12 +536,12 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type + 1;
     query.match.masks.eth_type          = 0xffff;
 
-    list = FT_QUERY(ft, &query);
+    list = ft_query(ft, &query);
     TEST_ASSERT(biglist_length(list) == 0);
     biglist_free(list);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
+    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for strict mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -562,12 +549,12 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0;
 
-    list = FT_QUERY(ft, &query);
+    list = ft_query(ft, &query);
     TEST_ASSERT(biglist_length(list) == 0);
     biglist_free(list);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(FT_FIRST_MATCH(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
+    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test success for non-strict with varying mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -575,20 +562,20 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     biglist_free(list);
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, &lookup_entry));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(FT_FIRST_MATCH(ft, &query, NULL));
+    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
-    FT_DELETE_ID(ft, TEST_ENT_ID, 1);
+    ft_delete_id(ft, TEST_ENT_ID);
 
     /* Delete the table */
-    ft_hash_delete(ft);
+    ft_destroy(ft);
 
     /* Create a new flow table and add TEST_FLOW_COUNT entries. Do some queries */
     config.max_entries = TEST_FLOW_COUNT;
-    ft = ft_hash_create(&config);
+    ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
     TEST_OK(populate_table(ft, TEST_FLOW_COUNT, &query.match));
     orig_eth_type = query.match.fields.eth_type; /* Last ethtype added */
@@ -599,7 +586,7 @@ test_ft_hash(void)
     query.match.fields.eth_type         = 0;
     query.match.masks.eth_type          = 0;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     TEST_ASSERT(biglist_length(list) == TEST_FLOW_COUNT);
     biglist_free(list);
 
@@ -609,7 +596,7 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     TEST_ASSERT(biglist_length(list) == 1);
     biglist_free(list);
 
@@ -619,7 +606,7 @@ test_ft_hash(void)
     query.match.fields.eth_type         = 0x1;
     query.match.masks.eth_type          = 0x1;
 
-    TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+    TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
     TEST_ASSERT(biglist_length(list) == TEST_FLOW_COUNT/2);
     biglist_free(list);
 
@@ -633,14 +620,14 @@ test_ft_hash(void)
         query.match.fields.eth_type         = TEST_ETH_TYPE(idx);
         query.match.masks.eth_type          = 0xffff;
 
-        TEST_ASSERT((list = FT_QUERY(ft, &query)) != NULL);
+        TEST_ASSERT((list = ft_query(ft, &query)) != NULL);
         TEST_ASSERT(biglist_length(list) == 1);
         TEST_ASSERT(FT_LIST_TO_FLOW_ID(list) == TEST_KEY(idx));
         biglist_free(list);
 
         /* Also do a match iteration */
         count = 0;
-        bucket_idx = match_to_bucket_index(ft, &(query.match));
+        bucket_idx = ft_match_to_bucket_index(ft, &(query.match));
         FT_MATCH_ITER(ft, &(query.match), bucket_idx, entry, cur, next) {
             (void)entry;
             count += 1;
@@ -650,7 +637,7 @@ test_ft_hash(void)
 
     TEST_OK(depopulate_table(ft));
     TEST_ASSERT(check_bucket_counts(ft, 0) == 0);
-    ft_hash_delete(ft);
+    ft_destroy(ft);
     ft = NULL;
 
     /* @todo Check for memory consistency */
@@ -671,7 +658,7 @@ iter_task_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         state->finished = 0;
         state->entries_seen++;
-        ASSERT(ft_hash_flow_delete(state->ft, entry, 1) == 0);
+        ASSERT(ft_delete(state->ft, entry) == 0);
     } else {
         state->finished = 1;
     }
@@ -686,14 +673,12 @@ test_ft_iter_task(void)
         1024, /* prio buckets */
         1024, /* match buckets */
         1024, /* flow_id buckets */
-        entry_deleted, /* callback */
-        NULL /* cookie */
     };
     of_flow_add_t *flow_add1, *flow_add2;
     ft_entry_t *entry1, *entry2;
     struct iter_task_state state;
 
-    ft = ft_hash_create(&config);
+    ft = ft_create(&config);
 
     flow_add1 = of_flow_add_new(OF_VERSION_1_0);
     of_flow_add_OF_VERSION_1_0_populate(flow_add1, 1);
@@ -703,8 +688,8 @@ test_ft_iter_task(void)
     of_flow_add_OF_VERSION_1_0_populate(flow_add2, 2);
     of_flow_add_flags_set(flow_add2, 0);
 
-    TEST_INDIGO_OK(FT_ADD(ft, 1, flow_add1, &entry1));
-    TEST_INDIGO_OK(FT_ADD(ft, 2, flow_add2, &entry2));
+    TEST_INDIGO_OK(ft_add(ft, 1, flow_add1, &entry1));
+    TEST_INDIGO_OK(ft_add(ft, 2, flow_add2, &entry2));
 
     state = (struct iter_task_state) { .ft = ft, .finished = -1, .entries_seen = 0 };
     ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_DEFAULT_PRIORITY);
@@ -718,7 +703,7 @@ test_ft_iter_task(void)
     TEST_ASSERT(state.entries_seen == 2);
     TEST_ASSERT(ft->status.current_count == 0);
 
-    ft_hash_delete(ft);
+    ft_destroy(ft);
 
     return TEST_PASS;
 }
