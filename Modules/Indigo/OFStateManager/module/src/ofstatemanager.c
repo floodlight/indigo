@@ -1113,13 +1113,51 @@ ind_core_ft_iter(ind_core_ft_iter_f iterf, void* cookie)
     if(ft == NULL) {
         return INDIGO_ERROR_NONE;
     }
+
+    /*
+     * HACK reconstruct a flow-mod from the flowtable entry
+     */
+    of_flow_add_t *flow_add = of_flow_add_new(OF_VERSION_1_0);
+    if (flow_add == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+
     FT_ITER(ft, entry, cur, next) {
         if (!FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            if (iterf(entry->id, entry->flow_add, cookie) < 0) {
+            of_flow_add_cookie_set(flow_add, entry->cookie);
+            of_flow_add_priority_set(flow_add, entry->priority);
+            of_flow_add_idle_timeout_set(flow_add, entry->idle_timeout);
+            of_flow_add_hard_timeout_set(flow_add, entry->hard_timeout);
+            of_flow_add_flags_set(flow_add, entry->flags);
+
+            if (of_flow_add_match_set(flow_add, &entry->match)) {
+                LOG_ERROR("Failed to set match in flow stats entry");
+                continue;
+            }
+
+            if (flow_add->version == entry->effects.actions->version) {
+                if (flow_add->version == OF_VERSION_1_0) {
+                    if (of_flow_add_actions_set(
+                            flow_add, entry->effects.actions) < 0) {
+                        LOG_ERROR("Failed to set actions list of flow stats entry");
+                        continue;
+                    }
+                } else {
+                    if (of_flow_add_instructions_set(
+                            flow_add, entry->effects.instructions) < 0) {
+                        LOG_ERROR("Failed to set instructions list of flow stats entry");
+                        continue;
+                    }
+                }
+            }
+
+            if (iterf(entry->id, flow_add, cookie) < 0) {
                 break;
             }
         }
     }
+
+    of_object_delete(flow_add);
 
     return INDIGO_ERROR_NONE;
 }
