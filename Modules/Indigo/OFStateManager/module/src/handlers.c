@@ -1200,13 +1200,32 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
             return;
         }
 
-        /* Populate the entry */
-        if (of_flow_stats_entry_setup_from_flow_add(&stats_entry,
-                                                    entry->flow_add,
-                                                    entry->effects.actions)) {
-            LOG_ERROR("failed to setup flow stats entry during flow_stats callback");
+        of_flow_stats_entry_cookie_set(&stats_entry, entry->cookie);
+        of_flow_stats_entry_priority_set(&stats_entry, entry->priority);
+        of_flow_stats_entry_idle_timeout_set(&stats_entry, entry->idle_timeout);
+        of_flow_stats_entry_hard_timeout_set(&stats_entry, entry->hard_timeout);
+
+        if (of_flow_stats_entry_match_set(&stats_entry, &entry->match)) {
+            LOG_ERROR("Failed to set match in flow stats entry");
             return;
         }
+
+        if (stats_entry.version == entry->effects.actions->version) {
+            if (stats_entry.version == OF_VERSION_1_0) {
+                if (of_flow_stats_entry_actions_set(
+                        &stats_entry, entry->effects.actions) < 0) {
+                    LOG_ERROR("Failed to set actions list of flow stats entry");
+                    return;
+                }
+            } else {
+                if (of_flow_stats_entry_instructions_set(
+                        &stats_entry, entry->effects.instructions) < 0) {
+                    LOG_ERROR("Failed to set instructions list of flow stats entry");
+                    return;
+                }
+            }
+        }
+
         of_flow_stats_entry_table_id_set(&stats_entry, entry->table_id);
         of_flow_stats_entry_duration_sec_set(&stats_entry, secs);
         of_flow_stats_entry_duration_nsec_set(&stats_entry, nsecs);
