@@ -134,7 +134,6 @@ typedef struct ft_entry_s {
     uint16_t idle_timeout;
     uint16_t hard_timeout;
     uint16_t flags;
-    of_flow_add_t *flow_add;
 
     /* Modifiable thru API calls */
     uint64_t cookie;
