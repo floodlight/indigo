@@ -527,7 +527,7 @@ of_match_to_wire_match_v2(of_match_t *src, of_match_v2_t *dst)
                 src->masks.ipv4_dst);
         } else { /* Exact match; use all ones mask */
             of_match_v2_ipv4_dst_mask_set(dst,
-                ((uint32_t) -1));
+                ((of_ipv4_t) -1));
         }
         of_match_v2_ipv4_dst_set(dst, src->fields.ipv4_dst);
     }
@@ -548,7 +548,7 @@ of_match_to_wire_match_v2(of_match_t *src, of_match_v2_t *dst)
                 src->masks.ipv4_src);
         } else { /* Exact match; use all ones mask */
             of_match_v2_ipv4_src_mask_set(dst,
-                ((uint32_t) -1));
+                ((of_ipv4_t) -1));
         }
         of_match_v2_ipv4_src_set(dst, src->fields.ipv4_src);
     }
@@ -1456,17 +1456,6 @@ of_match_v1_to_match(of_match_v1_t *src, of_match_t *dst)
 
     of_match_v1_wildcards_get(src, &wc);
 
-    /* Handle L3 src and dst wildcarding first */
-    /* @fixme Check mask values are properly treated for ipv4 src/dst */
-    if ((count = OF_MATCH_V1_WC_IPV4_DST_GET(wc)) < 32) {
-        of_match_v1_ipv4_dst_get(src, &dst->fields.ipv4_dst);
-        if (count > 0) { /* Not exact match */
-            dst->masks.ipv4_dst = ~(((uint32_t)1 << count) - 1);
-        } else {
-            OF_MATCH_MASK_IPV4_DST_EXACT_SET(dst);
-        }
-    }
-
     if (!(OF_MATCH_V1_WC_ETH_DST_TEST(wc))) {
         of_match_v1_eth_dst_get(src, &dst->fields.eth_dst);
         OF_MATCH_MASK_ETH_DST_EXACT_SET(dst);
@@ -1499,13 +1488,15 @@ of_match_v1_to_match(of_match_v1_t *src, of_match_t *dst)
 
     count = OF_MATCH_V1_WC_IPV4_DST_GET(wc);
     dst->masks.ipv4_dst = of_ip_index_to_mask(count);
-    /* @todo Review if we should only get the addr when masks.ipv4_dst != 0 */
     of_match_v1_ipv4_dst_get(src, &dst->fields.ipv4_dst);
+    /* Clear the bits not indicated by mask; IP addrs are special for 1.0 */
+    dst->fields.ipv4_dst &= dst->masks.ipv4_dst;
 
     count = OF_MATCH_V1_WC_IPV4_SRC_GET(wc);
     dst->masks.ipv4_src = of_ip_index_to_mask(count);
-    /* @todo Review if we should only get the addr when masks.ipv4_src != 0 */
     of_match_v1_ipv4_src_get(src, &dst->fields.ipv4_src);
+    /* Clear the bits not indicated by mask; IP addrs are special for 1.0 */
+    dst->fields.ipv4_src &= dst->masks.ipv4_src;
 
     if (!(OF_MATCH_V1_WC_TCP_DST_TEST(wc))) {
         of_match_v1_tcp_dst_get(src, &dst->fields.tcp_dst);
@@ -1614,6 +1605,9 @@ of_match_v2_to_match(of_match_v2_t *src, of_match_t *dst)
     if (OF_VARIABLE_IS_NON_ZERO(&dst->masks.metadata)) { /* Matching something */
         of_match_v2_metadata_get(src, &dst->fields.metadata);
     }
+
+    /* Clear values outside of masks */
+    of_match_values_mask(dst);
 
     return OF_ERROR_NONE;
 }
@@ -2180,6 +2174,9 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
         } /* end switch */
         rv = of_list_oxm_next(&oxm_list, &oxm_entry);
     } /* end OXM iteration */
+
+    /* Clear values outside of masks */
+    of_match_values_mask(dst);
 
     return OF_ERROR_NONE;
 }

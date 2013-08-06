@@ -147,6 +147,7 @@ typedef of_object_t of_bsn_get_l2_table_reply_t;
 typedef of_object_t of_bsn_get_l2_table_request_t;
 typedef of_object_t of_bsn_get_mirroring_reply_t;
 typedef of_object_t of_bsn_get_mirroring_request_t;
+typedef of_object_t of_bsn_header_t;
 typedef of_object_t of_bsn_set_ip_mask_t;
 typedef of_object_t of_bsn_set_l2_table_reply_t;
 typedef of_object_t of_bsn_set_l2_table_request_t;
@@ -173,6 +174,7 @@ typedef of_object_t of_features_request_t;
 typedef of_object_t of_flow_add_t;
 typedef of_object_t of_flow_delete_t;
 typedef of_object_t of_flow_delete_strict_t;
+typedef of_object_t of_flow_mod_t;
 typedef of_object_t of_flow_modify_t;
 typedef of_object_t of_flow_modify_strict_t;
 typedef of_object_t of_flow_removed_t;
@@ -197,6 +199,7 @@ typedef of_object_t of_meter_stats_reply_t;
 typedef of_object_t of_meter_stats_request_t;
 typedef of_object_t of_nicira_controller_role_reply_t;
 typedef of_object_t of_nicira_controller_role_request_t;
+typedef of_object_t of_nicira_header_t;
 typedef of_object_t of_packet_in_t;
 typedef of_object_t of_packet_out_t;
 typedef of_object_t of_port_desc_stats_reply_t;
@@ -212,11 +215,14 @@ typedef of_object_t of_queue_stats_request_t;
 typedef of_object_t of_role_reply_t;
 typedef of_object_t of_role_request_t;
 typedef of_object_t of_set_config_t;
+typedef of_object_t of_stats_reply_t;
+typedef of_object_t of_stats_request_t;
 typedef of_object_t of_table_features_stats_reply_t;
 typedef of_object_t of_table_features_stats_request_t;
 typedef of_object_t of_table_mod_t;
 typedef of_object_t of_table_stats_reply_t;
 typedef of_object_t of_table_stats_request_t;
+typedef of_object_t of_action_bsn_t;
 typedef of_object_t of_action_bsn_mirror_t;
 typedef of_object_t of_action_bsn_set_tunnel_dst_t;
 typedef of_object_t of_action_copy_ttl_in_t;
@@ -227,6 +233,7 @@ typedef of_object_t of_action_enqueue_t;
 typedef of_object_t of_action_experimenter_t;
 typedef of_object_t of_action_group_t;
 typedef of_object_t of_action_header_t;
+typedef of_object_t of_action_id_bsn_t;
 typedef of_object_t of_action_id_bsn_mirror_t;
 typedef of_object_t of_action_id_bsn_set_tunnel_dst_t;
 typedef of_object_t of_action_id_copy_ttl_in_t;
@@ -236,6 +243,7 @@ typedef of_object_t of_action_id_dec_nw_ttl_t;
 typedef of_object_t of_action_id_experimenter_t;
 typedef of_object_t of_action_id_group_t;
 typedef of_object_t of_action_id_header_t;
+typedef of_object_t of_action_id_nicira_t;
 typedef of_object_t of_action_id_nicira_dec_ttl_t;
 typedef of_object_t of_action_id_output_t;
 typedef of_object_t of_action_id_pop_mpls_t;
@@ -248,6 +256,7 @@ typedef of_object_t of_action_id_set_field_t;
 typedef of_object_t of_action_id_set_mpls_ttl_t;
 typedef of_object_t of_action_id_set_nw_ttl_t;
 typedef of_object_t of_action_id_set_queue_t;
+typedef of_object_t of_action_nicira_t;
 typedef of_object_t of_action_nicira_dec_ttl_t;
 typedef of_object_t of_action_output_t;
 typedef of_object_t of_action_pop_mpls_t;
@@ -761,6 +770,19 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bsn_header_t *
+    of_bsn_header_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_header_new(version) \
+    of_bsn_header_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_header_t *
+    of_bsn_header_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_header_new_from_message(msg) \
+    of_bsn_header_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1099,6 +1121,19 @@ extern of_flow_delete_strict_t *
     of_flow_delete_strict_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_flow_mod_t *
+    of_flow_mod_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_flow_mod_new(version) \
+    of_flow_mod_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_flow_mod_t *
+    of_flow_mod_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_flow_mod_new_from_message(msg) \
+    of_flow_mod_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_flow_modify_t *
     of_flow_modify_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1411,6 +1446,19 @@ extern of_nicira_controller_role_request_t *
     of_nicira_controller_role_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_nicira_header_t *
+    of_nicira_header_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_nicira_header_new(version) \
+    of_nicira_header_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_nicira_header_t *
+    of_nicira_header_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_nicira_header_new_from_message(msg) \
+    of_nicira_header_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_packet_in_t *
     of_packet_in_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1606,6 +1654,32 @@ extern of_set_config_t *
     of_set_config_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_stats_reply_t *
+    of_stats_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_stats_reply_new(version) \
+    of_stats_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_stats_reply_t *
+    of_stats_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_stats_reply_new_from_message(msg) \
+    of_stats_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_stats_request_t *
+    of_stats_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_stats_request_new(version) \
+    of_stats_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_stats_request_t *
+    of_stats_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_stats_request_new_from_message(msg) \
+    of_stats_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1676,6 +1750,13 @@ extern of_action_t *
         const char *file, int line);
 #define of_action_new(version) \
     of_action_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_action_bsn_t *
+    of_action_bsn_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_action_bsn_new(version) \
+    of_action_bsn_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_action_bsn_mirror_t *
@@ -1755,6 +1836,13 @@ extern of_action_id_t *
     of_action_id_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_action_id_bsn_t *
+    of_action_id_bsn_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_action_id_bsn_new(version) \
+    of_action_id_bsn_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_action_id_bsn_mirror_t *
     of_action_id_bsn_mirror_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1816,6 +1904,13 @@ extern of_action_id_header_t *
         const char *file, int line);
 #define of_action_id_header_new(version) \
     of_action_id_header_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_action_id_nicira_t *
+    of_action_id_nicira_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_action_id_nicira_new(version) \
+    of_action_id_nicira_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_action_id_nicira_dec_ttl_t *
@@ -1900,6 +1995,13 @@ extern of_action_id_set_queue_t *
         const char *file, int line);
 #define of_action_id_set_queue_new(version) \
     of_action_id_set_queue_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_action_nicira_t *
+    of_action_nicira_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_action_nicira_new(version) \
+    of_action_nicira_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_action_nicira_dec_ttl_t *
@@ -3325,6 +3427,11 @@ extern of_list_uint8_t *
 #define of_bsn_get_mirroring_request_new_from_message(msg) \
     of_bsn_get_mirroring_request_new_from_message_(msg)
 
+#define of_bsn_header_new(version) \
+    of_bsn_header_new_(version)
+#define of_bsn_header_new_from_message(msg) \
+    of_bsn_header_new_from_message_(msg)
+
 #define of_bsn_set_ip_mask_new(version) \
     of_bsn_set_ip_mask_new_(version)
 #define of_bsn_set_ip_mask_new_from_message(msg) \
@@ -3455,6 +3562,11 @@ extern of_list_uint8_t *
 #define of_flow_delete_strict_new_from_message(msg) \
     of_flow_delete_strict_new_from_message_(msg)
 
+#define of_flow_mod_new(version) \
+    of_flow_mod_new_(version)
+#define of_flow_mod_new_from_message(msg) \
+    of_flow_mod_new_from_message_(msg)
+
 #define of_flow_modify_new(version) \
     of_flow_modify_new_(version)
 #define of_flow_modify_new_from_message(msg) \
@@ -3575,6 +3687,11 @@ extern of_list_uint8_t *
 #define of_nicira_controller_role_request_new_from_message(msg) \
     of_nicira_controller_role_request_new_from_message_(msg)
 
+#define of_nicira_header_new(version) \
+    of_nicira_header_new_(version)
+#define of_nicira_header_new_from_message(msg) \
+    of_nicira_header_new_from_message_(msg)
+
 #define of_packet_in_new(version) \
     of_packet_in_new_(version)
 #define of_packet_in_new_from_message(msg) \
@@ -3650,6 +3767,16 @@ extern of_list_uint8_t *
 #define of_set_config_new_from_message(msg) \
     of_set_config_new_from_message_(msg)
 
+#define of_stats_reply_new(version) \
+    of_stats_reply_new_(version)
+#define of_stats_reply_new_from_message(msg) \
+    of_stats_reply_new_from_message_(msg)
+
+#define of_stats_request_new(version) \
+    of_stats_request_new_(version)
+#define of_stats_request_new_from_message(msg) \
+    of_stats_request_new_from_message_(msg)
+
 #define of_table_features_stats_reply_new(version) \
     of_table_features_stats_reply_new_(version)
 #define of_table_features_stats_reply_new_from_message(msg) \
@@ -3677,6 +3804,9 @@ extern of_list_uint8_t *
 
 #define of_action_new(version) \
     of_action_new_(version)
+
+#define of_action_bsn_new(version) \
+    of_action_bsn_new_(version)
 
 #define of_action_bsn_mirror_new(version) \
     of_action_bsn_mirror_new_(version)
@@ -3711,6 +3841,9 @@ extern of_list_uint8_t *
 #define of_action_id_new(version) \
     of_action_id_new_(version)
 
+#define of_action_id_bsn_new(version) \
+    of_action_id_bsn_new_(version)
+
 #define of_action_id_bsn_mirror_new(version) \
     of_action_id_bsn_mirror_new_(version)
 
@@ -3737,6 +3870,9 @@ extern of_list_uint8_t *
 
 #define of_action_id_header_new(version) \
     of_action_id_header_new_(version)
+
+#define of_action_id_nicira_new(version) \
+    of_action_id_nicira_new_(version)
 
 #define of_action_id_nicira_dec_ttl_new(version) \
     of_action_id_nicira_dec_ttl_new_(version)
@@ -3773,6 +3909,9 @@ extern of_list_uint8_t *
 
 #define of_action_id_set_queue_new(version) \
     of_action_id_set_queue_new_(version)
+
+#define of_action_nicira_new(version) \
+    of_action_nicira_new_(version)
 
 #define of_action_nicira_dec_ttl_new(version) \
     of_action_nicira_dec_ttl_new_(version)
@@ -4487,6 +4626,13 @@ extern of_bsn_get_mirroring_request_t *
 extern void of_bsn_get_mirroring_request_init(
     of_bsn_get_mirroring_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_header_t *
+    of_bsn_header_new_(of_version_t version);
+extern of_bsn_header_t *
+    of_bsn_header_new_from_message_(of_message_t msg);
+extern void of_bsn_header_init(
+    of_bsn_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_new_(of_version_t version);
 extern of_bsn_set_ip_mask_t *
@@ -4669,6 +4815,13 @@ extern of_flow_delete_strict_t *
 extern void of_flow_delete_strict_init(
     of_flow_delete_strict_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_flow_mod_t *
+    of_flow_mod_new_(of_version_t version);
+extern of_flow_mod_t *
+    of_flow_mod_new_from_message_(of_message_t msg);
+extern void of_flow_mod_init(
+    of_flow_mod_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_flow_modify_t *
     of_flow_modify_new_(of_version_t version);
 extern of_flow_modify_t *
@@ -4837,6 +4990,13 @@ extern of_nicira_controller_role_request_t *
 extern void of_nicira_controller_role_request_init(
     of_nicira_controller_role_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_nicira_header_t *
+    of_nicira_header_new_(of_version_t version);
+extern of_nicira_header_t *
+    of_nicira_header_new_from_message_(of_message_t msg);
+extern void of_nicira_header_init(
+    of_nicira_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_packet_in_t *
     of_packet_in_new_(of_version_t version);
 extern of_packet_in_t *
@@ -4942,6 +5102,20 @@ extern of_set_config_t *
 extern void of_set_config_init(
     of_set_config_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_stats_reply_t *
+    of_stats_reply_new_(of_version_t version);
+extern of_stats_reply_t *
+    of_stats_reply_new_from_message_(of_message_t msg);
+extern void of_stats_reply_init(
+    of_stats_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_stats_request_t *
+    of_stats_request_new_(of_version_t version);
+extern of_stats_request_t *
+    of_stats_request_new_from_message_(of_message_t msg);
+extern void of_stats_request_init(
+    of_stats_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_new_(of_version_t version);
 extern of_table_features_stats_reply_t *
@@ -4981,6 +5155,11 @@ extern of_action_t *
     of_action_new_(of_version_t version);
 extern void of_action_init(
     of_action_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_action_bsn_t *
+    of_action_bsn_new_(of_version_t version);
+extern void of_action_bsn_init(
+    of_action_bsn_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_new_(of_version_t version);
@@ -5037,6 +5216,11 @@ extern of_action_id_t *
 extern void of_action_id_init(
     of_action_id_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_action_id_bsn_t *
+    of_action_id_bsn_new_(of_version_t version);
+extern void of_action_id_bsn_init(
+    of_action_id_bsn_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_action_id_bsn_mirror_t *
     of_action_id_bsn_mirror_new_(of_version_t version);
 extern void of_action_id_bsn_mirror_init(
@@ -5081,6 +5265,11 @@ extern of_action_id_header_t *
     of_action_id_header_new_(of_version_t version);
 extern void of_action_id_header_init(
     of_action_id_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_action_id_nicira_t *
+    of_action_id_nicira_new_(of_version_t version);
+extern void of_action_id_nicira_init(
+    of_action_id_nicira_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_action_id_nicira_dec_ttl_t *
     of_action_id_nicira_dec_ttl_new_(of_version_t version);
@@ -5141,6 +5330,11 @@ extern of_action_id_set_queue_t *
     of_action_id_set_queue_new_(of_version_t version);
 extern void of_action_id_set_queue_init(
     of_action_id_set_queue_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_action_nicira_t *
+    of_action_nicira_new_(of_version_t version);
+extern void of_action_nicira_init(
+    of_action_nicira_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_new_(of_version_t version);
@@ -6321,6 +6515,17 @@ of_bsn_get_mirroring_request_delete(of_bsn_get_mirroring_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bsn_header_t
+ * @param obj An instance of type of_bsn_header_t
+ *
+ * \ingroup of_bsn_header
+ */
+static inline void
+of_bsn_header_delete(of_bsn_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_bsn_set_ip_mask_t
  * @param obj An instance of type of_bsn_set_ip_mask_t
  *
@@ -6607,6 +6812,17 @@ of_flow_delete_strict_delete(of_flow_delete_strict_t *obj) {
 }
 
 /**
+ * Delete an object of type of_flow_mod_t
+ * @param obj An instance of type of_flow_mod_t
+ *
+ * \ingroup of_flow_mod
+ */
+static inline void
+of_flow_mod_delete(of_flow_mod_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_flow_modify_t
  * @param obj An instance of type of_flow_modify_t
  *
@@ -6871,6 +7087,17 @@ of_nicira_controller_role_request_delete(of_nicira_controller_role_request_t *ob
 }
 
 /**
+ * Delete an object of type of_nicira_header_t
+ * @param obj An instance of type of_nicira_header_t
+ *
+ * \ingroup of_nicira_header
+ */
+static inline void
+of_nicira_header_delete(of_nicira_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_packet_in_t
  * @param obj An instance of type of_packet_in_t
  *
@@ -7036,6 +7263,28 @@ of_set_config_delete(of_set_config_t *obj) {
 }
 
 /**
+ * Delete an object of type of_stats_reply_t
+ * @param obj An instance of type of_stats_reply_t
+ *
+ * \ingroup of_stats_reply
+ */
+static inline void
+of_stats_reply_delete(of_stats_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_stats_request_t
+ * @param obj An instance of type of_stats_request_t
+ *
+ * \ingroup of_stats_request
+ */
+static inline void
+of_stats_request_delete(of_stats_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_table_features_stats_reply_t
  * @param obj An instance of type of_table_features_stats_reply_t
  *
@@ -7098,6 +7347,17 @@ of_table_stats_request_delete(of_table_stats_request_t *obj) {
  */
 static inline void
 of_action_delete(of_action_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_action_bsn_t
+ * @param obj An instance of type of_action_bsn_t
+ *
+ * \ingroup of_action_bsn
+ */
+static inline void
+of_action_bsn_delete(of_action_bsn_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -7223,6 +7483,17 @@ of_action_id_delete(of_action_id_t *obj) {
 }
 
 /**
+ * Delete an object of type of_action_id_bsn_t
+ * @param obj An instance of type of_action_id_bsn_t
+ *
+ * \ingroup of_action_id_bsn
+ */
+static inline void
+of_action_id_bsn_delete(of_action_id_bsn_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_action_id_bsn_mirror_t
  * @param obj An instance of type of_action_id_bsn_mirror_t
  *
@@ -7318,6 +7589,17 @@ of_action_id_group_delete(of_action_id_group_t *obj) {
  */
 static inline void
 of_action_id_header_delete(of_action_id_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_action_id_nicira_t
+ * @param obj An instance of type of_action_id_nicira_t
+ *
+ * \ingroup of_action_id_nicira
+ */
+static inline void
+of_action_id_nicira_delete(of_action_id_nicira_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -7450,6 +7732,17 @@ of_action_id_set_nw_ttl_delete(of_action_id_set_nw_ttl_t *obj) {
  */
 static inline void
 of_action_id_set_queue_delete(of_action_id_set_queue_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_action_nicira_t
+ * @param obj An instance of type of_action_nicira_t
+ *
+ * \ingroup of_action_nicira
+ */
+static inline void
+of_action_nicira_delete(of_action_nicira_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10219,6 +10512,29 @@ extern void of_bsn_get_mirroring_request_report_mirror_ports_get(
     of_bsn_get_mirroring_request_t *obj,
     uint8_t *report_mirror_ports);
 
+/* Unified accessor functions for of_bsn_header */
+
+extern void of_bsn_header_xid_set(
+    of_bsn_header_t *obj,
+    uint32_t xid);
+extern void of_bsn_header_xid_get(
+    of_bsn_header_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_header_experimenter_set(
+    of_bsn_header_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_header_experimenter_get(
+    of_bsn_header_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_header_subtype_set(
+    of_bsn_header_t *obj,
+    uint32_t subtype);
+extern void of_bsn_header_subtype_get(
+    of_bsn_header_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_bsn_set_ip_mask */
 
 extern void of_bsn_set_ip_mask_xid_set(
@@ -11302,6 +11618,110 @@ extern void of_flow_delete_strict_actions_bind(
 extern of_list_action_t *of_flow_delete_strict_actions_get(
     of_flow_delete_strict_t *obj);
 
+/* Unified accessor functions for of_flow_mod */
+
+extern void of_flow_mod_xid_set(
+    of_flow_mod_t *obj,
+    uint32_t xid);
+extern void of_flow_mod_xid_get(
+    of_flow_mod_t *obj,
+    uint32_t *xid);
+
+extern void of_flow_mod_cookie_set(
+    of_flow_mod_t *obj,
+    uint64_t cookie);
+extern void of_flow_mod_cookie_get(
+    of_flow_mod_t *obj,
+    uint64_t *cookie);
+
+extern void of_flow_mod_cookie_mask_set(
+    of_flow_mod_t *obj,
+    uint64_t cookie_mask);
+extern void of_flow_mod_cookie_mask_get(
+    of_flow_mod_t *obj,
+    uint64_t *cookie_mask);
+
+extern void of_flow_mod_table_id_set(
+    of_flow_mod_t *obj,
+    uint8_t table_id);
+extern void of_flow_mod_table_id_get(
+    of_flow_mod_t *obj,
+    uint8_t *table_id);
+
+extern void of_flow_mod_idle_timeout_set(
+    of_flow_mod_t *obj,
+    uint16_t idle_timeout);
+extern void of_flow_mod_idle_timeout_get(
+    of_flow_mod_t *obj,
+    uint16_t *idle_timeout);
+
+extern void of_flow_mod_hard_timeout_set(
+    of_flow_mod_t *obj,
+    uint16_t hard_timeout);
+extern void of_flow_mod_hard_timeout_get(
+    of_flow_mod_t *obj,
+    uint16_t *hard_timeout);
+
+extern void of_flow_mod_priority_set(
+    of_flow_mod_t *obj,
+    uint16_t priority);
+extern void of_flow_mod_priority_get(
+    of_flow_mod_t *obj,
+    uint16_t *priority);
+
+extern void of_flow_mod_buffer_id_set(
+    of_flow_mod_t *obj,
+    uint32_t buffer_id);
+extern void of_flow_mod_buffer_id_get(
+    of_flow_mod_t *obj,
+    uint32_t *buffer_id);
+
+extern void of_flow_mod_out_port_set(
+    of_flow_mod_t *obj,
+    of_port_no_t out_port);
+extern void of_flow_mod_out_port_get(
+    of_flow_mod_t *obj,
+    of_port_no_t *out_port);
+
+extern void of_flow_mod_out_group_set(
+    of_flow_mod_t *obj,
+    uint32_t out_group);
+extern void of_flow_mod_out_group_get(
+    of_flow_mod_t *obj,
+    uint32_t *out_group);
+
+extern void of_flow_mod_flags_set(
+    of_flow_mod_t *obj,
+    uint16_t flags);
+extern void of_flow_mod_flags_get(
+    of_flow_mod_t *obj,
+    uint16_t *flags);
+
+extern int WARN_UNUSED_RESULT of_flow_mod_match_set(
+    of_flow_mod_t *obj,
+    of_match_t *match);
+extern int WARN_UNUSED_RESULT of_flow_mod_match_get(
+    of_flow_mod_t *obj,
+    of_match_t *match);
+
+extern int WARN_UNUSED_RESULT of_flow_mod_instructions_set(
+    of_flow_mod_t *obj,
+    of_list_instruction_t *instructions);
+extern void of_flow_mod_instructions_bind(
+    of_flow_mod_t *obj,
+    of_list_instruction_t *instructions);
+extern of_list_instruction_t *of_flow_mod_instructions_get(
+    of_flow_mod_t *obj);
+
+extern int WARN_UNUSED_RESULT of_flow_mod_actions_set(
+    of_flow_mod_t *obj,
+    of_list_action_t *actions);
+extern void of_flow_mod_actions_bind(
+    of_flow_mod_t *obj,
+    of_list_action_t *actions);
+extern of_list_action_t *of_flow_mod_actions_get(
+    of_flow_mod_t *obj);
+
 /* Unified accessor functions for of_flow_modify */
 
 extern void of_flow_modify_xid_set(
@@ -12195,6 +12615,29 @@ extern void of_nicira_controller_role_request_role_get(
     of_nicira_controller_role_request_t *obj,
     uint32_t *role);
 
+/* Unified accessor functions for of_nicira_header */
+
+extern void of_nicira_header_xid_set(
+    of_nicira_header_t *obj,
+    uint32_t xid);
+extern void of_nicira_header_xid_get(
+    of_nicira_header_t *obj,
+    uint32_t *xid);
+
+extern void of_nicira_header_experimenter_set(
+    of_nicira_header_t *obj,
+    uint32_t experimenter);
+extern void of_nicira_header_experimenter_get(
+    of_nicira_header_t *obj,
+    uint32_t *experimenter);
+
+extern void of_nicira_header_subtype_set(
+    of_nicira_header_t *obj,
+    uint32_t subtype);
+extern void of_nicira_header_subtype_get(
+    of_nicira_header_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_packet_in */
 
 extern void of_packet_in_xid_set(
@@ -12622,6 +13065,38 @@ extern void of_set_config_miss_send_len_get(
     of_set_config_t *obj,
     uint16_t *miss_send_len);
 
+/* Unified accessor functions for of_stats_reply */
+
+extern void of_stats_reply_xid_set(
+    of_stats_reply_t *obj,
+    uint32_t xid);
+extern void of_stats_reply_xid_get(
+    of_stats_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_stats_reply_flags_set(
+    of_stats_reply_t *obj,
+    uint16_t flags);
+extern void of_stats_reply_flags_get(
+    of_stats_reply_t *obj,
+    uint16_t *flags);
+
+/* Unified accessor functions for of_stats_request */
+
+extern void of_stats_request_xid_set(
+    of_stats_request_t *obj,
+    uint32_t xid);
+extern void of_stats_request_xid_get(
+    of_stats_request_t *obj,
+    uint32_t *xid);
+
+extern void of_stats_request_flags_set(
+    of_stats_request_t *obj,
+    uint16_t flags);
+extern void of_stats_request_flags_get(
+    of_stats_request_t *obj,
+    uint16_t *flags);
+
 /* Unified accessor functions for of_table_features_stats_reply */
 
 extern void of_table_features_stats_reply_xid_set(
@@ -12736,6 +13211,22 @@ extern void of_table_stats_request_flags_get(
     of_table_stats_request_t *obj,
     uint16_t *flags);
 
+/* Unified accessor functions for of_action_bsn */
+
+extern void of_action_bsn_experimenter_set(
+    of_action_bsn_t *obj,
+    uint32_t experimenter);
+extern void of_action_bsn_experimenter_get(
+    of_action_bsn_t *obj,
+    uint32_t *experimenter);
+
+extern void of_action_bsn_subtype_set(
+    of_action_bsn_t *obj,
+    uint32_t subtype);
+extern void of_action_bsn_subtype_get(
+    of_action_bsn_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_action_bsn_mirror */
 
 extern void of_action_bsn_mirror_experimenter_set(
@@ -12847,6 +13338,8 @@ extern void of_action_group_group_id_get(
 
 /* Unified accessor functions for of_action_header */
 
+/* Unified accessor functions for of_action_id_bsn */
+
 /* Unified accessor functions for of_action_id_bsn_mirror */
 
 extern void of_action_id_bsn_mirror_experimenter_set(
@@ -12893,6 +13386,8 @@ extern void of_action_id_bsn_set_tunnel_dst_subtype_get(
 
 /* Unified accessor functions for of_action_id_header */
 
+/* Unified accessor functions for of_action_id_nicira */
+
 /* Unified accessor functions for of_action_id_nicira_dec_ttl */
 
 extern void of_action_id_nicira_dec_ttl_experimenter_set(
@@ -12930,6 +13425,22 @@ extern void of_action_id_nicira_dec_ttl_subtype_get(
 /* Unified accessor functions for of_action_id_set_nw_ttl */
 
 /* Unified accessor functions for of_action_id_set_queue */
+
+/* Unified accessor functions for of_action_nicira */
+
+extern void of_action_nicira_experimenter_set(
+    of_action_nicira_t *obj,
+    uint32_t experimenter);
+extern void of_action_nicira_experimenter_get(
+    of_action_nicira_t *obj,
+    uint32_t *experimenter);
+
+extern void of_action_nicira_subtype_set(
+    of_action_nicira_t *obj,
+    uint16_t subtype);
+extern void of_action_nicira_subtype_get(
+    of_action_nicira_t *obj,
+    uint16_t *subtype);
 
 /* Unified accessor functions for of_action_nicira_dec_ttl */
 
@@ -13167,17 +13678,17 @@ extern void of_bsn_interface_name_get(
 
 extern void of_bsn_interface_ipv4_addr_set(
     of_bsn_interface_t *obj,
-    uint32_t ipv4_addr);
+    of_ipv4_t ipv4_addr);
 extern void of_bsn_interface_ipv4_addr_get(
     of_bsn_interface_t *obj,
-    uint32_t *ipv4_addr);
+    of_ipv4_t *ipv4_addr);
 
 extern void of_bsn_interface_ipv4_netmask_set(
     of_bsn_interface_t *obj,
-    uint32_t ipv4_netmask);
+    of_ipv4_t ipv4_netmask);
 extern void of_bsn_interface_ipv4_netmask_get(
     of_bsn_interface_t *obj,
-    uint32_t *ipv4_netmask);
+    of_ipv4_t *ipv4_netmask);
 
 /* Unified accessor functions for of_bsn_vport_header */
 
@@ -13608,17 +14119,17 @@ extern void of_match_v1_ip_proto_get(
 
 extern void of_match_v1_ipv4_src_set(
     of_match_v1_t *obj,
-    uint32_t ipv4_src);
+    of_ipv4_t ipv4_src);
 extern void of_match_v1_ipv4_src_get(
     of_match_v1_t *obj,
-    uint32_t *ipv4_src);
+    of_ipv4_t *ipv4_src);
 
 extern void of_match_v1_ipv4_dst_set(
     of_match_v1_t *obj,
-    uint32_t ipv4_dst);
+    of_ipv4_t ipv4_dst);
 extern void of_match_v1_ipv4_dst_get(
     of_match_v1_t *obj,
-    uint32_t *ipv4_dst);
+    of_ipv4_t *ipv4_dst);
 
 extern void of_match_v1_tcp_src_set(
     of_match_v1_t *obj,
@@ -13715,31 +14226,31 @@ extern void of_match_v2_ip_proto_get(
 
 extern void of_match_v2_ipv4_src_set(
     of_match_v2_t *obj,
-    uint32_t ipv4_src);
+    of_ipv4_t ipv4_src);
 extern void of_match_v2_ipv4_src_get(
     of_match_v2_t *obj,
-    uint32_t *ipv4_src);
+    of_ipv4_t *ipv4_src);
 
 extern void of_match_v2_ipv4_src_mask_set(
     of_match_v2_t *obj,
-    uint32_t ipv4_src_mask);
+    of_ipv4_t ipv4_src_mask);
 extern void of_match_v2_ipv4_src_mask_get(
     of_match_v2_t *obj,
-    uint32_t *ipv4_src_mask);
+    of_ipv4_t *ipv4_src_mask);
 
 extern void of_match_v2_ipv4_dst_set(
     of_match_v2_t *obj,
-    uint32_t ipv4_dst);
+    of_ipv4_t ipv4_dst);
 extern void of_match_v2_ipv4_dst_get(
     of_match_v2_t *obj,
-    uint32_t *ipv4_dst);
+    of_ipv4_t *ipv4_dst);
 
 extern void of_match_v2_ipv4_dst_mask_set(
     of_match_v2_t *obj,
-    uint32_t ipv4_dst_mask);
+    of_ipv4_t ipv4_dst_mask);
 extern void of_match_v2_ipv4_dst_mask_get(
     of_match_v2_t *obj,
-    uint32_t *ipv4_dst_mask);
+    of_ipv4_t *ipv4_dst_mask);
 
 extern void of_match_v2_tcp_src_set(
     of_match_v2_t *obj,
@@ -14420,51 +14931,51 @@ extern void of_oxm_ip_proto_masked_value_mask_get(
 
 extern void of_oxm_ipv4_dst_value_set(
     of_oxm_ipv4_dst_t *obj,
-    uint32_t value);
+    of_ipv4_t value);
 extern void of_oxm_ipv4_dst_value_get(
     of_oxm_ipv4_dst_t *obj,
-    uint32_t *value);
+    of_ipv4_t *value);
 
 /* Unified accessor functions for of_oxm_ipv4_dst_masked */
 
 extern void of_oxm_ipv4_dst_masked_value_set(
     of_oxm_ipv4_dst_masked_t *obj,
-    uint32_t value);
+    of_ipv4_t value);
 extern void of_oxm_ipv4_dst_masked_value_get(
     of_oxm_ipv4_dst_masked_t *obj,
-    uint32_t *value);
+    of_ipv4_t *value);
 
 extern void of_oxm_ipv4_dst_masked_value_mask_set(
     of_oxm_ipv4_dst_masked_t *obj,
-    uint32_t value_mask);
+    of_ipv4_t value_mask);
 extern void of_oxm_ipv4_dst_masked_value_mask_get(
     of_oxm_ipv4_dst_masked_t *obj,
-    uint32_t *value_mask);
+    of_ipv4_t *value_mask);
 
 /* Unified accessor functions for of_oxm_ipv4_src */
 
 extern void of_oxm_ipv4_src_value_set(
     of_oxm_ipv4_src_t *obj,
-    uint32_t value);
+    of_ipv4_t value);
 extern void of_oxm_ipv4_src_value_get(
     of_oxm_ipv4_src_t *obj,
-    uint32_t *value);
+    of_ipv4_t *value);
 
 /* Unified accessor functions for of_oxm_ipv4_src_masked */
 
 extern void of_oxm_ipv4_src_masked_value_set(
     of_oxm_ipv4_src_masked_t *obj,
-    uint32_t value);
+    of_ipv4_t value);
 extern void of_oxm_ipv4_src_masked_value_get(
     of_oxm_ipv4_src_masked_t *obj,
-    uint32_t *value);
+    of_ipv4_t *value);
 
 extern void of_oxm_ipv4_src_masked_value_mask_set(
     of_oxm_ipv4_src_masked_t *obj,
-    uint32_t value_mask);
+    of_ipv4_t value_mask);
 extern void of_oxm_ipv4_src_masked_value_mask_get(
     of_oxm_ipv4_src_masked_t *obj,
-    uint32_t *value_mask);
+    of_ipv4_t *value_mask);
 
 /* Unified accessor functions for of_oxm_ipv6_dst */
 
@@ -16253,6 +16764,7 @@ union of_generic_u {
     of_bsn_get_l2_table_request_t of_bsn_get_l2_table_request;
     of_bsn_get_mirroring_reply_t of_bsn_get_mirroring_reply;
     of_bsn_get_mirroring_request_t of_bsn_get_mirroring_request;
+    of_bsn_header_t of_bsn_header;
     of_bsn_set_ip_mask_t of_bsn_set_ip_mask;
     of_bsn_set_l2_table_reply_t of_bsn_set_l2_table_reply;
     of_bsn_set_l2_table_request_t of_bsn_set_l2_table_request;
@@ -16279,6 +16791,7 @@ union of_generic_u {
     of_flow_add_t of_flow_add;
     of_flow_delete_t of_flow_delete;
     of_flow_delete_strict_t of_flow_delete_strict;
+    of_flow_mod_t of_flow_mod;
     of_flow_modify_t of_flow_modify;
     of_flow_modify_strict_t of_flow_modify_strict;
     of_flow_removed_t of_flow_removed;
@@ -16303,6 +16816,7 @@ union of_generic_u {
     of_meter_stats_request_t of_meter_stats_request;
     of_nicira_controller_role_reply_t of_nicira_controller_role_reply;
     of_nicira_controller_role_request_t of_nicira_controller_role_request;
+    of_nicira_header_t of_nicira_header;
     of_packet_in_t of_packet_in;
     of_packet_out_t of_packet_out;
     of_port_desc_stats_reply_t of_port_desc_stats_reply;
@@ -16318,6 +16832,8 @@ union of_generic_u {
     of_role_reply_t of_role_reply;
     of_role_request_t of_role_request;
     of_set_config_t of_set_config;
+    of_stats_reply_t of_stats_reply;
+    of_stats_request_t of_stats_request;
     of_table_features_stats_reply_t of_table_features_stats_reply;
     of_table_features_stats_request_t of_table_features_stats_request;
     of_table_mod_t of_table_mod;
@@ -16325,6 +16841,7 @@ union of_generic_u {
     of_table_stats_request_t of_table_stats_request;
 
     /* Non-message composite objects */
+    of_action_bsn_t of_action_bsn;
     of_action_bsn_mirror_t of_action_bsn_mirror;
     of_action_bsn_set_tunnel_dst_t of_action_bsn_set_tunnel_dst;
     of_action_copy_ttl_in_t of_action_copy_ttl_in;
@@ -16335,6 +16852,7 @@ union of_generic_u {
     of_action_experimenter_t of_action_experimenter;
     of_action_group_t of_action_group;
     of_action_header_t of_action_header;
+    of_action_id_bsn_t of_action_id_bsn;
     of_action_id_bsn_mirror_t of_action_id_bsn_mirror;
     of_action_id_bsn_set_tunnel_dst_t of_action_id_bsn_set_tunnel_dst;
     of_action_id_copy_ttl_in_t of_action_id_copy_ttl_in;
@@ -16344,6 +16862,7 @@ union of_generic_u {
     of_action_id_experimenter_t of_action_id_experimenter;
     of_action_id_group_t of_action_id_group;
     of_action_id_header_t of_action_id_header;
+    of_action_id_nicira_t of_action_id_nicira;
     of_action_id_nicira_dec_ttl_t of_action_id_nicira_dec_ttl;
     of_action_id_output_t of_action_id_output;
     of_action_id_pop_mpls_t of_action_id_pop_mpls;
@@ -16356,6 +16875,7 @@ union of_generic_u {
     of_action_id_set_mpls_ttl_t of_action_id_set_mpls_ttl;
     of_action_id_set_nw_ttl_t of_action_id_set_nw_ttl;
     of_action_id_set_queue_t of_action_id_set_queue;
+    of_action_nicira_t of_action_nicira;
     of_action_nicira_dec_ttl_t of_action_nicira_dec_ttl;
     of_action_output_t of_action_output;
     of_action_pop_mpls_t of_action_pop_mpls;
@@ -16619,6 +17139,7 @@ union of_table_feature_prop_u {
 
 union of_action_u {
     of_action_header_t header; /* Generic instance */
+    of_action_bsn_t bsn;
     of_action_bsn_mirror_t bsn_mirror;
     of_action_bsn_set_tunnel_dst_t bsn_set_tunnel_dst;
     of_action_copy_ttl_in_t copy_ttl_in;
@@ -16628,6 +17149,7 @@ union of_action_u {
     of_action_enqueue_t enqueue;
     of_action_experimenter_t experimenter;
     of_action_group_t group;
+    of_action_nicira_t nicira;
     of_action_nicira_dec_ttl_t nicira_dec_ttl;
     of_action_output_t output;
     of_action_pop_mpls_t pop_mpls;
@@ -16699,6 +17221,7 @@ union of_meter_band_u {
 
 union of_action_id_u {
     of_action_id_header_t header; /* Generic instance */
+    of_action_id_bsn_t bsn;
     of_action_id_bsn_mirror_t bsn_mirror;
     of_action_id_bsn_set_tunnel_dst_t bsn_set_tunnel_dst;
     of_action_id_copy_ttl_in_t copy_ttl_in;
@@ -16707,6 +17230,7 @@ union of_action_id_u {
     of_action_id_dec_nw_ttl_t dec_nw_ttl;
     of_action_id_experimenter_t experimenter;
     of_action_id_group_t group;
+    of_action_id_nicira_t nicira;
     of_action_id_nicira_dec_ttl_t nicira_dec_ttl;
     of_action_id_output_t output;
     of_action_id_pop_mpls_t pop_mpls;
@@ -18151,6 +18675,28 @@ extern int of_length_flow_delete_instructions_get(
  */
 extern int of_offset_flow_delete_instructions_get(
     of_flow_delete_t *obj, int *offset);
+
+/**
+ * Special length calculation for of_flow_mod->instructions.
+ * @param obj An object of type of_flow_mod to check for
+ * length of instructions
+ * @param bytes[out] Where to store the calculated length
+ *
+ * Preceding data member is match.
+ */
+extern int of_length_flow_mod_instructions_get(
+    of_flow_mod_t *obj, int *bytes);
+
+/**
+ * Special offset calculation for of_flow_mod->instructions.
+ * @param obj An object of type of_flow_mod to check for
+ * length of instructions
+ * @param offset[out] Where to store the calculated length
+ *
+ * Preceding data member is match.
+ */
+extern int of_offset_flow_mod_instructions_get(
+    of_flow_mod_t *obj, int *offset);
 
 /**
  * Special length calculation for of_flow_add->instructions.
