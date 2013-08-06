@@ -55,7 +55,14 @@ murmur_hash(const void *key, int len, uint32_t seed)
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
 
-    const uint32_t *blocks = (const uint32_t *)(data + nblocks*4);
+    /* Workaround for strict aliasing */
+#ifdef __GNUC__
+    typedef uint32_t __attribute__((__may_alias__)) uint32_aliased_t;
+#else
+    typedef uint32_t uint32_aliased_t;
+#endif
+
+    const uint32_aliased_t *blocks = (const uint32_aliased_t *)(data + nblocks*4);
 
     const uint8_t* tail;
     uint32_t k1;
