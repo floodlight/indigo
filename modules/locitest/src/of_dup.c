@@ -646,6 +646,37 @@ of_bsn_get_mirroring_request_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_header_t *
+of_bsn_header_OF_VERSION_1_0_dup(
+    of_bsn_header_t *src)
+{
+    of_bsn_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_header_xid_get(src, &val32);
+    of_bsn_header_xid_set(dst, val32);
+
+    of_bsn_header_experimenter_get(src, &val32);
+    of_bsn_header_experimenter_set(dst, val32);
+
+    of_bsn_header_subtype_get(src, &val32);
+    of_bsn_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_ip_mask
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -1693,6 +1724,72 @@ of_flow_delete_strict_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_flow_mod
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_t *
+of_flow_mod_OF_VERSION_1_0_dup(
+    of_flow_mod_t *src)
+{
+    of_flow_mod_t *dst;
+    uint32_t val32;
+    of_match_t match;
+    uint64_t val64;
+    uint16_t val16;
+    of_port_no_t port_no;
+
+    of_list_action_t src_list;
+    of_list_action_t *dst_list;
+
+    if ((dst = of_flow_mod_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_xid_get(src, &val32);
+    of_flow_mod_xid_set(dst, val32);
+
+    of_flow_mod_match_get(src, &match);
+    of_flow_mod_match_set(dst, &match);
+
+    of_flow_mod_cookie_get(src, &val64);
+    of_flow_mod_cookie_set(dst, val64);
+
+    of_flow_mod_idle_timeout_get(src, &val16);
+    of_flow_mod_idle_timeout_set(dst, val16);
+
+    of_flow_mod_hard_timeout_get(src, &val16);
+    of_flow_mod_hard_timeout_set(dst, val16);
+
+    of_flow_mod_priority_get(src, &val16);
+    of_flow_mod_priority_set(dst, val16);
+
+    of_flow_mod_buffer_id_get(src, &val32);
+    of_flow_mod_buffer_id_set(dst, val32);
+
+    of_flow_mod_out_port_get(src, &port_no);
+    of_flow_mod_out_port_set(dst, port_no);
+
+    of_flow_mod_flags_get(src, &val16);
+    of_flow_mod_flags_set(dst, val16);
+
+    of_flow_mod_actions_bind(
+        src, &src_list);
+    dst_list = of_list_action_OF_VERSION_1_0_dup(&src_list);
+    if (dst_list == NULL) {
+        of_flow_mod_delete(dst);
+        return NULL;
+    }
+    of_flow_mod_actions_set(dst, dst_list);
+    of_list_action_delete(dst_list);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_flow_modify
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -2109,6 +2206,37 @@ of_nicira_controller_role_request_OF_VERSION_1_0_dup(
 
     of_nicira_controller_role_request_role_get(src, &val32);
     of_nicira_controller_role_request_role_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_nicira_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_nicira_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_nicira_header_t *
+of_nicira_header_OF_VERSION_1_0_dup(
+    of_nicira_header_t *src)
+{
+    of_nicira_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_nicira_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_nicira_header_xid_get(src, &val32);
+    of_nicira_header_xid_set(dst, val32);
+
+    of_nicira_header_experimenter_get(src, &val32);
+    of_nicira_header_experimenter_set(dst, val32);
+
+    of_nicira_header_subtype_get(src, &val32);
+    of_nicira_header_subtype_set(dst, val32);
 
     return dst;
 }
@@ -2547,6 +2675,64 @@ of_set_config_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_stats_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_reply_t *
+of_stats_reply_OF_VERSION_1_0_dup(
+    of_stats_reply_t *src)
+{
+    of_stats_reply_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_reply_xid_get(src, &val32);
+    of_stats_reply_xid_set(dst, val32);
+
+    of_stats_reply_flags_get(src, &val16);
+    of_stats_reply_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_stats_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_request_t *
+of_stats_request_OF_VERSION_1_0_dup(
+    of_stats_request_t *src)
+{
+    of_stats_request_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_request_xid_get(src, &val32);
+    of_stats_request_xid_set(dst, val32);
+
+    of_stats_request_flags_get(src, &val16);
+    of_stats_request_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_mod
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -2661,6 +2847,11 @@ of_action_OF_VERSION_1_0_dup(
     of_action_t *src)
 {
 
+    if (src->header.object_id == OF_ACTION_NICIRA) {
+        return (of_action_t *)of_action_nicira_OF_VERSION_1_0_dup(
+            &src->nicira);
+    }
+
     if (src->header.object_id == OF_ACTION_STRIP_VLAN) {
         return (of_action_t *)of_action_strip_vlan_OF_VERSION_1_0_dup(
             &src->strip_vlan);
@@ -2691,14 +2882,19 @@ of_action_OF_VERSION_1_0_dup(
             &src->set_vlan_pcp);
     }
 
+    if (src->header.object_id == OF_ACTION_SET_TP_SRC) {
+        return (of_action_t *)of_action_set_tp_src_OF_VERSION_1_0_dup(
+            &src->set_tp_src);
+    }
+
     if (src->header.object_id == OF_ACTION_ENQUEUE) {
         return (of_action_t *)of_action_enqueue_OF_VERSION_1_0_dup(
             &src->enqueue);
     }
 
-    if (src->header.object_id == OF_ACTION_SET_TP_SRC) {
-        return (of_action_t *)of_action_set_tp_src_OF_VERSION_1_0_dup(
-            &src->set_tp_src);
+    if (src->header.object_id == OF_ACTION_BSN) {
+        return (of_action_t *)of_action_bsn_OF_VERSION_1_0_dup(
+            &src->bsn);
     }
 
     if (src->header.object_id == OF_ACTION_SET_NW_TOS) {
@@ -2742,6 +2938,34 @@ of_action_OF_VERSION_1_0_dup(
     }
 
     return NULL;
+}
+
+/**
+ * Duplicate an object of type of_action_bsn
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_bsn.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_bsn_t *
+of_action_bsn_OF_VERSION_1_0_dup(
+    of_action_bsn_t *src)
+{
+    of_action_bsn_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_action_bsn_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_bsn_experimenter_get(src, &val32);
+    of_action_bsn_experimenter_set(dst, val32);
+
+    of_action_bsn_subtype_get(src, &val32);
+    of_action_bsn_subtype_set(dst, val32);
+
+    return dst;
 }
 
 /**
@@ -2888,6 +3112,35 @@ of_action_header_OF_VERSION_1_0_dup(
     if ((dst = of_action_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_action_nicira
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_nicira.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_nicira_t *
+of_action_nicira_OF_VERSION_1_0_dup(
+    of_action_nicira_t *src)
+{
+    of_action_nicira_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_action_nicira_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_nicira_experimenter_get(src, &val32);
+    of_action_nicira_experimenter_set(dst, val32);
+
+    of_action_nicira_subtype_get(src, &val16);
+    of_action_nicira_subtype_set(dst, val16);
 
     return dst;
 }
@@ -3211,7 +3464,7 @@ of_bsn_interface_OF_VERSION_1_0_dup(
     of_bsn_interface_t *dst;
     of_mac_addr_t mac_addr;
     of_port_name_t port_name;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_bsn_interface_new(src->version)) == NULL) {
         return NULL;
@@ -3223,11 +3476,11 @@ of_bsn_interface_OF_VERSION_1_0_dup(
     of_bsn_interface_name_get(src, &port_name);
     of_bsn_interface_name_set(dst, port_name);
 
-    of_bsn_interface_ipv4_addr_get(src, &val32);
-    of_bsn_interface_ipv4_addr_set(dst, val32);
+    of_bsn_interface_ipv4_addr_get(src, &ipv4);
+    of_bsn_interface_ipv4_addr_set(dst, ipv4);
 
-    of_bsn_interface_ipv4_netmask_get(src, &val32);
-    of_bsn_interface_ipv4_netmask_set(dst, val32);
+    of_bsn_interface_ipv4_netmask_get(src, &ipv4);
+    of_bsn_interface_ipv4_netmask_set(dst, ipv4);
 
     return dst;
 }
@@ -3423,7 +3676,7 @@ of_match_v1_OF_VERSION_1_0_dup(
     of_mac_addr_t mac_addr;
     uint16_t val16;
     uint8_t val8;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_match_v1_new(src->version)) == NULL) {
         return NULL;
@@ -3456,11 +3709,11 @@ of_match_v1_OF_VERSION_1_0_dup(
     of_match_v1_ip_proto_get(src, &val8);
     of_match_v1_ip_proto_set(dst, val8);
 
-    of_match_v1_ipv4_src_get(src, &val32);
-    of_match_v1_ipv4_src_set(dst, val32);
+    of_match_v1_ipv4_src_get(src, &ipv4);
+    of_match_v1_ipv4_src_set(dst, ipv4);
 
-    of_match_v1_ipv4_dst_get(src, &val32);
-    of_match_v1_ipv4_dst_set(dst, val32);
+    of_match_v1_ipv4_dst_get(src, &ipv4);
+    of_match_v1_ipv4_dst_set(dst, ipv4);
 
     of_match_v1_tcp_src_get(src, &val16);
     of_match_v1_tcp_src_set(dst, val16);
@@ -4568,6 +4821,37 @@ of_bsn_get_mirroring_request_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_header_t *
+of_bsn_header_OF_VERSION_1_1_dup(
+    of_bsn_header_t *src)
+{
+    of_bsn_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_header_xid_get(src, &val32);
+    of_bsn_header_xid_set(dst, val32);
+
+    of_bsn_header_experimenter_get(src, &val32);
+    of_bsn_header_experimenter_set(dst, val32);
+
+    of_bsn_header_subtype_get(src, &val32);
+    of_bsn_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -5419,6 +5703,82 @@ of_flow_delete_strict_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_flow_mod
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_t *
+of_flow_mod_OF_VERSION_1_1_dup(
+    of_flow_mod_t *src)
+{
+    of_flow_mod_t *dst;
+    uint32_t val32;
+    uint64_t val64;
+    uint8_t val8;
+    uint16_t val16;
+    of_port_no_t port_no;
+    of_match_t match;
+
+    of_list_instruction_t src_list;
+    of_list_instruction_t *dst_list;
+
+    if ((dst = of_flow_mod_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_xid_get(src, &val32);
+    of_flow_mod_xid_set(dst, val32);
+
+    of_flow_mod_cookie_get(src, &val64);
+    of_flow_mod_cookie_set(dst, val64);
+
+    of_flow_mod_cookie_mask_get(src, &val64);
+    of_flow_mod_cookie_mask_set(dst, val64);
+
+    of_flow_mod_table_id_get(src, &val8);
+    of_flow_mod_table_id_set(dst, val8);
+
+    of_flow_mod_idle_timeout_get(src, &val16);
+    of_flow_mod_idle_timeout_set(dst, val16);
+
+    of_flow_mod_hard_timeout_get(src, &val16);
+    of_flow_mod_hard_timeout_set(dst, val16);
+
+    of_flow_mod_priority_get(src, &val16);
+    of_flow_mod_priority_set(dst, val16);
+
+    of_flow_mod_buffer_id_get(src, &val32);
+    of_flow_mod_buffer_id_set(dst, val32);
+
+    of_flow_mod_out_port_get(src, &port_no);
+    of_flow_mod_out_port_set(dst, port_no);
+
+    of_flow_mod_out_group_get(src, &val32);
+    of_flow_mod_out_group_set(dst, val32);
+
+    of_flow_mod_flags_get(src, &val16);
+    of_flow_mod_flags_set(dst, val16);
+
+    of_flow_mod_match_get(src, &match);
+    of_flow_mod_match_set(dst, &match);
+
+    of_flow_mod_instructions_bind(
+        src, &src_list);
+    dst_list = of_list_instruction_OF_VERSION_1_1_dup(&src_list);
+    if (dst_list == NULL) {
+        of_flow_mod_delete(dst);
+        return NULL;
+    }
+    of_flow_mod_instructions_set(dst, dst_list);
+    of_list_instruction_delete(dst_list);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_flow_modify
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -5999,6 +6359,37 @@ of_hello_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_nicira_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_nicira_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_nicira_header_t *
+of_nicira_header_OF_VERSION_1_1_dup(
+    of_nicira_header_t *src)
+{
+    of_nicira_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_nicira_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_nicira_header_xid_get(src, &val32);
+    of_nicira_header_xid_set(dst, val32);
+
+    of_nicira_header_experimenter_get(src, &val32);
+    of_nicira_header_experimenter_set(dst, val32);
+
+    of_nicira_header_subtype_get(src, &val32);
+    of_nicira_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_packet_in
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6438,6 +6829,64 @@ of_set_config_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_stats_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_reply_t *
+of_stats_reply_OF_VERSION_1_1_dup(
+    of_stats_reply_t *src)
+{
+    of_stats_reply_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_reply_xid_get(src, &val32);
+    of_stats_reply_xid_set(dst, val32);
+
+    of_stats_reply_flags_get(src, &val16);
+    of_stats_reply_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_stats_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_request_t *
+of_stats_request_OF_VERSION_1_1_dup(
+    of_stats_request_t *src)
+{
+    of_stats_request_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_request_xid_get(src, &val32);
+    of_stats_request_xid_set(dst, val32);
+
+    of_stats_request_flags_get(src, &val16);
+    of_stats_request_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_mod
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6552,9 +7001,9 @@ of_action_OF_VERSION_1_1_dup(
     of_action_t *src)
 {
 
-    if (src->header.object_id == OF_ACTION_COPY_TTL_OUT) {
-        return (of_action_t *)of_action_copy_ttl_out_OF_VERSION_1_1_dup(
-            &src->copy_ttl_out);
+    if (src->header.object_id == OF_ACTION_SET_NW_SRC) {
+        return (of_action_t *)of_action_set_nw_src_OF_VERSION_1_1_dup(
+            &src->set_nw_src);
     }
 
     if (src->header.object_id == OF_ACTION_SET_MPLS_TC) {
@@ -6597,9 +7046,9 @@ of_action_OF_VERSION_1_1_dup(
             &src->group);
     }
 
-    if (src->header.object_id == OF_ACTION_SET_NW_SRC) {
-        return (of_action_t *)of_action_set_nw_src_OF_VERSION_1_1_dup(
-            &src->set_nw_src);
+    if (src->header.object_id == OF_ACTION_COPY_TTL_OUT) {
+        return (of_action_t *)of_action_copy_ttl_out_OF_VERSION_1_1_dup(
+            &src->copy_ttl_out);
     }
 
     if (src->header.object_id == OF_ACTION_SET_VLAN_VID) {
@@ -6642,9 +7091,9 @@ of_action_OF_VERSION_1_1_dup(
             &src->set_vlan_pcp);
     }
 
-    if (src->header.object_id == OF_ACTION_SET_TP_SRC) {
-        return (of_action_t *)of_action_set_tp_src_OF_VERSION_1_1_dup(
-            &src->set_tp_src);
+    if (src->header.object_id == OF_ACTION_BSN) {
+        return (of_action_t *)of_action_bsn_OF_VERSION_1_1_dup(
+            &src->bsn);
     }
 
     if (src->header.object_id == OF_ACTION_EXPERIMENTER) {
@@ -6662,6 +7111,11 @@ of_action_OF_VERSION_1_1_dup(
             &src->copy_ttl_in);
     }
 
+    if (src->header.object_id == OF_ACTION_NICIRA) {
+        return (of_action_t *)of_action_nicira_OF_VERSION_1_1_dup(
+            &src->nicira);
+    }
+
     if (src->header.object_id == OF_ACTION_SET_NW_ECN) {
         return (of_action_t *)of_action_set_nw_ecn_OF_VERSION_1_1_dup(
             &src->set_nw_ecn);
@@ -6675,6 +7129,11 @@ of_action_OF_VERSION_1_1_dup(
     if (src->header.object_id == OF_ACTION_PUSH_MPLS) {
         return (of_action_t *)of_action_push_mpls_OF_VERSION_1_1_dup(
             &src->push_mpls);
+    }
+
+    if (src->header.object_id == OF_ACTION_SET_TP_SRC) {
+        return (of_action_t *)of_action_set_tp_src_OF_VERSION_1_1_dup(
+            &src->set_tp_src);
     }
 
     if (src->header.object_id == OF_ACTION_DEC_NW_TTL) {
@@ -6698,6 +7157,34 @@ of_action_OF_VERSION_1_1_dup(
     }
 
     return NULL;
+}
+
+/**
+ * Duplicate an object of type of_action_bsn
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_bsn.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_bsn_t *
+of_action_bsn_OF_VERSION_1_1_dup(
+    of_action_bsn_t *src)
+{
+    of_action_bsn_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_action_bsn_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_bsn_experimenter_get(src, &val32);
+    of_action_bsn_experimenter_set(dst, val32);
+
+    of_action_bsn_subtype_get(src, &val32);
+    of_action_bsn_subtype_set(dst, val32);
+
+    return dst;
 }
 
 /**
@@ -6924,6 +7411,35 @@ of_action_header_OF_VERSION_1_1_dup(
     if ((dst = of_action_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_action_nicira
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_nicira.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_nicira_t *
+of_action_nicira_OF_VERSION_1_1_dup(
+    of_action_nicira_t *src)
+{
+    of_action_nicira_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_action_nicira_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_nicira_experimenter_get(src, &val32);
+    of_action_nicira_experimenter_set(dst, val32);
+
+    of_action_nicira_subtype_get(src, &val16);
+    of_action_nicira_subtype_set(dst, val16);
 
     return dst;
 }
@@ -7472,7 +7988,7 @@ of_bsn_interface_OF_VERSION_1_1_dup(
     of_bsn_interface_t *dst;
     of_mac_addr_t mac_addr;
     of_port_name_t port_name;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_bsn_interface_new(src->version)) == NULL) {
         return NULL;
@@ -7484,11 +8000,11 @@ of_bsn_interface_OF_VERSION_1_1_dup(
     of_bsn_interface_name_get(src, &port_name);
     of_bsn_interface_name_set(dst, port_name);
 
-    of_bsn_interface_ipv4_addr_get(src, &val32);
-    of_bsn_interface_ipv4_addr_set(dst, val32);
+    of_bsn_interface_ipv4_addr_get(src, &ipv4);
+    of_bsn_interface_ipv4_addr_set(dst, ipv4);
 
-    of_bsn_interface_ipv4_netmask_get(src, &val32);
-    of_bsn_interface_ipv4_netmask_set(dst, val32);
+    of_bsn_interface_ipv4_netmask_get(src, &ipv4);
+    of_bsn_interface_ipv4_netmask_set(dst, ipv4);
 
     return dst;
 }
@@ -8081,6 +8597,7 @@ of_match_v2_OF_VERSION_1_1_dup(
     of_mac_addr_t mac_addr;
     uint16_t val16;
     uint8_t val8;
+    of_ipv4_t ipv4;
     uint32_t val32;
     uint64_t val64;
 
@@ -8121,17 +8638,17 @@ of_match_v2_OF_VERSION_1_1_dup(
     of_match_v2_ip_proto_get(src, &val8);
     of_match_v2_ip_proto_set(dst, val8);
 
-    of_match_v2_ipv4_src_get(src, &val32);
-    of_match_v2_ipv4_src_set(dst, val32);
+    of_match_v2_ipv4_src_get(src, &ipv4);
+    of_match_v2_ipv4_src_set(dst, ipv4);
 
-    of_match_v2_ipv4_src_mask_get(src, &val32);
-    of_match_v2_ipv4_src_mask_set(dst, val32);
+    of_match_v2_ipv4_src_mask_get(src, &ipv4);
+    of_match_v2_ipv4_src_mask_set(dst, ipv4);
 
-    of_match_v2_ipv4_dst_get(src, &val32);
-    of_match_v2_ipv4_dst_set(dst, val32);
+    of_match_v2_ipv4_dst_get(src, &ipv4);
+    of_match_v2_ipv4_dst_set(dst, ipv4);
 
-    of_match_v2_ipv4_dst_mask_get(src, &val32);
-    of_match_v2_ipv4_dst_mask_set(dst, val32);
+    of_match_v2_ipv4_dst_mask_get(src, &ipv4);
+    of_match_v2_ipv4_dst_mask_set(dst, ipv4);
 
     of_match_v2_tcp_src_get(src, &val16);
     of_match_v2_tcp_src_set(dst, val16);
@@ -9443,6 +9960,37 @@ of_bsn_get_mirroring_request_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_header_t *
+of_bsn_header_OF_VERSION_1_2_dup(
+    of_bsn_header_t *src)
+{
+    of_bsn_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_header_xid_get(src, &val32);
+    of_bsn_header_xid_set(dst, val32);
+
+    of_bsn_header_experimenter_get(src, &val32);
+    of_bsn_header_experimenter_set(dst, val32);
+
+    of_bsn_header_subtype_get(src, &val32);
+    of_bsn_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -10300,6 +10848,82 @@ of_flow_delete_strict_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_flow_mod
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_t *
+of_flow_mod_OF_VERSION_1_2_dup(
+    of_flow_mod_t *src)
+{
+    of_flow_mod_t *dst;
+    uint32_t val32;
+    uint64_t val64;
+    uint8_t val8;
+    uint16_t val16;
+    of_port_no_t port_no;
+    of_match_t match;
+
+    of_list_instruction_t src_list;
+    of_list_instruction_t *dst_list;
+
+    if ((dst = of_flow_mod_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_xid_get(src, &val32);
+    of_flow_mod_xid_set(dst, val32);
+
+    of_flow_mod_cookie_get(src, &val64);
+    of_flow_mod_cookie_set(dst, val64);
+
+    of_flow_mod_cookie_mask_get(src, &val64);
+    of_flow_mod_cookie_mask_set(dst, val64);
+
+    of_flow_mod_table_id_get(src, &val8);
+    of_flow_mod_table_id_set(dst, val8);
+
+    of_flow_mod_idle_timeout_get(src, &val16);
+    of_flow_mod_idle_timeout_set(dst, val16);
+
+    of_flow_mod_hard_timeout_get(src, &val16);
+    of_flow_mod_hard_timeout_set(dst, val16);
+
+    of_flow_mod_priority_get(src, &val16);
+    of_flow_mod_priority_set(dst, val16);
+
+    of_flow_mod_buffer_id_get(src, &val32);
+    of_flow_mod_buffer_id_set(dst, val32);
+
+    of_flow_mod_out_port_get(src, &port_no);
+    of_flow_mod_out_port_set(dst, port_no);
+
+    of_flow_mod_out_group_get(src, &val32);
+    of_flow_mod_out_group_set(dst, val32);
+
+    of_flow_mod_flags_get(src, &val16);
+    of_flow_mod_flags_set(dst, val16);
+
+    of_flow_mod_match_get(src, &match);
+    of_flow_mod_match_set(dst, &match);
+
+    of_flow_mod_instructions_bind(
+        src, &src_list);
+    dst_list = of_list_instruction_OF_VERSION_1_2_dup(&src_list);
+    if (dst_list == NULL) {
+        of_flow_mod_delete(dst);
+        return NULL;
+    }
+    of_flow_mod_instructions_set(dst, dst_list);
+    of_list_instruction_delete(dst_list);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_flow_modify
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -10971,6 +11595,37 @@ of_hello_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_nicira_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_nicira_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_nicira_header_t *
+of_nicira_header_OF_VERSION_1_2_dup(
+    of_nicira_header_t *src)
+{
+    of_nicira_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_nicira_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_nicira_header_xid_get(src, &val32);
+    of_nicira_header_xid_set(dst, val32);
+
+    of_nicira_header_experimenter_get(src, &val32);
+    of_nicira_header_experimenter_set(dst, val32);
+
+    of_nicira_header_subtype_get(src, &val32);
+    of_nicira_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_packet_in
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -11468,6 +12123,64 @@ of_set_config_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_stats_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_reply_t *
+of_stats_reply_OF_VERSION_1_2_dup(
+    of_stats_reply_t *src)
+{
+    of_stats_reply_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_reply_xid_get(src, &val32);
+    of_stats_reply_xid_set(dst, val32);
+
+    of_stats_reply_flags_get(src, &val16);
+    of_stats_reply_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_stats_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_request_t *
+of_stats_request_OF_VERSION_1_2_dup(
+    of_stats_request_t *src)
+{
+    of_stats_request_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_request_xid_get(src, &val32);
+    of_stats_request_xid_set(dst, val32);
+
+    of_stats_request_flags_get(src, &val16);
+    of_stats_request_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_mod
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -11582,6 +12295,11 @@ of_action_OF_VERSION_1_2_dup(
     of_action_t *src)
 {
 
+    if (src->header.object_id == OF_ACTION_NICIRA) {
+        return (of_action_t *)of_action_nicira_OF_VERSION_1_2_dup(
+            &src->nicira);
+    }
+
     if (src->header.object_id == OF_ACTION_GROUP) {
         return (of_action_t *)of_action_group_OF_VERSION_1_2_dup(
             &src->group);
@@ -11637,6 +12355,11 @@ of_action_OF_VERSION_1_2_dup(
             &src->dec_nw_ttl);
     }
 
+    if (src->header.object_id == OF_ACTION_BSN) {
+        return (of_action_t *)of_action_bsn_OF_VERSION_1_2_dup(
+            &src->bsn);
+    }
+
     if (src->header.object_id == OF_ACTION_EXPERIMENTER) {
         return (of_action_t *)of_action_experimenter_OF_VERSION_1_2_dup(
             &src->experimenter);
@@ -11673,6 +12396,34 @@ of_action_OF_VERSION_1_2_dup(
     }
 
     return NULL;
+}
+
+/**
+ * Duplicate an object of type of_action_bsn
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_bsn.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_bsn_t *
+of_action_bsn_OF_VERSION_1_2_dup(
+    of_action_bsn_t *src)
+{
+    of_action_bsn_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_action_bsn_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_bsn_experimenter_get(src, &val32);
+    of_action_bsn_experimenter_set(dst, val32);
+
+    of_action_bsn_subtype_get(src, &val32);
+    of_action_bsn_subtype_set(dst, val32);
+
+    return dst;
 }
 
 /**
@@ -11899,6 +12650,35 @@ of_action_header_OF_VERSION_1_2_dup(
     if ((dst = of_action_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_action_nicira
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_nicira.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_nicira_t *
+of_action_nicira_OF_VERSION_1_2_dup(
+    of_action_nicira_t *src)
+{
+    of_action_nicira_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_action_nicira_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_nicira_experimenter_get(src, &val32);
+    of_action_nicira_experimenter_set(dst, val32);
+
+    of_action_nicira_subtype_get(src, &val16);
+    of_action_nicira_subtype_set(dst, val16);
 
     return dst;
 }
@@ -12172,7 +12952,7 @@ of_bsn_interface_OF_VERSION_1_2_dup(
     of_bsn_interface_t *dst;
     of_mac_addr_t mac_addr;
     of_port_name_t port_name;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_bsn_interface_new(src->version)) == NULL) {
         return NULL;
@@ -12184,11 +12964,11 @@ of_bsn_interface_OF_VERSION_1_2_dup(
     of_bsn_interface_name_get(src, &port_name);
     of_bsn_interface_name_set(dst, port_name);
 
-    of_bsn_interface_ipv4_addr_get(src, &val32);
-    of_bsn_interface_ipv4_addr_set(dst, val32);
+    of_bsn_interface_ipv4_addr_get(src, &ipv4);
+    of_bsn_interface_ipv4_addr_set(dst, ipv4);
 
-    of_bsn_interface_ipv4_netmask_get(src, &val32);
-    of_bsn_interface_ipv4_netmask_set(dst, val32);
+    of_bsn_interface_ipv4_netmask_get(src, &ipv4);
+    of_bsn_interface_ipv4_netmask_set(dst, ipv4);
 
     return dst;
 }
@@ -14107,14 +14887,14 @@ of_oxm_ipv4_dst_OF_VERSION_1_2_dup(
     of_oxm_ipv4_dst_t *src)
 {
     of_oxm_ipv4_dst_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_dst_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_dst_value_get(src, &val32);
-    of_oxm_ipv4_dst_value_set(dst, val32);
+    of_oxm_ipv4_dst_value_get(src, &ipv4);
+    of_oxm_ipv4_dst_value_set(dst, ipv4);
 
     return dst;
 }
@@ -14132,17 +14912,17 @@ of_oxm_ipv4_dst_masked_OF_VERSION_1_2_dup(
     of_oxm_ipv4_dst_masked_t *src)
 {
     of_oxm_ipv4_dst_masked_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_dst_masked_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_dst_masked_value_get(src, &val32);
-    of_oxm_ipv4_dst_masked_value_set(dst, val32);
+    of_oxm_ipv4_dst_masked_value_get(src, &ipv4);
+    of_oxm_ipv4_dst_masked_value_set(dst, ipv4);
 
-    of_oxm_ipv4_dst_masked_value_mask_get(src, &val32);
-    of_oxm_ipv4_dst_masked_value_mask_set(dst, val32);
+    of_oxm_ipv4_dst_masked_value_mask_get(src, &ipv4);
+    of_oxm_ipv4_dst_masked_value_mask_set(dst, ipv4);
 
     return dst;
 }
@@ -14160,14 +14940,14 @@ of_oxm_ipv4_src_OF_VERSION_1_2_dup(
     of_oxm_ipv4_src_t *src)
 {
     of_oxm_ipv4_src_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_src_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_src_value_get(src, &val32);
-    of_oxm_ipv4_src_value_set(dst, val32);
+    of_oxm_ipv4_src_value_get(src, &ipv4);
+    of_oxm_ipv4_src_value_set(dst, ipv4);
 
     return dst;
 }
@@ -14185,17 +14965,17 @@ of_oxm_ipv4_src_masked_OF_VERSION_1_2_dup(
     of_oxm_ipv4_src_masked_t *src)
 {
     of_oxm_ipv4_src_masked_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_src_masked_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_src_masked_value_get(src, &val32);
-    of_oxm_ipv4_src_masked_value_set(dst, val32);
+    of_oxm_ipv4_src_masked_value_get(src, &ipv4);
+    of_oxm_ipv4_src_masked_value_set(dst, ipv4);
 
-    of_oxm_ipv4_src_masked_value_mask_get(src, &val32);
-    of_oxm_ipv4_src_masked_value_mask_set(dst, val32);
+    of_oxm_ipv4_src_masked_value_mask_get(src, &ipv4);
+    of_oxm_ipv4_src_masked_value_mask_set(dst, ipv4);
 
     return dst;
 }
@@ -16633,6 +17413,37 @@ of_bsn_get_mirroring_request_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_header_t *
+of_bsn_header_OF_VERSION_1_3_dup(
+    of_bsn_header_t *src)
+{
+    of_bsn_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_header_xid_get(src, &val32);
+    of_bsn_header_xid_set(dst, val32);
+
+    of_bsn_header_experimenter_get(src, &val32);
+    of_bsn_header_experimenter_set(dst, val32);
+
+    of_bsn_header_subtype_get(src, &val32);
+    of_bsn_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -17396,6 +18207,82 @@ of_flow_delete_strict_OF_VERSION_1_3_dup(
         return NULL;
     }
     of_flow_delete_strict_instructions_set(dst, dst_list);
+    of_list_instruction_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_flow_mod
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_t *
+of_flow_mod_OF_VERSION_1_3_dup(
+    of_flow_mod_t *src)
+{
+    of_flow_mod_t *dst;
+    uint32_t val32;
+    uint64_t val64;
+    uint8_t val8;
+    uint16_t val16;
+    of_port_no_t port_no;
+    of_match_t match;
+
+    of_list_instruction_t src_list;
+    of_list_instruction_t *dst_list;
+
+    if ((dst = of_flow_mod_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_xid_get(src, &val32);
+    of_flow_mod_xid_set(dst, val32);
+
+    of_flow_mod_cookie_get(src, &val64);
+    of_flow_mod_cookie_set(dst, val64);
+
+    of_flow_mod_cookie_mask_get(src, &val64);
+    of_flow_mod_cookie_mask_set(dst, val64);
+
+    of_flow_mod_table_id_get(src, &val8);
+    of_flow_mod_table_id_set(dst, val8);
+
+    of_flow_mod_idle_timeout_get(src, &val16);
+    of_flow_mod_idle_timeout_set(dst, val16);
+
+    of_flow_mod_hard_timeout_get(src, &val16);
+    of_flow_mod_hard_timeout_set(dst, val16);
+
+    of_flow_mod_priority_get(src, &val16);
+    of_flow_mod_priority_set(dst, val16);
+
+    of_flow_mod_buffer_id_get(src, &val32);
+    of_flow_mod_buffer_id_set(dst, val32);
+
+    of_flow_mod_out_port_get(src, &port_no);
+    of_flow_mod_out_port_set(dst, port_no);
+
+    of_flow_mod_out_group_get(src, &val32);
+    of_flow_mod_out_group_set(dst, val32);
+
+    of_flow_mod_flags_get(src, &val16);
+    of_flow_mod_flags_set(dst, val16);
+
+    of_flow_mod_match_get(src, &match);
+    of_flow_mod_match_set(dst, &match);
+
+    of_flow_mod_instructions_bind(
+        src, &src_list);
+    dst_list = of_list_instruction_OF_VERSION_1_3_dup(&src_list);
+    if (dst_list == NULL) {
+        of_flow_mod_delete(dst);
+        return NULL;
+    }
+    of_flow_mod_instructions_set(dst, dst_list);
     of_list_instruction_delete(dst_list);
 
     return dst;
@@ -18353,6 +19240,37 @@ of_meter_stats_request_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_nicira_header
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_nicira_header.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_nicira_header_t *
+of_nicira_header_OF_VERSION_1_3_dup(
+    of_nicira_header_t *src)
+{
+    of_nicira_header_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_nicira_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_nicira_header_xid_get(src, &val32);
+    of_nicira_header_xid_set(dst, val32);
+
+    of_nicira_header_experimenter_get(src, &val32);
+    of_nicira_header_experimenter_set(dst, val32);
+
+    of_nicira_header_subtype_get(src, &val32);
+    of_nicira_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_packet_in
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -18925,6 +19843,64 @@ of_set_config_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_stats_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_reply_t *
+of_stats_reply_OF_VERSION_1_3_dup(
+    of_stats_reply_t *src)
+{
+    of_stats_reply_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_reply_xid_get(src, &val32);
+    of_stats_reply_xid_set(dst, val32);
+
+    of_stats_reply_flags_get(src, &val16);
+    of_stats_reply_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_stats_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_stats_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_stats_request_t *
+of_stats_request_OF_VERSION_1_3_dup(
+    of_stats_request_t *src)
+{
+    of_stats_request_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_stats_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_stats_request_xid_get(src, &val32);
+    of_stats_request_xid_set(dst, val32);
+
+    of_stats_request_flags_get(src, &val16);
+    of_stats_request_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_features_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -19123,34 +20099,29 @@ of_action_OF_VERSION_1_3_dup(
     of_action_t *src)
 {
 
-    if (src->header.object_id == OF_ACTION_POP_PBB) {
-        return (of_action_t *)of_action_pop_pbb_OF_VERSION_1_3_dup(
-            &src->pop_pbb);
-    }
-
-    if (src->header.object_id == OF_ACTION_GROUP) {
-        return (of_action_t *)of_action_group_OF_VERSION_1_3_dup(
-            &src->group);
-    }
-
     if (src->header.object_id == OF_ACTION_BSN_MIRROR) {
         return (of_action_t *)of_action_bsn_mirror_OF_VERSION_1_3_dup(
             &src->bsn_mirror);
     }
 
-    if (src->header.object_id == OF_ACTION_POP_MPLS) {
-        return (of_action_t *)of_action_pop_mpls_OF_VERSION_1_3_dup(
-            &src->pop_mpls);
+    if (src->header.object_id == OF_ACTION_DEC_MPLS_TTL) {
+        return (of_action_t *)of_action_dec_mpls_ttl_OF_VERSION_1_3_dup(
+            &src->dec_mpls_ttl);
     }
 
-    if (src->header.object_id == OF_ACTION_PUSH_PBB) {
-        return (of_action_t *)of_action_push_pbb_OF_VERSION_1_3_dup(
-            &src->push_pbb);
+    if (src->header.object_id == OF_ACTION_BSN_SET_TUNNEL_DST) {
+        return (of_action_t *)of_action_bsn_set_tunnel_dst_OF_VERSION_1_3_dup(
+            &src->bsn_set_tunnel_dst);
     }
 
-    if (src->header.object_id == OF_ACTION_PUSH_MPLS) {
-        return (of_action_t *)of_action_push_mpls_OF_VERSION_1_3_dup(
-            &src->push_mpls);
+    if (src->header.object_id == OF_ACTION_COPY_TTL_IN) {
+        return (of_action_t *)of_action_copy_ttl_in_OF_VERSION_1_3_dup(
+            &src->copy_ttl_in);
+    }
+
+    if (src->header.object_id == OF_ACTION_GROUP) {
+        return (of_action_t *)of_action_group_OF_VERSION_1_3_dup(
+            &src->group);
     }
 
     if (src->header.object_id == OF_ACTION_COPY_TTL_OUT) {
@@ -19173,34 +20144,9 @@ of_action_OF_VERSION_1_3_dup(
             &src->pop_vlan);
     }
 
-    if (src->header.object_id == OF_ACTION_SET_NW_TTL) {
-        return (of_action_t *)of_action_set_nw_ttl_OF_VERSION_1_3_dup(
-            &src->set_nw_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_DEC_NW_TTL) {
-        return (of_action_t *)of_action_dec_nw_ttl_OF_VERSION_1_3_dup(
-            &src->dec_nw_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_EXPERIMENTER) {
-        return (of_action_t *)of_action_experimenter_OF_VERSION_1_3_dup(
-            &src->experimenter);
-    }
-
-    if (src->header.object_id == OF_ACTION_DEC_MPLS_TTL) {
-        return (of_action_t *)of_action_dec_mpls_ttl_OF_VERSION_1_3_dup(
-            &src->dec_mpls_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_BSN_SET_TUNNEL_DST) {
-        return (of_action_t *)of_action_bsn_set_tunnel_dst_OF_VERSION_1_3_dup(
-            &src->bsn_set_tunnel_dst);
-    }
-
-    if (src->header.object_id == OF_ACTION_OUTPUT) {
-        return (of_action_t *)of_action_output_OF_VERSION_1_3_dup(
-            &src->output);
+    if (src->header.object_id == OF_ACTION_PUSH_PBB) {
+        return (of_action_t *)of_action_push_pbb_OF_VERSION_1_3_dup(
+            &src->push_pbb);
     }
 
     if (src->header.object_id == OF_ACTION_NICIRA_DEC_TTL) {
@@ -19208,14 +20154,9 @@ of_action_OF_VERSION_1_3_dup(
             &src->nicira_dec_ttl);
     }
 
-    if (src->header.object_id == OF_ACTION_COPY_TTL_IN) {
-        return (of_action_t *)of_action_copy_ttl_in_OF_VERSION_1_3_dup(
-            &src->copy_ttl_in);
-    }
-
-    if (src->header.object_id == OF_ACTION_SET_QUEUE) {
-        return (of_action_t *)of_action_set_queue_OF_VERSION_1_3_dup(
-            &src->set_queue);
+    if (src->header.object_id == OF_ACTION_POP_MPLS) {
+        return (of_action_t *)of_action_pop_mpls_OF_VERSION_1_3_dup(
+            &src->pop_mpls);
     }
 
     if (src->header.object_id == OF_ACTION_PUSH_VLAN) {
@@ -19223,7 +20164,80 @@ of_action_OF_VERSION_1_3_dup(
             &src->push_vlan);
     }
 
+    if (src->header.object_id == OF_ACTION_BSN) {
+        return (of_action_t *)of_action_bsn_OF_VERSION_1_3_dup(
+            &src->bsn);
+    }
+
+    if (src->header.object_id == OF_ACTION_EXPERIMENTER) {
+        return (of_action_t *)of_action_experimenter_OF_VERSION_1_3_dup(
+            &src->experimenter);
+    }
+
+    if (src->header.object_id == OF_ACTION_SET_NW_TTL) {
+        return (of_action_t *)of_action_set_nw_ttl_OF_VERSION_1_3_dup(
+            &src->set_nw_ttl);
+    }
+
+    if (src->header.object_id == OF_ACTION_POP_PBB) {
+        return (of_action_t *)of_action_pop_pbb_OF_VERSION_1_3_dup(
+            &src->pop_pbb);
+    }
+
+    if (src->header.object_id == OF_ACTION_NICIRA) {
+        return (of_action_t *)of_action_nicira_OF_VERSION_1_3_dup(
+            &src->nicira);
+    }
+
+    if (src->header.object_id == OF_ACTION_SET_QUEUE) {
+        return (of_action_t *)of_action_set_queue_OF_VERSION_1_3_dup(
+            &src->set_queue);
+    }
+
+    if (src->header.object_id == OF_ACTION_PUSH_MPLS) {
+        return (of_action_t *)of_action_push_mpls_OF_VERSION_1_3_dup(
+            &src->push_mpls);
+    }
+
+    if (src->header.object_id == OF_ACTION_DEC_NW_TTL) {
+        return (of_action_t *)of_action_dec_nw_ttl_OF_VERSION_1_3_dup(
+            &src->dec_nw_ttl);
+    }
+
+    if (src->header.object_id == OF_ACTION_OUTPUT) {
+        return (of_action_t *)of_action_output_OF_VERSION_1_3_dup(
+            &src->output);
+    }
+
     return NULL;
+}
+
+/**
+ * Duplicate an object of type of_action_bsn
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_bsn.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_bsn_t *
+of_action_bsn_OF_VERSION_1_3_dup(
+    of_action_bsn_t *src)
+{
+    of_action_bsn_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_action_bsn_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_bsn_experimenter_get(src, &val32);
+    of_action_bsn_experimenter_set(dst, val32);
+
+    of_action_bsn_subtype_get(src, &val32);
+    of_action_bsn_subtype_set(dst, val32);
+
+    return dst;
 }
 
 /**
@@ -19466,34 +20480,29 @@ of_action_id_OF_VERSION_1_3_dup(
     of_action_id_t *src)
 {
 
-    if (src->header.object_id == OF_ACTION_ID_POP_PBB) {
-        return (of_action_id_t *)of_action_id_pop_pbb_OF_VERSION_1_3_dup(
-            &src->pop_pbb);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_GROUP) {
-        return (of_action_id_t *)of_action_id_group_OF_VERSION_1_3_dup(
-            &src->group);
-    }
-
     if (src->header.object_id == OF_ACTION_ID_BSN_MIRROR) {
         return (of_action_id_t *)of_action_id_bsn_mirror_OF_VERSION_1_3_dup(
             &src->bsn_mirror);
     }
 
-    if (src->header.object_id == OF_ACTION_ID_POP_MPLS) {
-        return (of_action_id_t *)of_action_id_pop_mpls_OF_VERSION_1_3_dup(
-            &src->pop_mpls);
+    if (src->header.object_id == OF_ACTION_ID_DEC_MPLS_TTL) {
+        return (of_action_id_t *)of_action_id_dec_mpls_ttl_OF_VERSION_1_3_dup(
+            &src->dec_mpls_ttl);
     }
 
-    if (src->header.object_id == OF_ACTION_ID_PUSH_PBB) {
-        return (of_action_id_t *)of_action_id_push_pbb_OF_VERSION_1_3_dup(
-            &src->push_pbb);
+    if (src->header.object_id == OF_ACTION_ID_BSN_SET_TUNNEL_DST) {
+        return (of_action_id_t *)of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3_dup(
+            &src->bsn_set_tunnel_dst);
     }
 
-    if (src->header.object_id == OF_ACTION_ID_PUSH_MPLS) {
-        return (of_action_id_t *)of_action_id_push_mpls_OF_VERSION_1_3_dup(
-            &src->push_mpls);
+    if (src->header.object_id == OF_ACTION_ID_COPY_TTL_IN) {
+        return (of_action_id_t *)of_action_id_copy_ttl_in_OF_VERSION_1_3_dup(
+            &src->copy_ttl_in);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_GROUP) {
+        return (of_action_id_t *)of_action_id_group_OF_VERSION_1_3_dup(
+            &src->group);
     }
 
     if (src->header.object_id == OF_ACTION_ID_COPY_TTL_OUT) {
@@ -19516,34 +20525,9 @@ of_action_id_OF_VERSION_1_3_dup(
             &src->pop_vlan);
     }
 
-    if (src->header.object_id == OF_ACTION_ID_SET_NW_TTL) {
-        return (of_action_id_t *)of_action_id_set_nw_ttl_OF_VERSION_1_3_dup(
-            &src->set_nw_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_DEC_NW_TTL) {
-        return (of_action_id_t *)of_action_id_dec_nw_ttl_OF_VERSION_1_3_dup(
-            &src->dec_nw_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_EXPERIMENTER) {
-        return (of_action_id_t *)of_action_id_experimenter_OF_VERSION_1_3_dup(
-            &src->experimenter);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_DEC_MPLS_TTL) {
-        return (of_action_id_t *)of_action_id_dec_mpls_ttl_OF_VERSION_1_3_dup(
-            &src->dec_mpls_ttl);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_BSN_SET_TUNNEL_DST) {
-        return (of_action_id_t *)of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3_dup(
-            &src->bsn_set_tunnel_dst);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_OUTPUT) {
-        return (of_action_id_t *)of_action_id_output_OF_VERSION_1_3_dup(
-            &src->output);
+    if (src->header.object_id == OF_ACTION_ID_PUSH_PBB) {
+        return (of_action_id_t *)of_action_id_push_pbb_OF_VERSION_1_3_dup(
+            &src->push_pbb);
     }
 
     if (src->header.object_id == OF_ACTION_ID_NICIRA_DEC_TTL) {
@@ -19551,14 +20535,9 @@ of_action_id_OF_VERSION_1_3_dup(
             &src->nicira_dec_ttl);
     }
 
-    if (src->header.object_id == OF_ACTION_ID_COPY_TTL_IN) {
-        return (of_action_id_t *)of_action_id_copy_ttl_in_OF_VERSION_1_3_dup(
-            &src->copy_ttl_in);
-    }
-
-    if (src->header.object_id == OF_ACTION_ID_SET_QUEUE) {
-        return (of_action_id_t *)of_action_id_set_queue_OF_VERSION_1_3_dup(
-            &src->set_queue);
+    if (src->header.object_id == OF_ACTION_ID_POP_MPLS) {
+        return (of_action_id_t *)of_action_id_pop_mpls_OF_VERSION_1_3_dup(
+            &src->pop_mpls);
     }
 
     if (src->header.object_id == OF_ACTION_ID_PUSH_VLAN) {
@@ -19566,7 +20545,73 @@ of_action_id_OF_VERSION_1_3_dup(
             &src->push_vlan);
     }
 
+    if (src->header.object_id == OF_ACTION_ID_BSN) {
+        return (of_action_id_t *)of_action_id_bsn_OF_VERSION_1_3_dup(
+            &src->bsn);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_EXPERIMENTER) {
+        return (of_action_id_t *)of_action_id_experimenter_OF_VERSION_1_3_dup(
+            &src->experimenter);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_SET_NW_TTL) {
+        return (of_action_id_t *)of_action_id_set_nw_ttl_OF_VERSION_1_3_dup(
+            &src->set_nw_ttl);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_POP_PBB) {
+        return (of_action_id_t *)of_action_id_pop_pbb_OF_VERSION_1_3_dup(
+            &src->pop_pbb);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_NICIRA) {
+        return (of_action_id_t *)of_action_id_nicira_OF_VERSION_1_3_dup(
+            &src->nicira);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_SET_QUEUE) {
+        return (of_action_id_t *)of_action_id_set_queue_OF_VERSION_1_3_dup(
+            &src->set_queue);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_PUSH_MPLS) {
+        return (of_action_id_t *)of_action_id_push_mpls_OF_VERSION_1_3_dup(
+            &src->push_mpls);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_DEC_NW_TTL) {
+        return (of_action_id_t *)of_action_id_dec_nw_ttl_OF_VERSION_1_3_dup(
+            &src->dec_nw_ttl);
+    }
+
+    if (src->header.object_id == OF_ACTION_ID_OUTPUT) {
+        return (of_action_id_t *)of_action_id_output_OF_VERSION_1_3_dup(
+            &src->output);
+    }
+
     return NULL;
+}
+
+/**
+ * Duplicate an object of type of_action_id_bsn
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_id_bsn.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_id_bsn_t *
+of_action_id_bsn_OF_VERSION_1_3_dup(
+    of_action_id_bsn_t *src)
+{
+    of_action_id_bsn_t *dst;
+
+    if ((dst = of_action_id_bsn_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    return dst;
 }
 
 /**
@@ -19766,6 +20811,27 @@ of_action_id_header_OF_VERSION_1_3_dup(
     of_action_id_header_t *dst;
 
     if ((dst = of_action_id_header_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_action_id_nicira
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_id_nicira.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_id_nicira_t *
+of_action_id_nicira_OF_VERSION_1_3_dup(
+    of_action_id_nicira_t *src)
+{
+    of_action_id_nicira_t *dst;
+
+    if ((dst = of_action_id_nicira_new(src->version)) == NULL) {
         return NULL;
     }
 
@@ -20028,6 +21094,35 @@ of_action_id_set_queue_OF_VERSION_1_3_dup(
     if ((dst = of_action_id_set_queue_new(src->version)) == NULL) {
         return NULL;
     }
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_action_nicira
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_action_nicira.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_action_nicira_t *
+of_action_nicira_OF_VERSION_1_3_dup(
+    of_action_nicira_t *src)
+{
+    of_action_nicira_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+
+    if ((dst = of_action_nicira_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_action_nicira_experimenter_get(src, &val32);
+    of_action_nicira_experimenter_set(dst, val32);
+
+    of_action_nicira_subtype_get(src, &val16);
+    of_action_nicira_subtype_set(dst, val16);
 
     return dst;
 }
@@ -20347,7 +21442,7 @@ of_bsn_interface_OF_VERSION_1_3_dup(
     of_bsn_interface_t *dst;
     of_mac_addr_t mac_addr;
     of_port_name_t port_name;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_bsn_interface_new(src->version)) == NULL) {
         return NULL;
@@ -20359,11 +21454,11 @@ of_bsn_interface_OF_VERSION_1_3_dup(
     of_bsn_interface_name_get(src, &port_name);
     of_bsn_interface_name_set(dst, port_name);
 
-    of_bsn_interface_ipv4_addr_get(src, &val32);
-    of_bsn_interface_ipv4_addr_set(dst, val32);
+    of_bsn_interface_ipv4_addr_get(src, &ipv4);
+    of_bsn_interface_ipv4_addr_set(dst, ipv4);
 
-    of_bsn_interface_ipv4_netmask_get(src, &val32);
-    of_bsn_interface_ipv4_netmask_set(dst, val32);
+    of_bsn_interface_ipv4_netmask_get(src, &ipv4);
+    of_bsn_interface_ipv4_netmask_set(dst, ipv4);
 
     return dst;
 }
@@ -22725,14 +23820,14 @@ of_oxm_ipv4_dst_OF_VERSION_1_3_dup(
     of_oxm_ipv4_dst_t *src)
 {
     of_oxm_ipv4_dst_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_dst_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_dst_value_get(src, &val32);
-    of_oxm_ipv4_dst_value_set(dst, val32);
+    of_oxm_ipv4_dst_value_get(src, &ipv4);
+    of_oxm_ipv4_dst_value_set(dst, ipv4);
 
     return dst;
 }
@@ -22750,17 +23845,17 @@ of_oxm_ipv4_dst_masked_OF_VERSION_1_3_dup(
     of_oxm_ipv4_dst_masked_t *src)
 {
     of_oxm_ipv4_dst_masked_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_dst_masked_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_dst_masked_value_get(src, &val32);
-    of_oxm_ipv4_dst_masked_value_set(dst, val32);
+    of_oxm_ipv4_dst_masked_value_get(src, &ipv4);
+    of_oxm_ipv4_dst_masked_value_set(dst, ipv4);
 
-    of_oxm_ipv4_dst_masked_value_mask_get(src, &val32);
-    of_oxm_ipv4_dst_masked_value_mask_set(dst, val32);
+    of_oxm_ipv4_dst_masked_value_mask_get(src, &ipv4);
+    of_oxm_ipv4_dst_masked_value_mask_set(dst, ipv4);
 
     return dst;
 }
@@ -22778,14 +23873,14 @@ of_oxm_ipv4_src_OF_VERSION_1_3_dup(
     of_oxm_ipv4_src_t *src)
 {
     of_oxm_ipv4_src_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_src_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_src_value_get(src, &val32);
-    of_oxm_ipv4_src_value_set(dst, val32);
+    of_oxm_ipv4_src_value_get(src, &ipv4);
+    of_oxm_ipv4_src_value_set(dst, ipv4);
 
     return dst;
 }
@@ -22803,17 +23898,17 @@ of_oxm_ipv4_src_masked_OF_VERSION_1_3_dup(
     of_oxm_ipv4_src_masked_t *src)
 {
     of_oxm_ipv4_src_masked_t *dst;
-    uint32_t val32;
+    of_ipv4_t ipv4;
 
     if ((dst = of_oxm_ipv4_src_masked_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_oxm_ipv4_src_masked_value_get(src, &val32);
-    of_oxm_ipv4_src_masked_value_set(dst, val32);
+    of_oxm_ipv4_src_masked_value_get(src, &ipv4);
+    of_oxm_ipv4_src_masked_value_set(dst, ipv4);
 
-    of_oxm_ipv4_src_masked_value_mask_get(src, &val32);
-    of_oxm_ipv4_src_masked_value_mask_set(dst, val32);
+    of_oxm_ipv4_src_masked_value_mask_get(src, &ipv4);
+    of_oxm_ipv4_src_masked_value_mask_set(dst, ipv4);
 
     return dst;
 }
@@ -26081,6 +27176,31 @@ of_bsn_get_mirroring_request_dup(
     return NULL;
 }
 
+of_bsn_header_t *
+of_bsn_header_dup(
+    of_bsn_header_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_header_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_header_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_header_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_header_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_bsn_set_ip_mask_t *
 of_bsn_set_ip_mask_dup(
     of_bsn_set_ip_mask_t *src)
@@ -26651,6 +27771,31 @@ of_flow_delete_strict_dup(
     return NULL;
 }
 
+of_flow_mod_t *
+of_flow_mod_dup(
+    of_flow_mod_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_flow_mod_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_flow_mod_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_flow_mod_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_flow_mod_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_flow_modify_t *
 of_flow_modify_dup(
     of_flow_modify_t *src)
@@ -27107,6 +28252,31 @@ of_nicira_controller_role_request_dup(
     return NULL;
 }
 
+of_nicira_header_t *
+of_nicira_header_dup(
+    of_nicira_header_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_nicira_header_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_nicira_header_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_nicira_header_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_nicira_header_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_packet_in_t *
 of_packet_in_dup(
     of_packet_in_t *src)
@@ -27442,6 +28612,56 @@ of_set_config_dup(
     return NULL;
 }
 
+of_stats_reply_t *
+of_stats_reply_dup(
+    of_stats_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_stats_reply_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_stats_reply_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_stats_reply_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_stats_reply_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_stats_request_t *
+of_stats_request_dup(
+    of_stats_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_stats_request_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_stats_request_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_stats_request_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_stats_request_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_table_features_stats_reply_t *
 of_table_features_stats_reply_dup(
     of_table_features_stats_reply_t *src)
@@ -27562,6 +28782,31 @@ of_action_dup(
 
     if (src->header.version == OF_VERSION_1_3) {
         return of_action_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_action_bsn_t *
+of_action_bsn_dup(
+    of_action_bsn_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_action_bsn_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_action_bsn_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_action_bsn_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_action_bsn_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -27799,6 +29044,19 @@ of_action_id_dup(
     return NULL;
 }
 
+of_action_id_bsn_t *
+of_action_id_bsn_dup(
+    of_action_id_bsn_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_action_id_bsn_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_action_id_bsn_mirror_t *
 of_action_id_bsn_mirror_dup(
     of_action_id_bsn_mirror_t *src)
@@ -27910,6 +29168,19 @@ of_action_id_header_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_action_id_header_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_action_id_nicira_t *
+of_action_id_nicira_dup(
+    of_action_id_nicira_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_action_id_nicira_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -28066,6 +29337,31 @@ of_action_id_set_queue_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_action_id_set_queue_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_action_nicira_t *
+of_action_nicira_dup(
+    of_action_nicira_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_action_nicira_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_action_nicira_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_action_nicira_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_action_nicira_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
