@@ -697,6 +697,23 @@ test_of_bsn_get_mirroring_request_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_bsn_header_OF_VERSION_1_0(void)
+{
+    of_bsn_header_t *obj;
+    obj = of_bsn_header_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_HEADER);
+
+    of_bsn_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_ip_mask_OF_VERSION_1_0(void)
 {
     of_bsn_set_ip_mask_t *obj;
@@ -1685,6 +1702,23 @@ test_of_flow_delete_strict_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_flow_mod_OF_VERSION_1_0(void)
+{
+    of_flow_mod_t *obj;
+    obj = of_flow_mod_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 72);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
+
+    of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_flow_modify_OF_VERSION_1_0(void)
 {
     of_flow_modify_t *obj;
@@ -2059,6 +2093,23 @@ test_of_nicira_controller_role_request_OF_VERSION_1_0(void)
         obj, 1) != 0);
 
     of_nicira_controller_role_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_nicira_header_OF_VERSION_1_0(void)
+{
+    of_nicira_header_t *obj;
+    obj = of_nicira_header_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_NICIRA_HEADER);
+
+    of_nicira_header_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -2483,6 +2534,40 @@ test_of_set_config_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_stats_reply_OF_VERSION_1_0(void)
+{
+    of_stats_reply_t *obj;
+    obj = of_stats_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REPLY);
+
+    of_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_stats_request_OF_VERSION_1_0(void)
+{
+    of_stats_request_t *obj;
+    obj = of_stats_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REQUEST);
+
+    of_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_mod_OF_VERSION_1_0(void)
 {
     of_table_mod_t *obj;
@@ -2591,6 +2676,23 @@ test_of_table_stats_request_OF_VERSION_1_0(void)
         obj, 1) != 0);
 
     of_table_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_bsn_OF_VERSION_1_0(void)
+{
+    of_action_bsn_t *obj;
+    obj = of_action_bsn_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_BSN);
+
+    of_action_bsn_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -2760,6 +2862,23 @@ test_of_action_header_OF_VERSION_1_0(void)
     TEST_ASSERT(obj->object_id == OF_ACTION_HEADER);
 
     of_action_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_nicira_OF_VERSION_1_0(void)
+{
+    of_action_nicira_t *obj;
+    obj = of_action_nicira_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_NICIRA);
+
+    of_action_nicira_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -4527,6 +4646,23 @@ test_of_bsn_get_mirroring_request_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_bsn_header_OF_VERSION_1_1(void)
+{
+    of_bsn_header_t *obj;
+    obj = of_bsn_header_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_HEADER);
+
+    of_bsn_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_1(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -5287,6 +5423,23 @@ test_of_flow_delete_strict_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_flow_mod_OF_VERSION_1_1(void)
+{
+    of_flow_mod_t *obj;
+    obj = of_flow_mod_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 136);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
+
+    of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_flow_modify_OF_VERSION_1_1(void)
 {
     of_flow_modify_t *obj;
@@ -5781,6 +5934,23 @@ test_of_hello_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_nicira_header_OF_VERSION_1_1(void)
+{
+    of_nicira_header_t *obj;
+    obj = of_nicira_header_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_NICIRA_HEADER);
+
+    of_nicira_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_packet_in_OF_VERSION_1_1(void)
 {
     of_packet_in_t *obj;
@@ -6199,6 +6369,40 @@ test_of_set_config_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_stats_reply_OF_VERSION_1_1(void)
+{
+    of_stats_reply_t *obj;
+    obj = of_stats_reply_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REPLY);
+
+    of_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_stats_request_OF_VERSION_1_1(void)
+{
+    of_stats_request_t *obj;
+    obj = of_stats_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REQUEST);
+
+    of_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_mod_OF_VERSION_1_1(void)
 {
     of_table_mod_t *obj;
@@ -6307,6 +6511,23 @@ test_of_table_stats_request_OF_VERSION_1_1(void)
         obj, 1) != 0);
 
     of_table_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_bsn_OF_VERSION_1_1(void)
+{
+    of_action_bsn_t *obj;
+    obj = of_action_bsn_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_BSN);
+
+    of_action_bsn_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -6628,6 +6849,23 @@ test_of_action_header_OF_VERSION_1_1(void)
     TEST_ASSERT(obj->object_id == OF_ACTION_HEADER);
 
     of_action_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_nicira_OF_VERSION_1_1(void)
+{
+    of_action_nicira_t *obj;
+    obj = of_action_nicira_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_NICIRA);
+
+    of_action_nicira_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -9324,6 +9562,23 @@ test_of_bsn_get_mirroring_request_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_bsn_header_OF_VERSION_1_2(void)
+{
+    of_bsn_header_t *obj;
+    obj = of_bsn_header_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_HEADER);
+
+    of_bsn_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_2(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -10084,6 +10339,23 @@ test_of_flow_delete_strict_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_flow_mod_OF_VERSION_1_2(void)
+{
+    of_flow_mod_t *obj;
+    obj = of_flow_mod_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 56);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
+
+    of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_flow_modify_OF_VERSION_1_2(void)
 {
     of_flow_modify_t *obj;
@@ -10654,6 +10926,23 @@ test_of_hello_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_nicira_header_OF_VERSION_1_2(void)
+{
+    of_nicira_header_t *obj;
+    obj = of_nicira_header_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_NICIRA_HEADER);
+
+    of_nicira_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_packet_in_OF_VERSION_1_2(void)
 {
     of_packet_in_t *obj;
@@ -11148,6 +11437,40 @@ test_of_set_config_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_stats_reply_OF_VERSION_1_2(void)
+{
+    of_stats_reply_t *obj;
+    obj = of_stats_reply_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REPLY);
+
+    of_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_stats_request_OF_VERSION_1_2(void)
+{
+    of_stats_request_t *obj;
+    obj = of_stats_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REQUEST);
+
+    of_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_mod_OF_VERSION_1_2(void)
 {
     of_table_mod_t *obj;
@@ -11256,6 +11579,23 @@ test_of_table_stats_request_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_table_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_bsn_OF_VERSION_1_2(void)
+{
+    of_action_bsn_t *obj;
+    obj = of_action_bsn_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_BSN);
+
+    of_action_bsn_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -11577,6 +11917,23 @@ test_of_action_header_OF_VERSION_1_2(void)
     TEST_ASSERT(obj->object_id == OF_ACTION_HEADER);
 
     of_action_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_nicira_OF_VERSION_1_2(void)
+{
+    of_action_nicira_t *obj;
+    obj = of_action_nicira_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_NICIRA);
+
+    of_action_nicira_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16836,6 +17193,23 @@ test_of_bsn_get_mirroring_request_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_bsn_header_OF_VERSION_1_3(void)
+{
+    of_bsn_header_t *obj;
+    obj = of_bsn_header_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_HEADER);
+
+    of_bsn_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_3(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -17514,6 +17888,23 @@ test_of_flow_delete_strict_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_flow_delete_strict_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_flow_mod_OF_VERSION_1_3(void)
+{
+    of_flow_mod_t *obj;
+    obj = of_flow_mod_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 56);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
+
+    of_flow_mod_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -18356,6 +18747,23 @@ test_of_meter_stats_request_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_nicira_header_OF_VERSION_1_3(void)
+{
+    of_nicira_header_t *obj;
+    obj = of_nicira_header_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_NICIRA_HEADER);
+
+    of_nicira_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_packet_in_OF_VERSION_1_3(void)
 {
     of_packet_in_t *obj;
@@ -18926,6 +19334,40 @@ test_of_set_config_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_stats_reply_OF_VERSION_1_3(void)
+{
+    of_stats_reply_t *obj;
+    obj = of_stats_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REPLY);
+
+    of_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_stats_request_OF_VERSION_1_3(void)
+{
+    of_stats_request_t *obj;
+    obj = of_stats_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_STATS_REQUEST);
+
+    of_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_features_stats_reply_OF_VERSION_1_3(void)
 {
     of_table_features_stats_reply_t *obj;
@@ -19110,6 +19552,23 @@ test_of_table_stats_request_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_table_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_bsn_OF_VERSION_1_3(void)
+{
+    of_action_bsn_t *obj;
+    obj = of_action_bsn_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_BSN);
+
+    of_action_bsn_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -19437,6 +19896,23 @@ test_of_action_header_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_action_id_bsn_OF_VERSION_1_3(void)
+{
+    of_action_id_bsn_t *obj;
+    obj = of_action_id_bsn_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 8);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_ID_BSN);
+
+    of_action_id_bsn_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_action_id_bsn_mirror_OF_VERSION_1_3(void)
 {
     of_action_id_bsn_mirror_t *obj;
@@ -19752,6 +20228,23 @@ test_of_action_id_header_OF_VERSION_1_3(void)
     TEST_ASSERT(obj->object_id == OF_ACTION_ID_HEADER);
 
     of_action_id_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_id_nicira_OF_VERSION_1_3(void)
+{
+    of_action_id_nicira_t *obj;
+    obj = of_action_id_nicira_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 8);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_ID_NICIRA);
+
+    of_action_id_nicira_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -20208,6 +20701,23 @@ test_of_action_id_set_queue_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_action_id_set_queue_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_action_nicira_OF_VERSION_1_3(void)
+{
+    of_action_nicira_t *obj;
+    obj = of_action_nicira_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ACTION_NICIRA);
+
+    of_action_nicira_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -26353,6 +26863,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_l2_table_request_OF_VERSION_1_0);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_header_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_ip_mask_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_request_OF_VERSION_1_0);
@@ -26379,6 +26890,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_add_OF_VERSION_1_0);
     RUN_TEST(of_flow_delete_OF_VERSION_1_0);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_0);
+    RUN_TEST(of_flow_mod_OF_VERSION_1_0);
     RUN_TEST(of_flow_modify_OF_VERSION_1_0);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_0);
     RUN_TEST(of_flow_removed_OF_VERSION_1_0);
@@ -26389,6 +26901,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_hello_OF_VERSION_1_0);
     RUN_TEST(of_nicira_controller_role_reply_OF_VERSION_1_0);
     RUN_TEST(of_nicira_controller_role_request_OF_VERSION_1_0);
+    RUN_TEST(of_nicira_header_OF_VERSION_1_0);
     RUN_TEST(of_packet_in_OF_VERSION_1_0);
     RUN_TEST(of_packet_out_OF_VERSION_1_0);
     RUN_TEST(of_port_mod_OF_VERSION_1_0);
@@ -26400,14 +26913,18 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_0);
     RUN_TEST(of_set_config_OF_VERSION_1_0);
+    RUN_TEST(of_stats_reply_OF_VERSION_1_0);
+    RUN_TEST(of_stats_request_OF_VERSION_1_0);
     RUN_TEST(of_table_mod_OF_VERSION_1_0);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_0);
+    RUN_TEST(of_action_bsn_OF_VERSION_1_0);
     RUN_TEST(of_action_bsn_mirror_OF_VERSION_1_0);
     RUN_TEST(of_action_bsn_set_tunnel_dst_OF_VERSION_1_0);
     RUN_TEST(of_action_enqueue_OF_VERSION_1_0);
     RUN_TEST(of_action_experimenter_OF_VERSION_1_0);
     RUN_TEST(of_action_header_OF_VERSION_1_0);
+    RUN_TEST(of_action_nicira_OF_VERSION_1_0);
     RUN_TEST(of_action_nicira_dec_ttl_OF_VERSION_1_0);
     RUN_TEST(of_action_output_OF_VERSION_1_0);
     RUN_TEST(of_action_set_dl_dst_OF_VERSION_1_0);
@@ -26456,6 +26973,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_interfaces_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_header_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1);
@@ -26476,6 +26994,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_add_OF_VERSION_1_1);
     RUN_TEST(of_flow_delete_OF_VERSION_1_1);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_1);
+    RUN_TEST(of_flow_mod_OF_VERSION_1_1);
     RUN_TEST(of_flow_modify_OF_VERSION_1_1);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_1);
     RUN_TEST(of_flow_removed_OF_VERSION_1_1);
@@ -26489,6 +27008,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_group_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_group_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_hello_OF_VERSION_1_1);
+    RUN_TEST(of_nicira_header_OF_VERSION_1_1);
     RUN_TEST(of_packet_in_OF_VERSION_1_1);
     RUN_TEST(of_packet_out_OF_VERSION_1_1);
     RUN_TEST(of_port_mod_OF_VERSION_1_1);
@@ -26500,9 +27020,12 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_set_config_OF_VERSION_1_1);
+    RUN_TEST(of_stats_reply_OF_VERSION_1_1);
+    RUN_TEST(of_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_table_mod_OF_VERSION_1_1);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_1);
+    RUN_TEST(of_action_bsn_OF_VERSION_1_1);
     RUN_TEST(of_action_bsn_mirror_OF_VERSION_1_1);
     RUN_TEST(of_action_bsn_set_tunnel_dst_OF_VERSION_1_1);
     RUN_TEST(of_action_copy_ttl_in_OF_VERSION_1_1);
@@ -26512,6 +27035,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_action_experimenter_OF_VERSION_1_1);
     RUN_TEST(of_action_group_OF_VERSION_1_1);
     RUN_TEST(of_action_header_OF_VERSION_1_1);
+    RUN_TEST(of_action_nicira_OF_VERSION_1_1);
     RUN_TEST(of_action_nicira_dec_ttl_OF_VERSION_1_1);
     RUN_TEST(of_action_output_OF_VERSION_1_1);
     RUN_TEST(of_action_pop_mpls_OF_VERSION_1_1);
@@ -26585,6 +27109,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_interfaces_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_header_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2);
@@ -26605,6 +27130,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_add_OF_VERSION_1_2);
     RUN_TEST(of_flow_delete_OF_VERSION_1_2);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_2);
+    RUN_TEST(of_flow_mod_OF_VERSION_1_2);
     RUN_TEST(of_flow_modify_OF_VERSION_1_2);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_2);
     RUN_TEST(of_flow_removed_OF_VERSION_1_2);
@@ -26620,6 +27146,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_group_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_group_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_hello_OF_VERSION_1_2);
+    RUN_TEST(of_nicira_header_OF_VERSION_1_2);
     RUN_TEST(of_packet_in_OF_VERSION_1_2);
     RUN_TEST(of_packet_out_OF_VERSION_1_2);
     RUN_TEST(of_port_mod_OF_VERSION_1_2);
@@ -26633,9 +27160,12 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_role_reply_OF_VERSION_1_2);
     RUN_TEST(of_role_request_OF_VERSION_1_2);
     RUN_TEST(of_set_config_OF_VERSION_1_2);
+    RUN_TEST(of_stats_reply_OF_VERSION_1_2);
+    RUN_TEST(of_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_table_mod_OF_VERSION_1_2);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_2);
+    RUN_TEST(of_action_bsn_OF_VERSION_1_2);
     RUN_TEST(of_action_bsn_mirror_OF_VERSION_1_2);
     RUN_TEST(of_action_bsn_set_tunnel_dst_OF_VERSION_1_2);
     RUN_TEST(of_action_copy_ttl_in_OF_VERSION_1_2);
@@ -26645,6 +27175,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_action_experimenter_OF_VERSION_1_2);
     RUN_TEST(of_action_group_OF_VERSION_1_2);
     RUN_TEST(of_action_header_OF_VERSION_1_2);
+    RUN_TEST(of_action_nicira_OF_VERSION_1_2);
     RUN_TEST(of_action_nicira_dec_ttl_OF_VERSION_1_2);
     RUN_TEST(of_action_output_OF_VERSION_1_2);
     RUN_TEST(of_action_pop_mpls_OF_VERSION_1_2);
@@ -26786,6 +27317,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_interfaces_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_header_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3);
@@ -26804,6 +27336,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_add_OF_VERSION_1_3);
     RUN_TEST(of_flow_delete_OF_VERSION_1_3);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_3);
+    RUN_TEST(of_flow_mod_OF_VERSION_1_3);
     RUN_TEST(of_flow_modify_OF_VERSION_1_3);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_3);
     RUN_TEST(of_flow_removed_OF_VERSION_1_3);
@@ -26826,6 +27359,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_meter_mod_OF_VERSION_1_3);
     RUN_TEST(of_meter_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_meter_stats_request_OF_VERSION_1_3);
+    RUN_TEST(of_nicira_header_OF_VERSION_1_3);
     RUN_TEST(of_packet_in_OF_VERSION_1_3);
     RUN_TEST(of_packet_out_OF_VERSION_1_3);
     RUN_TEST(of_port_desc_stats_reply_OF_VERSION_1_3);
@@ -26841,11 +27375,14 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_role_reply_OF_VERSION_1_3);
     RUN_TEST(of_role_request_OF_VERSION_1_3);
     RUN_TEST(of_set_config_OF_VERSION_1_3);
+    RUN_TEST(of_stats_reply_OF_VERSION_1_3);
+    RUN_TEST(of_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_table_features_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_table_features_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_table_mod_OF_VERSION_1_3);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_3);
+    RUN_TEST(of_action_bsn_OF_VERSION_1_3);
     RUN_TEST(of_action_bsn_mirror_OF_VERSION_1_3);
     RUN_TEST(of_action_bsn_set_tunnel_dst_OF_VERSION_1_3);
     RUN_TEST(of_action_copy_ttl_in_OF_VERSION_1_3);
@@ -26855,6 +27392,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_action_experimenter_OF_VERSION_1_3);
     RUN_TEST(of_action_group_OF_VERSION_1_3);
     RUN_TEST(of_action_header_OF_VERSION_1_3);
+    RUN_TEST(of_action_id_bsn_OF_VERSION_1_3);
     RUN_TEST(of_action_id_bsn_mirror_OF_VERSION_1_3);
     RUN_TEST(of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3);
     RUN_TEST(of_action_id_copy_ttl_in_OF_VERSION_1_3);
@@ -26864,6 +27402,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_action_id_experimenter_OF_VERSION_1_3);
     RUN_TEST(of_action_id_group_OF_VERSION_1_3);
     RUN_TEST(of_action_id_header_OF_VERSION_1_3);
+    RUN_TEST(of_action_id_nicira_OF_VERSION_1_3);
     RUN_TEST(of_action_id_nicira_dec_ttl_OF_VERSION_1_3);
     RUN_TEST(of_action_id_output_OF_VERSION_1_3);
     RUN_TEST(of_action_id_pop_mpls_OF_VERSION_1_3);
@@ -26876,6 +27415,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_action_id_set_mpls_ttl_OF_VERSION_1_3);
     RUN_TEST(of_action_id_set_nw_ttl_OF_VERSION_1_3);
     RUN_TEST(of_action_id_set_queue_OF_VERSION_1_3);
+    RUN_TEST(of_action_nicira_OF_VERSION_1_3);
     RUN_TEST(of_action_nicira_dec_ttl_OF_VERSION_1_3);
     RUN_TEST(of_action_output_OF_VERSION_1_3);
     RUN_TEST(of_action_pop_mpls_OF_VERSION_1_3);

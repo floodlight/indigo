@@ -98,6 +98,10 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_header_t *
+    of_bsn_header_dup(
+        of_bsn_header_t *src);
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_dup(
         of_bsn_set_ip_mask_t *src);
@@ -202,6 +206,10 @@ extern of_flow_delete_strict_t *
     of_flow_delete_strict_dup(
         of_flow_delete_strict_t *src);
 
+extern of_flow_mod_t *
+    of_flow_mod_dup(
+        of_flow_mod_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_dup(
         of_flow_modify_t *src);
@@ -298,6 +306,10 @@ extern of_nicira_controller_role_request_t *
     of_nicira_controller_role_request_dup(
         of_nicira_controller_role_request_t *src);
 
+extern of_nicira_header_t *
+    of_nicira_header_dup(
+        of_nicira_header_t *src);
+
 extern of_packet_in_t *
     of_packet_in_dup(
         of_packet_in_t *src);
@@ -358,6 +370,14 @@ extern of_set_config_t *
     of_set_config_dup(
         of_set_config_t *src);
 
+extern of_stats_reply_t *
+    of_stats_reply_dup(
+        of_stats_reply_t *src);
+
+extern of_stats_request_t *
+    of_stats_request_dup(
+        of_stats_request_t *src);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_dup(
         of_table_features_stats_reply_t *src);
@@ -381,6 +401,10 @@ extern of_table_stats_request_t *
 extern of_action_t *
     of_action_dup(
         of_action_t *src);
+
+extern of_action_bsn_t *
+    of_action_bsn_dup(
+        of_action_bsn_t *src);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_dup(
@@ -426,6 +450,10 @@ extern of_action_id_t *
     of_action_id_dup(
         of_action_id_t *src);
 
+extern of_action_id_bsn_t *
+    of_action_id_bsn_dup(
+        of_action_id_bsn_t *src);
+
 extern of_action_id_bsn_mirror_t *
     of_action_id_bsn_mirror_dup(
         of_action_id_bsn_mirror_t *src);
@@ -461,6 +489,10 @@ extern of_action_id_group_t *
 extern of_action_id_header_t *
     of_action_id_header_dup(
         of_action_id_header_t *src);
+
+extern of_action_id_nicira_t *
+    of_action_id_nicira_dup(
+        of_action_id_nicira_t *src);
 
 extern of_action_id_nicira_dec_ttl_t *
     of_action_id_nicira_dec_ttl_dup(
@@ -509,6 +541,10 @@ extern of_action_id_set_nw_ttl_t *
 extern of_action_id_set_queue_t *
     of_action_id_set_queue_dup(
         of_action_id_set_queue_t *src);
+
+extern of_action_nicira_t *
+    of_action_nicira_dup(
+        of_action_nicira_t *src);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_dup(
@@ -1334,6 +1370,10 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_OF_VERSION_1_0_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_header_t *
+    of_bsn_header_OF_VERSION_1_0_dup(
+        of_bsn_header_t *src);
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_OF_VERSION_1_0_dup(
         of_bsn_set_ip_mask_t *src);
@@ -1438,6 +1478,10 @@ extern of_flow_delete_strict_t *
     of_flow_delete_strict_OF_VERSION_1_0_dup(
         of_flow_delete_strict_t *src);
 
+extern of_flow_mod_t *
+    of_flow_mod_OF_VERSION_1_0_dup(
+        of_flow_mod_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_0_dup(
         of_flow_modify_t *src);
@@ -1477,6 +1521,10 @@ extern of_nicira_controller_role_reply_t *
 extern of_nicira_controller_role_request_t *
     of_nicira_controller_role_request_OF_VERSION_1_0_dup(
         of_nicira_controller_role_request_t *src);
+
+extern of_nicira_header_t *
+    of_nicira_header_OF_VERSION_1_0_dup(
+        of_nicira_header_t *src);
 
 extern of_packet_in_t *
     of_packet_in_OF_VERSION_1_0_dup(
@@ -1522,6 +1570,14 @@ extern of_set_config_t *
     of_set_config_OF_VERSION_1_0_dup(
         of_set_config_t *src);
 
+extern of_stats_reply_t *
+    of_stats_reply_OF_VERSION_1_0_dup(
+        of_stats_reply_t *src);
+
+extern of_stats_request_t *
+    of_stats_request_OF_VERSION_1_0_dup(
+        of_stats_request_t *src);
+
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_0_dup(
         of_table_mod_t *src);
@@ -1537,6 +1593,10 @@ extern of_table_stats_request_t *
 extern of_action_t *
     of_action_OF_VERSION_1_0_dup(
         of_action_t *src);
+
+extern of_action_bsn_t *
+    of_action_bsn_OF_VERSION_1_0_dup(
+        of_action_bsn_t *src);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_OF_VERSION_1_0_dup(
@@ -1557,6 +1617,10 @@ extern of_action_experimenter_t *
 extern of_action_header_t *
     of_action_header_OF_VERSION_1_0_dup(
         of_action_header_t *src);
+
+extern of_action_nicira_t *
+    of_action_nicira_OF_VERSION_1_0_dup(
+        of_action_nicira_t *src);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_OF_VERSION_1_0_dup(
@@ -1758,6 +1822,10 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_OF_VERSION_1_1_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_header_t *
+    of_bsn_header_OF_VERSION_1_1_dup(
+        of_bsn_header_t *src);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_1_dup(
         of_bsn_set_mirroring_t *src);
@@ -1838,6 +1906,10 @@ extern of_flow_delete_strict_t *
     of_flow_delete_strict_OF_VERSION_1_1_dup(
         of_flow_delete_strict_t *src);
 
+extern of_flow_mod_t *
+    of_flow_mod_OF_VERSION_1_1_dup(
+        of_flow_mod_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_1_dup(
         of_flow_modify_t *src);
@@ -1890,6 +1962,10 @@ extern of_hello_t *
     of_hello_OF_VERSION_1_1_dup(
         of_hello_t *src);
 
+extern of_nicira_header_t *
+    of_nicira_header_OF_VERSION_1_1_dup(
+        of_nicira_header_t *src);
+
 extern of_packet_in_t *
     of_packet_in_OF_VERSION_1_1_dup(
         of_packet_in_t *src);
@@ -1934,6 +2010,14 @@ extern of_set_config_t *
     of_set_config_OF_VERSION_1_1_dup(
         of_set_config_t *src);
 
+extern of_stats_reply_t *
+    of_stats_reply_OF_VERSION_1_1_dup(
+        of_stats_reply_t *src);
+
+extern of_stats_request_t *
+    of_stats_request_OF_VERSION_1_1_dup(
+        of_stats_request_t *src);
+
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_1_dup(
         of_table_mod_t *src);
@@ -1949,6 +2033,10 @@ extern of_table_stats_request_t *
 extern of_action_t *
     of_action_OF_VERSION_1_1_dup(
         of_action_t *src);
+
+extern of_action_bsn_t *
+    of_action_bsn_OF_VERSION_1_1_dup(
+        of_action_bsn_t *src);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_OF_VERSION_1_1_dup(
@@ -1985,6 +2073,10 @@ extern of_action_group_t *
 extern of_action_header_t *
     of_action_header_OF_VERSION_1_1_dup(
         of_action_header_t *src);
+
+extern of_action_nicira_t *
+    of_action_nicira_OF_VERSION_1_1_dup(
+        of_action_nicira_t *src);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_OF_VERSION_1_1_dup(
@@ -2290,6 +2382,10 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_OF_VERSION_1_2_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_header_t *
+    of_bsn_header_OF_VERSION_1_2_dup(
+        of_bsn_header_t *src);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_2_dup(
         of_bsn_set_mirroring_t *src);
@@ -2370,6 +2466,10 @@ extern of_flow_delete_strict_t *
     of_flow_delete_strict_OF_VERSION_1_2_dup(
         of_flow_delete_strict_t *src);
 
+extern of_flow_mod_t *
+    of_flow_mod_OF_VERSION_1_2_dup(
+        of_flow_mod_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_2_dup(
         of_flow_modify_t *src);
@@ -2430,6 +2530,10 @@ extern of_hello_t *
     of_hello_OF_VERSION_1_2_dup(
         of_hello_t *src);
 
+extern of_nicira_header_t *
+    of_nicira_header_OF_VERSION_1_2_dup(
+        of_nicira_header_t *src);
+
 extern of_packet_in_t *
     of_packet_in_OF_VERSION_1_2_dup(
         of_packet_in_t *src);
@@ -2482,6 +2586,14 @@ extern of_set_config_t *
     of_set_config_OF_VERSION_1_2_dup(
         of_set_config_t *src);
 
+extern of_stats_reply_t *
+    of_stats_reply_OF_VERSION_1_2_dup(
+        of_stats_reply_t *src);
+
+extern of_stats_request_t *
+    of_stats_request_OF_VERSION_1_2_dup(
+        of_stats_request_t *src);
+
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_2_dup(
         of_table_mod_t *src);
@@ -2497,6 +2609,10 @@ extern of_table_stats_request_t *
 extern of_action_t *
     of_action_OF_VERSION_1_2_dup(
         of_action_t *src);
+
+extern of_action_bsn_t *
+    of_action_bsn_OF_VERSION_1_2_dup(
+        of_action_bsn_t *src);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_OF_VERSION_1_2_dup(
@@ -2533,6 +2649,10 @@ extern of_action_group_t *
 extern of_action_header_t *
     of_action_header_OF_VERSION_1_2_dup(
         of_action_header_t *src);
+
+extern of_action_nicira_t *
+    of_action_nicira_OF_VERSION_1_2_dup(
+        of_action_nicira_t *src);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_OF_VERSION_1_2_dup(
@@ -3114,6 +3234,10 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_OF_VERSION_1_3_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_header_t *
+    of_bsn_header_OF_VERSION_1_3_dup(
+        of_bsn_header_t *src);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_3_dup(
         of_bsn_set_mirroring_t *src);
@@ -3185,6 +3309,10 @@ extern of_flow_delete_t *
 extern of_flow_delete_strict_t *
     of_flow_delete_strict_OF_VERSION_1_3_dup(
         of_flow_delete_strict_t *src);
+
+extern of_flow_mod_t *
+    of_flow_mod_OF_VERSION_1_3_dup(
+        of_flow_mod_t *src);
 
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_3_dup(
@@ -3274,6 +3402,10 @@ extern of_meter_stats_request_t *
     of_meter_stats_request_OF_VERSION_1_3_dup(
         of_meter_stats_request_t *src);
 
+extern of_nicira_header_t *
+    of_nicira_header_OF_VERSION_1_3_dup(
+        of_nicira_header_t *src);
+
 extern of_packet_in_t *
     of_packet_in_OF_VERSION_1_3_dup(
         of_packet_in_t *src);
@@ -3334,6 +3466,14 @@ extern of_set_config_t *
     of_set_config_OF_VERSION_1_3_dup(
         of_set_config_t *src);
 
+extern of_stats_reply_t *
+    of_stats_reply_OF_VERSION_1_3_dup(
+        of_stats_reply_t *src);
+
+extern of_stats_request_t *
+    of_stats_request_OF_VERSION_1_3_dup(
+        of_stats_request_t *src);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_OF_VERSION_1_3_dup(
         of_table_features_stats_reply_t *src);
@@ -3357,6 +3497,10 @@ extern of_table_stats_request_t *
 extern of_action_t *
     of_action_OF_VERSION_1_3_dup(
         of_action_t *src);
+
+extern of_action_bsn_t *
+    of_action_bsn_OF_VERSION_1_3_dup(
+        of_action_bsn_t *src);
 
 extern of_action_bsn_mirror_t *
     of_action_bsn_mirror_OF_VERSION_1_3_dup(
@@ -3398,6 +3542,10 @@ extern of_action_id_t *
     of_action_id_OF_VERSION_1_3_dup(
         of_action_id_t *src);
 
+extern of_action_id_bsn_t *
+    of_action_id_bsn_OF_VERSION_1_3_dup(
+        of_action_id_bsn_t *src);
+
 extern of_action_id_bsn_mirror_t *
     of_action_id_bsn_mirror_OF_VERSION_1_3_dup(
         of_action_id_bsn_mirror_t *src);
@@ -3433,6 +3581,10 @@ extern of_action_id_group_t *
 extern of_action_id_header_t *
     of_action_id_header_OF_VERSION_1_3_dup(
         of_action_id_header_t *src);
+
+extern of_action_id_nicira_t *
+    of_action_id_nicira_OF_VERSION_1_3_dup(
+        of_action_id_nicira_t *src);
 
 extern of_action_id_nicira_dec_ttl_t *
     of_action_id_nicira_dec_ttl_OF_VERSION_1_3_dup(
@@ -3481,6 +3633,10 @@ extern of_action_id_set_nw_ttl_t *
 extern of_action_id_set_queue_t *
     of_action_id_set_queue_OF_VERSION_1_3_dup(
         of_action_id_set_queue_t *src);
+
+extern of_action_nicira_t *
+    of_action_nicira_OF_VERSION_1_3_dup(
+        of_action_nicira_t *src);
 
 extern of_action_nicira_dec_ttl_t *
     of_action_nicira_dec_ttl_OF_VERSION_1_3_dup(

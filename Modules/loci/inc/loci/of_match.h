@@ -87,8 +87,8 @@ typedef struct of_match_fields_s {
     uint32_t             arp_tpa;
     of_mac_addr_t        arp_sha;
     of_mac_addr_t        arp_tha;
-    uint32_t             ipv4_src;
-    uint32_t             ipv4_dst;
+    of_ipv4_t            ipv4_src;
+    of_ipv4_t            ipv4_dst;
     uint8_t              ip_dscp;
     uint8_t              ip_ecn;
     uint8_t              ip_proto;
@@ -122,6 +122,18 @@ typedef struct of_match_s {
     of_match_fields_t fields;
     of_match_fields_t masks;
 } of_match_t;
+
+/**
+ * Mask the values in the match structure according to its fields
+ */
+static inline void of_match_values_mask(of_match_t *match)
+{
+    int idx;
+
+    for (idx = 0; idx < sizeof(of_match_fields_t); idx++) {
+        ((uint8_t *)&match->fields)[idx] &= ((uint8_t *)&match->masks)[idx];
+    }
+}
 
 /**
  * IP Mask map.  IP maks wildcards from OF 1.0 are interpretted as
