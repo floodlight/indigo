@@ -60,6 +60,7 @@ int of_bsn_get_l2_table_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* co
 int of_bsn_get_l2_table_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_get_l2_table_request_t *obj);
 int of_bsn_get_mirroring_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_reply_t *obj);
 int of_bsn_get_mirroring_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_request_t *obj);
+int of_bsn_header_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_header_t *obj);
 int of_bsn_set_ip_mask_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_ip_mask_t *obj);
 int of_bsn_set_l2_table_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_l2_table_reply_t *obj);
 int of_bsn_set_l2_table_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_l2_table_request_t *obj);
@@ -86,6 +87,7 @@ int of_features_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, 
 int of_flow_add_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_add_t *obj);
 int of_flow_delete_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_delete_t *obj);
 int of_flow_delete_strict_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_delete_strict_t *obj);
+int of_flow_mod_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_mod_t *obj);
 int of_flow_modify_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj);
 int of_flow_modify_strict_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_modify_strict_t *obj);
 int of_flow_removed_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_removed_t *obj);
@@ -96,6 +98,7 @@ int of_get_config_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie
 int of_hello_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_hello_t *obj);
 int of_nicira_controller_role_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_nicira_controller_role_reply_t *obj);
 int of_nicira_controller_role_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_nicira_controller_role_request_t *obj);
+int of_nicira_header_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_nicira_header_t *obj);
 int of_packet_in_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_packet_in_t *obj);
 int of_packet_out_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_packet_out_t *obj);
 int of_port_mod_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_port_mod_t *obj);
@@ -107,14 +110,18 @@ int of_queue_get_config_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* 
 int of_queue_stats_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_queue_stats_reply_t *obj);
 int of_queue_stats_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_queue_stats_request_t *obj);
 int of_set_config_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj);
+int of_stats_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_stats_reply_t *obj);
+int of_stats_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_stats_request_t *obj);
 int of_table_mod_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj);
 int of_table_stats_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_table_stats_reply_t *obj);
 int of_table_stats_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_table_stats_request_t *obj);
+int of_action_bsn_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_bsn_t *obj);
 int of_action_bsn_mirror_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_bsn_mirror_t *obj);
 int of_action_bsn_set_tunnel_dst_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_bsn_set_tunnel_dst_t *obj);
 int of_action_enqueue_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_enqueue_t *obj);
 int of_action_experimenter_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_experimenter_t *obj);
 int of_action_header_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_header_t *obj);
+int of_action_nicira_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_nicira_t *obj);
 int of_action_nicira_dec_ttl_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_nicira_dec_ttl_t *obj);
 int of_action_output_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_output_t *obj);
 int of_action_set_dl_dst_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_action_set_dl_dst_t *obj);
@@ -163,6 +170,7 @@ int of_bsn_get_interfaces_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* 
 int of_bsn_get_interfaces_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_get_interfaces_request_t *obj);
 int of_bsn_get_mirroring_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_reply_t *obj);
 int of_bsn_get_mirroring_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_request_t *obj);
+int of_bsn_header_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_header_t *obj);
 int of_bsn_set_mirroring_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_mirroring_t *obj);
 int of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj);
 int of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj);
@@ -183,6 +191,7 @@ int of_features_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, 
 int of_flow_add_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_add_t *obj);
 int of_flow_delete_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_delete_t *obj);
 int of_flow_delete_strict_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_delete_strict_t *obj);
+int of_flow_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_mod_t *obj);
 int of_flow_modify_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj);
 int of_flow_modify_strict_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_modify_strict_t *obj);
 int of_flow_removed_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_removed_t *obj);
@@ -196,6 +205,7 @@ int of_group_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_grou
 int of_group_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_stats_reply_t *obj);
 int of_group_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_stats_request_t *obj);
 int of_hello_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_hello_t *obj);
+int of_nicira_header_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_nicira_header_t *obj);
 int of_packet_in_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_packet_in_t *obj);
 int of_packet_out_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_packet_out_t *obj);
 int of_port_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_port_mod_t *obj);
@@ -207,9 +217,12 @@ int of_queue_get_config_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* 
 int of_queue_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_queue_stats_reply_t *obj);
 int of_queue_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_queue_stats_request_t *obj);
 int of_set_config_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj);
+int of_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_stats_reply_t *obj);
+int of_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_stats_request_t *obj);
 int of_table_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj);
 int of_table_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_stats_reply_t *obj);
 int of_table_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_stats_request_t *obj);
+int of_action_bsn_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_bsn_t *obj);
 int of_action_bsn_mirror_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_bsn_mirror_t *obj);
 int of_action_bsn_set_tunnel_dst_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_bsn_set_tunnel_dst_t *obj);
 int of_action_copy_ttl_in_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_copy_ttl_in_t *obj);
@@ -219,6 +232,7 @@ int of_action_dec_nw_ttl_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie,
 int of_action_experimenter_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_experimenter_t *obj);
 int of_action_group_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_group_t *obj);
 int of_action_header_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_header_t *obj);
+int of_action_nicira_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_nicira_t *obj);
 int of_action_nicira_dec_ttl_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_nicira_dec_ttl_t *obj);
 int of_action_output_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_output_t *obj);
 int of_action_pop_mpls_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_action_pop_mpls_t *obj);
@@ -292,6 +306,7 @@ int of_bsn_get_interfaces_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* 
 int of_bsn_get_interfaces_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_get_interfaces_request_t *obj);
 int of_bsn_get_mirroring_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_reply_t *obj);
 int of_bsn_get_mirroring_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_request_t *obj);
+int of_bsn_header_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_header_t *obj);
 int of_bsn_set_mirroring_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_mirroring_t *obj);
 int of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj);
 int of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj);
@@ -312,6 +327,7 @@ int of_features_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, 
 int of_flow_add_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_add_t *obj);
 int of_flow_delete_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_delete_t *obj);
 int of_flow_delete_strict_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_delete_strict_t *obj);
+int of_flow_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_mod_t *obj);
 int of_flow_modify_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj);
 int of_flow_modify_strict_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_modify_strict_t *obj);
 int of_flow_removed_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_removed_t *obj);
@@ -327,6 +343,7 @@ int of_group_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_grou
 int of_group_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_stats_reply_t *obj);
 int of_group_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_stats_request_t *obj);
 int of_hello_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_hello_t *obj);
+int of_nicira_header_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_nicira_header_t *obj);
 int of_packet_in_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_packet_in_t *obj);
 int of_packet_out_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_packet_out_t *obj);
 int of_port_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_port_mod_t *obj);
@@ -340,9 +357,12 @@ int of_queue_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cooki
 int of_role_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_role_reply_t *obj);
 int of_role_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_role_request_t *obj);
 int of_set_config_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj);
+int of_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_stats_reply_t *obj);
+int of_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_stats_request_t *obj);
 int of_table_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj);
 int of_table_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_stats_reply_t *obj);
 int of_table_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_stats_request_t *obj);
+int of_action_bsn_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_bsn_t *obj);
 int of_action_bsn_mirror_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_bsn_mirror_t *obj);
 int of_action_bsn_set_tunnel_dst_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_bsn_set_tunnel_dst_t *obj);
 int of_action_copy_ttl_in_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_copy_ttl_in_t *obj);
@@ -352,6 +372,7 @@ int of_action_dec_nw_ttl_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie,
 int of_action_experimenter_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_experimenter_t *obj);
 int of_action_group_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_group_t *obj);
 int of_action_header_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_header_t *obj);
+int of_action_nicira_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_nicira_t *obj);
 int of_action_nicira_dec_ttl_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_nicira_dec_ttl_t *obj);
 int of_action_output_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_output_t *obj);
 int of_action_pop_mpls_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_action_pop_mpls_t *obj);
@@ -493,6 +514,7 @@ int of_bsn_get_interfaces_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* 
 int of_bsn_get_interfaces_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_get_interfaces_request_t *obj);
 int of_bsn_get_mirroring_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_reply_t *obj);
 int of_bsn_get_mirroring_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_get_mirroring_request_t *obj);
+int of_bsn_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_header_t *obj);
 int of_bsn_set_mirroring_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_mirroring_t *obj);
 int of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_reply_t *obj);
 int of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_set_pktin_suppression_request_t *obj);
@@ -511,6 +533,7 @@ int of_features_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, 
 int of_flow_add_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_add_t *obj);
 int of_flow_delete_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_delete_t *obj);
 int of_flow_delete_strict_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_delete_strict_t *obj);
+int of_flow_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_mod_t *obj);
 int of_flow_modify_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj);
 int of_flow_modify_strict_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_modify_strict_t *obj);
 int of_flow_removed_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_removed_t *obj);
@@ -533,6 +556,7 @@ int of_meter_features_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, vo
 int of_meter_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_meter_mod_t *obj);
 int of_meter_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_meter_stats_reply_t *obj);
 int of_meter_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_meter_stats_request_t *obj);
+int of_nicira_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_nicira_header_t *obj);
 int of_packet_in_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_packet_in_t *obj);
 int of_packet_out_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_packet_out_t *obj);
 int of_port_desc_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_port_desc_stats_reply_t *obj);
@@ -548,11 +572,14 @@ int of_queue_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cooki
 int of_role_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_role_reply_t *obj);
 int of_role_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_role_request_t *obj);
 int of_set_config_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj);
+int of_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_stats_reply_t *obj);
+int of_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_stats_request_t *obj);
 int of_table_features_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_features_stats_reply_t *obj);
 int of_table_features_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_features_stats_request_t *obj);
 int of_table_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj);
 int of_table_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_stats_reply_t *obj);
 int of_table_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_stats_request_t *obj);
+int of_action_bsn_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_bsn_t *obj);
 int of_action_bsn_mirror_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_bsn_mirror_t *obj);
 int of_action_bsn_set_tunnel_dst_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_bsn_set_tunnel_dst_t *obj);
 int of_action_copy_ttl_in_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_copy_ttl_in_t *obj);
@@ -562,6 +589,7 @@ int of_action_dec_nw_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie,
 int of_action_experimenter_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_experimenter_t *obj);
 int of_action_group_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_group_t *obj);
 int of_action_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_header_t *obj);
+int of_action_id_bsn_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_bsn_t *obj);
 int of_action_id_bsn_mirror_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_bsn_mirror_t *obj);
 int of_action_id_bsn_set_tunnel_dst_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_bsn_set_tunnel_dst_t *obj);
 int of_action_id_copy_ttl_in_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_copy_ttl_in_t *obj);
@@ -571,6 +599,7 @@ int of_action_id_dec_nw_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cook
 int of_action_id_experimenter_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_experimenter_t *obj);
 int of_action_id_group_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_group_t *obj);
 int of_action_id_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_header_t *obj);
+int of_action_id_nicira_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_nicira_t *obj);
 int of_action_id_nicira_dec_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_nicira_dec_ttl_t *obj);
 int of_action_id_output_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_output_t *obj);
 int of_action_id_pop_mpls_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_pop_mpls_t *obj);
@@ -583,6 +612,7 @@ int of_action_id_set_field_OF_VERSION_1_3_dump(loci_writer_f writer, void* cooki
 int of_action_id_set_mpls_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_set_mpls_ttl_t *obj);
 int of_action_id_set_nw_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_set_nw_ttl_t *obj);
 int of_action_id_set_queue_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_id_set_queue_t *obj);
+int of_action_nicira_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_nicira_t *obj);
 int of_action_nicira_dec_ttl_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_nicira_dec_ttl_t *obj);
 int of_action_output_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_output_t *obj);
 int of_action_pop_mpls_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_action_pop_mpls_t *obj);
