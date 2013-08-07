@@ -154,6 +154,8 @@ typedef struct ft_entry_s {
     list_links_t prio_links;       /* Search by priority */
     list_links_t match_links;      /* Search by strict match */
     list_links_t flow_id_links;    /* Search by flow id */
+    list_head_t iterators;         /* List of ft_iterator_t objects
+                                      pointing to this entry */
 } ft_entry_t;
 
 /**

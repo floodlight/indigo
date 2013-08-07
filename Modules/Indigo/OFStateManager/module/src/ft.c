@@ -510,10 +510,9 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 struct ft_iter_task_state {
     ft_iter_task_callback_f callback;
     void *cookie;
-    ft_instance_t flowtable;
     of_meta_match_t query;
     int use_query;
-    int idx;
+    ft_iterator_t iter;
 };
 
 static ind_soc_task_status_t
@@ -522,14 +521,14 @@ ft_iter_task_callback(void *cookie)
     struct ft_iter_task_state *state = cookie;
 
     do {
-        if (state->idx == state->flowtable->config.max_entries) {
+        ft_entry_t *entry = ft_iterator_next(&state->iter);
+        if (entry == NULL) {
             /* Finished */
             state->callback(state->cookie, NULL);
+            ft_iterator_cleanup(&state->iter);
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            ft_entry_t *entry = &state->flowtable->flow_entries[state->idx++];
-
             if (entry->state == FT_FLOW_STATE_FREE ||
                 FT_FLOW_STATE_IS_DELETED(entry->state)) {
                 continue;
@@ -562,8 +561,6 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     state->callback = callback;
     state->cookie = cookie;
-    state->flowtable = instance;
-    state->idx = 0;
 
     if (query != NULL) {
         state->query = *query;
@@ -572,6 +569,8 @@ ft_spawn_iter_task(ft_instance_t instance,
         state->use_query = 0;
     }
 
+    ft_iterator_init(&state->iter, instance);
+
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
         INDIGO_MEM_FREE(state);
@@ -579,6 +578,50 @@ ft_spawn_iter_task(ft_instance_t instance,
     }
 
     return INDIGO_ERROR_NONE;
+}
+
+static void
+ft_iterator_set(ft_iterator_t *iter, list_links_t *cur)
+{
+    if (iter->cur != NULL) {
+        list_remove(&iter->entry_links);
+    }
+    iter->cur = cur;
+    if (iter->cur == &iter->ft->all_list.links) {
+        iter->cur = NULL;
+    } else {
+        ft_entry_t *next_entry = FT_ENTRY_CONTAINER(iter->cur, table);
+        list_push(&next_entry->iterators, &iter->entry_links);
+    }
+}
+
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
+{
+    iter->ft = ft;
+    iter->cur = NULL;
+    ft_iterator_set(iter, ft->all_list.links.next);
+}
+
+ft_entry_t *
+ft_iterator_next(ft_iterator_t *iter)
+{
+    if (iter->cur == NULL) {
+        return NULL;
+    }
+
+    ft_entry_t *cur_entry = FT_ENTRY_CONTAINER(iter->cur, table);
+    ft_iterator_set(iter, iter->cur->next);
+    return cur_entry;
+}
+
+void
+ft_iterator_cleanup(ft_iterator_t *iter)
+{
+    if (iter->cur != NULL) {
+        list_remove(&iter->entry_links);
+        iter->cur = NULL;
+    }
 }
 
 /**
@@ -610,6 +653,8 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
         idx = ft_flow_id_to_bucket_index(ft, &entry->id);
         list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
     }
+
+    list_init(&entry->iterators);
 }
 
 /**
@@ -625,6 +670,12 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     }
 
     INDIGO_ASSERT(!list_empty(&ft->all_list));
+
+    /* Advance iterators pointing to this entry */
+    list_links_t *cur, *next;
+    LIST_FOREACH_SAFE(&entry->iterators, cur, next) {
+        ft_iterator_next(container_of(cur, entry_links, ft_iterator_t));
+    }
 
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
