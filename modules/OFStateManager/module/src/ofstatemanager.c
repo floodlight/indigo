@@ -1119,33 +1119,61 @@ ind_core_ft_iter(ind_core_ft_iter_f iterf, void* cookie)
     return INDIGO_ERROR_NONE;
 }
 
-static int
-ind_core_ft_dump_iter__(indigo_flow_id_t id, of_flow_add_t* ofa, void* cookie)
-{
-    of_object_dump((loci_writer_f)aim_printf, (aim_pvs_t*)cookie, ofa);
-    return 0;
-}
-
 void
 ind_core_ft_dump(aim_pvs_t* pvs)
 {
-    ind_core_ft_iter(ind_core_ft_dump_iter__, pvs);
-}
+    ft_entry_t *entry;
+    list_links_t *cur, *next;
 
-static int
-ind_core_ft_show_iter__(indigo_flow_id_t id, of_flow_add_t* ofa, void* cookie)
-{
-    aim_pvs_t* pvs = (aim_pvs_t*)(cookie);
+    FT_ITER(ind_core_ft, entry, cur, next) {
+        aim_printf(pvs, "Flow %d:\n", entry->id);
+        loci_dump_match((loci_writer_f)aim_printf, pvs, &entry->match);
+        aim_printf(pvs, "cookie: 0x%016"PRIx64"\n", entry->cookie);
+        aim_printf(pvs, "idle_timeout: %hu\n", entry->idle_timeout);
+        aim_printf(pvs, "hard_timeout: %hu\n", entry->hard_timeout);
+        aim_printf(pvs, "priority: %hu\n", entry->priority);
+        aim_printf(pvs, "flags: %hu\n", entry->flags);
+        aim_printf(pvs, "table_id: %hhu\n", entry->table_id);
+        aim_printf(pvs, "packets: %"PRIu64"\n", entry->packets);
+        aim_printf(pvs, "bytes: %"PRIu64"\n", entry->bytes);
 
-    of_object_show((loci_writer_f)aim_printf, pvs, ofa);
-    aim_printf(pvs, "\n");
-    return 0;
+        {
+            int rv;
+            of_action_t elt;
+            OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
+                of_object_dump((loci_writer_f)aim_printf, pvs, &elt.header);
+            }
+        }
+
+        aim_printf(pvs, "\n");
+    }
 }
 
 void
 ind_core_ft_show(aim_pvs_t* pvs)
 {
-    ind_core_ft_iter(ind_core_ft_show_iter__, pvs);
+    ft_entry_t *entry;
+    list_links_t *cur, *next;
+
+    FT_ITER(ind_core_ft, entry, cur, next) {
+        aim_printf(pvs, "Flow %d: ", entry->id);
+        loci_show_match((loci_writer_f)aim_printf, pvs, &entry->match);
+        aim_printf(pvs, "cookie=0x%016"PRIx64" ", entry->cookie);
+        aim_printf(pvs, "priority=%hu ", entry->priority);
+        aim_printf(pvs, "table_id=%hhu ", entry->table_id);
+
+        {
+            int rv;
+            of_action_t elt;
+            OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
+                aim_printf(pvs, "%s(", of_object_id_str[elt.header.object_id]);
+                of_object_show((loci_writer_f)aim_printf, pvs, &elt.header);
+                aim_printf(pvs, ") ");
+            }
+        }
+
+        aim_printf(pvs, "\n");
+    }
 }
 
 void
