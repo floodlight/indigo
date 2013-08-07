@@ -168,7 +168,7 @@ void *cxn_to_cookie(connection_t *cxn)
 
 connection_t* cookie_to_cxn(void* cookie)
 {
-    uint32_t val = (uint32_t) cookie;
+    uintptr_t val = (uintptr_t) cookie;
     uint32_t gen_id = (val >> GEN_ID_SHIFT) & GEN_ID_MASK;
     indigo_cxn_id_t cxn_id = val & CXN_ID_MASK;
 
