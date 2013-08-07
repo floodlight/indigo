@@ -520,7 +520,11 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
                      int force_wildcard_port)
 {
     INDIGO_MEM_SET(query, 0, sizeof(*query));
-    query->table_id = TABLE_ID_ANY;
+    if (obj->version > OF_VERSION_1_0) {
+        of_flow_modify_table_id_get(obj, &query->table_id);
+    } else {
+        query->table_id = TABLE_ID_ANY;
+    }
     _TRY(of_flow_modify_match_get(obj, &(query->match)));
     query->mode = query_mode;
     if ((query_mode == OF_MATCH_STRICT) || (query_mode == OF_MATCH_OVERLAP)) {
