@@ -157,9 +157,10 @@ void *cxn_to_cookie(connection_t *cxn)
 {
     void *cookie;
     if (CXN_ACTIVE(cxn)) {
-        cookie = (void *)
-            (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
-             (cxn->cxn_id & CXN_ID_MASK));
+        cookie = (void *) 
+            ((uintptr_t)
+             (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
+              (cxn->cxn_id & CXN_ID_MASK)));
     } else {
         cookie = NULL;
     }
