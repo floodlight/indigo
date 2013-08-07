@@ -148,6 +148,43 @@ static int preferred_cxn_id = -1;
 
 #define CXN_ID_TO_CONNECTION(cxn_id) (&connection[cxn_id])
 
+
+#define GEN_ID_SHIFT 16
+#define GEN_ID_MASK 0xffff
+#define CXN_ID_MASK 0xffff
+
+void *cxn_to_cookie(connection_t *cxn)
+{
+    void *cookie;
+    if (CXN_ACTIVE(cxn)) {
+        cookie = (void *)
+            (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
+             (cxn->cxn_id & CXN_ID_MASK));
+    } else {
+        cookie = NULL;
+    }
+    return cookie;
+}
+
+connection_t* cookie_to_cxn(void* cookie)
+{
+    uint32_t val = (uint32_t) cookie;
+    uint32_t gen_id = (val >> GEN_ID_SHIFT) & GEN_ID_MASK;
+    indigo_cxn_id_t cxn_id = val & CXN_ID_MASK;
+
+    if (ACTIVE_ENTRY(cxn_id)) {
+        connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+        if ((cxn->generation_id & GEN_ID_MASK) == gen_id) {
+            return cxn;
+        } else {
+            return NULL;
+        }
+    } else {
+        return NULL;
+    }
+}
+
+
 /* Generate IP string from a connection ID */
 static inline char *
 cxn_id_ip_string(indigo_cxn_id_t cxn_id)

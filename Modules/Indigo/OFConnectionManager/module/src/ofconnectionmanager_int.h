@@ -62,6 +62,12 @@ extern int have_local_connection;
  */
 extern int remote_connection_count;
 
+
+/* conversion functions from cookie with generation id to connection and vice versa */
+void *cxn_to_cookie(connection_t *cxn);
+connection_t* cookie_to_cxn(void* cookie);
+
+
 /*
  * Priority for sockets and timers registered with SocketManager.
  */
