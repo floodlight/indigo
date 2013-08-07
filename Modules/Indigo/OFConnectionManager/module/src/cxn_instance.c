@@ -59,8 +59,8 @@
 #define LOG_TRACE(cxn, fmt, ...)                                        \
     AIM_LOG_TRACE("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
 
-#define NO_CXN_LOG_INFO(fmt, ...)                                       \
-    AIM_LOG_INFO(fmt, ##__VA_ARGS__)
+#define NO_CXN_LOG_VERBOSE(fmt, ...)                                    \
+    AIM_LOG_VERBOSE(fmt, ##__VA_ARGS__)
 
 #define STATE_INFO_INIT(s, t) { .name = #s, .timeout = t }
 state_info_t state_info[INDIGO_CXN_S_COUNT] = {
@@ -735,9 +735,9 @@ cxn_object_delete_cb(of_object_t *obj)
 
     cxn = cookie_to_cxn(obj->track_info.delete_cookie);
     if (cxn == NULL) {
-        NO_CXN_LOG_INFO("Connection invalid, "
-                        "delete message object %p of type %s",
-                        obj, of_object_id_str[obj->object_id]);
+        NO_CXN_LOG_VERBOSE("Connection invalid, "
+                           "delete message object %p of type %s",
+                           obj, of_object_id_str[obj->object_id]);
         return;
     }
 
