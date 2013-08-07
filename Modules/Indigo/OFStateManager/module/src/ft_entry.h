@@ -134,7 +134,6 @@ typedef struct ft_entry_s {
     uint16_t idle_timeout;
     uint16_t hard_timeout;
     uint16_t flags;
-    of_flow_add_t *flow_add;
 
     /* Modifiable thru API calls */
     uint64_t cookie;
@@ -145,7 +144,6 @@ typedef struct ft_entry_s {
 
     /* Updated by implementation */
     uint8_t table_id;
-    biglist_t *output_ports;
     indigo_time_t insert_time;
     uint64_t packets;
     uint64_t bytes;
@@ -156,6 +154,8 @@ typedef struct ft_entry_s {
     list_links_t prio_links;       /* Search by priority */
     list_links_t match_links;      /* Search by strict match */
     list_links_t flow_id_links;    /* Search by flow id */
+    list_head_t iterators;         /* List of ft_iterator_t objects
+                                      pointing to this entry */
 } ft_entry_t;
 
 /**

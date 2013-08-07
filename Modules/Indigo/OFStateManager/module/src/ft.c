@@ -31,12 +31,10 @@
 
 static indigo_error_t ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add);
 static void ft_entry_clear(ft_instance_t ft, ft_entry_t *entry);
-static biglist_t *out_port_list_populate_from_actions(of_list_action_t *actions);
-static biglist_t *out_port_list_populate_from_instructions(of_list_instruction_t *instructions);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
-static inline int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
+static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
 
 #define FT_HASH_SEED 0
 
@@ -512,10 +510,9 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 struct ft_iter_task_state {
     ft_iter_task_callback_f callback;
     void *cookie;
-    ft_instance_t flowtable;
     of_meta_match_t query;
     int use_query;
-    int idx;
+    ft_iterator_t iter;
 };
 
 static ind_soc_task_status_t
@@ -524,14 +521,14 @@ ft_iter_task_callback(void *cookie)
     struct ft_iter_task_state *state = cookie;
 
     do {
-        if (state->idx == state->flowtable->config.max_entries) {
+        ft_entry_t *entry = ft_iterator_next(&state->iter);
+        if (entry == NULL) {
             /* Finished */
             state->callback(state->cookie, NULL);
+            ft_iterator_cleanup(&state->iter);
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            ft_entry_t *entry = &state->flowtable->flow_entries[state->idx++];
-
             if (entry->state == FT_FLOW_STATE_FREE ||
                 FT_FLOW_STATE_IS_DELETED(entry->state)) {
                 continue;
@@ -564,8 +561,6 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     state->callback = callback;
     state->cookie = cookie;
-    state->flowtable = instance;
-    state->idx = 0;
 
     if (query != NULL) {
         state->query = *query;
@@ -574,6 +569,8 @@ ft_spawn_iter_task(ft_instance_t instance,
         state->use_query = 0;
     }
 
+    ft_iterator_init(&state->iter, instance);
+
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
         INDIGO_MEM_FREE(state);
@@ -581,6 +578,50 @@ ft_spawn_iter_task(ft_instance_t instance,
     }
 
     return INDIGO_ERROR_NONE;
+}
+
+static void
+ft_iterator_set(ft_iterator_t *iter, list_links_t *cur)
+{
+    if (iter->cur != NULL) {
+        list_remove(&iter->entry_links);
+    }
+    iter->cur = cur;
+    if (iter->cur == &iter->ft->all_list.links) {
+        iter->cur = NULL;
+    } else {
+        ft_entry_t *next_entry = FT_ENTRY_CONTAINER(iter->cur, table);
+        list_push(&next_entry->iterators, &iter->entry_links);
+    }
+}
+
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
+{
+    iter->ft = ft;
+    iter->cur = NULL;
+    ft_iterator_set(iter, ft->all_list.links.next);
+}
+
+ft_entry_t *
+ft_iterator_next(ft_iterator_t *iter)
+{
+    if (iter->cur == NULL) {
+        return NULL;
+    }
+
+    ft_entry_t *cur_entry = FT_ENTRY_CONTAINER(iter->cur, table);
+    ft_iterator_set(iter, iter->cur->next);
+    return cur_entry;
+}
+
+void
+ft_iterator_cleanup(ft_iterator_t *iter)
+{
+    if (iter->cur != NULL) {
+        list_remove(&iter->entry_links);
+        iter->cur = NULL;
+    }
 }
 
 /**
@@ -612,6 +653,8 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
         idx = ft_flow_id_to_bucket_index(ft, &entry->id);
         list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
     }
+
+    list_init(&entry->iterators);
 }
 
 /**
@@ -627,6 +670,12 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     }
 
     INDIGO_ASSERT(!list_empty(&ft->all_list));
+
+    /* Advance iterators pointing to this entry */
+    list_links_t *cur, *next;
+    LIST_FOREACH_SAFE(&entry->iterators, cur, next) {
+        ft_iterator_next(container_of(cur, entry_links, ft_iterator_t));
+    }
 
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
@@ -660,22 +709,15 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 static indigo_error_t
 ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 {
-    of_flow_add_t *dup;
     indigo_error_t err;
 
     INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
 
     entry->id = id;
-    dup = (of_flow_add_t *)of_object_dup(flow_add);
-    if (dup == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
 
     entry->state = FT_FLOW_STATE_NEW;
     entry->queued_reqs = NULL;
-    entry->flow_add = dup;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
-        of_object_delete(dup);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -708,17 +750,9 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 static void
 ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
 {
-    if (entry->output_ports != NULL) {
-        biglist_free(entry->output_ports);
-        entry->output_ports = NULL;
-    }
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = NULL;
-    }
-    if (entry->flow_add != NULL) {
-        of_flow_add_delete(entry->flow_add);
-        entry->flow_add = NULL;
     }
 
     biglist_free(entry->queued_reqs);
@@ -729,44 +763,6 @@ ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
         ft->status.pending_deletes -= 1;
     }
     entry->state = FT_FLOW_STATE_FREE;
-}
-
-static biglist_t *
-out_port_list_populate_from_actions(of_list_action_t *actions)
-{
-    of_action_t elt;
-    of_action_output_t *output;
-    int loop_rv;
-    of_port_no_t port_no;
-    biglist_t *bl = NULL;
-
-    output = &elt.output;
-    OF_LIST_ACTION_ITER(actions, &elt, loop_rv) {
-        if (output->object_id == OF_ACTION_OUTPUT) {
-            of_action_output_port_get(output, &port_no);
-            bl = biglist_prepend(bl, (void*)((uintptr_t)(port_no)));
-        }
-    }
-
-    return bl;
-}
-
-static biglist_t *
-out_port_list_populate_from_instructions(of_list_instruction_t *instructions)
-{
-    of_instruction_t inst;
-    int loop_rv;
-    biglist_t *bl = NULL;
-
-    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
-            bl = biglist_append_list(bl, out_port_list_populate_from_actions(&actions));
-        }
-    }
-
-    return bl;
 }
 
 /* Populate the output port list and effects */
@@ -781,9 +777,7 @@ ft_entry_set_effects(ft_entry_t *entry,
             LOG_ERROR("Could not get action list");
             return INDIGO_ERROR_RESOURCE;
         }
-        biglist_free(entry->output_ports);
         of_list_action_delete(entry->effects.actions);
-        entry->output_ports = out_port_list_populate_from_actions(actions);
         entry->effects.actions = actions;
     } else {
         of_list_instruction_t *instructions;
@@ -791,29 +785,61 @@ ft_entry_set_effects(ft_entry_t *entry,
             LOG_ERROR("Could not get instruction list");
             return INDIGO_ERROR_RESOURCE;
         }
-        biglist_free(entry->output_ports);
         of_list_instruction_delete(entry->effects.instructions);
-        entry->output_ports = out_port_list_populate_from_instructions(instructions);
         entry->effects.instructions = instructions;
     }
 
     return INDIGO_ERROR_NONE;
 }
 
+static int
+action_list_has_out_port(of_list_action_t *actions, of_port_no_t port)
+{
+    of_action_t act;
+    int loop_rv;
+    of_port_no_t out_port;
+
+    OF_LIST_ACTION_ITER(actions, &act, loop_rv) {
+        if (act.header.object_id == OF_ACTION_OUTPUT) {
+            of_action_output_port_get(&act.output, &out_port);
+            if (out_port == port) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+static int
+instruction_list_has_out_port(of_list_instruction_t *instructions, of_port_no_t port)
+{
+    of_instruction_t inst;
+    int loop_rv;
+
+    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
+        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
+            of_list_action_t actions;
+            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
+            if (action_list_has_out_port(&actions, port)) {
+                return 1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 /**
  * Determine if the given entry has port as an output port
  */
-static inline int
+static int
 ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
 {
-    biglist_t *elt;
-    of_port_no_t chk_port;
-
-    for (elt = entry->output_ports; elt != NULL; elt = elt->next) {
-        chk_port = (uintptr_t)elt->data;
-        if (port == chk_port) {
-            return 1;
-        }
+    if (entry->effects.actions->version == OF_VERSION_1_0) {
+        return action_list_has_out_port(entry->effects.actions, port);
+    } else {
+        return instruction_list_has_out_port(entry->effects.instructions, port);
     }
 
     return 0;
