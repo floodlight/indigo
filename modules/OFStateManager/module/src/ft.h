@@ -155,6 +155,19 @@ struct ft_public_s {
 #define FT_STATUS(_ft) (&(_ft)->status)
 
 /**
+ * Safe iterator for the entire flowtable
+ *
+ * See ft_iterator_init, ft_iterator_next, and ft_iterator_cleanup.
+ *
+ * This struct should be treated as opaque.
+ */
+typedef struct ft_iterator_s {
+    list_head_t *head;             /* List head for this iteration */
+    ft_entry_t *next_entry;        /* Entry to be returned on next() */
+    list_links_t entry_links;      /* Linked into next_entry->iterators if next_entry != NULL */
+} ft_iterator_t;
+
+/**
  * Safe iterator for entire flow table
  *
  * The current entry may be deleted during this iteration.
@@ -446,5 +459,28 @@ ft_spawn_iter_task(ft_instance_t instance,
                    ft_iter_task_callback_f callback,
                    void *cookie,
                    int priority);
+
+/**
+ * Initialize a flowtable iterator
+ *
+ * This will iterate over the entire flowtable. It is safe to use with
+ * concurrent modification of the flowtable.
+ */
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft);
+
+/**
+ * Yield the next entry from an iterator
+ *
+ * Will return NULL to signal the end of the iteration.
+ */
+ft_entry_t *
+ft_iterator_next(ft_iterator_t *iter);
+
+/**
+ * Cleanup a flowtable iterator
+ */
+void
+ft_iterator_cleanup(ft_iterator_t *iter);
 
 #endif /* _OFSTATEMANAGER_FT_H_ */
