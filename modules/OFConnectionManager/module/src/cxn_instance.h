@@ -47,7 +47,7 @@
  * this should really be determined by the platform specific code and
  * made visible via the config.
  */
-#define WRITE_BUFFER_SIZE (512 * 1024)
+#define WRITE_BUFFER_SIZE (129 * 1024 * 88 + 12)
 
 /**
  * Connection flag, connection is to be removed pending op completion
@@ -111,7 +111,13 @@ typedef struct connection_s {
 
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
+
+    /* To detect object staleness */
+    uint32_t generation_id;
+    
 } connection_t;
+
+
 
 /**
  * Should a packet in be dropped based on connection state?
