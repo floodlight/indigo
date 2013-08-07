@@ -111,7 +111,13 @@ typedef struct connection_s {
 
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
+
+    /* To detect object staleness */
+    uint32_t generation_id;
+    
 } connection_t;
+
+
 
 /**
  * Should a packet in be dropped based on connection state?
