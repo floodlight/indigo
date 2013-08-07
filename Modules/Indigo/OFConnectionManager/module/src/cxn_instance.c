@@ -59,6 +59,9 @@
 #define LOG_TRACE(cxn, fmt, ...)                                        \
     AIM_LOG_TRACE("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
 
+#define NO_CXN_LOG_VERBOSE(fmt, ...)                                    \
+    AIM_LOG_VERBOSE(fmt, ##__VA_ARGS__)
+
 #define STATE_INFO_INIT(s, t) { .name = #s, .timeout = t }
 state_info_t state_info[INDIGO_CXN_S_COUNT] = {
     STATE_INFO_INIT(DISCONNECTED, 0),
@@ -140,6 +143,8 @@ cleanup_disconnect(connection_t *cxn)
         close(cxn->sd);
     }
     cxn->sd = -1;
+
+    cxn->generation_id++;
 
     /* @fixme Is it possible there's a message that should be processed? */
     LOG_VERBOSE(cxn, "Closing connection, current read buf has %d bytes",
@@ -728,17 +733,16 @@ cxn_object_delete_cb(of_object_t *obj)
 {
     connection_t *cxn;
 
-    cxn = (connection_t *)obj->track_info.delete_cookie;
-
-    LOG_TRACE(cxn, "Delete message object %p of type %s",
-              obj, of_object_id_str[obj->object_id]);
-
-    if (!cxn->active) {
-        LOG_VERBOSE(cxn, "Cxn no longer active");
+    cxn = cookie_to_cxn(obj->track_info.delete_cookie);
+    if (cxn == NULL) {
+        NO_CXN_LOG_VERBOSE("Connection invalid, "
+                           "delete message object %p of type %s",
+                           obj, of_object_id_str[obj->object_id]);
         return;
     }
 
-    /* @fixme Should we check the state of the cxn? */
+    LOG_TRACE(cxn, "Delete message object %p of type %s",
+              obj, of_object_id_str[obj->object_id]);
 
     INDIGO_ASSERT(cxn->outstanding_op_cnt > 0);
     cxn->outstanding_op_cnt -= 1;
@@ -780,7 +784,7 @@ void
 cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
 {
     obj->track_info.delete_cb = cxn_object_delete_cb;
-    obj->track_info.delete_cookie = cxn;
+    obj->track_info.delete_cookie = cxn_to_cookie(cxn);
     cxn->outstanding_op_cnt++;
 #if defined(OF_OBJECT_TRACKING)
     cxn->outstanding_ops = biglist_prepend(cxn->outstanding_ops, (void *)obj);
@@ -1405,8 +1409,8 @@ ind_cxn_try_to_connect(connection_t *cxn)
     if (inet_pton(AF_INET, params->controller_ip, &cxn_addr.sin_addr) != 1) {
         LOG_ERROR(cxn, "Could not convert %s to inet address",
                   params->controller_ip);
-        /* Socket is not open, so this is the one place we directly call... */
-        cleanup_disconnect(cxn);
+        close(cxn->sd);
+        cxn->sd = -1;
         return -1;
     }
 
