@@ -96,17 +96,6 @@ indigo_error_t ind_core_serial_num_set(of_serial_num_t serial_num);
 indigo_error_t ind_core_serial_num_get(of_serial_num_t serial_num);
 
 /**
- * Flow Table Iterator
- */
-typedef int (ind_core_ft_iter_f)(indigo_flow_id_t id,
-                                 of_flow_add_t* ofa, void* cookie);
-
-/**
- * Iterate over all core flowtable entries.
- */
-indigo_error_t ind_core_ft_iter(ind_core_ft_iter_f iter, void* cookie);
-
-/**
  * Dump all entries in the flow table.
  * This is verbose.
  */
