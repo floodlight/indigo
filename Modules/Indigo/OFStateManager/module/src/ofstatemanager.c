@@ -1100,30 +1100,6 @@ flow_expiration_timer(void *cookie)
                                         INDIGO_POINTER_TO_COOKIE(state));
 }
 
-indigo_error_t
-ind_core_ft_iter(ind_core_ft_iter_f iterf, void* cookie)
-{
-    ft_instance_t ft = ind_core_ft;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
-
-    if(iterf == NULL) {
-        return INDIGO_ERROR_PARAM;
-    }
-    if(ft == NULL) {
-        return INDIGO_ERROR_NONE;
-    }
-    FT_ITER(ft, entry, cur, next) {
-        if (!FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            if (iterf(entry->id, entry->flow_add, cookie) < 0) {
-                break;
-            }
-        }
-    }
-
-    return INDIGO_ERROR_NONE;
-}
-
 void
 ind_core_ft_dump(aim_pvs_t* pvs)
 {
