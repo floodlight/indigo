@@ -1078,7 +1078,11 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!OF_VERSION_OKAY(version)) {
-        version = cxn->status.negotiated_version;
+        if (cxn->status.negotiated_version == OF_VERSION_UNKNOWN) {
+            version = OF_VERSION_1_0;
+        } else {
+            version = cxn->status.negotiated_version;
+        }
         INDIGO_ASSERT(OF_VERSION_OKAY(version));
     }
 
