@@ -1134,13 +1134,7 @@ ind_cxn_process_read_buffer(connection_t *cxn)
         process_message(cxn);
     }
 
-    /* @fixme Should this be handled by state machine transition? */
-    if (rv < 0) { /* Does not include "pending" */
-        ind_cxn_disconnect(cxn);
-        return rv;
-    }
-
-    return INDIGO_ERROR_NONE;
+    return rv;
 }
 
 /**
