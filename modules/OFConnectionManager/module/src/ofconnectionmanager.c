@@ -253,7 +253,6 @@ indigo_cxn_socket_ready_callback(
         if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
             LOG_VERBOSE("Error processing read buffer, resetting");
             ind_cxn_disconnect(cxn);
-            ++ind_cxn_internal_errors;
             return;
         }
     }
