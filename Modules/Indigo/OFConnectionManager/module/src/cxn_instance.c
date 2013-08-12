@@ -940,6 +940,7 @@ read_from_cxn(connection_t *cxn)
         }
 
         LOG_ERROR(cxn, "Error reading from socket: %s", strerror(errno));
+        ++ind_cxn_internal_errors;
         return INDIGO_ERROR_CONNECTION;
     }
 
@@ -997,6 +998,7 @@ read_message(connection_t *cxn)
         msg_bytes = of_message_length_get(msg);
         if (msg_bytes < OF_MESSAGE_HEADER_LENGTH) {
             LOG_TRACE(cxn, "Illegal msg length %d. Framing error?", msg_bytes);
+            ++ind_cxn_internal_errors;
             return INDIGO_ERROR_PROTOCOL;
         }
         cxn->bytes_needed = msg_bytes - OF_MESSAGE_HEADER_LENGTH;
@@ -1134,13 +1136,7 @@ ind_cxn_process_read_buffer(connection_t *cxn)
         process_message(cxn);
     }
 
-    /* @fixme Should this be handled by state machine transition? */
-    if (rv < 0) { /* Does not include "pending" */
-        ind_cxn_disconnect(cxn);
-        return rv;
-    }
-
-    return INDIGO_ERROR_NONE;
+    return rv;
 }
 
 /**
