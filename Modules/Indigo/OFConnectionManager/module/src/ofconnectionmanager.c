@@ -239,15 +239,21 @@ indigo_cxn_socket_ready_callback(
     }
 
     if (error_seen) {
-        LOG_ERROR("Error seen on connection %s", cxn_ip_string(cxn));
-        /* @todo What to do on socket error */
+        int socket_error = 0;
+        socklen_t len = sizeof(socket_error);
+        getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
+        LOG_ERROR("Error seen on connection %s: %s",
+                  cxn_ip_string(cxn), strerror(socket_error));
+        ind_cxn_disconnect(cxn);
         ++ind_cxn_internal_errors;
+        return;
     }
 
     if (read_ready) {
         if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
-            LOG_VERBOSE("Error %d processing read buffer", rv);
-            ++ind_cxn_internal_errors;
+            LOG_VERBOSE("Error processing read buffer, resetting");
+            ind_cxn_disconnect(cxn);
+            return;
         }
     }
 
@@ -256,6 +262,7 @@ indigo_cxn_socket_ready_callback(
             LOG_ERROR("Error processing write buffer, resetting");
             ind_cxn_disconnect(cxn);
             ++ind_cxn_internal_errors;
+            return;
         }
     }
 }
@@ -1070,7 +1077,11 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!OF_VERSION_OKAY(version)) {
-        version = cxn->status.negotiated_version;
+        if (cxn->status.negotiated_version == OF_VERSION_UNKNOWN) {
+            version = OF_VERSION_1_0;
+        } else {
+            version = cxn->status.negotiated_version;
+        }
         INDIGO_ASSERT(OF_VERSION_OKAY(version));
     }
 
