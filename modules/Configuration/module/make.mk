@@ -27,4 +27,4 @@
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 Configuration_INCLUDES := -I $(THISDIR)inc
 Configuration_INTERNAL_INCLUDES := -I $(THISDIR)src
-Configuration_DEPENDMODULE_ENTRIES := ucli:configuration
+Configuration_DEPENDMODULE_ENTRIES := ucli:configuration init:configuration
