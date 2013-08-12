@@ -962,6 +962,8 @@ ind_cxn_init(ind_cxn_config_t *config)
     /* Verify required functions are non-NULL */
     INDIGO_MEM_COPY(&cxn_config, config, sizeof(*config));
 
+    module_init();
+
     init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -980,7 +982,6 @@ ind_cxn_enable_set(int enable)
     }
 
     if (enable && !module_enabled) {
-        module_init();
         LOG_INFO("Enabling OF connection mgr");
         module_enabled = 1;
     } else if (!enable && module_enabled) {
