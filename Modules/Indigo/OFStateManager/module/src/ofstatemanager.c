@@ -129,7 +129,7 @@ send_flow_removed_message(ft_entry_t *entry)
     indigo_fi_flow_removed_t reason;
 
     current = INDIGO_CURRENT_TIME;
-    if ((msg = of_flow_removed_new(entry->flow_add->version)) == NULL) {
+    if ((msg = of_flow_removed_new(entry->match.version)) == NULL) {
         return;
     }
 
@@ -137,8 +137,23 @@ send_flow_removed_message(ft_entry_t *entry)
 
     of_flow_removed_xid_set(msg, ind_core_xid_alloc());
 
-    /* @fixme OF 1.0 specific */
-    of_flow_removed_setup_from_flow_add(msg, entry->flow_add);
+    of_flow_removed_cookie_set(msg, entry->cookie);
+    of_flow_removed_priority_set(msg, entry->priority);
+    of_flow_removed_idle_timeout_set(msg, entry->idle_timeout);
+
+    if (msg->version >= OF_VERSION_1_1) {
+        of_flow_removed_table_id_set(msg, entry->table_id);
+    }
+
+    if (msg->version >= OF_VERSION_1_2) {
+        of_flow_removed_hard_timeout_set(msg, entry->hard_timeout);
+    }
+
+    if (of_flow_removed_match_set(msg, &entry->match)) {
+        LOG_ERROR("Failed to set match in flow removed message");
+        of_object_delete(msg);
+        return;
+    }
 
     reason = entry->removed_reason;
     if (reason > INDIGO_FLOW_REMOVED_DELETE) {
@@ -539,10 +554,8 @@ process_flow_removal(ft_entry_t *entry,
     indigo_error_t rv;
     biglist_t      *ble;
 
-    if ((entry->state == FT_FLOW_STATE_FREE) ||
-            (entry->flow_add == NULL)) {
-        LOG_VERBOSE("Remove flow in state %d, flow add %p; ignoring",
-                    entry->state, entry->flow_add);
+    if (entry->state == FT_FLOW_STATE_FREE) {
+        LOG_VERBOSE("Remove flow in state %d; ignoring", entry->state);
         return;
     }
 

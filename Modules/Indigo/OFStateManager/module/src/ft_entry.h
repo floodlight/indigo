@@ -79,7 +79,6 @@ enum ft_flow_state {
  * @param priority The priority, from the original add
  * @param idle_timeout The idle_timeout, from the original add
  * @param hard_timeout The hard_timeout, from the original add
- * @param flow_add Pointer to the original add object
  * @param cookie The cookie, from the original or as updated
  * @param effects The actions or instructions from the add or as updated.
  * See below.  May not be maintained by all implementations.
@@ -98,7 +97,7 @@ enum ft_flow_state {
  * structure.  This is used in determining whether actions or instructions
  * are active.
  *
- * The match, priority, timeouts and flow_add are invariant once the entry
+ * The match, priority, timeouts and flags are invariant once the entry
  * has been added to the table.  The cookie and effects may be updated by
  * modify commands.
  */
@@ -134,7 +133,6 @@ typedef struct ft_entry_s {
     uint16_t idle_timeout;
     uint16_t hard_timeout;
     uint16_t flags;
-    of_flow_add_t *flow_add;
 
     /* Modifiable thru API calls */
     uint64_t cookie;
