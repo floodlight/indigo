@@ -141,11 +141,11 @@ send_flow_removed_message(ft_entry_t *entry)
     of_flow_removed_priority_set(msg, entry->priority);
     of_flow_removed_idle_timeout_set(msg, entry->idle_timeout);
 
-    if (entry->version >= OF_VERSION_1_1) {
+    if (msg->version >= OF_VERSION_1_1) {
         of_flow_removed_table_id_set(msg, entry->table_id);
     }
 
-    if (entry->version >= OF_VERSION_1_2) {
+    if (msg->version >= OF_VERSION_1_2) {
         of_flow_removed_hard_timeout_set(msg, entry->hard_timeout);
     }
 
