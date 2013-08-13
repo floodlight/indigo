@@ -318,49 +318,6 @@ ft_first_match(ft_instance_t instance,
     return INDIGO_ERROR_NOT_FOUND;
 }
 
-biglist_t *
-ft_query(ft_instance_t instance, of_meta_match_t *query)
-{
-    int bucket_idx;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
-    biglist_t *list = NULL;
-    int count = 0;
-
-    if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    } else if (query->check_priority) {
-        /* Iterate thru prio hash list */
-        bucket_idx = ft_prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    } else { /* Iterate thru whole list */
-        FT_ITER(instance, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    }
-
-    LOG_TRACE("Query generated %d entries", count);
-    return list;
-}
-
 ft_entry_t *
 ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {

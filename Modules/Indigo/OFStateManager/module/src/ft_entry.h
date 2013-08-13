@@ -196,9 +196,6 @@ typedef struct ft_entry_s {
  *
  * For a query match, Mq, the "non-strict match" is the set of entries for
  * which each M in the set satisfies FS(M) is a subset of FS(Mq).
- *
- * For queries, the called routine will allocate the the variable length
- * list of flow IDs and the caller is responsible freeing it.
  */
 
 /**
