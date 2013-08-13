@@ -1243,7 +1243,10 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
     }
 }
 
-/* Flowtable iterator for ind_core_flow_stats_request_handler */
+/*
+ * Flowtable iterator for ind_core_flow_stats_request_handler
+ * and ind_core_aggregate_stats_request_handler.
+ */
 static void
 stats_iter_cb(void *cookie, ft_entry_t *entry)
 {
@@ -1397,8 +1400,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     of_meta_match_t query;
     struct ind_core_flow_stats_state *state;
     struct ind_core_aggregate_stats_priv *priv;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
+    indigo_error_t rv;
 
     obj = (of_aggregate_stats_request_t *)_obj;
     LOG_TRACE("Handling of_aggregate_stats_request message: %p.", obj);
@@ -1433,23 +1435,16 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     priv->bytes = 0;
     priv->flows = 0;
 
-    /*
-     * Iterate over flow table; query stats for each entry.
-     *
-     * indigo_core_flow_stats_get_callback will generate the reply.
-     */
-    FT_ITER(ind_core_ft, entry, cur, next) {
-       if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-              ft_entry_meta_match(&query, entry)) {
-           state->expected_count++;
-           indigo_fwd_flow_stats_get(entry->id,
-                                     INDIGO_POINTER_TO_COOKIE(state));
-        }
+    rv = ft_spawn_iter_task(ind_core_ft, &query, stats_iter_cb,
+                            state, IND_SOC_DEFAULT_PRIORITY);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to start aggregate stats iter.");
+        of_object_delete(_obj);
+        INDIGO_MEM_FREE(state);
+        return rv;
     }
 
-    indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL,
-                                        INDIGO_POINTER_TO_COOKIE(state));
-
+    /* Ownership of _obj is passed to the iterator for barrier tracking */
     return INDIGO_ERROR_NONE;
 }
 
