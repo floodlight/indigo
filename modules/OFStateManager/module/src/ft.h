@@ -67,22 +67,6 @@ typedef struct ft_public_s ft_public_t;
 
 typedef ft_public_t *ft_instance_t;
 
-/**
- * Map from a list entry to a flow entry pointer.
- *
- * The flow table abstraction uses BigLists for queries.  These
- * use ft_entry_t pointers for their data.
- */
-
-#define FT_LIST_TO_ENTRY(elt) ((ft_entry_t *)((elt)->data))
-
-/**
- * Map from a list entry to a flow ID.
- */
-
-#define FT_LIST_TO_FLOW_ID(elt)                            \
-    (INDIGO_POINTER_TO_COOKIE(FT_LIST_TO_ENTRY(elt)->id))
-
 /****************************************************************
  * Managing a flow table instance: Configuration, status, handle
  ****************************************************************/
@@ -346,18 +330,6 @@ indigo_error_t ft_delete_id(ft_instance_t ft,
 indigo_error_t ft_first_match(ft_instance_t instance,
                               of_meta_match_t *query,
                               ft_entry_t **entry_ptr);
-
-/**
- * Query the flow table and return all matches
- * @param ft Handle for a flow table instance
- * @param query The meta-match data for the query
- * @returns A list with pointers to ft_entry_t
- *
- * @fixme Currently we don't/can't check for failed alloc in biglist.
- */
-
-biglist_t *ft_query(ft_instance_t instance,
-                    of_meta_match_t *query);
 
 /**
  * Look up a flow by ID
