@@ -1408,6 +1408,8 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     if (of_aggregate_stats_request_match_get(obj, &(query.match)) < 0) {
+        LOG_ERROR("Failed to get aggregate stats match.");
+        of_object_delete(_obj);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
