@@ -658,22 +658,15 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 static indigo_error_t
 ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 {
-    of_flow_add_t *dup;
     indigo_error_t err;
 
     INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
 
     entry->id = id;
-    dup = (of_flow_add_t *)of_object_dup(flow_add);
-    if (dup == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
 
     entry->state = FT_FLOW_STATE_NEW;
     entry->queued_reqs = NULL;
-    entry->flow_add = dup;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
-        of_object_delete(dup);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -709,10 +702,6 @@ ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = NULL;
-    }
-    if (entry->flow_add != NULL) {
-        of_flow_add_delete(entry->flow_add);
-        entry->flow_add = NULL;
     }
 
     biglist_free(entry->queued_reqs);
