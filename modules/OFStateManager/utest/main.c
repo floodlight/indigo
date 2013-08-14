@@ -384,8 +384,8 @@ check_bucket_counts(ft_instance_t ft, int expected)
     TEST_ASSERT(count == expected);
 
     count = 0;
-    for (idx = 0; idx < ft->config.match_bucket_count; idx++) {
-        count += list_length(&ft->match_buckets[idx]);
+    for (idx = 0; idx < ft->config.strict_match_bucket_count; idx++) {
+        count += list_length(&ft->strict_match_buckets[idx]);
     }
     TEST_ASSERT(count == expected);
 
@@ -468,7 +468,7 @@ test_ft_hash(void)
     ft_instance_t ft;
     ft_config_t config = {
         16, /* Max entries */
-        1024, /* match buckets */
+        1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
     of_flow_add_t *flow_add;
@@ -479,9 +479,6 @@ test_ft_hash(void)
     uint16_t orig_eth_type;
     int idx;
     ft_entry_t *lookup_entry;
-    int bucket_idx;
-    list_links_t *cur, *next;
-    int count;
 
     /* Test edge cases for create/destroy */
     ft_destroy(NULL);
@@ -655,15 +652,6 @@ test_ft_hash(void)
 
         TEST_INDIGO_OK(ft_strict_match(ft, &query, &entry));
         TEST_ASSERT(entry->id == TEST_KEY(idx));
-
-        /* Also do a match iteration */
-        count = 0;
-        bucket_idx = ft_match_to_bucket_index(ft, &(query.match));
-        FT_MATCH_ITER(ft, &(query.match), bucket_idx, entry, cur, next) {
-            (void)entry;
-            count += 1;
-        }
-        TEST_ASSERT(count >= 1);
     }
 
     TEST_OK(depopulate_table(ft));
@@ -701,7 +689,7 @@ test_ft_iter_task(void)
     ft_instance_t ft;
     ft_config_t config = {
         16, /* Max entries */
-        1024, /* match buckets */
+        1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
     of_flow_add_t *flow_add1, *flow_add2;
