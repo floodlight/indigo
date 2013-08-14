@@ -453,6 +453,22 @@ count_matching(ft_instance_t ft, of_meta_match_t *query)
 }
 
 static int
+first_match(ft_instance_t ft, of_meta_match_t *query, ft_entry_t **result)
+{
+    ft_entry_t *entry;
+    list_links_t *cur, *next;
+
+    FT_ITER(ft, entry, cur, next) {
+        if (ft_entry_meta_match(query, entry)) {
+            *result = entry;
+            return INDIGO_ERROR_NONE;
+        }
+    }
+
+    return INDIGO_ERROR_NOT_FOUND;
+}
+
+static int
 test_ft_hash(void)
 {
     ft_instance_t ft;
@@ -534,9 +550,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_INDIGO_OK(ft_first_match(ft, &query, &lookup_entry));
+    TEST_ASSERT(count_matching(ft, &query) == 1);
+    TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
     /* Test success on strict match */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -544,9 +560,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_INDIGO_OK(ft_first_match(ft, &query, &lookup_entry));
+    TEST_ASSERT(count_matching(ft, &query) == 1);
+    TEST_INDIGO_OK(ft_strict_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
     /* Test fail lookup for port, strict */
     query.out_port                      = 1;
@@ -554,9 +570,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(count_matching(ft, &query) == 0);
+    TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -564,9 +580,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type + 1;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(count_matching(ft, &query) == 0);
+    TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for non-strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -574,9 +590,7 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type + 1;
     query.match.masks.eth_type          = 0xffff;
 
-    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
-                INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
+    TEST_ASSERT(count_matching(ft, &query) == 0);
 
     /* Test fail lookup for strict mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -584,9 +598,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0;
 
-    TEST_ASSERT(ft_first_match(ft, &query, &lookup_entry) ==
+    TEST_ASSERT(count_matching(ft, &query) == 0);
+    TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
                 INDIGO_ERROR_NOT_FOUND);
-    TEST_ASSERT(ft_first_match(ft, &query, NULL) == INDIGO_ERROR_NOT_FOUND);
 
     /* Test success for non-strict with varying mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
@@ -594,8 +608,9 @@ test_ft_hash(void)
     query.match.fields.eth_type         = orig_eth_type;
     query.match.masks.eth_type          = 0;
 
+    TEST_ASSERT(count_matching(ft, &query) == 1);
+    TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
-    TEST_INDIGO_OK(ft_first_match(ft, &query, NULL));
 
     ft_delete_id(ft, TEST_ENT_ID);
 
@@ -645,7 +660,7 @@ test_ft_hash(void)
 
         TEST_ASSERT(count_matching(ft, &query) == 1);
 
-        TEST_INDIGO_OK(ft_first_match(ft, &query, &entry));
+        TEST_INDIGO_OK(ft_strict_match(ft, &query, &entry));
         TEST_ASSERT(entry->id == TEST_KEY(idx));
 
         /* Also do a match iteration */

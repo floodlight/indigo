@@ -318,18 +318,16 @@ indigo_error_t ft_delete_id(ft_instance_t ft,
                             indigo_flow_id_t id);
 
 /**
- * Query the flow table and return the first match if found
+ * Query the flow table (strict match) and return the first match if found
  * @param ft Handle for a flow table instance
  * @param query The meta-match data for the query
  * @param entry_ptr (out) Pointer to where to store the result if found
  * @returns INDIGO_ERROR_NONE if found; otherwise INDIGO_ERROR_NOT_FOUND
- *
- * entry_ptr may be NULL; Normally this is called with priority checked.
  */
 
-indigo_error_t ft_first_match(ft_instance_t instance,
-                              of_meta_match_t *query,
-                              ft_entry_t **entry_ptr);
+indigo_error_t ft_strict_match(ft_instance_t instance,
+                               of_meta_match_t *query,
+                               ft_entry_t **entry_ptr);
 
 /**
  * Look up a flow by ID
