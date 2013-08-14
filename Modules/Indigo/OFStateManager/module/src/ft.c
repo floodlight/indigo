@@ -54,7 +54,7 @@ ft_strict_match_to_bucket_index(ft_instance_t ft,
     return h % ft->config.strict_match_bucket_count;
 }
 
-int
+static int
 ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
 {
     return (murmur_hash(flow_id, sizeof(*flow_id), FT_HASH_SEED) %
@@ -280,17 +280,18 @@ ft_strict_match(ft_instance_t instance,
 ft_entry_t *
 ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {
-    int idx;
-    ft_entry_t *entry = NULL, *iter_entry;
-    list_links_t *cur, *next;
+    int bucket_idx = ft_flow_id_to_bucket_index(ft, &id);
+    list_head_t *bucket = &ft->flow_id_buckets[bucket_idx];
+    list_links_t *cur;
 
-    idx = ft_flow_id_to_bucket_index(ft, &id);
-    FT_FLOW_ID_ITER(ft, id, idx, iter_entry, cur, next) {
-        /* Found a match, break */
-        entry = iter_entry;
-        break;
+    LIST_FOREACH(bucket, cur) {
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, flow_id);
+        if (!FT_FLOW_STATE_IS_DELETED(entry->state) && entry->id == id) {
+            return entry;
+        }
     }
-    return entry;
+
+    return NULL;
 }
 
 int

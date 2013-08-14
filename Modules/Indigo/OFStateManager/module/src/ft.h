@@ -167,37 +167,6 @@ typedef struct ft_iterator_s {
              _next = _cur->next, _cur != &((_ft)->all_list.links);      \
              _cur = _next, _entry = FT_ENTRY_CONTAINER((_cur), table))
 
-/**
- * Iterate across flows of a given flow ID
- *
- * @param _ft The instance of the flow table being iterated
- * @param flow_id The flow ID to match
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the flow_id object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * This is included for completeness and convenience.  In general,
- * there should be at most one match in the table.  Note that entry
- * SHOULD NOT BE REFERENCED OUTSIDE THE LOOP.
- */
-
-#define FT_FLOW_ID_ITER(_ft, _id, _idx, _entry, _cur, _next)            \
-    if (!list_empty(&(_ft)->flow_id_buckets[_idx]))                     \
-        for ((_cur) = (_ft)->flow_id_buckets[_idx].links.next,          \
-                 _entry = FT_ENTRY_CONTAINER(_cur, flow_id);                \
-             _next = (_cur)->next,                                      \
-                 _cur != &((_ft)->flow_id_buckets[_idx].links);         \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
-            if (_id == (_entry)->id)
-
 /*
  * Create a flow table instance
  *
@@ -318,13 +287,6 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes);
 void
 ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
                       indigo_fi_flow_removed_t reason);
-
-/**
- * Map a flow id to a hash bucket
- */
-
-int
-ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id);
 
 /*
  * Spawn a task that iterates over the flowtable
