@@ -43,11 +43,15 @@ static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
  * hash calculations.  Multiplying by a prime is a good option
  */
 
-int
-ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match)
+static int
+ft_strict_match_to_bucket_index(ft_instance_t ft,
+                                of_match_t *match,
+                                uint16_t priority)
 {
-    return (murmur_hash(match, sizeof(*match), FT_HASH_SEED) %
-            ft->config.match_bucket_count);
+    uint32_t h = FT_HASH_SEED;
+    h = murmur_hash(match, sizeof(*match), h);
+    h = murmur_hash(&priority, sizeof(priority), h);
+    return h % ft->config.strict_match_bucket_count;
 }
 
 int
@@ -97,16 +101,16 @@ ft_create(ft_config_t *config)
     }
 
     /* Allocate and init buckets for each search type */
-    bytes = sizeof(list_head_t) * config->match_bucket_count;
-    ft->match_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->match_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, match bucket alloc failed");
+    bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
+    ft->strict_match_buckets = INDIGO_MEM_ALLOC(bytes);
+    if (ft->strict_match_buckets == NULL) {
+        LOG_ERROR("ERROR: Flow table, strict_match bucket alloc failed");
         ft_destroy(ft);
         return NULL;
     }
-    INDIGO_MEM_SET(ft->match_buckets, 0, bytes);
-    for (idx = 0; idx < config->match_bucket_count; idx++) {
-        list_init(&ft->match_buckets[idx]);
+    INDIGO_MEM_SET(ft->strict_match_buckets, 0, bytes);
+    for (idx = 0; idx < config->strict_match_bucket_count; idx++) {
+        list_init(&ft->strict_match_buckets[idx]);
     }
 
     bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
@@ -159,10 +163,10 @@ ft_destroy(ft_instance_t ft)
         INDIGO_MEM_FREE(ft->flow_entries);
         ft->flow_entries = NULL;
     }
-    if (ft->match_buckets != NULL) {
-        CHECK_BUCKETS(match);
-        INDIGO_MEM_FREE(ft->match_buckets);
-        ft->match_buckets = NULL;
+    if (ft->strict_match_buckets != NULL) {
+        CHECK_BUCKETS(strict_match);
+        INDIGO_MEM_FREE(ft->strict_match_buckets);
+        ft->strict_match_buckets = NULL;
     }
     if (ft->flow_id_buckets != NULL) {
         CHECK_BUCKETS(flow_id);
@@ -253,14 +257,16 @@ ft_strict_match(ft_instance_t instance,
                ft_entry_t **entry_ptr)
 {
     int bucket_idx;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
+    list_links_t *cur;
 
     INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
 
-    bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
-    FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                    cur, next) {
+    bucket_idx = ft_strict_match_to_bucket_index(instance, &query->match,
+                                                 query->priority);
+    list_head_t *bucket = &instance->strict_match_buckets[bucket_idx];
+
+    LIST_FOREACH(bucket, cur) {
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, strict_match);
         if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
                 ft_entry_meta_match(query, entry)) {
             *entry_ptr = entry;
@@ -552,9 +558,9 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->match_buckets) { /* Strict match hash */
-        idx = ft_match_to_bucket_index(ft, &entry->match);
-        list_push(&ft->match_buckets[idx], &entry->match_links);
+    if (ft->strict_match_buckets) { /* Strict match hash */
+        idx = ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority);
+        list_push(&ft->strict_match_buckets[idx], &entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
         idx = ft_flow_id_to_bucket_index(ft, &entry->id);
@@ -587,10 +593,10 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->match_buckets) { /* Strict match hash */
-        INDIGO_ASSERT(!list_empty(&ft->match_buckets[ft_match_to_bucket_index(ft,
-            &entry->match)]));
-        list_remove(&entry->match_links);
+    if (ft->strict_match_buckets) { /* Strict match hash */
+        INDIGO_ASSERT(!list_empty(&ft->strict_match_buckets[
+            ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority)]));
+        list_remove(&entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
         INDIGO_ASSERT(!list_empty(&ft->flow_id_buckets[ft_flow_id_to_bucket_index(ft,

@@ -74,13 +74,13 @@ typedef ft_public_t *ft_instance_t;
 /**
  * Flow table configuration structure
  * @param max_entries Maximum number of entries to support
- * @param match_bucket_count How many buckets for match hash table
+ * @param strict_match_bucket_count How many buckets for strict_match hash table
  * @param flow_id_bucket_count How many buckets for flow_id hash table
  */
 
 typedef struct ft_config_s {
     int max_entries;
-    int match_bucket_count;
+    int strict_match_bucket_count;
     int flow_id_bucket_count;
 } ft_config_t;
 
@@ -128,7 +128,7 @@ struct ft_public_s {
     list_head_t free_list;         /* List of unused entries */
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *match_buckets;    /* Array of strict match based buckets */
+    list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
 };
 
@@ -166,38 +166,6 @@ typedef struct ft_iterator_s {
                  _entry = FT_ENTRY_CONTAINER(_cur, table);              \
              _next = _cur->next, _cur != &((_ft)->all_list.links);      \
              _cur = _next, _entry = FT_ENTRY_CONTAINER((_cur), table))
-
-/**
- * Iterate across flows with a given match
- *
- * @param _ft The instance of the flow table being iterated
- * @param _match The match of the entries being sought strictly
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the match object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * @fixme of_match_eq may not work on non-canonicalized flows
- *
- * @note Note that this does not check that the priority of the
- * entry matches any particular priority.
- */
-
-#define FT_MATCH_ITER(_ft, _match, _idx, _entry, _cur, _next)           \
-    if (!list_empty(&(_ft)->match_buckets[_idx]))                       \
-        for ((_cur) = (_ft)->match_buckets[_idx].links.next,            \
-                 _entry = FT_ENTRY_CONTAINER(_cur, match);              \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->match_buckets[_idx].links);           \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, match))    \
-            if (of_match_eq((_match), &((_entry)->match)))
 
 /**
  * Iterate across flows of a given flow ID
@@ -350,13 +318,6 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes);
 void
 ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
                       indigo_fi_flow_removed_t reason);
-
-/**
- * Map a match structure to a hash bucket
- */
-
-int
-ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match);
 
 /**
  * Map a flow id to a hash bucket
