@@ -398,6 +398,44 @@ check_bucket_counts(ft_instance_t ft, int expected)
     return 0;
 }
 
+/*
+ * Track messages in flight like OFConnectionManager does, for barriers
+ */
+static int outstanding_op_cnt;
+
+static void
+message_deleted(of_object_t *obj)
+{
+    assert(outstanding_op_cnt > 0);
+    outstanding_op_cnt--;
+}
+
+static int
+handle_message(of_object_t *obj)
+{
+    assert(outstanding_op_cnt >= 0);
+    outstanding_op_cnt++;
+    obj->track_info.delete_cb = message_deleted;
+    obj->track_info.delete_cookie = NULL;
+    return indigo_core_receive_controller_message(0, obj);
+}
+
+static int
+do_barrier(void)
+{
+    int count = 0;
+    assert(outstanding_op_cnt >= 0);
+    while (outstanding_op_cnt > 0) {
+        LOG_VERBOSE("Waiting for barrier (outstanding_op_cnt %d)", outstanding_op_cnt);
+        ind_soc_select_and_run(0);
+        count++;
+    }
+    if (count > 0) {
+        LOG_VERBOSE("Ran %d event loop iterations while waiting for barrier", count);
+    }
+    return 0;
+}
+
 static int
 test_ft_hash(void)
 {
@@ -814,10 +852,8 @@ delete_all_entries(ft_instance_t ft)
     TEST_ASSERT(flow_del != NULL);
     of_flow_delete_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
     TEST_OK(of_flow_delete_match_set(flow_del, &match));
-    TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_del));
-    while (ft->status.current_count > 0) {
-        ind_soc_select_and_run(0);
-    }
+    TEST_INDIGO_OK(handle_message(flow_del));
+    TEST_INDIGO_OK(do_barrier());
 
     TEST_OK(depopulate_table(ft));
 
@@ -838,8 +874,8 @@ test_simple_add_del(void)
         TEST_ASSERT(flow_add != NULL);
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_add));
-        /* Technically this is an async call and requires a barrier */
+        TEST_INDIGO_OK(handle_message(flow_add));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
 
@@ -868,8 +904,8 @@ test_exact_add_del(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_add));
-        /* Technically this is an async call and requires a barrier */
+        TEST_INDIGO_OK(handle_message(flow_add));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
 
@@ -883,7 +919,8 @@ test_exact_add_del(void)
         of_flow_delete_strict_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
         of_flow_delete_strict_priority_set(flow_del, prio);
         TEST_OK(of_flow_delete_strict_match_set(flow_del, &match));
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_del));
+        TEST_INDIGO_OK(handle_message(flow_del));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT - (idx + 1));
         of_flow_add_delete(flow_add_keep[idx]);
     }
@@ -911,8 +948,8 @@ test_modify(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_add));
-        /* Technically this is an async call and requires a barrier */
+        TEST_INDIGO_OK(handle_message(flow_add));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
 
@@ -926,7 +963,8 @@ test_modify(void)
         of_flow_modify_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_match_set(flow_mod, &match));
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_mod));
+        TEST_INDIGO_OK(handle_message(flow_mod));
+        TEST_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);
     }
@@ -957,8 +995,8 @@ test_modify_strict(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_add));
-        /* Technically this is an async call and requires a barrier */
+        TEST_INDIGO_OK(handle_message(flow_add));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
 
@@ -972,7 +1010,8 @@ test_modify_strict(void)
         of_flow_modify_strict_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_strict_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_strict_match_set(flow_mod, &match));
-        TEST_INDIGO_OK(indigo_core_receive_controller_message(0, flow_mod));
+        TEST_INDIGO_OK(handle_message(flow_mod));
+        TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);
     }
