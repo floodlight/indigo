@@ -550,19 +550,19 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
 static int
 overlap_found(of_flow_modify_t *obj)
 {
+    ft_entry_t *entry;
+    list_links_t *cur, *next;
     of_meta_match_t query;
-    indigo_error_t rv;
 
     _TRY(flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1));
-    rv = ft_first_match(ind_core_ft, &query, NULL);
 
-    if (rv == INDIGO_ERROR_NONE) {
-        return 1;
-    } else if (rv == INDIGO_ERROR_NOT_FOUND) {
-        return 0;
+    FT_ITER(ind_core_ft, entry, cur, next) {
+        if (ft_entry_meta_match(&query, entry)) {
+            return 1;
+        }
     }
 
-    return rv;
+    return 0;
 }
 
 static indigo_flow_id_t
@@ -644,7 +644,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     /* Delete existing flow if any */
-    if (ft_first_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+    if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
     }
 
@@ -921,7 +921,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    rv = ft_first_match(ind_core_ft, &query, &entry);
+    rv = ft_strict_match(ind_core_ft, &query, &entry);
     if (rv == INDIGO_ERROR_NOT_FOUND) {
         LOG_TRACE("No entries to modify strict, treat as add: %p", obj);
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
@@ -1078,7 +1078,7 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return rv;
     }
 
-    if (ft_first_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+    if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
     }
 

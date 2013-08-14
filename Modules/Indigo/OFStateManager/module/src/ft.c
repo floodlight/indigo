@@ -272,7 +272,7 @@ ft_delete_id(ft_instance_t ft,
 }
 
 indigo_error_t
-ft_first_match(ft_instance_t instance,
+ft_strict_match(ft_instance_t instance,
                of_meta_match_t *query,
                ft_entry_t **entry_ptr)
 {
@@ -280,38 +280,15 @@ ft_first_match(ft_instance_t instance,
     ft_entry_t *entry;
     list_links_t *cur, *next;
 
-    if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
-        }
-    } else if (query->check_priority) { /* Iterate thru prio hash list */
-        bucket_idx = ft_prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
-        }
-    } else { /* Iterate thru whole list */
-        FT_ITER(instance, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
+    INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
+
+    bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
+    FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
+                    cur, next) {
+        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
+                ft_entry_meta_match(query, entry)) {
+            *entry_ptr = entry;
+            return INDIGO_ERROR_NONE;
         }
     }
 
