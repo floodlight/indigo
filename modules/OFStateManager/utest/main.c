@@ -378,12 +378,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
 
     /* Check the buckets */
     count = 0;
-    for (idx = 0; idx < ft->config.prio_bucket_count; idx++) {
-        count += list_length(&ft->prio_buckets[idx]);
-    }
-    TEST_ASSERT(count == expected);
-
-    count = 0;
     for (idx = 0; idx < ft->config.flow_id_bucket_count; idx++) {
         count += list_length(&ft->flow_id_buckets[idx]);
     }
@@ -474,7 +468,6 @@ test_ft_hash(void)
     ft_instance_t ft;
     ft_config_t config = {
         16, /* Max entries */
-        1024, /* prio buckets */
         1024, /* match buckets */
         1024, /* flow_id buckets */
     };
@@ -708,7 +701,6 @@ test_ft_iter_task(void)
     ft_instance_t ft;
     ft_config_t config = {
         16, /* Max entries */
-        1024, /* prio buckets */
         1024, /* match buckets */
         1024, /* flow_id buckets */
     };

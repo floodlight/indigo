@@ -44,13 +44,6 @@ static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
  */
 
 int
-ft_prio_to_bucket_index(ft_instance_t ft, uint16_t priority)
-{
-    return (murmur_hash(&priority, sizeof(priority), FT_HASH_SEED) %
-            ft->config.prio_bucket_count);
-}
-
-int
 ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match)
 {
     return (murmur_hash(match, sizeof(*match), FT_HASH_SEED) %
@@ -104,18 +97,6 @@ ft_create(ft_config_t *config)
     }
 
     /* Allocate and init buckets for each search type */
-    bytes = sizeof(list_head_t) * config->prio_bucket_count;
-    ft->prio_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->prio_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, prio bucket alloc failed");
-        ft_destroy(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->prio_buckets, 0, bytes);
-    for (idx = 0; idx < config->prio_bucket_count; idx++) {
-        list_init(&ft->prio_buckets[idx]);
-    }
-
     bytes = sizeof(list_head_t) * config->match_bucket_count;
     ft->match_buckets = INDIGO_MEM_ALLOC(bytes);
     if (ft->match_buckets == NULL) {
@@ -177,11 +158,6 @@ ft_destroy(ft_instance_t ft)
     if (ft->flow_entries != NULL) {
         INDIGO_MEM_FREE(ft->flow_entries);
         ft->flow_entries = NULL;
-    }
-    if (ft->prio_buckets != NULL) {
-        CHECK_BUCKETS(prio);
-        INDIGO_MEM_FREE(ft->prio_buckets);
-        ft->prio_buckets = NULL;
     }
     if (ft->match_buckets != NULL) {
         CHECK_BUCKETS(match);
@@ -576,10 +552,6 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        idx = ft_prio_to_bucket_index(ft, entry->priority);
-        list_push(&ft->prio_buckets[idx], &entry->prio_links);
-    }
     if (ft->match_buckets) { /* Strict match hash */
         idx = ft_match_to_bucket_index(ft, &entry->match);
         list_push(&ft->match_buckets[idx], &entry->match_links);
@@ -615,11 +587,6 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        INDIGO_ASSERT(!list_empty(&ft->prio_buckets[ft_prio_to_bucket_index(ft,
-            entry->priority)]));
-        list_remove(&entry->prio_links);
-    }
     if (ft->match_buckets) { /* Strict match hash */
         INDIGO_ASSERT(!list_empty(&ft->match_buckets[ft_match_to_bucket_index(ft,
             &entry->match)]));

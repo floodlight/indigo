@@ -448,7 +448,6 @@ ind_core_init(ind_core_config_t *config)
         config->max_flowtable_entries = 16384;
     }
     ft_config.max_entries = config->max_flowtable_entries;
-    ft_config.prio_bucket_count = config->max_flowtable_entries;
     ft_config.match_bucket_count = config->max_flowtable_entries;
     ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
