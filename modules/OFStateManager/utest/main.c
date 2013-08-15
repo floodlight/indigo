@@ -281,7 +281,6 @@ static int
 check_table_entry_states(ft_instance_t ft)
 {
     int counted = 0;
-    int valid_ids = 0;
     int pending_del = 0;
     ft_entry_t *entry;
     list_links_t *cur, *next;
@@ -291,13 +290,9 @@ check_table_entry_states(ft_instance_t ft)
         if (entry->state >= FT_FLOW_STATE_DELETE_MARKED) {
             pending_del += 1;
         }
-        if (entry->id != INDIGO_FLOW_ID_INVALID) {
-            valid_ids += 1;
-        }
     }
 
     TEST_ASSERT(counted == ft->status.current_count);
-    TEST_ASSERT(valid_ids == counted);
     TEST_ASSERT(pending_del == ft->status.pending_deletes);
 
     return 0;
