@@ -780,6 +780,67 @@ indigo_core_flow_create_callback(indigo_error_t result,
 
 /****************************************************************/
 
+/* State for non-strict flow-modify iteration */
+struct flow_modify_state {
+    of_flow_modify_t *request;
+    indigo_cxn_id_t cxn_id;
+    int num_matched;
+};
+
+/* Flowtable iterator for ind_core_flow_modify_handler */
+static void
+modify_iter_cb(void *cookie, ft_entry_t *entry)
+{
+    struct flow_modify_state *state = cookie;
+    of_flow_modify_t *dup;
+    ptr_cxn_wrapper_t *ptr_cxn;
+
+    if (entry != NULL) {
+        state->num_matched++;
+
+        if ((dup = of_object_dup(state->request)) == NULL) {
+            LOG_ERROR("Could not allocate duplicate flow mod obj");
+            return;
+        }
+
+        if ((ptr_cxn = setup_ptr_cxn(dup, 0, state->cxn_id, entry)) == 0) {
+            LOG_ERROR("setup_ptr_cxn() failed");
+            of_object_delete(dup);
+            return;
+        }
+
+        /* Indicate the dup object is outstanding for the cxn instance */
+        if (ind_cxn_message_track_setup(state->cxn_id, dup) < 0) {
+            LOG_ERROR("Could not set up flow-mod msg tracking for id %d",
+                      state->cxn_id);
+            of_object_delete(dup);
+            INDIGO_MEM_FREE(ptr_cxn);
+            return;
+        }
+
+        if (FT_FLOW_STATE_IS_STABLE(entry->state)) {
+            /* Flow is stable => Issue modify to forwarding */
+            entry->state = FT_FLOW_STATE_MODIFYING;
+
+            indigo_fwd_flow_modify(entry->id, dup,
+                                   INDIGO_POINTER_TO_COOKIE(ptr_cxn));
+        } else {
+            /* Outstanding req to forwarding for flow => Queue request */
+            req_enqueue(entry, ptr_cxn);
+        }
+    } else {
+        if (state->num_matched == 0) {
+            LOG_TRACE("No entries to modify, treat as add");
+            /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
+            ind_core_flow_add_handler(state->request, state->cxn_id);
+        } else {
+            LOG_TRACE("Finished flow modify task");
+            of_object_delete(state->request);
+        }
+        INDIGO_MEM_FREE(state);
+    }
+}
+
 /**
  * Handle a flow_modify message
  * @param cxn_id Connection handler for the owning connection
@@ -797,90 +858,37 @@ indigo_core_flow_create_callback(indigo_error_t result,
 indigo_error_t
 ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    indigo_error_t result = INDIGO_ERROR_NONE;
     of_flow_modify_t *obj;
-    biglist_t *list = 0, *ble;
-    int count;
     int rv;
     of_meta_match_t query;
-    of_flow_modify_t *dup = 0;
-    ptr_cxn_wrapper_t *ptr_cxn = 0;
-    ft_entry_t        *entry;
 
     obj = (of_flow_modify_t *)_obj;
     LOG_TRACE("Handling of_flow_modify message: %p.", obj);
 
-    /* Form the query and call mark entries */
+    struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    if (state == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+    state->request = obj;
+    state->num_matched = 0;
+    state->cxn_id = cxn_id;
+
     rv = flow_mod_setup_query(obj, &query, OF_MATCH_NON_STRICT, 1);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(_obj);
+        INDIGO_MEM_FREE(state);
         return rv;
     }
-    list = ft_query(ind_core_ft, &query);
-    if ((count = biglist_length(list)) == 0) {
-        LOG_TRACE("No entries to modify, treat as add: %p", obj);
-        biglist_free(list);
-        /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
-        return ind_core_flow_add_handler(_obj, cxn_id);
+
+    rv = ft_spawn_iter_task(ind_core_ft, &query, modify_iter_cb, state,
+                            IND_SOC_DEFAULT_PRIORITY);
+    if (rv != INDIGO_ERROR_NONE) {
+        of_object_delete(_obj);
+        INDIGO_MEM_FREE(state);
+        return rv;
     }
 
-    LOG_TRACE("Found %d entries to be modified", count);
-
-    for (ble = list; ble; ble = ble->next) {
-        LOG_TRACE("Flow mod entry " INDIGO_COOKIE_PRINTF_FORMAT,
-                  FT_LIST_TO_FLOW_ID(ble));
-
-        entry = FT_LIST_TO_ENTRY(ble);
-
-        /* Flow is being deleted => Ignore modify */
-        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            LOG_TRACE("Flow being deleted -- skipping modify");
-            continue;
-        }
-
-        if ((dup = of_object_dup(_obj)) == NULL) {
-            LOG_ERROR("Could not allocate duplicate flow mod obj");
-            result = INDIGO_ERROR_RESOURCE;
-            goto done;
-        }
-
-        if ((ptr_cxn = setup_ptr_cxn(dup, 0, cxn_id, entry)) == 0) {
-            LOG_ERROR("setup_ptr_cxn() failed");
-            result = INDIGO_ERROR_RESOURCE;
-            goto done;
-        }
-
-        /* Indicate the dup object is outstanding for the cxn instance */
-        if (ind_cxn_message_track_setup(cxn_id, dup) < 0) {
-            LOG_ERROR("Could not set up flow-mod msg tracking for id %d\n",
-                      cxn_id);
-        }
-        if (FT_FLOW_STATE_IS_STABLE(entry->state)) {
-            /* Flow is stable => Issue modify to forwarding */
-            entry->state = FT_FLOW_STATE_MODIFYING;
-
-            indigo_fwd_flow_modify(entry->id, dup,
-                                   INDIGO_POINTER_TO_COOKIE(ptr_cxn));
-        } else {
-            /* Outstanding req to forwarding for flow => Queue request */
-            req_enqueue(entry, ptr_cxn);
-        }
-
-        ptr_cxn = 0;
-        dup     = 0;
-    }
-
- done:
-    if (result != INDIGO_ERROR_NONE) {
-        if (ptr_cxn)  INDIGO_MEM_FREE(ptr_cxn);
-        if (dup)      of_object_delete(dup);
-    }
-
-    if (list)  biglist_free(list);
-
-    of_object_delete(_obj);
-
-    return (result);
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -1243,7 +1251,10 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
     }
 }
 
-/* Flowtable iterator for ind_core_flow_stats_request_handler */
+/*
+ * Flowtable iterator for ind_core_flow_stats_request_handler
+ * and ind_core_aggregate_stats_request_handler.
+ */
 static void
 stats_iter_cb(void *cookie, ft_entry_t *entry)
 {
@@ -1397,8 +1408,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     of_meta_match_t query;
     struct ind_core_flow_stats_state *state;
     struct ind_core_aggregate_stats_priv *priv;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
+    indigo_error_t rv;
 
     obj = (of_aggregate_stats_request_t *)_obj;
     LOG_TRACE("Handling of_aggregate_stats_request message: %p.", obj);
@@ -1406,6 +1416,8 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     if (of_aggregate_stats_request_match_get(obj, &(query.match)) < 0) {
+        LOG_ERROR("Failed to get aggregate stats match.");
+        of_object_delete(_obj);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
@@ -1433,23 +1445,16 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     priv->bytes = 0;
     priv->flows = 0;
 
-    /*
-     * Iterate over flow table; query stats for each entry.
-     *
-     * indigo_core_flow_stats_get_callback will generate the reply.
-     */
-    FT_ITER(ind_core_ft, entry, cur, next) {
-       if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-              ft_entry_meta_match(&query, entry)) {
-           state->expected_count++;
-           indigo_fwd_flow_stats_get(entry->id,
-                                     INDIGO_POINTER_TO_COOKIE(state));
-        }
+    rv = ft_spawn_iter_task(ind_core_ft, &query, stats_iter_cb,
+                            state, IND_SOC_DEFAULT_PRIORITY);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to start aggregate stats iter.");
+        of_object_delete(_obj);
+        INDIGO_MEM_FREE(state);
+        return rv;
     }
 
-    indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL,
-                                        INDIGO_POINTER_TO_COOKIE(state));
-
+    /* Ownership of _obj is passed to the iterator for barrier tracking */
     return INDIGO_ERROR_NONE;
 }
 
