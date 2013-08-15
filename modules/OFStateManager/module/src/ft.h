@@ -79,7 +79,6 @@ typedef ft_public_t *ft_instance_t;
  */
 
 typedef struct ft_config_s {
-    int max_entries;
     int strict_match_bucket_count;
     int flow_id_bucket_count;
 } ft_config_t;
