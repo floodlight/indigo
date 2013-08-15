@@ -29,8 +29,8 @@
 #include "ofstatemanager_log.h"
 #include "ft.h"
 
-static indigo_error_t ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add);
-static void ft_entry_clear(ft_instance_t ft, ft_entry_t *entry);
+static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p);
+static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
@@ -82,23 +82,7 @@ ft_create(ft_config_t *config)
     INDIGO_MEM_SET(ft, 0, sizeof(*ft));
     INDIGO_MEM_COPY(&ft->config,  config, sizeof(ft_config_t));
 
-    list_init(&ft->free_list);
     list_init(&ft->all_list);
-
-    /* Allocate and init the flow entries */
-    bytes = sizeof(ft_entry_t) * config->max_entries;
-    ft->flow_entries = INDIGO_MEM_ALLOC(bytes);
-    if (ft->flow_entries == NULL) {
-        LOG_ERROR("ERROR: Flow table (hash) creation failed");
-        INDIGO_MEM_FREE(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->flow_entries, 0, bytes);
-
-    /* Put the flow entries on the free list */
-    for (idx = 0; idx < config->max_entries; idx++) {
-        list_push(&ft->free_list, &ft->flow_entries[idx].table_links);
-    }
 
     /* Allocate and init buckets for each search type */
     bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
@@ -156,13 +140,9 @@ ft_destroy(ft_instance_t ft)
 
     FT_ITER(ft, entry, cur, next) {
         ft_entry_unlink(ft, entry);
-        ft_entry_clear(ft, entry);
+        ft_entry_destroy(ft, entry);
     }
 
-    if (ft->flow_entries != NULL) {
-        INDIGO_MEM_FREE(ft->flow_entries);
-        ft->flow_entries = NULL;
-    }
     if (ft->strict_match_buckets != NULL) {
         CHECK_BUCKETS(strict_match);
         INDIGO_MEM_FREE(ft->strict_match_buckets);
@@ -181,8 +161,7 @@ indigo_error_t
 ft_add(ft_instance_t ft, indigo_flow_id_t id,
        of_flow_add_t *flow_add, ft_entry_t **entry_p)
 {
-    ft_entry_t *entry;
-    list_links_t *links;
+    ft_entry_t *entry = NULL;
     indigo_error_t rv;
 
     LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
@@ -192,14 +171,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
         return INDIGO_ERROR_EXISTS;
     }
 
-    /* Grab an entry from the free list */
-    if ((links = list_pop(&ft->free_list)) == NULL) {
-        ++(ft->status.table_full_errors);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    entry = FT_ENTRY_CONTAINER(links, table);
-
-    if ((rv = ft_entry_setup(entry, id, flow_add)) < 0) {
+    if ((rv = ft_entry_create(id, flow_add, &entry)) < 0) {
         return rv;
     }
 
@@ -225,12 +197,9 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
         return INDIGO_ERROR_UNKNOWN;
     }
 
-    /* Unlink from hash lists; clear entry; put it on the free list */
     ft_entry_unlink(ft, entry);
-    ft_entry_clear(ft, entry);
+    ft_entry_destroy(ft, entry);
 
-    INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
-    list_push(&ft->free_list, &entry->table_links);
     ft->status.current_count -= 1;
     ft->status.deletes += 1;
 
@@ -607,26 +576,32 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 }
 
 /**
- * Initialize the data for a flow entry that is being added
+ * Allocate and initialize a new flowtable entry
  *
- * @param entry Pointer to entry being initialized
  * @param id The flow ID to use
  * @param flow_add Pointer to the flow add object for the entry
+ * @param_p entry Populated with pointer to new flowtable entry on success
  *
  * The list links are not modified by this call.
  */
 static indigo_error_t
-ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
+ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p)
 {
     indigo_error_t err;
+    ft_entry_t *entry;
 
-    INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
+    entry = INDIGO_MEM_ALLOC(sizeof(*entry));
+    if (entry == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+    INDIGO_MEM_SET(entry, 0, sizeof(*entry));
 
     entry->id = id;
 
     entry->state = FT_FLOW_STATE_NEW;
     entry->queued_reqs = NULL;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
+        INDIGO_MEM_FREE(entry);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -637,11 +612,14 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 
     err = ft_entry_set_effects(entry, flow_add);
     if (err != INDIGO_ERROR_NONE) {
+        INDIGO_MEM_FREE(entry);
         return err;
     }
 
     entry->insert_time = INDIGO_CURRENT_TIME;
     entry->last_counter_change = entry->insert_time;
+
+    *entry_p = entry;
 
     return INDIGO_ERROR_NONE;
 }
@@ -657,7 +635,7 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
  * decremented.
  */
 static void
-ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
+ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
 {
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
@@ -665,13 +643,13 @@ ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
     }
 
     biglist_free(entry->queued_reqs);
-    entry->id = INDIGO_FLOW_ID_INVALID;
 
     /* If entry was being deleted, pending deletes gets decremented */
     if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
         ft->status.pending_deletes -= 1;
     }
-    entry->state = FT_FLOW_STATE_FREE;
+
+    INDIGO_MEM_FREE(entry);
 }
 
 /* Populate the output port list and effects */

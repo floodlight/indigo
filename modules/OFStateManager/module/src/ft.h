@@ -123,9 +123,6 @@ struct ft_public_s {
     ft_config_t config;
     ft_status_t status;
 
-    ft_entry_t *flow_entries;      /* All entries */
-
-    list_head_t free_list;         /* List of unused entries */
     list_head_t all_list;          /* Single list of all current entries */
 
     list_head_t *strict_match_buckets;  /* Array of strict match based buckets */

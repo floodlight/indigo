@@ -280,14 +280,13 @@ indigo_error_t indigo_port_desc_stats_get(
 static int
 check_table_entry_states(ft_instance_t ft)
 {
-    int idx;
     int counted = 0;
     int valid_ids = 0;
     int pending_del = 0;
     ft_entry_t *entry;
+    list_links_t *cur, *next;
 
-    for (idx = 0; idx < ft->config.max_entries; idx++) {
-        entry = &ft->flow_entries[idx];
+    FT_ITER(ft, entry, cur, next) {
         if (entry->state != FT_FLOW_STATE_FREE) {
             counted += 1;
             if (entry->state >= FT_FLOW_STATE_DELETE_MARKED) {
