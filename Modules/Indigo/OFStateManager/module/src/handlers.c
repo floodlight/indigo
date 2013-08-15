@@ -39,36 +39,17 @@
 #include "handlers.h"
 #include "ft.h"
 
-typedef struct ptr_cxn_wrapper_s {
-    void *req; /**< Generic request pointer, usually a LOXI object */
-    void *reply; /**< Generic reply pointer, usually a LOXI object */
-    indigo_cxn_id_t cxn_id; /**< The connection ID for the operation */
-    ft_entry_t      *entry;
-    int expected_count; /**< Number of callbacks expected */
-    int received_count; /**< Number of callbacks received so far */
-} ptr_cxn_wrapper_t;
-
 /****************************************************************
  *
  * Utility functions
  *
  ****************************************************************/
 
-/**
- * Wrapper for a callback pair of a generic pointer and a connection id
- * For some operations, multiple callbacks occur.  Bookkeeping variables
- * are included for these, but are not used by all operations.
- */
-
-/**
- * Init function for cookie wrapper
- */
-
-static ptr_cxn_wrapper_t *
+ptr_cxn_wrapper_t *
 setup_ptr_cxn(void *req,
               void *reply,
               indigo_cxn_id_t cxn_id,
-              ft_entry_t *entry
+              void *entry
               )
 {
     ptr_cxn_wrapper_t *ptr_cxn;
