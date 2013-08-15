@@ -68,11 +68,6 @@ ft_create(ft_config_t *config)
     int bytes;
     int idx;
 
-    if (config->max_entries <= 0) {
-        LOG_ERROR("Hash flow table only supports fixed number of buckets");
-        return NULL;
-    }
-
     /* Allocate the flow table itself */
     ft = INDIGO_MEM_ALLOC(sizeof(*ft));
     if (ft == NULL) {

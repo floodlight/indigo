@@ -467,7 +467,6 @@ test_ft_hash(void)
 {
     ft_instance_t ft;
     ft_config_t config = {
-        16, /* Max entries */
         1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
@@ -610,7 +609,6 @@ test_ft_hash(void)
     ft_destroy(ft);
 
     /* Create a new flow table and add TEST_FLOW_COUNT entries. Do some queries */
-    config.max_entries = TEST_FLOW_COUNT;
     ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
     TEST_OK(populate_table(ft, TEST_FLOW_COUNT, &query.match));
@@ -690,7 +688,6 @@ test_ft_iter_task(void)
 {
     ft_instance_t ft;
     ft_config_t config = {
-        16, /* Max entries */
         1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
