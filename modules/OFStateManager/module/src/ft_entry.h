@@ -45,7 +45,6 @@
  *
  * States:
  *
- * FREE => Not in use.
  * NEW => Allocated but not committed; call is being made to fwding
  * CREATED => Flow is stable, successfully added to forwarding, nothing pending
  * MODIFYING => Modify request is pending with forwarding, but entry
@@ -55,7 +54,6 @@
  */
 
 enum ft_flow_state {
-    FT_FLOW_STATE_FREE,
     FT_FLOW_STATE_NEW,
     FT_FLOW_STATE_CREATED,
     FT_FLOW_STATE_MODIFYING,

@@ -287,11 +287,9 @@ check_table_entry_states(ft_instance_t ft)
     list_links_t *cur, *next;
 
     FT_ITER(ft, entry, cur, next) {
-        if (entry->state != FT_FLOW_STATE_FREE) {
-            counted += 1;
-            if (entry->state >= FT_FLOW_STATE_DELETE_MARKED) {
-                pending_del += 1;
-            }
+        counted += 1;
+        if (entry->state >= FT_FLOW_STATE_DELETE_MARKED) {
+            pending_del += 1;
         }
         if (entry->id != INDIGO_FLOW_ID_INVALID) {
             valid_ids += 1;

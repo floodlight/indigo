@@ -410,8 +410,7 @@ ft_iter_task_callback(void *cookie)
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            if (entry->state == FT_FLOW_STATE_FREE ||
-                FT_FLOW_STATE_IS_DELETED(entry->state)) {
+            if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
                 continue;
             }
 
