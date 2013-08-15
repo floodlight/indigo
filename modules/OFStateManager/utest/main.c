@@ -330,6 +330,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
         match->fields.eth_type = TEST_ETH_TYPE(idx);
         TEST_OK(of_flow_add_match_set(flow_add, match));
         TEST_INDIGO_OK(ft_add(ft, TEST_KEY(idx), flow_add, &entry));
+        of_object_delete(flow_add);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
@@ -501,6 +502,7 @@ test_ft_hash(void)
     TEST_ASSERT(check_table_entry_states(ft) == 0);
     entry = ft_lookup(ft, TEST_ENT_ID);
     ft_destroy(ft);
+    of_object_delete(flow_add);
 
     /* Test simple cases for hash table */
     ft = ft_create(&config);
@@ -602,6 +604,7 @@ test_ft_hash(void)
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
 
     ft_delete_id(ft, TEST_ENT_ID);
+    of_object_delete(flow_add);
 
     /* Delete the table */
     ft_destroy(ft);
@@ -721,6 +724,8 @@ test_ft_iter_task(void)
     TEST_ASSERT(ft->status.current_count == 0);
 
     ft_destroy(ft);
+    of_object_delete(flow_add1);
+    of_object_delete(flow_add2);
 
     return TEST_PASS;
 }
@@ -1061,6 +1066,9 @@ aim_main(int argc, char* argv[])
     RUN_TEST(simple_add_del);
     RUN_TEST(modify);
     RUN_TEST(modify_strict);
+
+    TRY(ind_core_enable_set(0));
+    TRY(ind_core_finish());
 
     return global_error;
 }
