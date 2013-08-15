@@ -187,11 +187,6 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
     LOG_TRACE("Delete rsn %d flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               entry->removed_reason, entry->id);
 
-    if (entry->id == INDIGO_FLOW_ID_INVALID) {
-        LOG_ERROR("Deleting invalid flow table entry");
-        return INDIGO_ERROR_UNKNOWN;
-    }
-
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
 

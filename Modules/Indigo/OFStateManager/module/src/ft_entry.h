@@ -29,8 +29,7 @@
 /**
  * Flow state enumeration
  *
- * Indicates the state in the flow table of a flow entry.  These are
- * only valid when the entry's ID is valid (not INDIGO_FLOW_ID_INVALID).
+ * Indicates the state in the flow table of a flow entry.
  *
  * Due to the async nature of flow table modifications, we maintain
  * these states for each flow.  Note that if a flow is deleted while
