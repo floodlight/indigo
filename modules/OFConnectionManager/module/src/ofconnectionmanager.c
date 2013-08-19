@@ -626,6 +626,23 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
     return INDIGO_ERROR_NONE;
 }
 
+/* Return the config of a specific connection */
+indigo_error_t
+indigo_cxn_connection_config_get(
+    indigo_cxn_id_t cxn_id,
+    indigo_cxn_config_params_t *config)
+{
+    if (!CXN_ID_ACTIVE(cxn_id)) {
+        LOG_TRACE("Config get id not found %d", cxn_id);
+        return INDIGO_ERROR_NOT_FOUND;
+    }
+
+    INDIGO_MEM_COPY(config, &connection[cxn_id].config_params, 
+                    sizeof(*config));
+
+    return INDIGO_ERROR_NONE;
+}
+
 /* Return the status of a specific connection */
 indigo_error_t
 indigo_cxn_connection_status_get(

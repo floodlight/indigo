@@ -257,6 +257,17 @@ extern indigo_error_t indigo_cxn_connection_add(
 extern indigo_error_t indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id);
 
 /**
+ * Return the config parameters of a specific connection
+ * @param cxn_id The descriptor of the connection to look up
+ * @param config (out) Pointer to structure to be filled out with
+ *    config parameters
+ */
+
+extern indigo_error_t indigo_cxn_connection_config_get(
+    indigo_cxn_id_t cxn_id,
+    indigo_cxn_config_params_t *config);
+
+/**
  * Return the status of a specific connection
  * @param cxn_id The descriptor of the connection to look up
  * @param status (out) Pointer to structure to be filled out with status
