@@ -453,8 +453,7 @@ req_enqueue(ft_entry_t *entry, ptr_cxn_wrapper_t *ptr_cxn)
 
 /*
  * An operation on an entry has completed.  Check the queue for other
- * pending operations.  Note that the second check is to see if the
- * entry was deleted and process that deletion if so.
+ * pending operations.
  */
 
 static void
@@ -468,28 +467,30 @@ queued_req_service(ft_entry_t *entry)
         return;
     }
 
+    /* Mark entry as stable */
+    if (entry->state != FT_FLOW_STATE_DELETE_MARKED) {
+        entry->state = FT_FLOW_STATE_CREATED;
+    }
+
+    if ((ble = entry->queued_reqs) == 0) { /* No ops pending */
+        return;
+    }
+
+    /* Start next modify/delete operation */
+    ptr_cxn = BIGLIST_CAST(ptr_cxn_wrapper_t *, ble);
+    entry->queued_reqs = biglist_remove(entry->queued_reqs, ptr_cxn);
+
     if (entry->state == FT_FLOW_STATE_DELETE_MARKED) { /* entry deleted */
         LOG_TRACE("Queued req: removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
 
         entry->state = FT_FLOW_STATE_DELETING;
-        indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(entry));
-        return;
+        indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(ptr_cxn));
+    } else {
+        entry->state = FT_FLOW_STATE_MODIFYING;
+        indigo_fwd_flow_modify(entry->id, ptr_cxn->req,
+                               INDIGO_POINTER_TO_COOKIE(ptr_cxn));
     }
-
-    /* Mark entry as stable */
-    entry->state = FT_FLOW_STATE_CREATED;
-    if ((ble = entry->queued_reqs) == 0) { /* No ops pending */
-        return;
-    }
-
-    /* Start next modify operation */
-    ptr_cxn = BIGLIST_CAST(ptr_cxn_wrapper_t *, ble);
-    entry->queued_reqs = biglist_remove(entry->queued_reqs, ptr_cxn);
-    entry->state = FT_FLOW_STATE_MODIFYING;
-
-    indigo_fwd_flow_modify(entry->id, ptr_cxn->req,
-                           INDIGO_POINTER_TO_COOKIE(ptr_cxn));
 }
 
 /****************************************************************/
@@ -626,7 +627,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Delete existing flow if any */
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE,
+                                   _obj, cxn_id);
     }
 
     /* No match found, add as normal */
@@ -988,12 +990,15 @@ indigo_core_flow_modify_callback(indigo_error_t result,
 static void
 delete_iter_cb(void *cookie, ft_entry_t *entry)
 {
-    of_object_t *obj = cookie;
+    struct flow_modify_state *state = cookie;
+
     if (entry != NULL) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE,
+                                   state->request, state->cxn_id);
     } else {
         LOG_TRACE("Finished flow delete task");
-        of_object_delete(obj);
+        of_object_delete(state->request);
+        INDIGO_MEM_FREE(state);
     }
 }
 
@@ -1015,18 +1020,29 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     flow_del = (of_flow_delete_t *)_obj;
     LOG_TRACE("Handling of_flow_delete message: %p.", flow_del);
 
+    struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    if (state == NULL) {
+        of_object_delete(_obj);
+        return INDIGO_ERROR_RESOURCE;
+    }
+    state->request = _obj;
+    state->num_matched = 0;
+    state->cxn_id = cxn_id;
+
     /* Form the query and call mark entries */
     rv = flow_mod_setup_query((of_flow_modify_t *)flow_del, &query,
                               OF_MATCH_NON_STRICT, 0);
     if (rv != INDIGO_ERROR_NONE) {
-        of_object_delete(_obj);
+        of_object_delete(state->request);
+        INDIGO_MEM_FREE(state);
         return rv;
     }
 
-    rv = ft_spawn_iter_task(ind_core_ft, &query, delete_iter_cb, _obj,
+    rv = ft_spawn_iter_task(ind_core_ft, &query, delete_iter_cb, state,
                             IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        of_object_delete(_obj);
+        of_object_delete(state->request);
+        INDIGO_MEM_FREE(state);
         return rv;
     }
 
@@ -1060,10 +1076,13 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE,
+                                   _obj, cxn_id);
     }
 
+    /* ind_core_flow_entry_delete copied _obj for barrier tracking */
     of_object_delete(_obj);
+
     return INDIGO_ERROR_NONE;
 }
 
