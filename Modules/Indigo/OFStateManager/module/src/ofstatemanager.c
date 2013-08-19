@@ -528,16 +528,20 @@ indigo_core_flow_stats_get_callback(indigo_error_t result,
 void
 ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 {
-    /* Mark the flow deleted or pending in OF state mgr table */
+    enum ft_flow_state prev_state = entry->state;
+
+    /* Sets flow state to DELETE_MARKED */
     ft_entry_mark_deleted(ind_core_ft, entry, reason);
 
-    /* If it is not pending, notify forwarding; final cleanup occurs in
+    /* If the flow was stable, notify forwarding; final cleanup occurs in
      * flow deleted callback. */
-    if (entry->state == FT_FLOW_STATE_DELETE_MARKED) {
+    if (FT_FLOW_STATE_IS_STABLE(prev_state)) {
         LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
         entry->state = FT_FLOW_STATE_DELETING;
         indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(entry));
+    } else {
+        /* indigo_fwd_flow_delete will be called by queued_req_service */
     }
 }
 
