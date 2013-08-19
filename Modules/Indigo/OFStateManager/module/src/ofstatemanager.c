@@ -526,9 +526,33 @@ indigo_core_flow_stats_get_callback(indigo_error_t result,
  */
 
 void
-ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
+ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
+                           of_object_t *obj, indigo_cxn_id_t cxn_id)
 {
     enum ft_flow_state prev_state = entry->state;
+    of_object_t *dup = NULL;
+    ptr_cxn_wrapper_t *ptr_cxn;
+
+    if (obj != NULL) {
+        if ((dup = of_object_dup(obj)) == NULL) {
+            LOG_ERROR("Could not allocate duplicate flow mod obj");
+            return;
+        }
+
+        /* Indicate the dup object is outstanding for the cxn instance */
+        if (ind_cxn_message_track_setup(cxn_id, dup) < 0) {
+            LOG_ERROR("Could not set up flow-mod msg tracking for id %d", cxn_id);
+            of_object_delete(dup);
+            return;
+        }
+    }
+
+    if ((ptr_cxn = setup_ptr_cxn(dup, NULL, cxn_id, entry)) == 0) {
+        LOG_ERROR("setup_ptr_cxn() failed");
+        of_object_delete(dup);
+        INDIGO_MEM_FREE(ptr_cxn);
+        return;
+    }
 
     /* Sets flow state to DELETE_MARKED */
     ft_entry_mark_deleted(ind_core_ft, entry, reason);
@@ -539,9 +563,20 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
         LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
         entry->state = FT_FLOW_STATE_DELETING;
-        indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(entry));
+        indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(ptr_cxn));
     } else {
+        /* Clear existing queued modify requests */
+        biglist_t *ble;
+        BIGLIST_FOREACH(ble, entry->queued_reqs) {
+            ptr_cxn_wrapper_t *ptr_cxn = BIGLIST_CAST(ptr_cxn_wrapper_t *, ble);
+            of_object_delete(ptr_cxn->req);
+            INDIGO_MEM_FREE(ptr_cxn);
+        }
+        biglist_free(entry->queued_reqs);
+        entry->queued_reqs = NULL;
+
         /* indigo_fwd_flow_delete will be called by queued_req_service */
+        entry->queued_reqs = biglist_append(entry->queued_reqs, ptr_cxn);
     }
 }
 
@@ -632,13 +667,12 @@ indigo_core_flow_delete_callback(indigo_error_t result,
                                  indigo_fi_flow_stats_t *flow_stats,
                                  indigo_cookie_t cookie)
 {
-    ft_entry_t      *entry;
-
     if (!ind_core_init_done) {
         return;
     }
 
-    entry  = INDIGO_COOKIE_TO_POINTER(cookie);
+    ptr_cxn_wrapper_t *ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
+    ft_entry_t *entry = ptr_cxn->entry;
 
     LOG_TRACE("Flow delete callback, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
@@ -648,6 +682,9 @@ indigo_core_flow_delete_callback(indigo_error_t result,
     }
 
     process_flow_removal(entry, flow_stats);
+
+    of_object_delete(ptr_cxn->req);
+    INDIGO_MEM_FREE(ptr_cxn);
 }
 
 #define CORE_EXPIRES_FLOWS(_cfg) \
@@ -1036,7 +1073,8 @@ flow_expiration_timer_cb(struct ind_core_flow_stats_state *state,
     if ((entry->idle_timeout > 0) && (delta >= entry->idle_timeout)) {
         LOG_TRACE("Marking idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
+                                   NULL, INDIGO_CXN_ID_UNSPECIFIED);
     }
 }
 
@@ -1084,7 +1122,8 @@ flow_expiration_timer(void *cookie)
                               entry->hard_timeout,
                               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                     ind_core_flow_entry_delete(entry,
-                                              INDIGO_FLOW_REMOVED_HARD_TIMEOUT);
+                                              INDIGO_FLOW_REMOVED_HARD_TIMEOUT,
+                                              NULL, INDIGO_CXN_ID_UNSPECIFIED);
                     deleted = 1;
                 }
             }
