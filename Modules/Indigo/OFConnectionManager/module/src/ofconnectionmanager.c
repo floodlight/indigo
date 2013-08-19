@@ -605,9 +605,9 @@ indigo_cxn_connection_add(indigo_cxn_protocol_params_t *protocol_params,
 indigo_error_t
 indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 {
-    if (!CXN_ID_ACTIVE(cxn_id)) {
-        LOG_ERROR("Remove connection id not found %d", cxn_id);
-        return INDIGO_ERROR_NOT_FOUND;
+    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
+        LOG_ERROR("Remove connection id %d invalid or not active", cxn_id);
+        return INDIGO_ERROR_PARAM;
     }
 
     LOG_INFO("Connection remove: %s", cxn_id_ip_string(cxn_id));
@@ -626,15 +626,32 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
     return INDIGO_ERROR_NONE;
 }
 
+/* Return the config of a specific connection */
+indigo_error_t
+indigo_cxn_connection_config_get(
+    indigo_cxn_id_t cxn_id,
+    indigo_cxn_config_params_t *config)
+{
+    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
+        LOG_TRACE("Config_get id %d invalid or not active", cxn_id);
+        return INDIGO_ERROR_PARAM;
+    }
+
+    INDIGO_MEM_COPY(config, &connection[cxn_id].config_params, 
+                    sizeof(*config));
+
+    return INDIGO_ERROR_NONE;
+}
+
 /* Return the status of a specific connection */
 indigo_error_t
 indigo_cxn_connection_status_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_status_t *status)
 {
-    if (!CXN_ID_ACTIVE(cxn_id)) {
-        LOG_TRACE("Status get id not found %d", cxn_id);
-        return INDIGO_ERROR_NOT_FOUND;
+    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
+        LOG_TRACE("Status_get id %d invalid or not active", cxn_id);
+        return INDIGO_ERROR_PARAM;
     }
 
     INDIGO_MEM_COPY(status, &connection[cxn_id].status, sizeof(*status));
