@@ -495,13 +495,11 @@ periodic_keepalive(void *cookie)
         return;
     }
 
-#if OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION == 1
     if (cxn->keepalive.outstanding_echo_cnt > cxn->keepalive.threshold) {
         LOG_INFO(cxn, "Exceeded outstanding echo requests.  Resetting cxn");
         ind_cxn_disconnect(cxn);
         return;
     }
-#endif
 
     if ((echo = of_echo_request_new(cxn->status.negotiated_version)) == NULL) {
         LOG_TRACE(cxn, "Could not allocate echo request obj");
