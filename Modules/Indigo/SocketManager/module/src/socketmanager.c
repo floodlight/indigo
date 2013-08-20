@@ -215,6 +215,7 @@ ind_soc_socket_register_with_priority(int socket_id,
     pfd = &pollfds[num_pollfds++];
     pfd->fd = socket_id;
     pfd->events = POLLIN;
+    pfd->revents = 0;
 
     return INDIGO_ERROR_NONE;
 }
