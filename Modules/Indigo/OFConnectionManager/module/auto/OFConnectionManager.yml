@@ -45,7 +45,9 @@ cdefs: &cdefs
 - OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI:
     doc: "Include generic uCli support."
     default: 0
-
+- OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION:
+    doc: "Optimize echo requests based on controller activity. Otherwise echo requests are sent periodically regardless of other activity."
+    default: 0
 
 definitions:
   cdefs:

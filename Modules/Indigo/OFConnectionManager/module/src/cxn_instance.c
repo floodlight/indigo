@@ -1084,11 +1084,15 @@ process_message(connection_t *cxn)
     if (CXN_HANDSHAKE_COMPLETE(cxn)) {
         /* We have a message from the controller.  Reset keepalive timeout */
         cxn->keepalive.outstanding_echo_cnt = 0;
+
+#if OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION == 1
         if (cxn->keepalive.period_ms > 0) {
             ind_soc_timer_event_register_with_priority(
                 periodic_keepalive, (void *)cxn,
                 cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
+#endif
+
     }
 
     {       /***** Debug info about message *****/

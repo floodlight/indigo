@@ -76,6 +76,11 @@ ofconnectionmanager_config_settings_t ofconnectionmanager_config_settings[] =
 #else
 { OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
+#ifdef OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION
+    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION) },
+#else
+{ OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
     { NULL, NULL }
 };
 #undef __ofconnectionmanager_config_STRINGIFY_VALUE
