@@ -657,6 +657,140 @@ test_ft_hash(void)
     return TEST_PASS;
 }
 
+static int
+add_flow(ft_instance_t ft, int id, ft_entry_t **entry_p)
+{
+    of_flow_add_t *flow_add;
+    ft_entry_t *entry;
+    flow_add = of_flow_add_new(OF_VERSION_1_0);
+    of_flow_add_OF_VERSION_1_0_populate(flow_add, id);
+    of_flow_add_flags_set(flow_add, 0);
+    TEST_INDIGO_OK(ft_add(ft, id, flow_add, &entry));
+    of_object_delete(flow_add);
+    *entry_p = entry;
+    return 0;
+}
+
+static int
+test_ft_iterator(void)
+{
+    ft_instance_t ft;
+    ft_config_t config = {
+        1024, /* strict_match buckets */
+        1024, /* flow_id buckets */
+    };
+    int i;
+    const int num_flows = 3;
+    ft_entry_t *entries[num_flows];
+
+    ft = ft_create(&config);
+
+    for (i = 0; i < num_flows; i++) {
+        TEST_OK(add_flow(ft, i, &entries[i]));
+        TEST_ASSERT(entries[i]->id == i);
+    }
+
+    /* Cleanup at start */
+    {
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Cleanup in middle */
+    {
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        ft_iterator_next(&iter);
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Cleanup at end */
+    {
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        while (ft_iterator_next(&iter) != NULL);
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Verify we get all entries with no duplicates */
+    {
+        ft_entry_t *results[num_flows];
+        ft_entry_t *entry;
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        memset(results, 0, sizeof(results));
+        while ((entry = ft_iterator_next(&iter)) != NULL) {
+            TEST_ASSERT(entry->id >= 0 && entry->id < 3);
+            TEST_ASSERT(entry == entries[entry->id]);
+            TEST_ASSERT(results[entry->id] == NULL);
+            results[entry->id] = entry;
+        }
+        for (i = 0; i < num_flows; i++) {
+            TEST_ASSERT(results[i] == entries[i]);
+        }
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Verify we get all entries with no duplicates when deleting the current flow */
+    {
+        ft_entry_t *results[num_flows];
+        ft_entry_t *entry;
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        memset(results, 0, sizeof(results));
+        while ((entry = ft_iterator_next(&iter)) != NULL) {
+            TEST_ASSERT(entry->id >= 0 && entry->id < 3);
+            TEST_ASSERT(entry == entries[entry->id]);
+            TEST_ASSERT(results[entry->id] == NULL);
+            results[entry->id] = entry;
+            ft_delete(ft, entry);
+        }
+        for (i = 0; i < num_flows; i++) {
+            TEST_ASSERT(results[i] == entries[i]);
+        }
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Repopulate table */
+    for (i = 0; i < num_flows; i++) {
+        TEST_OK(add_flow(ft, i, &entries[i]));
+        TEST_ASSERT(entries[i]->id == i);
+    }
+
+    /* Check iteration order */
+    /* Implementation dependent */
+    {
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        for (i = 0; i < num_flows; i++) {
+            TEST_ASSERT(ft_iterator_next(&iter) == entries[i]);
+        }
+        TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Check iteration order with concurrent delete/add */
+    /* Implementation dependent */
+    {
+        ft_iterator_t iter;
+        ft_iterator_init(&iter, ft);
+        TEST_ASSERT(ft_iterator_next(&iter) == entries[0]);
+        ft_delete(ft, entries[0]);
+        TEST_ASSERT(ft_iterator_next(&iter) == entries[1]);
+        TEST_OK(add_flow(ft, 0, &entries[0]));
+        TEST_ASSERT(ft_iterator_next(&iter) == entries[2]);
+        TEST_ASSERT(ft_iterator_next(&iter) == entries[0]);
+        TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        ft_iterator_cleanup(&iter);
+    }
+
+    ft_destroy(ft);
+
+    return TEST_PASS;
+}
+
 struct iter_task_state {
     ft_instance_t ft;
     int finished;
@@ -1014,6 +1148,7 @@ aim_main(int argc, char* argv[])
     ind_soc_enable_set(1);
 
     RUN_TEST(ft_hash);
+    RUN_TEST(ft_iterator);
     RUN_TEST(ft_iter_task);
 
     /* Init Core */
