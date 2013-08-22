@@ -317,6 +317,10 @@ ft_spawn_iter_task(ft_instance_t instance,
  *
  * This will iterate over the entire flowtable. It is safe to use with
  * concurrent modification of the flowtable.
+ *
+ * This iterator does not guarantee a consistent view of the flowtable over
+ * the course of the iteration. Flows added during the iteration may or may
+ * not be returned by the iterator.
  */
 void
 ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft);
