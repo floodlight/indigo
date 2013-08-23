@@ -67,22 +67,6 @@ typedef struct ft_public_s ft_public_t;
 
 typedef ft_public_t *ft_instance_t;
 
-/**
- * Map from a list entry to a flow entry pointer.
- *
- * The flow table abstraction uses BigLists for queries.  These
- * use ft_entry_t pointers for their data.
- */
-
-#define FT_LIST_TO_ENTRY(elt) ((ft_entry_t *)((elt)->data))
-
-/**
- * Map from a list entry to a flow ID.
- */
-
-#define FT_LIST_TO_FLOW_ID(elt)                            \
-    (INDIGO_POINTER_TO_COOKIE(FT_LIST_TO_ENTRY(elt)->id))
-
 /****************************************************************
  * Managing a flow table instance: Configuration, status, handle
  ****************************************************************/
@@ -90,15 +74,12 @@ typedef ft_public_t *ft_instance_t;
 /**
  * Flow table configuration structure
  * @param max_entries Maximum number of entries to support
- * @param prio_bucket_count How many buckets for priority hash table
- * @param match_bucket_count How many buckets for match hash table
+ * @param strict_match_bucket_count How many buckets for strict_match hash table
  * @param flow_id_bucket_count How many buckets for flow_id hash table
  */
 
 typedef struct ft_config_s {
-    int max_entries;
-    int prio_bucket_count;
-    int match_bucket_count;
+    int strict_match_bucket_count;
     int flow_id_bucket_count;
 } ft_config_t;
 
@@ -141,18 +122,27 @@ struct ft_public_s {
     ft_config_t config;
     ft_status_t status;
 
-    ft_entry_t *flow_entries;      /* All entries */
-
-    list_head_t free_list;         /* List of unused entries */
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *prio_buckets;     /* Array of priority based buckets */
-    list_head_t *match_buckets;    /* Array of strict match based buckets */
+    list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
 #define FT_STATUS(_ft) (&(_ft)->status)
+
+/**
+ * Safe iterator for the entire flowtable
+ *
+ * See ft_iterator_init, ft_iterator_next, and ft_iterator_cleanup.
+ *
+ * This struct should be treated as opaque.
+ */
+typedef struct ft_iterator_s {
+    list_head_t *head;             /* List head for this iteration */
+    ft_entry_t *next_entry;        /* Entry to be returned on next() */
+    list_links_t entry_links;      /* Linked into next_entry->iterators if next_entry != NULL */
+} ft_iterator_t;
 
 /**
  * Safe iterator for entire flow table
@@ -172,96 +162,6 @@ struct ft_public_s {
                  _entry = FT_ENTRY_CONTAINER(_cur, table);              \
              _next = _cur->next, _cur != &((_ft)->all_list.links);      \
              _cur = _next, _entry = FT_ENTRY_CONTAINER((_cur), table))
-
-/**
- * Iterate across flows of a given priority (hash value)
- *
- * @param _ft The instance of the flow table being iterated
- * @param _prio The priority of the entries being sought
- * @param _idx Index of the priority bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the priority) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- */
-
-#define FT_PRIO_ITER(_ft, _prio, _idx, _entry, _cur, _next)             \
-    if (!list_empty(&(_ft)->prio_buckets[_idx]))                        \
-        for ((_cur) = (_ft)->prio_buckets[_idx].links.next,             \
-                 _entry = FT_ENTRY_CONTAINER(_cur, prio);               \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->prio_buckets[_idx].links);            \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, prio))     \
-            if ((_entry)->priority == _prio)
-
-/**
- * Iterate across flows with a given match
- *
- * @param _ft The instance of the flow table being iterated
- * @param _match The match of the entries being sought strictly
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the match object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * @fixme of_match_eq may not work on non-canonicalized flows
- *
- * @note Note that this does not check that the priority of the
- * entry matches any particular priority.
- */
-
-#define FT_MATCH_ITER(_ft, _match, _idx, _entry, _cur, _next)           \
-    if (!list_empty(&(_ft)->match_buckets[_idx]))                       \
-        for ((_cur) = (_ft)->match_buckets[_idx].links.next,            \
-                 _entry = FT_ENTRY_CONTAINER(_cur, match);              \
-             _next = _cur->next,                                        \
-                 _cur != &((_ft)->match_buckets[_idx].links);           \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, match))    \
-            if (of_match_eq((_match), &((_entry)->match)))
-
-/**
- * Iterate across flows of a given flow ID
- *
- * @param _ft The instance of the flow table being iterated
- * @param flow_id The flow ID to match
- * @param _idx Index of the match bucket hash list
- * @param _entry Pointer to the "current" entry in the iteration
- * @param _cur list_link_t bookkeeping pointer, do not reference
- * @param _next list_link_t bookkeeping pointer, do not refernece
- *
- * You need to compute the bucket index (using the hash function on
- * the flow_id object) before calling this macro.  Suggest you use an
- * auto variable to hold the result as the result is instantiated
- * multiple times.
- *
- * Assumes the ft_instance is initialized
- *
- * This is included for completeness and convenience.  In general,
- * there should be at most one match in the table.  Note that entry
- * SHOULD NOT BE REFERENCED OUTSIDE THE LOOP.
- */
-
-#define FT_FLOW_ID_ITER(_ft, _id, _idx, _entry, _cur, _next)            \
-    if (!list_empty(&(_ft)->flow_id_buckets[_idx]))                     \
-        for ((_cur) = (_ft)->flow_id_buckets[_idx].links.next,          \
-                 _entry = FT_ENTRY_CONTAINER(_cur, flow_id);                \
-             _next = (_cur)->next,                                      \
-                 _cur != &((_ft)->flow_id_buckets[_idx].links);         \
-             _cur = _next, _entry = FT_ENTRY_CONTAINER(_cur, flow_id))  \
-            if (_id == (_entry)->id)
 
 /*
  * Create a flow table instance
@@ -321,30 +221,16 @@ indigo_error_t ft_delete_id(ft_instance_t ft,
                             indigo_flow_id_t id);
 
 /**
- * Query the flow table and return the first match if found
+ * Query the flow table (strict match) and return the first match if found
  * @param ft Handle for a flow table instance
  * @param query The meta-match data for the query
  * @param entry_ptr (out) Pointer to where to store the result if found
  * @returns INDIGO_ERROR_NONE if found; otherwise INDIGO_ERROR_NOT_FOUND
- *
- * entry_ptr may be NULL; Normally this is called with priority checked.
  */
 
-indigo_error_t ft_first_match(ft_instance_t instance,
-                              of_meta_match_t *query,
-                              ft_entry_t **entry_ptr);
-
-/**
- * Query the flow table and return all matches
- * @param ft Handle for a flow table instance
- * @param query The meta-match data for the query
- * @returns A list with pointers to ft_entry_t
- *
- * @fixme Currently we don't/can't check for failed alloc in biglist.
- */
-
-biglist_t *ft_query(ft_instance_t instance,
-                    of_meta_match_t *query);
+indigo_error_t ft_strict_match(ft_instance_t instance,
+                               of_meta_match_t *query,
+                               ft_entry_t **entry_ptr);
 
 /**
  * Look up a flow by ID
@@ -398,27 +284,6 @@ void
 ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
                       indigo_fi_flow_removed_t reason);
 
-/**
- * Map a priority to a hash bucket
- */
-
-int
-ft_prio_to_bucket_index(ft_instance_t ft, uint16_t priority);
-
-/**
- * Map a match structure to a hash bucket
- */
-
-int
-ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match);
-
-/**
- * Map a flow id to a hash bucket
- */
-
-int
-ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id);
-
 /*
  * Spawn a task that iterates over the flowtable
  *
@@ -446,5 +311,32 @@ ft_spawn_iter_task(ft_instance_t instance,
                    ft_iter_task_callback_f callback,
                    void *cookie,
                    int priority);
+
+/**
+ * Initialize a flowtable iterator
+ *
+ * This will iterate over the entire flowtable. It is safe to use with
+ * concurrent modification of the flowtable.
+ *
+ * This iterator does not guarantee a consistent view of the flowtable over
+ * the course of the iteration. Flows added during the iteration may or may
+ * not be returned by the iterator.
+ */
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft);
+
+/**
+ * Yield the next entry from an iterator
+ *
+ * Will return NULL to signal the end of the iteration.
+ */
+ft_entry_t *
+ft_iterator_next(ft_iterator_t *iter);
+
+/**
+ * Cleanup a flowtable iterator
+ */
+void
+ft_iterator_cleanup(ft_iterator_t *iter);
 
 #endif /* _OFSTATEMANAGER_FT_H_ */

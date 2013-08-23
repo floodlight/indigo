@@ -29,8 +29,8 @@
 #include "ofstatemanager_log.h"
 #include "ft.h"
 
-static indigo_error_t ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add);
-static void ft_entry_clear(ft_instance_t ft, ft_entry_t *entry);
+static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p);
+static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
@@ -43,21 +43,18 @@ static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
  * hash calculations.  Multiplying by a prime is a good option
  */
 
-int
-ft_prio_to_bucket_index(ft_instance_t ft, uint16_t priority)
+static int
+ft_strict_match_to_bucket_index(ft_instance_t ft,
+                                of_match_t *match,
+                                uint16_t priority)
 {
-    return (murmur_hash(&priority, sizeof(priority), FT_HASH_SEED) %
-            ft->config.prio_bucket_count);
+    uint32_t h = FT_HASH_SEED;
+    h = murmur_hash(match, sizeof(*match), h);
+    h = murmur_hash(&priority, sizeof(priority), h);
+    return h % ft->config.strict_match_bucket_count;
 }
 
-int
-ft_match_to_bucket_index(ft_instance_t ft, of_match_t *match)
-{
-    return (murmur_hash(match, sizeof(*match), FT_HASH_SEED) %
-            ft->config.match_bucket_count);
-}
-
-int
+static int
 ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
 {
     return (murmur_hash(flow_id, sizeof(*flow_id), FT_HASH_SEED) %
@@ -71,11 +68,6 @@ ft_create(ft_config_t *config)
     int bytes;
     int idx;
 
-    if (config->max_entries <= 0) {
-        LOG_ERROR("Hash flow table only supports fixed number of buckets");
-        return NULL;
-    }
-
     /* Allocate the flow table itself */
     ft = INDIGO_MEM_ALLOC(sizeof(*ft));
     if (ft == NULL) {
@@ -85,47 +77,19 @@ ft_create(ft_config_t *config)
     INDIGO_MEM_SET(ft, 0, sizeof(*ft));
     INDIGO_MEM_COPY(&ft->config,  config, sizeof(ft_config_t));
 
-    list_init(&ft->free_list);
     list_init(&ft->all_list);
 
-    /* Allocate and init the flow entries */
-    bytes = sizeof(ft_entry_t) * config->max_entries;
-    ft->flow_entries = INDIGO_MEM_ALLOC(bytes);
-    if (ft->flow_entries == NULL) {
-        LOG_ERROR("ERROR: Flow table (hash) creation failed");
-        INDIGO_MEM_FREE(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->flow_entries, 0, bytes);
-
-    /* Put the flow entries on the free list */
-    for (idx = 0; idx < config->max_entries; idx++) {
-        list_push(&ft->free_list, &ft->flow_entries[idx].table_links);
-    }
-
     /* Allocate and init buckets for each search type */
-    bytes = sizeof(list_head_t) * config->prio_bucket_count;
-    ft->prio_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->prio_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, prio bucket alloc failed");
+    bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
+    ft->strict_match_buckets = INDIGO_MEM_ALLOC(bytes);
+    if (ft->strict_match_buckets == NULL) {
+        LOG_ERROR("ERROR: Flow table, strict_match bucket alloc failed");
         ft_destroy(ft);
         return NULL;
     }
-    INDIGO_MEM_SET(ft->prio_buckets, 0, bytes);
-    for (idx = 0; idx < config->prio_bucket_count; idx++) {
-        list_init(&ft->prio_buckets[idx]);
-    }
-
-    bytes = sizeof(list_head_t) * config->match_bucket_count;
-    ft->match_buckets = INDIGO_MEM_ALLOC(bytes);
-    if (ft->match_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, match bucket alloc failed");
-        ft_destroy(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->match_buckets, 0, bytes);
-    for (idx = 0; idx < config->match_bucket_count; idx++) {
-        list_init(&ft->match_buckets[idx]);
+    INDIGO_MEM_SET(ft->strict_match_buckets, 0, bytes);
+    for (idx = 0; idx < config->strict_match_bucket_count; idx++) {
+        list_init(&ft->strict_match_buckets[idx]);
     }
 
     bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
@@ -171,22 +135,13 @@ ft_destroy(ft_instance_t ft)
 
     FT_ITER(ft, entry, cur, next) {
         ft_entry_unlink(ft, entry);
-        ft_entry_clear(ft, entry);
+        ft_entry_destroy(ft, entry);
     }
 
-    if (ft->flow_entries != NULL) {
-        INDIGO_MEM_FREE(ft->flow_entries);
-        ft->flow_entries = NULL;
-    }
-    if (ft->prio_buckets != NULL) {
-        CHECK_BUCKETS(prio);
-        INDIGO_MEM_FREE(ft->prio_buckets);
-        ft->prio_buckets = NULL;
-    }
-    if (ft->match_buckets != NULL) {
-        CHECK_BUCKETS(match);
-        INDIGO_MEM_FREE(ft->match_buckets);
-        ft->match_buckets = NULL;
+    if (ft->strict_match_buckets != NULL) {
+        CHECK_BUCKETS(strict_match);
+        INDIGO_MEM_FREE(ft->strict_match_buckets);
+        ft->strict_match_buckets = NULL;
     }
     if (ft->flow_id_buckets != NULL) {
         CHECK_BUCKETS(flow_id);
@@ -201,8 +156,7 @@ indigo_error_t
 ft_add(ft_instance_t ft, indigo_flow_id_t id,
        of_flow_add_t *flow_add, ft_entry_t **entry_p)
 {
-    ft_entry_t *entry;
-    list_links_t *links;
+    ft_entry_t *entry = NULL;
     indigo_error_t rv;
 
     LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
@@ -212,14 +166,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
         return INDIGO_ERROR_EXISTS;
     }
 
-    /* Grab an entry from the free list */
-    if ((links = list_pop(&ft->free_list)) == NULL) {
-        ++(ft->status.table_full_errors);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    entry = FT_ENTRY_CONTAINER(links, table);
-
-    if ((rv = ft_entry_setup(entry, id, flow_add)) < 0) {
+    if ((rv = ft_entry_create(id, flow_add, &entry)) < 0) {
         return rv;
     }
 
@@ -240,17 +187,9 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
     LOG_TRACE("Delete rsn %d flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               entry->removed_reason, entry->id);
 
-    if (entry->id == INDIGO_FLOW_ID_INVALID) {
-        LOG_ERROR("Deleting invalid flow table entry");
-        return INDIGO_ERROR_UNKNOWN;
-    }
-
-    /* Unlink from hash lists; clear entry; put it on the free list */
     ft_entry_unlink(ft, entry);
-    ft_entry_clear(ft, entry);
+    ft_entry_destroy(ft, entry);
 
-    INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
-    list_push(&ft->free_list, &entry->table_links);
     ft->status.current_count -= 1;
     ft->status.deletes += 1;
 
@@ -272,109 +211,46 @@ ft_delete_id(ft_instance_t ft,
 }
 
 indigo_error_t
-ft_first_match(ft_instance_t instance,
+ft_strict_match(ft_instance_t instance,
                of_meta_match_t *query,
                ft_entry_t **entry_ptr)
 {
     int bucket_idx;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
+    list_links_t *cur;
 
-    if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
-        }
-    } else if (query->check_priority) { /* Iterate thru prio hash list */
-        bucket_idx = ft_prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
-        }
-    } else { /* Iterate thru whole list */
-        FT_ITER(instance, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                if (entry_ptr) {
-                    *entry_ptr = entry;
-                }
-                return INDIGO_ERROR_NONE;
-            }
+    INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
+
+    bucket_idx = ft_strict_match_to_bucket_index(instance, &query->match,
+                                                 query->priority);
+    list_head_t *bucket = &instance->strict_match_buckets[bucket_idx];
+
+    LIST_FOREACH(bucket, cur) {
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, strict_match);
+        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
+                ft_entry_meta_match(query, entry)) {
+            *entry_ptr = entry;
+            return INDIGO_ERROR_NONE;
         }
     }
 
     return INDIGO_ERROR_NOT_FOUND;
 }
 
-biglist_t *
-ft_query(ft_instance_t instance, of_meta_match_t *query)
-{
-    int bucket_idx;
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
-    biglist_t *list = NULL;
-    int count = 0;
-
-    if (query->mode == OF_MATCH_STRICT) {
-        bucket_idx = ft_match_to_bucket_index(instance, &(query->match));
-        FT_MATCH_ITER(instance, &(query->match), bucket_idx, entry,
-                      cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    } else if (query->check_priority) {
-        /* Iterate thru prio hash list */
-        bucket_idx = ft_prio_to_bucket_index(instance, query->priority);
-        FT_PRIO_ITER(instance, query->priority, bucket_idx, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    } else { /* Iterate thru whole list */
-        FT_ITER(instance, entry, cur, next) {
-            if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    ft_entry_meta_match(query, entry)) {
-                list = biglist_prepend(list, (void *)entry);
-                count += 1;
-            }
-        }
-    }
-
-    LOG_TRACE("Query generated %d entries", count);
-    return list;
-}
-
 ft_entry_t *
 ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {
-    int idx;
-    ft_entry_t *entry = NULL, *iter_entry;
-    list_links_t *cur, *next;
+    int bucket_idx = ft_flow_id_to_bucket_index(ft, &id);
+    list_head_t *bucket = &ft->flow_id_buckets[bucket_idx];
+    list_links_t *cur;
 
-    idx = ft_flow_id_to_bucket_index(ft, &id);
-    FT_FLOW_ID_ITER(ft, id, idx, iter_entry, cur, next) {
-        /* Found a match, break */
-        entry = iter_entry;
-        break;
+    LIST_FOREACH(bucket, cur) {
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, flow_id);
+        if (!FT_FLOW_STATE_IS_DELETED(entry->state) && entry->id == id) {
+            return entry;
+        }
     }
-    return entry;
+
+    return NULL;
 }
 
 int
@@ -510,10 +386,9 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 struct ft_iter_task_state {
     ft_iter_task_callback_f callback;
     void *cookie;
-    ft_instance_t flowtable;
     of_meta_match_t query;
     int use_query;
-    int idx;
+    ft_iterator_t iter;
 };
 
 static ind_soc_task_status_t
@@ -522,16 +397,15 @@ ft_iter_task_callback(void *cookie)
     struct ft_iter_task_state *state = cookie;
 
     do {
-        if (state->idx == state->flowtable->config.max_entries) {
+        ft_entry_t *entry = ft_iterator_next(&state->iter);
+        if (entry == NULL) {
             /* Finished */
             state->callback(state->cookie, NULL);
+            ft_iterator_cleanup(&state->iter);
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            ft_entry_t *entry = &state->flowtable->flow_entries[state->idx++];
-
-            if (entry->state == FT_FLOW_STATE_FREE ||
-                FT_FLOW_STATE_IS_DELETED(entry->state)) {
+            if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
                 continue;
             }
 
@@ -562,8 +436,6 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     state->callback = callback;
     state->cookie = cookie;
-    state->flowtable = instance;
-    state->idx = 0;
 
     if (query != NULL) {
         state->query = *query;
@@ -572,6 +444,8 @@ ft_spawn_iter_task(ft_instance_t instance,
         state->use_query = 0;
     }
 
+    ft_iterator_init(&state->iter, instance);
+
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
         INDIGO_MEM_FREE(state);
@@ -579,6 +453,51 @@ ft_spawn_iter_task(ft_instance_t instance,
     }
 
     return INDIGO_ERROR_NONE;
+}
+
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
+{
+    iter->head = &ft->all_list;
+    if (list_empty(iter->head)) {
+        iter->next_entry = NULL;
+    } else {
+        iter->next_entry = FT_ENTRY_CONTAINER(iter->head->links.next, table);
+        list_push(&iter->next_entry->iterators, &iter->entry_links);
+    }
+}
+
+ft_entry_t *
+ft_iterator_next(ft_iterator_t *iter)
+{
+    if (iter->next_entry == NULL) {
+        /* Already at end */
+        return NULL;
+    }
+
+    ft_entry_t *result = iter->next_entry;
+
+    list_remove(&iter->entry_links);
+
+    list_links_t *next_links = iter->next_entry->table_links.next;
+    if (next_links == &iter->head->links) {
+        /* Finished iteration */
+        iter->next_entry = NULL;
+    } else {
+        iter->next_entry = FT_ENTRY_CONTAINER(next_links, table);
+        list_push(&iter->next_entry->iterators, &iter->entry_links);
+    }
+
+    return result;
+}
+
+void
+ft_iterator_cleanup(ft_iterator_t *iter)
+{
+    if (iter->next_entry != NULL) {
+        list_remove(&iter->entry_links);
+        iter->next_entry = NULL;
+    }
 }
 
 /**
@@ -598,18 +517,16 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        idx = ft_prio_to_bucket_index(ft, entry->priority);
-        list_push(&ft->prio_buckets[idx], &entry->prio_links);
-    }
-    if (ft->match_buckets) { /* Strict match hash */
-        idx = ft_match_to_bucket_index(ft, &entry->match);
-        list_push(&ft->match_buckets[idx], &entry->match_links);
+    if (ft->strict_match_buckets) { /* Strict match hash */
+        idx = ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority);
+        list_push(&ft->strict_match_buckets[idx], &entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
         idx = ft_flow_id_to_bucket_index(ft, &entry->id);
         list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
     }
+
+    list_init(&entry->iterators);
 }
 
 /**
@@ -626,18 +543,19 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 
     INDIGO_ASSERT(!list_empty(&ft->all_list));
 
+    /* Advance iterators pointing to this entry */
+    list_links_t *cur, *next;
+    LIST_FOREACH_SAFE(&entry->iterators, cur, next) {
+        ft_iterator_next(container_of(cur, entry_links, ft_iterator_t));
+    }
+
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->prio_buckets) { /* Priority hash */
-        INDIGO_ASSERT(!list_empty(&ft->prio_buckets[ft_prio_to_bucket_index(ft,
-            entry->priority)]));
-        list_remove(&entry->prio_links);
-    }
-    if (ft->match_buckets) { /* Strict match hash */
-        INDIGO_ASSERT(!list_empty(&ft->match_buckets[ft_match_to_bucket_index(ft,
-            &entry->match)]));
-        list_remove(&entry->match_links);
+    if (ft->strict_match_buckets) { /* Strict match hash */
+        INDIGO_ASSERT(!list_empty(&ft->strict_match_buckets[
+            ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority)]));
+        list_remove(&entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
         INDIGO_ASSERT(!list_empty(&ft->flow_id_buckets[ft_flow_id_to_bucket_index(ft,
@@ -647,26 +565,32 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 }
 
 /**
- * Initialize the data for a flow entry that is being added
+ * Allocate and initialize a new flowtable entry
  *
- * @param entry Pointer to entry being initialized
  * @param id The flow ID to use
  * @param flow_add Pointer to the flow add object for the entry
+ * @param_p entry Populated with pointer to new flowtable entry on success
  *
  * The list links are not modified by this call.
  */
 static indigo_error_t
-ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
+ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p)
 {
     indigo_error_t err;
+    ft_entry_t *entry;
 
-    INDIGO_ASSERT(entry->state == FT_FLOW_STATE_FREE);
+    entry = INDIGO_MEM_ALLOC(sizeof(*entry));
+    if (entry == NULL) {
+        return INDIGO_ERROR_RESOURCE;
+    }
+    INDIGO_MEM_SET(entry, 0, sizeof(*entry));
 
     entry->id = id;
 
     entry->state = FT_FLOW_STATE_NEW;
     entry->queued_reqs = NULL;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
+        INDIGO_MEM_FREE(entry);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -677,11 +601,14 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
 
     err = ft_entry_set_effects(entry, flow_add);
     if (err != INDIGO_ERROR_NONE) {
+        INDIGO_MEM_FREE(entry);
         return err;
     }
 
     entry->insert_time = INDIGO_CURRENT_TIME;
     entry->last_counter_change = entry->insert_time;
+
+    *entry_p = entry;
 
     return INDIGO_ERROR_NONE;
 }
@@ -697,7 +624,7 @@ ft_entry_setup(ft_entry_t *entry, indigo_flow_id_t id, of_flow_add_t *flow_add)
  * decremented.
  */
 static void
-ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
+ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
 {
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
@@ -705,13 +632,13 @@ ft_entry_clear(ft_instance_t ft, ft_entry_t *entry)
     }
 
     biglist_free(entry->queued_reqs);
-    entry->id = INDIGO_FLOW_ID_INVALID;
 
     /* If entry was being deleted, pending deletes gets decremented */
     if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
         ft->status.pending_deletes -= 1;
     }
-    entry->state = FT_FLOW_STATE_FREE;
+
+    INDIGO_MEM_FREE(entry);
 }
 
 /* Populate the output port list and effects */

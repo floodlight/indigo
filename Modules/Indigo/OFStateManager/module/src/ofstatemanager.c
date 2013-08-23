@@ -447,9 +447,7 @@ ind_core_init(ind_core_config_t *config)
         /* Default value */
         config->max_flowtable_entries = 16384;
     }
-    ft_config.max_entries = config->max_flowtable_entries;
-    ft_config.prio_bucket_count = config->max_flowtable_entries;
-    ft_config.match_bucket_count = config->max_flowtable_entries;
+    ft_config.strict_match_bucket_count = config->max_flowtable_entries;
     ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
     if ((ind_core_ft = ft_create(&ft_config)) == NULL) {
@@ -553,11 +551,6 @@ process_flow_removal(ft_entry_t *entry,
 {
     indigo_error_t rv;
     biglist_t      *ble;
-
-    if (entry->state == FT_FLOW_STATE_FREE) {
-        LOG_VERBOSE("Remove flow in state %d; ignoring", entry->state);
-        return;
-    }
 
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */

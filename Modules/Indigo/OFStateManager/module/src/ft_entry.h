@@ -29,8 +29,7 @@
 /**
  * Flow state enumeration
  *
- * Indicates the state in the flow table of a flow entry.  These are
- * only valid when the entry's ID is valid (not INDIGO_FLOW_ID_INVALID).
+ * Indicates the state in the flow table of a flow entry.
  *
  * Due to the async nature of flow table modifications, we maintain
  * these states for each flow.  Note that if a flow is deleted while
@@ -45,7 +44,6 @@
  *
  * States:
  *
- * FREE => Not in use.
  * NEW => Allocated but not committed; call is being made to fwding
  * CREATED => Flow is stable, successfully added to forwarding, nothing pending
  * MODIFYING => Modify request is pending with forwarding, but entry
@@ -55,7 +53,6 @@
  */
 
 enum ft_flow_state {
-    FT_FLOW_STATE_FREE,
     FT_FLOW_STATE_NEW,
     FT_FLOW_STATE_CREATED,
     FT_FLOW_STATE_MODIFYING,
@@ -150,9 +147,10 @@ typedef struct ft_entry_s {
 
     /* For linked list maintance */
     list_links_t table_links;      /* For iterating across the flow table */
-    list_links_t prio_links;       /* Search by priority */
-    list_links_t match_links;      /* Search by strict match */
+    list_links_t strict_match_links;  /* Search by strict match */
     list_links_t flow_id_links;    /* Search by flow id */
+    list_head_t iterators;         /* List of ft_iterator_t objects
+                                      pointing to this entry */
 } ft_entry_t;
 
 /**
@@ -194,9 +192,6 @@ typedef struct ft_entry_s {
  *
  * For a query match, Mq, the "non-strict match" is the set of entries for
  * which each M in the set satisfies FS(M) is a subset of FS(Mq).
- *
- * For queries, the called routine will allocate the the variable length
- * list of flow IDs and the caller is responsible freeing it.
  */
 
 /**
