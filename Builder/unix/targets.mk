@@ -52,7 +52,12 @@ show_shared:
 	@echo "    " $(SHAREDLIB_TARGETS)
 	@echo ""
 
-SHOW_TARGETS := show_targets show_libs show_bins show_shared show_toolchains
+show_scripts:
+	@echo Available Scripts:
+	@echo "    " $(SCRIPT_TARGETS)
+	@echo ""
+
+SHOW_TARGETS := show_targets show_libs show_bins show_shared show_scripts show_toolchains
 ifdef __DIRS_MK__
 SHOW_TARGETS += show_dirs
 endif
@@ -64,6 +69,7 @@ show: $(SHOW_TARGETS)
 libraries: $(LIBRARY_TARGETS)
 binaries: $(BINARY_TARGETS)
 sharedlibs: $(SHAREDLIB_TARGETS)
+scripts: $(SCRIPT_TARGETS)
 
 libs: libraries
 bins: binaries
@@ -78,7 +84,7 @@ superclean:
 	@echo Removing BUILD directory
 	@rm -rf $(SUPERCLEAN_BUILD_DIR)
 
-alltargets: libraries binaries sharedlibs
+alltargets: libraries binaries sharedlibs scripts
 
 #
 # This special target will build the given target against all toolchains
