@@ -1217,6 +1217,10 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         of_flow_stats_entry_idle_timeout_set(&stats_entry, entry->idle_timeout);
         of_flow_stats_entry_hard_timeout_set(&stats_entry, entry->hard_timeout);
 
+        if (stats_entry.version >= OF_VERSION_1_3) {
+            of_flow_stats_entry_flags_set(&stats_entry, entry->flags);
+        }
+
         if (of_flow_stats_entry_match_set(&stats_entry, &entry->match)) {
             LOG_ERROR("Failed to set match in flow stats entry");
             return;
