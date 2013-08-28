@@ -21688,6 +21688,9 @@ of_flow_stats_entry_OF_VERSION_1_3_dup(
     of_flow_stats_entry_hard_timeout_get(src, &val16);
     of_flow_stats_entry_hard_timeout_set(dst, val16);
 
+    of_flow_stats_entry_flags_get(src, &val16);
+    of_flow_stats_entry_flags_set(dst, val16);
+
     of_flow_stats_entry_cookie_get(src, &val64);
     of_flow_stats_entry_cookie_set(dst, val64);
 

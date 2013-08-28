@@ -3241,6 +3241,10 @@ typedef struct of_experimenter_multipart_header_s of_experimenter_multipart_head
  *   Accessors for hard_timeout, a variable of type uint16.  Functions
  *   are of type of_flow_stats_entry_uint16_get_f and _set_f.
  *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_flow_stats_entry_uint16_get_f and _set_f.
+ *
  * @param cookie_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
  *   Accessors for cookie, a variable of type uint64.  Functions
  *   are of type of_flow_stats_entry_uint64_get_f and _set_f.
