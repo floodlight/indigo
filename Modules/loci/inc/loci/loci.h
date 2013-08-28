@@ -13837,6 +13837,13 @@ extern void of_flow_stats_entry_hard_timeout_get(
     of_flow_stats_entry_t *obj,
     uint16_t *hard_timeout);
 
+extern void of_flow_stats_entry_flags_set(
+    of_flow_stats_entry_t *obj,
+    uint16_t flags);
+extern void of_flow_stats_entry_flags_get(
+    of_flow_stats_entry_t *obj,
+    uint16_t *flags);
+
 extern void of_flow_stats_entry_cookie_set(
     of_flow_stats_entry_t *obj,
     uint64_t cookie);
