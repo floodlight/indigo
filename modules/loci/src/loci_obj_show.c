@@ -15513,6 +15513,11 @@ of_flow_stats_entry_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_f
     out += LOCI_SHOW_u16_hard_timeout(writer, cookie, val16);
     out += writer(cookie, " ");
 
+    of_flow_stats_entry_flags_get(obj, &val16);
+    out += writer(cookie, "flags=");
+    out += LOCI_SHOW_u16_flags(writer, cookie, val16);
+    out += writer(cookie, " ");
+
     of_flow_stats_entry_cookie_get(obj, &val64);
     out += writer(cookie, "cookie=");
     out += LOCI_SHOW_u64_cookie(writer, cookie, val64);

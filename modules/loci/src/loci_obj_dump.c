@@ -16604,6 +16604,11 @@ of_flow_stats_entry_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_f
     out += LOCI_DUMP_u16(writer, cookie, val16);
     out += writer(cookie, "\n");
 
+    of_flow_stats_entry_flags_get(obj, &val16);
+    out += writer(cookie, "  flags (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
     of_flow_stats_entry_cookie_get(obj, &val64);
     out += writer(cookie, "  cookie (uint64_t):  ");
     out += LOCI_DUMP_u64(writer, cookie, val64);
