@@ -1171,20 +1171,8 @@ ind_core_ft_dump(aim_pvs_t* pvs)
         } else {
             int rv;
             of_instruction_t inst;
-
             OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
-                if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-                    int rv;
-                    of_action_t elt;
-                    of_list_action_t actions;
-
-                    of_instruction_apply_actions_actions_bind(
-                        &inst.apply_actions, &actions);
-                    OF_LIST_ACTION_ITER(&actions, &elt, rv) {
-                        of_object_dump((loci_writer_f)aim_printf, pvs,
-                                       &elt.header);
-                    }
-                }
+                of_object_dump((loci_writer_f)aim_printf, pvs, &inst.header);
             }
         }
 
@@ -1216,20 +1204,10 @@ ind_core_ft_show(aim_pvs_t* pvs)
         } else {
             int rv;
             of_instruction_t inst;
-
             OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
-                if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-                    int rv;
-                    of_action_t elt;
-                    of_list_action_t actions;
-
-                    of_instruction_apply_actions_actions_bind(
-                        &inst.apply_actions, &actions);
-                    OF_LIST_ACTION_ITER(&actions, &elt, rv) {
-                        of_object_show((loci_writer_f)aim_printf, pvs,
-                                       &elt.header);
-                    }
-                }
+                aim_printf(pvs, "%s(", of_object_id_str[inst.header.object_id]);
+                of_object_show((loci_writer_f)aim_printf, pvs, &inst.header);
+                aim_printf(pvs, ") ");
             }
         }
 
