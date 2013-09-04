@@ -56,6 +56,8 @@ extern int ind_core_send_error_msg(of_version_t version,
                                    of_octets_t *octets);
 
 extern void ind_core_flow_entry_delete(ft_entry_t *entry,
-                                       indigo_fi_flow_removed_t reason);
+                                       indigo_fi_flow_removed_t reason,
+                                       of_object_t *obj,
+                                       indigo_cxn_id_t cxn_id);
 
 #endif /* OFSTATEMANAGER_DECS_H */
