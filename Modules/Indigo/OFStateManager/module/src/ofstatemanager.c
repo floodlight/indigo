@@ -679,6 +679,7 @@ indigo_core_flow_delete_callback(indigo_error_t result,
     if (result != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+        /* Ignoring failure */
     }
 
     process_flow_removal(entry, flow_stats);

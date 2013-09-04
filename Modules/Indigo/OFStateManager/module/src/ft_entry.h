@@ -38,18 +38,36 @@
  * ignore further operations on that flow, wait for any pending operation
  * to complete and then remove any other queued operations.
  *
+ * Once a flow enters the DELETE_MARKED or DELETING states it will be ignored
+ * by queries. The original intention was for flow stats queries, flow-adds,
+ * etc following a flow-delete to behave as if the flow were already deleted.
+ * However, this is not guaranteed by OpenFlow and is broken by the long
+ * running task implementation of flow deletion.
+ *
  * There are still some corner cases; for example, if a queued operation
  * would have failed, but a later delete operation occurs, no error
  * message will be generated for the op that would have failed.
  *
  * States:
  *
- * NEW => Allocated but not committed; call is being made to fwding
+ * NEW => Allocated but not committed; call is being made to forwarding
  * CREATED => Flow is stable, successfully added to forwarding, nothing pending
  * MODIFYING => Modify request is pending with forwarding, but entry
  * should be counted as active.
- * DELETE_MARKED => Flow is marked for deletion; other modify calls pending
+ * DELETE_MARKED => Flow is marked for deletion; other add/modify calls pending
  * DELETING => Request to delete the entry has been made to forwarding
+ *
+ * Possible state transitions:
+ *
+ * NEW -> CREATED (indigo_core_flow_create_callback)
+ * CREATED -> MODIFYING (ind_core_flow_modify_handler,
+ *                       ind_core_flow_modify_strict_handler,
+ *                       queued_req_service)
+ * MODIFYING -> CREATED (indigo_core_flow_modify_callback)
+ * NEW -> DELETE_MARKED (ind_core_flow_entry_delete)
+ * CREATED -> DELETE_MARKED (ind_core_flow_entry_delete)
+ * MODIFYING -> DELETE_MARKED (ind_core_flow_entry_delete)
+ * DELETE_MARKED -> DELETING (ind_core_flow_entry_delete, queued_req_service)
  */
 
 enum ft_flow_state {
