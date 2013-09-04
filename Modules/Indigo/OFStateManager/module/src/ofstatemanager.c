@@ -1119,11 +1119,17 @@ ind_core_ft_dump(aim_pvs_t* pvs)
         aim_printf(pvs, "packets: %"PRIu64"\n", entry->packets);
         aim_printf(pvs, "bytes: %"PRIu64"\n", entry->bytes);
 
-        {
+        if (entry->match.version == OF_VERSION_1_0) {
             int rv;
             of_action_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
                 of_object_dump((loci_writer_f)aim_printf, pvs, &elt.header);
+            }
+        } else {
+            int rv;
+            of_instruction_t inst;
+            OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
+                of_object_dump((loci_writer_f)aim_printf, pvs, &inst.header);
             }
         }
 
@@ -1144,12 +1150,20 @@ ind_core_ft_show(aim_pvs_t* pvs)
         aim_printf(pvs, "priority=%hu ", entry->priority);
         aim_printf(pvs, "table_id=%hhu ", entry->table_id);
 
-        {
+        if (entry->match.version == OF_VERSION_1_0) {
             int rv;
             of_action_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
                 aim_printf(pvs, "%s(", of_object_id_str[elt.header.object_id]);
                 of_object_show((loci_writer_f)aim_printf, pvs, &elt.header);
+                aim_printf(pvs, ") ");
+            }
+        } else {
+            int rv;
+            of_instruction_t inst;
+            OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
+                aim_printf(pvs, "%s(", of_object_id_str[inst.header.object_id]);
+                of_object_show((loci_writer_f)aim_printf, pvs, &inst.header);
                 aim_printf(pvs, ") ");
             }
         }
