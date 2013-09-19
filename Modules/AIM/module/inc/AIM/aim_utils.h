@@ -42,7 +42,7 @@
  * Safe pointer casting.
  */
 #define AIM_PCAST_SAFE(_type, _condition, _value)       \
-    (_type) (_condition) ? (_value) : NULL
+  ((_type) ((_condition) ? (_value) : NULL))
 
 /**
  * Declare a variable and assign a safe cast.
