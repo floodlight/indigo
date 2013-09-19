@@ -1100,7 +1100,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_0(void)
     obj = of_bsn_virtual_port_create_request_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 48);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REQUEST);
 
@@ -1108,7 +1108,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_0(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 32);
+        TEST_ASSERT(length == 48);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -3385,7 +3385,7 @@ test_of_bsn_vport_header_OF_VERSION_1_0(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 4);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -3402,7 +3402,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_0(void)
     obj = of_bsn_vport_q_in_q_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
 
@@ -3410,7 +3410,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_0(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
+        TEST_ASSERT(length == 32);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -4821,7 +4821,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_1(void)
     obj = of_bsn_virtual_port_create_request_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 48);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REQUEST);
 
@@ -4829,7 +4829,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_1(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 32);
+        TEST_ASSERT(length == 48);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -7714,7 +7714,7 @@ test_of_bsn_vport_header_OF_VERSION_1_1(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 4);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -7731,7 +7731,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_1(void)
     obj = of_bsn_vport_q_in_q_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
 
@@ -7739,7 +7739,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_1(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
+        TEST_ASSERT(length == 32);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -9737,7 +9737,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_2(void)
     obj = of_bsn_virtual_port_create_request_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 48);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REQUEST);
 
@@ -9745,7 +9745,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_2(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 32);
+        TEST_ASSERT(length == 48);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -12364,7 +12364,7 @@ test_of_bsn_vport_header_OF_VERSION_1_2(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 4);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -12381,7 +12381,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_2(void)
     obj = of_bsn_vport_q_in_q_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
 
@@ -12389,7 +12389,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_2(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
+        TEST_ASSERT(length == 32);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -17368,7 +17368,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_3(void)
     obj = of_bsn_virtual_port_create_request_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 32);
+    TEST_ASSERT(obj->length == 48);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VIRTUAL_PORT_CREATE_REQUEST);
 
@@ -17376,7 +17376,7 @@ test_of_bsn_virtual_port_create_request_OF_VERSION_1_3(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 32);
+        TEST_ASSERT(length == 48);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
@@ -21224,7 +21224,7 @@ test_of_bsn_vport_header_OF_VERSION_1_3(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 4);
+    TEST_ASSERT(obj->length == 20);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -21241,7 +21241,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_3(void)
     obj = of_bsn_vport_q_in_q_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->length == 32);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
 
@@ -21249,7 +21249,7 @@ test_of_bsn_vport_q_in_q_OF_VERSION_1_3(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
+        TEST_ASSERT(length == 32);
     }
     if (obj->wire_type_get != NULL) {
         of_object_id_t obj_id;
