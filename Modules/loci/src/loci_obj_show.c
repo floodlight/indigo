@@ -2794,6 +2794,12 @@ int
 of_bsn_vport_header_OF_VERSION_1_0_show(loci_writer_f writer, void* cookie, of_bsn_vport_header_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
+
+    of_bsn_vport_header_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     return out;
 }
@@ -2802,8 +2808,14 @@ int
 of_bsn_vport_q_in_q_OF_VERSION_1_0_show(loci_writer_f writer, void* cookie, of_bsn_vport_q_in_q_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     of_bsn_vport_q_in_q_port_no_get(obj, &val32);
     out += writer(cookie, "port_no=");
@@ -6161,6 +6173,12 @@ int
 of_bsn_vport_header_OF_VERSION_1_1_show(loci_writer_f writer, void* cookie, of_bsn_vport_header_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
+
+    of_bsn_vport_header_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     return out;
 }
@@ -6169,8 +6187,14 @@ int
 of_bsn_vport_q_in_q_OF_VERSION_1_1_show(loci_writer_f writer, void* cookie, of_bsn_vport_q_in_q_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     of_bsn_vport_q_in_q_port_no_get(obj, &val32);
     out += writer(cookie, "port_no=");
@@ -9866,6 +9890,12 @@ int
 of_bsn_vport_header_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_bsn_vport_header_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
+
+    of_bsn_vport_header_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     return out;
 }
@@ -9874,8 +9904,14 @@ int
 of_bsn_vport_q_in_q_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_bsn_vport_q_in_q_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     of_bsn_vport_q_in_q_port_no_get(obj, &val32);
     out += writer(cookie, "port_no=");
@@ -15355,6 +15391,12 @@ int
 of_bsn_vport_header_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_bsn_vport_header_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
+
+    of_bsn_vport_header_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     return out;
 }
@@ -15363,8 +15405,14 @@ int
 of_bsn_vport_q_in_q_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_bsn_vport_q_in_q_t *obj)
 {
     int out = 0;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "if_name=");
+    out += LOCI_SHOW_port_name_if_name(writer, cookie, port_name);
+    out += writer(cookie, " ");
 
     of_bsn_vport_q_in_q_port_no_get(obj, &val32);
     out += writer(cookie, "port_no=");

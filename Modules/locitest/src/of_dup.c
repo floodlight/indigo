@@ -3518,10 +3518,14 @@ of_bsn_vport_header_OF_VERSION_1_0_dup(
     of_bsn_vport_header_t *src)
 {
     of_bsn_vport_header_t *dst;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_header_if_name_get(src, &port_name);
+    of_bsn_vport_header_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -3539,12 +3543,16 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_dup(
     of_bsn_vport_q_in_q_t *src)
 {
     of_bsn_vport_q_in_q_t *dst;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     of_bsn_vport_q_in_q_port_no_get(src, &val32);
     of_bsn_vport_q_in_q_port_no_set(dst, val32);
@@ -8042,10 +8050,14 @@ of_bsn_vport_header_OF_VERSION_1_1_dup(
     of_bsn_vport_header_t *src)
 {
     of_bsn_vport_header_t *dst;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_header_if_name_get(src, &port_name);
+    of_bsn_vport_header_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -8063,12 +8075,16 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_dup(
     of_bsn_vport_q_in_q_t *src)
 {
     of_bsn_vport_q_in_q_t *dst;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     of_bsn_vport_q_in_q_port_no_get(src, &val32);
     of_bsn_vport_q_in_q_port_no_set(dst, val32);
@@ -13006,10 +13022,14 @@ of_bsn_vport_header_OF_VERSION_1_2_dup(
     of_bsn_vport_header_t *src)
 {
     of_bsn_vport_header_t *dst;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_header_if_name_get(src, &port_name);
+    of_bsn_vport_header_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -13027,12 +13047,16 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_dup(
     of_bsn_vport_q_in_q_t *src)
 {
     of_bsn_vport_q_in_q_t *dst;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     of_bsn_vport_q_in_q_port_no_get(src, &val32);
     of_bsn_vport_q_in_q_port_no_set(dst, val32);
@@ -21496,10 +21520,14 @@ of_bsn_vport_header_OF_VERSION_1_3_dup(
     of_bsn_vport_header_t *src)
 {
     of_bsn_vport_header_t *dst;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_header_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_header_if_name_get(src, &port_name);
+    of_bsn_vport_header_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -21517,12 +21545,16 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_dup(
     of_bsn_vport_q_in_q_t *src)
 {
     of_bsn_vport_q_in_q_t *dst;
+    of_port_name_t port_name;
     uint32_t val32;
     uint16_t val16;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     of_bsn_vport_q_in_q_port_no_get(src, &val32);
     of_bsn_vport_q_in_q_port_no_set(dst, val32);
