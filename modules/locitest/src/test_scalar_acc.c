@@ -2803,7 +2803,7 @@ test_of_bsn_vport_header_OF_VERSION_1_0_scalar(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 4);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -6267,7 +6267,7 @@ test_of_bsn_vport_header_OF_VERSION_1_1_scalar(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 4);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -9932,7 +9932,7 @@ test_of_bsn_vport_header_OF_VERSION_1_2_scalar(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 4);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
@@ -17035,7 +17035,7 @@ test_of_bsn_vport_header_OF_VERSION_1_3_scalar(void)
     obj = of_bsn_vport_header_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 4);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_VPORT_HEADER);
 
