@@ -2978,6 +2978,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_b
     int out = 0;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     out += writer(cookie, "Object of type of_bsn_vport_q_in_q\n");
 
@@ -3004,6 +3005,11 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_b
     of_bsn_vport_q_in_q_egress_vlan_id_get(obj, &val16);
     out += writer(cookie, "  egress_vlan_id (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "  if_name (of_port_name_t):  ");
+    out += LOCI_DUMP_port_name(writer, cookie, port_name);
     out += writer(cookie, "\n");
 
     return out;
@@ -6566,6 +6572,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_b
     int out = 0;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     out += writer(cookie, "Object of type of_bsn_vport_q_in_q\n");
 
@@ -6592,6 +6599,11 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_b
     of_bsn_vport_q_in_q_egress_vlan_id_get(obj, &val16);
     out += writer(cookie, "  egress_vlan_id (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "  if_name (of_port_name_t):  ");
+    out += LOCI_DUMP_port_name(writer, cookie, port_name);
     out += writer(cookie, "\n");
 
     return out;
@@ -10505,6 +10517,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_b
     int out = 0;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     out += writer(cookie, "Object of type of_bsn_vport_q_in_q\n");
 
@@ -10531,6 +10544,11 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_b
     of_bsn_vport_q_in_q_egress_vlan_id_get(obj, &val16);
     out += writer(cookie, "  egress_vlan_id (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "  if_name (of_port_name_t):  ");
+    out += LOCI_DUMP_port_name(writer, cookie, port_name);
     out += writer(cookie, "\n");
 
     return out;
@@ -16447,6 +16465,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_b
     int out = 0;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     out += writer(cookie, "Object of type of_bsn_vport_q_in_q\n");
 
@@ -16473,6 +16492,11 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_b
     of_bsn_vport_q_in_q_egress_vlan_id_get(obj, &val16);
     out += writer(cookie, "  egress_vlan_id (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bsn_vport_q_in_q_if_name_get(obj, &port_name);
+    out += writer(cookie, "  if_name (of_port_name_t):  ");
+    out += LOCI_DUMP_port_name(writer, cookie, port_name);
     out += writer(cookie, "\n");
 
     return out;

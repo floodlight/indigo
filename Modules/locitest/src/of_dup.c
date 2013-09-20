@@ -3541,6 +3541,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_dup(
     of_bsn_vport_q_in_q_t *dst;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
@@ -3560,6 +3561,9 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_dup(
 
     of_bsn_vport_q_in_q_egress_vlan_id_get(src, &val16);
     of_bsn_vport_q_in_q_egress_vlan_id_set(dst, val16);
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -8065,6 +8069,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_dup(
     of_bsn_vport_q_in_q_t *dst;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
@@ -8084,6 +8089,9 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_dup(
 
     of_bsn_vport_q_in_q_egress_vlan_id_get(src, &val16);
     of_bsn_vport_q_in_q_egress_vlan_id_set(dst, val16);
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -13029,6 +13037,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_dup(
     of_bsn_vport_q_in_q_t *dst;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
@@ -13048,6 +13057,9 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_dup(
 
     of_bsn_vport_q_in_q_egress_vlan_id_get(src, &val16);
     of_bsn_vport_q_in_q_egress_vlan_id_set(dst, val16);
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     return dst;
 }
@@ -21519,6 +21531,7 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_dup(
     of_bsn_vport_q_in_q_t *dst;
     uint32_t val32;
     uint16_t val16;
+    of_port_name_t port_name;
 
     if ((dst = of_bsn_vport_q_in_q_new(src->version)) == NULL) {
         return NULL;
@@ -21538,6 +21551,9 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_dup(
 
     of_bsn_vport_q_in_q_egress_vlan_id_get(src, &val16);
     of_bsn_vport_q_in_q_egress_vlan_id_set(dst, val16);
+
+    of_bsn_vport_q_in_q_if_name_get(src, &port_name);
+    of_bsn_vport_q_in_q_if_name_set(dst, port_name);
 
     return dst;
 }

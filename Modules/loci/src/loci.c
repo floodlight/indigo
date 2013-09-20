@@ -13002,7 +13002,7 @@ of_bsn_virtual_port_create_request_vport_bind(
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
         offset = 16;
-        cur_len = 16;
+        cur_len = 32;
         break;
     default:
         ASSERT(0);
@@ -13079,7 +13079,7 @@ of_bsn_virtual_port_create_request_vport_set(
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
         offset = 16;
-        cur_len = 16;
+        cur_len = 32;
         break;
     default:
         ASSERT(0);
@@ -46140,6 +46140,90 @@ of_bsn_vport_q_in_q_egress_vlan_id_set(
     abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
     ASSERT(abs_offset >= 0);
     of_wire_buffer_u16_set(wbuf, abs_offset, egress_vlan_id);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get if_name from an object of type of_bsn_vport_q_in_q.
+ * @param obj Pointer to an object of type of_bsn_vport_q_in_q.
+ * @param if_name Pointer to the child object of type
+ * of_port_name_t to be filled out.
+ *
+ */
+void
+of_bsn_vport_q_in_q_if_name_get(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t *if_name)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_name_get(wbuf, abs_offset, if_name);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set if_name in an object of type of_bsn_vport_q_in_q.
+ * @param obj Pointer to an object of type of_bsn_vport_q_in_q.
+ * @param if_name The value to write into the object
+ */
+void
+of_bsn_vport_q_in_q_if_name_set(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t if_name)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_VPORT_Q_IN_Q);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_name_set(wbuf, abs_offset, if_name);
 
     OF_LENGTH_CHECK_ASSERT(obj);
 

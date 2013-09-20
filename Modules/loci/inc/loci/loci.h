@@ -13729,6 +13729,13 @@ extern void of_bsn_vport_q_in_q_egress_vlan_id_get(
     of_bsn_vport_q_in_q_t *obj,
     uint16_t *egress_vlan_id);
 
+extern void of_bsn_vport_q_in_q_if_name_set(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t if_name);
+extern void of_bsn_vport_q_in_q_if_name_get(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t *if_name);
+
 /* Unified accessor functions for of_bucket */
 
 extern void of_bucket_weight_set(
