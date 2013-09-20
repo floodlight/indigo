@@ -3929,7 +3929,7 @@ of_object_fixed_len_v1[OF_OBJECT_COUNT] = {
     16,   /* 30: of_bsn_shell_output */
     20,   /* 31: of_bsn_shell_status */
     24,   /* 32: of_bsn_virtual_port_create_reply */
-    32,   /* 33: of_bsn_virtual_port_create_request */
+    48,   /* 33: of_bsn_virtual_port_create_request */
     20,   /* 34: of_bsn_virtual_port_remove_reply */
     20,   /* 35: of_bsn_virtual_port_remove_request */
     1068, /* 36: of_desc_stats_reply */
@@ -4058,7 +4058,7 @@ of_object_fixed_len_v1[OF_OBJECT_COUNT] = {
     32,   /* 159: of_bsn_interface */
     4,    /* 160: of_bsn_vport */
     4,    /* 161: of_bsn_vport_header */
-    16,   /* 162: of_bsn_vport_q_in_q */
+    32,   /* 162: of_bsn_vport_q_in_q */
     -1,   /* 163: of_bucket */
     -1,   /* 164: of_bucket_counter */
     -1,   /* 165: of_experimenter_multipart_header */
@@ -4255,7 +4255,7 @@ of_object_fixed_len_v2[OF_OBJECT_COUNT] = {
     -1,   /* 30: of_bsn_shell_output */
     -1,   /* 31: of_bsn_shell_status */
     24,   /* 32: of_bsn_virtual_port_create_reply */
-    32,   /* 33: of_bsn_virtual_port_create_request */
+    48,   /* 33: of_bsn_virtual_port_create_request */
     20,   /* 34: of_bsn_virtual_port_remove_reply */
     20,   /* 35: of_bsn_virtual_port_remove_request */
     1072, /* 36: of_desc_stats_reply */
@@ -4384,7 +4384,7 @@ of_object_fixed_len_v2[OF_OBJECT_COUNT] = {
     32,   /* 159: of_bsn_interface */
     4,    /* 160: of_bsn_vport */
     4,    /* 161: of_bsn_vport_header */
-    16,   /* 162: of_bsn_vport_q_in_q */
+    32,   /* 162: of_bsn_vport_q_in_q */
     16,   /* 163: of_bucket */
     16,   /* 164: of_bucket_counter */
     -1,   /* 165: of_experimenter_multipart_header */
@@ -4581,7 +4581,7 @@ of_object_fixed_len_v3[OF_OBJECT_COUNT] = {
     -1,   /* 30: of_bsn_shell_output */
     -1,   /* 31: of_bsn_shell_status */
     24,   /* 32: of_bsn_virtual_port_create_reply */
-    32,   /* 33: of_bsn_virtual_port_create_request */
+    48,   /* 33: of_bsn_virtual_port_create_request */
     20,   /* 34: of_bsn_virtual_port_remove_reply */
     20,   /* 35: of_bsn_virtual_port_remove_request */
     1072, /* 36: of_desc_stats_reply */
@@ -4710,7 +4710,7 @@ of_object_fixed_len_v3[OF_OBJECT_COUNT] = {
     32,   /* 159: of_bsn_interface */
     4,    /* 160: of_bsn_vport */
     4,    /* 161: of_bsn_vport_header */
-    16,   /* 162: of_bsn_vport_q_in_q */
+    32,   /* 162: of_bsn_vport_q_in_q */
     16,   /* 163: of_bucket */
     16,   /* 164: of_bucket_counter */
     -1,   /* 165: of_experimenter_multipart_header */
@@ -4907,7 +4907,7 @@ of_object_fixed_len_v4[OF_OBJECT_COUNT] = {
     -1,   /* 30: of_bsn_shell_output */
     -1,   /* 31: of_bsn_shell_status */
     24,   /* 32: of_bsn_virtual_port_create_reply */
-    32,   /* 33: of_bsn_virtual_port_create_request */
+    48,   /* 33: of_bsn_virtual_port_create_request */
     20,   /* 34: of_bsn_virtual_port_remove_reply */
     20,   /* 35: of_bsn_virtual_port_remove_request */
     1072, /* 36: of_desc_stats_reply */
@@ -5036,7 +5036,7 @@ of_object_fixed_len_v4[OF_OBJECT_COUNT] = {
     32,   /* 159: of_bsn_interface */
     4,    /* 160: of_bsn_vport */
     4,    /* 161: of_bsn_vport_header */
-    16,   /* 162: of_bsn_vport_q_in_q */
+    32,   /* 162: of_bsn_vport_q_in_q */
     16,   /* 163: of_bucket */
     16,   /* 164: of_bucket_counter */
     8,    /* 165: of_experimenter_multipart_header */

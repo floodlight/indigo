@@ -3157,6 +3157,10 @@ typedef struct of_bsn_vport_header_s of_bsn_vport_header_t;
  *   Accessors for egress_vlan_id, a variable of type uint16.  Functions
  *   are of type of_bsn_vport_q_in_q_uint16_get_f and _set_f.
  *
+ * @param if_name_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
+ *   Accessors for if_name, a variable of type of_port_name.  Functions
+ *   are of type of_bsn_vport_q_in_q_of_port_name_get_f and _set_f.
+ *
  */
 typedef struct of_bsn_vport_q_in_q_s of_bsn_vport_q_in_q_t;
 
