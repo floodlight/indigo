@@ -13692,21 +13692,7 @@ extern void of_bsn_interface_ipv4_netmask_get(
 
 /* Unified accessor functions for of_bsn_vport_header */
 
-extern void of_bsn_vport_header_if_name_set(
-    of_bsn_vport_header_t *obj,
-    of_port_name_t if_name);
-extern void of_bsn_vport_header_if_name_get(
-    of_bsn_vport_header_t *obj,
-    of_port_name_t *if_name);
-
 /* Unified accessor functions for of_bsn_vport_q_in_q */
-
-extern void of_bsn_vport_q_in_q_if_name_set(
-    of_bsn_vport_q_in_q_t *obj,
-    of_port_name_t if_name);
-extern void of_bsn_vport_q_in_q_if_name_get(
-    of_bsn_vport_q_in_q_t *obj,
-    of_port_name_t *if_name);
 
 extern void of_bsn_vport_q_in_q_port_no_set(
     of_bsn_vport_q_in_q_t *obj,
@@ -13742,6 +13728,13 @@ extern void of_bsn_vport_q_in_q_egress_vlan_id_set(
 extern void of_bsn_vport_q_in_q_egress_vlan_id_get(
     of_bsn_vport_q_in_q_t *obj,
     uint16_t *egress_vlan_id);
+
+extern void of_bsn_vport_q_in_q_if_name_set(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t if_name);
+extern void of_bsn_vport_q_in_q_if_name_get(
+    of_bsn_vport_q_in_q_t *obj,
+    of_port_name_t *if_name);
 
 /* Unified accessor functions for of_bucket */
 
