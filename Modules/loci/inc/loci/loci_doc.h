@@ -3123,10 +3123,6 @@ typedef struct of_bsn_interface_s of_bsn_interface_t;
  * Structure for of_bsn_vport object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
- * @param if_name_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
- *   Accessors for if_name, a variable of type of_port_name.  Functions
- *   are of type of_bsn_vport_of_port_name_get_f and _set_f.
- *
  */
 typedef struct of_bsn_vport_s of_bsn_vport_t;
 
@@ -3134,20 +3130,12 @@ typedef struct of_bsn_vport_s of_bsn_vport_t;
  * Structure for of_bsn_vport_header object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
- * @param if_name_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
- *   Accessors for if_name, a variable of type of_port_name.  Functions
- *   are of type of_bsn_vport_header_of_port_name_get_f and _set_f.
- *
  */
 typedef struct of_bsn_vport_header_s of_bsn_vport_header_t;
 
 /**
  * Structure for of_bsn_vport_q_in_q object.  Get/set
  * accessors available in all versions unless noted otherwise
- *
- * @param if_name_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
- *   Accessors for if_name, a variable of type of_port_name.  Functions
- *   are of type of_bsn_vport_q_in_q_of_port_name_get_f and _set_f.
  *
  * @param port_no_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
  *   Accessors for port_no, a variable of type uint32.  Functions
@@ -3168,6 +3156,10 @@ typedef struct of_bsn_vport_header_s of_bsn_vport_header_t;
  * @param egress_vlan_id_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
  *   Accessors for egress_vlan_id, a variable of type uint16.  Functions
  *   are of type of_bsn_vport_q_in_q_uint16_get_f and _set_f.
+ *
+ * @param if_name_get/set ( OF_1_0 OF_1_1 OF_1_2 OF_1_3).
+ *   Accessors for if_name, a variable of type of_port_name.  Functions
+ *   are of type of_bsn_vport_q_in_q_of_port_name_get_f and _set_f.
  *
  */
 typedef struct of_bsn_vport_q_in_q_s of_bsn_vport_q_in_q_t;

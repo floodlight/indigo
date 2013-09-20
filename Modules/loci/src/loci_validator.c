@@ -1105,8 +1105,8 @@ of_bsn_vport_q_in_q_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 static inline int
 of_bsn_vport_header_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 {
-    if (len < 20) {
-        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 20);
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
         return -1;
     }
 
@@ -3093,8 +3093,8 @@ of_bsn_vport_q_in_q_OF_VERSION_1_1_validate(uint8_t *buf, int len)
 static inline int
 of_bsn_vport_header_OF_VERSION_1_1_validate(uint8_t *buf, int len)
 {
-    if (len < 20) {
-        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 20);
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
         return -1;
     }
 
@@ -5957,8 +5957,8 @@ of_bsn_vport_q_in_q_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 static inline int
 of_bsn_vport_header_OF_VERSION_1_2_validate(uint8_t *buf, int len)
 {
-    if (len < 20) {
-        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 20);
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
         return -1;
     }
 
@@ -9631,8 +9631,8 @@ of_bsn_vport_q_in_q_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 static inline int
 of_bsn_vport_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
-    if (len < 20) {
-        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 20);
+    if (len < 4) {
+        VALIDATOR_LOG("Class of_bsn_vport_header.  Len %d too small, < %d", len, 4);
         return -1;
     }
 
