@@ -240,6 +240,24 @@ extern int of_bsn_header_OF_VERSION_1_0_populate_scalars(
 extern int of_bsn_header_OF_VERSION_1_0_check_scalars(
     of_bsn_header_t *obj, int value);
 
+extern int of_bsn_hybrid_get_reply_OF_VERSION_1_0_populate(
+    of_bsn_hybrid_get_reply_t *obj, int value);
+extern int of_bsn_hybrid_get_reply_OF_VERSION_1_0_check(
+    of_bsn_hybrid_get_reply_t *obj, int value);
+extern int of_bsn_hybrid_get_reply_OF_VERSION_1_0_populate_scalars(
+    of_bsn_hybrid_get_reply_t *obj, int value);
+extern int of_bsn_hybrid_get_reply_OF_VERSION_1_0_check_scalars(
+    of_bsn_hybrid_get_reply_t *obj, int value);
+
+extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_populate(
+    of_bsn_hybrid_get_request_t *obj, int value);
+extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_check(
+    of_bsn_hybrid_get_request_t *obj, int value);
+extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_populate_scalars(
+    of_bsn_hybrid_get_request_t *obj, int value);
+extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_check_scalars(
+    of_bsn_hybrid_get_request_t *obj, int value);
+
 extern int of_bsn_set_ip_mask_OF_VERSION_1_0_populate(
     of_bsn_set_ip_mask_t *obj, int value);
 extern int of_bsn_set_ip_mask_OF_VERSION_1_0_check(

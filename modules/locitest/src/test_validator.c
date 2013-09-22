@@ -535,6 +535,24 @@ test_validate_all(void)
     }
 
     {
+        of_bsn_hybrid_get_request_t *obj = of_bsn_hybrid_get_request_new(OF_VERSION_1_0);
+        of_message_t msg;
+        of_bsn_hybrid_get_request_OF_VERSION_1_0_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_hybrid_get_request_delete(obj);
+    }
+
+    {
+        of_bsn_hybrid_get_reply_t *obj = of_bsn_hybrid_get_reply_new(OF_VERSION_1_0);
+        of_message_t msg;
+        of_bsn_hybrid_get_reply_OF_VERSION_1_0_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_hybrid_get_reply_delete(obj);
+    }
+
+    {
         of_bsn_get_mirroring_request_t *obj = of_bsn_get_mirroring_request_new(OF_VERSION_1_0);
         of_message_t msg;
         of_bsn_get_mirroring_request_OF_VERSION_1_0_populate(obj, 1);
