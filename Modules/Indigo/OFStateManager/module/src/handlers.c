@@ -1970,7 +1970,48 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
     of_bsn_get_ip_mask_reply_mask_set(reply, val32);
 
     if ((rv = IND_CORE_MSG_SEND(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending features response to %d", cxn_id);
+        LOG_ERROR("Error sending get ip mask response to %d", cxn_id);
+        return rv;
+    }
+    return INDIGO_ERROR_NONE;
+}
+
+/**
+ * Handle a BSN hybrid get request
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+indigo_error_t
+ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
+                                        indigo_cxn_id_t cxn_id)
+{
+    of_bsn_hybrid_get_request_t *obj;
+    of_bsn_hybrid_get_reply_t *reply;
+    int rv;
+    uint32_t xid;
+
+    obj = (of_bsn_hybrid_get_request_t *)_obj;
+
+    LOG_TRACE("Received BSN hybrid_get message from %d", cxn_id);
+
+    /* Duplicate the module's desc stats reply and send to controller */
+    if ((reply = of_bsn_hybrid_get_reply_new(obj->version)) == NULL) {
+        LOG_ERROR("Failed to create hybrid_get reply message");
+        of_bsn_hybrid_get_request_delete(obj);
+        return INDIGO_ERROR_NONE; /* @fixme Error handling in this case? */
+    }
+
+    of_bsn_hybrid_get_request_xid_get(obj, &xid);
+    of_bsn_hybrid_get_reply_xid_set(reply, xid);
+    of_bsn_hybrid_get_reply_hybrid_enable_set(reply, 1);
+    of_bsn_hybrid_get_reply_hybrid_version_set(reply, 0);
+
+    of_bsn_hybrid_get_request_delete(obj);
+
+    if ((rv = IND_CORE_MSG_SEND(cxn_id, reply)) < 0) {
+        LOG_ERROR("Error sending hybrid_get response to %d", cxn_id);
         return rv;
     }
     return INDIGO_ERROR_NONE;

@@ -307,6 +307,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         rv = ind_core_bsn_get_ip_mask_request_handler(obj, cxn);
         break;
 
+    case OF_BSN_HYBRID_GET_REQUEST:
+        rv = ind_core_bsn_hybrid_get_request_handler(obj, cxn);
+        break;
+
     /* These all use the experimenter handler */
     case OF_BSN_GET_MIRRORING_REQUEST:
     case OF_BSN_SET_MIRRORING:
