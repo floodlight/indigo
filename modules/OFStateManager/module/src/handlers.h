@@ -122,10 +122,7 @@ extern indigo_error_t ind_core_bsn_get_ip_mask_request_handler(
 extern indigo_error_t ind_core_bsn_set_ip_mask_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_bsn_get_get_mirroring_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_bsn_get_set_mirroring_handler(
+extern indigo_error_t ind_core_bsn_hybrid_get_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 
