@@ -549,6 +549,52 @@ typedef struct of_bsn_get_mirroring_request_s of_bsn_get_mirroring_request_t;
 typedef struct of_bsn_header_s of_bsn_header_t;
 
 /**
+ * Structure for of_bsn_hybrid_get_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_0).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_reply_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_0).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_0).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_reply_uint32_get_f and _set_f.
+ *
+ * @param hybrid_enable_get/set ( OF_1_0).
+ *   Accessors for hybrid_enable, a variable of type uint8.  Functions
+ *   are of type of_bsn_hybrid_get_reply_uint8_get_f and _set_f.
+ *
+ * @param hybrid_version_get/set ( OF_1_0).
+ *   Accessors for hybrid_version, a variable of type uint16.  Functions
+ *   are of type of_bsn_hybrid_get_reply_uint16_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_hybrid_get_reply_s of_bsn_hybrid_get_reply_t;
+
+/**
+ * Structure for of_bsn_hybrid_get_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_0).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_request_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_0).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_0).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_hybrid_get_request_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_hybrid_get_request_s of_bsn_hybrid_get_request_t;
+
+/**
  * Structure for of_bsn_set_ip_mask object.  Get/set
  * accessors available in all versions unless noted otherwise
  *

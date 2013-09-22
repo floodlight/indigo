@@ -113,6 +113,8 @@ static inline int of_bsn_set_mirroring_OF_VERSION_1_0_validate(uint8_t *buf, int
 static inline int of_bsn_set_l2_table_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_l2_table_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_ip_mask_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_hybrid_get_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
+static inline int of_bsn_hybrid_get_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_header_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_0_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len);
@@ -2051,6 +2053,28 @@ of_bsn_set_ip_mask_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_hybrid_get_request_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_hybrid_get_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_hybrid_get_reply_OF_VERSION_1_0_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_hybrid_get_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_header_OF_VERSION_1_0_validate(uint8_t *buf, int len)
 {
     if (len < 16) {
@@ -2382,6 +2406,10 @@ of_validate_message_OF_VERSION_1_0(of_message_t msg, int len)
         return of_bsn_set_l2_table_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_SET_IP_MASK:
         return of_bsn_set_ip_mask_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_HYBRID_GET_REQUEST:
+        return of_bsn_hybrid_get_request_OF_VERSION_1_0_validate(buf, len);
+    case OF_BSN_HYBRID_GET_REPLY:
+        return of_bsn_hybrid_get_reply_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_HEADER:
         return of_bsn_header_OF_VERSION_1_0_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:

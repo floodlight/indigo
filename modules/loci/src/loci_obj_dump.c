@@ -600,6 +600,70 @@ of_bsn_header_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_hea
 }
 
 int
+of_bsn_hybrid_get_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_hybrid_get_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+
+    out += writer(cookie, "Object of type of_bsn_hybrid_get_reply\n");
+
+    of_bsn_hybrid_get_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_reply_hybrid_enable_get(obj, &val8);
+    out += writer(cookie, "  hybrid_enable (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_reply_hybrid_version_get(obj, &val16);
+    out += writer(cookie, "  hybrid_version (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_hybrid_get_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_hybrid_get_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_hybrid_get_request\n");
+
+    of_bsn_hybrid_get_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_hybrid_get_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_bsn_set_ip_mask_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_set_ip_mask_t *obj)
 {
     int out = 0;
@@ -19811,6 +19875,8 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_bsn_get_mirroring_reply_OF_VERSION_1_0_dump,
     of_bsn_get_mirroring_request_OF_VERSION_1_0_dump,
     of_bsn_header_OF_VERSION_1_0_dump,
+    of_bsn_hybrid_get_reply_OF_VERSION_1_0_dump,
+    of_bsn_hybrid_get_request_OF_VERSION_1_0_dump,
     of_bsn_set_ip_mask_OF_VERSION_1_0_dump,
     of_bsn_set_l2_table_reply_OF_VERSION_1_0_dump,
     of_bsn_set_l2_table_request_OF_VERSION_1_0_dump,
@@ -20140,6 +20206,8 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_bsn_set_mirroring_OF_VERSION_1_1_dump,
     of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_dump,
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dump,
@@ -20466,6 +20534,8 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_bsn_set_mirroring_OF_VERSION_1_2_dump,
     of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_dump,
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dump,
@@ -20789,6 +20859,8 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_bsn_get_mirroring_reply_OF_VERSION_1_3_dump,
     of_bsn_get_mirroring_request_OF_VERSION_1_3_dump,
     of_bsn_header_OF_VERSION_1_3_dump,
+    unknown_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
