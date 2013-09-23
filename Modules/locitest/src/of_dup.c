@@ -677,6 +677,76 @@ of_bsn_header_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_hybrid_get_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_hybrid_get_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_OF_VERSION_1_0_dup(
+    of_bsn_hybrid_get_reply_t *src)
+{
+    of_bsn_hybrid_get_reply_t *dst;
+    uint32_t val32;
+    uint8_t val8;
+    uint16_t val16;
+
+    if ((dst = of_bsn_hybrid_get_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_reply_xid_get(src, &val32);
+    of_bsn_hybrid_get_reply_xid_set(dst, val32);
+
+    of_bsn_hybrid_get_reply_experimenter_get(src, &val32);
+    of_bsn_hybrid_get_reply_experimenter_set(dst, val32);
+
+    of_bsn_hybrid_get_reply_subtype_get(src, &val32);
+    of_bsn_hybrid_get_reply_subtype_set(dst, val32);
+
+    of_bsn_hybrid_get_reply_hybrid_enable_get(src, &val8);
+    of_bsn_hybrid_get_reply_hybrid_enable_set(dst, val8);
+
+    of_bsn_hybrid_get_reply_hybrid_version_get(src, &val16);
+    of_bsn_hybrid_get_reply_hybrid_version_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_hybrid_get_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_hybrid_get_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(
+    of_bsn_hybrid_get_request_t *src)
+{
+    of_bsn_hybrid_get_request_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_hybrid_get_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_request_xid_get(src, &val32);
+    of_bsn_hybrid_get_request_xid_set(dst, val32);
+
+    of_bsn_hybrid_get_request_experimenter_get(src, &val32);
+    of_bsn_hybrid_get_request_experimenter_set(dst, val32);
+
+    of_bsn_hybrid_get_request_subtype_get(src, &val32);
+    of_bsn_hybrid_get_request_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_ip_mask
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -27214,6 +27284,32 @@ of_bsn_header_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_bsn_header_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_dup(
+    of_bsn_hybrid_get_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_hybrid_get_reply_OF_VERSION_1_0_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_dup(
+    of_bsn_hybrid_get_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(src);
     }
 
     /* Class not supported in given version */
