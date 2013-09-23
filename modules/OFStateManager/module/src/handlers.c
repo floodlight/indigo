@@ -1483,7 +1483,7 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     obj = (of_desc_stats_request_t *)_obj;
     LOG_TRACE("Handling of_desc_stats_request message: %p.", obj);
 
-    /* Duplicate the module's desc stats reply and send to controller */
+    /* Create reply and send to controller */
     if ((reply = of_desc_stats_reply_new(obj->version)) == NULL) {
         LOG_ERROR("Failed to create desc stats reply message");
         of_object_delete(_obj);
@@ -1942,7 +1942,7 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
 
     LOG_TRACE("Received BSN get IP mask request message from %d", cxn_id);
 
-    /* Duplicate the module's desc stats reply and send to controller */
+    /* Create reply and send to controller */
     if ((reply = of_bsn_get_ip_mask_reply_new(obj->version)) == NULL) {
         LOG_ERROR("Failed to create ip mask reply message");
         of_bsn_get_ip_mask_request_delete(obj);
@@ -1996,7 +1996,7 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
 
     LOG_TRACE("Received BSN hybrid_get message from %d", cxn_id);
 
-    /* Duplicate the module's desc stats reply and send to controller */
+    /* Create reply and send to controller */
     if ((reply = of_bsn_hybrid_get_reply_new(obj->version)) == NULL) {
         LOG_ERROR("Failed to create hybrid_get reply message");
         of_bsn_hybrid_get_request_delete(obj);
