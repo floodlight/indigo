@@ -102,6 +102,14 @@ extern of_bsn_header_t *
     of_bsn_header_dup(
         of_bsn_header_t *src);
 
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_dup(
+        of_bsn_hybrid_get_reply_t *src);
+
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_dup(
+        of_bsn_hybrid_get_request_t *src);
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_dup(
         of_bsn_set_ip_mask_t *src);
@@ -1373,6 +1381,14 @@ extern of_bsn_get_mirroring_request_t *
 extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_0_dup(
         of_bsn_header_t *src);
+
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_OF_VERSION_1_0_dup(
+        of_bsn_hybrid_get_reply_t *src);
+
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(
+        of_bsn_hybrid_get_request_t *src);
 
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_OF_VERSION_1_0_dup(

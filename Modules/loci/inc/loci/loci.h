@@ -148,6 +148,8 @@ typedef of_object_t of_bsn_get_l2_table_request_t;
 typedef of_object_t of_bsn_get_mirroring_reply_t;
 typedef of_object_t of_bsn_get_mirroring_request_t;
 typedef of_object_t of_bsn_header_t;
+typedef of_object_t of_bsn_hybrid_get_reply_t;
+typedef of_object_t of_bsn_hybrid_get_request_t;
 typedef of_object_t of_bsn_set_ip_mask_t;
 typedef of_object_t of_bsn_set_l2_table_reply_t;
 typedef of_object_t of_bsn_set_l2_table_request_t;
@@ -781,6 +783,32 @@ extern of_bsn_header_t *
         const char *file, int line);
 #define of_bsn_header_new_from_message(msg) \
     of_bsn_header_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_hybrid_get_reply_new(version) \
+    of_bsn_hybrid_get_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_hybrid_get_reply_new_from_message(msg) \
+    of_bsn_hybrid_get_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_hybrid_get_request_new(version) \
+    of_bsn_hybrid_get_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_hybrid_get_request_new_from_message(msg) \
+    of_bsn_hybrid_get_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_set_ip_mask_t *
@@ -3432,6 +3460,16 @@ extern of_list_uint8_t *
 #define of_bsn_header_new_from_message(msg) \
     of_bsn_header_new_from_message_(msg)
 
+#define of_bsn_hybrid_get_reply_new(version) \
+    of_bsn_hybrid_get_reply_new_(version)
+#define of_bsn_hybrid_get_reply_new_from_message(msg) \
+    of_bsn_hybrid_get_reply_new_from_message_(msg)
+
+#define of_bsn_hybrid_get_request_new(version) \
+    of_bsn_hybrid_get_request_new_(version)
+#define of_bsn_hybrid_get_request_new_from_message(msg) \
+    of_bsn_hybrid_get_request_new_from_message_(msg)
+
 #define of_bsn_set_ip_mask_new(version) \
     of_bsn_set_ip_mask_new_(version)
 #define of_bsn_set_ip_mask_new_from_message(msg) \
@@ -4632,6 +4670,20 @@ extern of_bsn_header_t *
     of_bsn_header_new_from_message_(of_message_t msg);
 extern void of_bsn_header_init(
     of_bsn_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_new_(of_version_t version);
+extern of_bsn_hybrid_get_reply_t *
+    of_bsn_hybrid_get_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_hybrid_get_reply_init(
+    of_bsn_hybrid_get_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_new_(of_version_t version);
+extern of_bsn_hybrid_get_request_t *
+    of_bsn_hybrid_get_request_new_from_message_(of_message_t msg);
+extern void of_bsn_hybrid_get_request_init(
+    of_bsn_hybrid_get_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_new_(of_version_t version);
@@ -6522,6 +6574,28 @@ of_bsn_get_mirroring_request_delete(of_bsn_get_mirroring_request_t *obj) {
  */
 static inline void
 of_bsn_header_delete(of_bsn_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_hybrid_get_reply_t
+ * @param obj An instance of type of_bsn_hybrid_get_reply_t
+ *
+ * \ingroup of_bsn_hybrid_get_reply
+ */
+static inline void
+of_bsn_hybrid_get_reply_delete(of_bsn_hybrid_get_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_hybrid_get_request_t
+ * @param obj An instance of type of_bsn_hybrid_get_request_t
+ *
+ * \ingroup of_bsn_hybrid_get_request
+ */
+static inline void
+of_bsn_hybrid_get_request_delete(of_bsn_hybrid_get_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10533,6 +10607,66 @@ extern void of_bsn_header_subtype_set(
     uint32_t subtype);
 extern void of_bsn_header_subtype_get(
     of_bsn_header_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_bsn_hybrid_get_reply */
+
+extern void of_bsn_hybrid_get_reply_xid_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_hybrid_get_reply_xid_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_hybrid_get_reply_experimenter_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_hybrid_get_reply_experimenter_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_hybrid_get_reply_subtype_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_hybrid_get_reply_subtype_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_hybrid_get_reply_hybrid_enable_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint8_t hybrid_enable);
+extern void of_bsn_hybrid_get_reply_hybrid_enable_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint8_t *hybrid_enable);
+
+extern void of_bsn_hybrid_get_reply_hybrid_version_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint16_t hybrid_version);
+extern void of_bsn_hybrid_get_reply_hybrid_version_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint16_t *hybrid_version);
+
+/* Unified accessor functions for of_bsn_hybrid_get_request */
+
+extern void of_bsn_hybrid_get_request_xid_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_hybrid_get_request_xid_get(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_hybrid_get_request_experimenter_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_hybrid_get_request_experimenter_get(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_hybrid_get_request_subtype_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_hybrid_get_request_subtype_get(
+    of_bsn_hybrid_get_request_t *obj,
     uint32_t *subtype);
 
 /* Unified accessor functions for of_bsn_set_ip_mask */
@@ -16779,6 +16913,8 @@ union of_generic_u {
     of_bsn_get_mirroring_reply_t of_bsn_get_mirroring_reply;
     of_bsn_get_mirroring_request_t of_bsn_get_mirroring_request;
     of_bsn_header_t of_bsn_header;
+    of_bsn_hybrid_get_reply_t of_bsn_hybrid_get_reply;
+    of_bsn_hybrid_get_request_t of_bsn_hybrid_get_request;
     of_bsn_set_ip_mask_t of_bsn_set_ip_mask;
     of_bsn_set_l2_table_reply_t of_bsn_set_l2_table_reply;
     of_bsn_set_l2_table_request_t of_bsn_set_l2_table_request;
@@ -17820,6 +17956,10 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
+        if (subtype == 28) {
+            return OF_BSN_HYBRID_GET_REPLY;
+        }
+
         if (subtype == 14) {
             return OF_BSN_GET_L2_TABLE_REPLY;
         }
@@ -17900,6 +18040,10 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_ENABLE_SET_REQUEST;
         }
 
+        if (subtype == 4) {
+            return OF_BSN_GET_MIRRORING_REQUEST;
+        }
+
         if (subtype == 19) {
             return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
@@ -17908,8 +18052,8 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_L2_TABLE_REQUEST;
         }
 
-        if (subtype == 4) {
-            return OF_BSN_GET_MIRRORING_REQUEST;
+        if (subtype == 27) {
+            return OF_BSN_HYBRID_GET_REQUEST;
         }
 
     }

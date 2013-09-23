@@ -82,6 +82,8 @@ const char *const of_object_id_str[] = {
     "of_bsn_get_mirroring_reply",
     "of_bsn_get_mirroring_request",
     "of_bsn_header",
+    "of_bsn_hybrid_get_reply",
+    "of_bsn_hybrid_get_request",
     "of_bsn_set_ip_mask",
     "of_bsn_set_l2_table_reply",
     "of_bsn_set_l2_table_request",
@@ -8572,6 +8574,642 @@ of_bsn_header_subtype_set(
     case OF_VERSION_1_1:
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_hybrid_get_reply */
+/** \ingroup of_bsn_hybrid_get_reply 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_reply_xid_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_hybrid_get_reply_xid_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_reply_experimenter_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_hybrid_get_reply_experimenter_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_reply_subtype_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_hybrid_get_reply_subtype_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get hybrid_enable from an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param hybrid_enable Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_reply_hybrid_enable_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint8_t *hybrid_enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, hybrid_enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set hybrid_enable in an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param hybrid_enable The value to write into the object
+ */
+void
+of_bsn_hybrid_get_reply_hybrid_enable_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint8_t hybrid_enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, hybrid_enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get hybrid_version from an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param hybrid_version Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_reply_hybrid_version_get(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint16_t *hybrid_version)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 18;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, hybrid_version);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set hybrid_version in an object of type of_bsn_hybrid_get_reply.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_reply.
+ * @param hybrid_version The value to write into the object
+ */
+void
+of_bsn_hybrid_get_reply_hybrid_version_set(
+    of_bsn_hybrid_get_reply_t *obj,
+    uint16_t hybrid_version)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 18;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, hybrid_version);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_hybrid_get_request */
+/** \ingroup of_bsn_hybrid_get_request 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_request_xid_get(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_hybrid_get_request_xid_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_request_experimenter_get(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_hybrid_get_request_experimenter_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_hybrid_get_request_subtype_get(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_hybrid_get_request.
+ * @param obj Pointer to an object of type of_bsn_hybrid_get_request.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_hybrid_get_request_subtype_set(
+    of_bsn_hybrid_get_request_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_HYBRID_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
         offset = 12;
         break;
     default:
@@ -79158,6 +79796,400 @@ of_bsn_header_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_bsn_hybrid_get_reply */
+
+/**
+ * \defgroup of_bsn_hybrid_get_reply of_bsn_hybrid_get_reply
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_hybrid_get_reply_push_wire_values(of_bsn_hybrid_get_reply_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_HYBRID_GET_REPLY));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            28);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_hybrid_get_reply object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_hybrid_get_reply
+ */
+
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_new_(of_version_t version)
+{
+    of_bsn_hybrid_get_reply_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_HYBRID_GET_REPLY] + of_object_extra_len[version][OF_BSN_HYBRID_GET_REPLY];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_hybrid_get_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_reply_init(obj, version, bytes, 0);
+
+    if (of_bsn_hybrid_get_reply_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_hybrid_get_reply_t *obj;
+
+    obj = of_bsn_hybrid_get_reply_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_hybrid_get_reply.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_hybrid_get_reply_init(of_bsn_hybrid_get_reply_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_HYBRID_GET_REPLY] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_HYBRID_GET_REPLY] + of_object_extra_len[version][OF_BSN_HYBRID_GET_REPLY];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_HYBRID_GET_REPLY;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_hybrid_get_reply object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_hybrid_get_reply
+ */
+
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_new_from_message_(of_message_t msg)
+{
+    of_bsn_hybrid_get_reply_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_hybrid_get_reply_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_reply_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_hybrid_get_reply_t *
+of_bsn_hybrid_get_reply_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_hybrid_get_reply_t *obj;
+
+    obj = of_bsn_hybrid_get_reply_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_hybrid_get_request */
+
+/**
+ * \defgroup of_bsn_hybrid_get_request of_bsn_hybrid_get_request
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_hybrid_get_request_push_wire_values(of_bsn_hybrid_get_request_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_HYBRID_GET_REQUEST));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            27);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_hybrid_get_request object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_hybrid_get_request
+ */
+
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_new_(of_version_t version)
+{
+    of_bsn_hybrid_get_request_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_HYBRID_GET_REQUEST] + of_object_extra_len[version][OF_BSN_HYBRID_GET_REQUEST];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_hybrid_get_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_request_init(obj, version, bytes, 0);
+
+    if (of_bsn_hybrid_get_request_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_hybrid_get_request_t *obj;
+
+    obj = of_bsn_hybrid_get_request_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_hybrid_get_request.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_hybrid_get_request_init(of_bsn_hybrid_get_request_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_HYBRID_GET_REQUEST] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_HYBRID_GET_REQUEST] + of_object_extra_len[version][OF_BSN_HYBRID_GET_REQUEST];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_HYBRID_GET_REQUEST;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_hybrid_get_request object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_hybrid_get_request
+ */
+
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_new_from_message_(of_message_t msg)
+{
+    of_bsn_hybrid_get_request_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_hybrid_get_request_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_hybrid_get_request_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_hybrid_get_request_t *
+of_bsn_hybrid_get_request_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_hybrid_get_request_t *obj;
+
+    obj = of_bsn_hybrid_get_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_bsn_set_ip_mask */
 
 /**
@@ -120969,305 +122001,307 @@ const of_object_init_f of_object_init_map[] = {
     (of_object_init_f)of_bsn_get_mirroring_reply_init,                /* 20 */
     (of_object_init_f)of_bsn_get_mirroring_request_init,              /* 21 */
     (of_object_init_f)of_bsn_header_init,                             /* 22 */
-    (of_object_init_f)of_bsn_set_ip_mask_init,                        /* 23 */
-    (of_object_init_f)of_bsn_set_l2_table_reply_init,                 /* 24 */
-    (of_object_init_f)of_bsn_set_l2_table_request_init,               /* 25 */
-    (of_object_init_f)of_bsn_set_mirroring_init,                      /* 26 */
-    (of_object_init_f)of_bsn_set_pktin_suppression_reply_init,        /* 27 */
-    (of_object_init_f)of_bsn_set_pktin_suppression_request_init,      /* 28 */
-    (of_object_init_f)of_bsn_shell_command_init,                      /* 29 */
-    (of_object_init_f)of_bsn_shell_output_init,                       /* 30 */
-    (of_object_init_f)of_bsn_shell_status_init,                       /* 31 */
-    (of_object_init_f)of_bsn_virtual_port_create_reply_init,          /* 32 */
-    (of_object_init_f)of_bsn_virtual_port_create_request_init,        /* 33 */
-    (of_object_init_f)of_bsn_virtual_port_remove_reply_init,          /* 34 */
-    (of_object_init_f)of_bsn_virtual_port_remove_request_init,        /* 35 */
-    (of_object_init_f)of_desc_stats_reply_init,                       /* 36 */
-    (of_object_init_f)of_desc_stats_request_init,                     /* 37 */
-    (of_object_init_f)of_echo_reply_init,                             /* 38 */
-    (of_object_init_f)of_echo_request_init,                           /* 39 */
-    (of_object_init_f)of_error_msg_init,                              /* 40 */
-    (of_object_init_f)of_experimenter_init,                           /* 41 */
-    (of_object_init_f)of_experimenter_stats_reply_init,               /* 42 */
-    (of_object_init_f)of_experimenter_stats_request_init,             /* 43 */
-    (of_object_init_f)of_features_reply_init,                         /* 44 */
-    (of_object_init_f)of_features_request_init,                       /* 45 */
-    (of_object_init_f)of_flow_add_init,                               /* 46 */
-    (of_object_init_f)of_flow_delete_init,                            /* 47 */
-    (of_object_init_f)of_flow_delete_strict_init,                     /* 48 */
-    (of_object_init_f)of_flow_mod_init,                               /* 49 */
-    (of_object_init_f)of_flow_modify_init,                            /* 50 */
-    (of_object_init_f)of_flow_modify_strict_init,                     /* 51 */
-    (of_object_init_f)of_flow_removed_init,                           /* 52 */
-    (of_object_init_f)of_flow_stats_reply_init,                       /* 53 */
-    (of_object_init_f)of_flow_stats_request_init,                     /* 54 */
-    (of_object_init_f)of_get_config_reply_init,                       /* 55 */
-    (of_object_init_f)of_get_config_request_init,                     /* 56 */
-    (of_object_init_f)of_group_desc_stats_reply_init,                 /* 57 */
-    (of_object_init_f)of_group_desc_stats_request_init,               /* 58 */
-    (of_object_init_f)of_group_features_stats_reply_init,             /* 59 */
-    (of_object_init_f)of_group_features_stats_request_init,           /* 60 */
-    (of_object_init_f)of_group_mod_init,                              /* 61 */
-    (of_object_init_f)of_group_stats_reply_init,                      /* 62 */
-    (of_object_init_f)of_group_stats_request_init,                    /* 63 */
-    (of_object_init_f)of_hello_init,                                  /* 64 */
-    (of_object_init_f)of_meter_config_stats_reply_init,               /* 65 */
-    (of_object_init_f)of_meter_config_stats_request_init,             /* 66 */
-    (of_object_init_f)of_meter_features_stats_reply_init,             /* 67 */
-    (of_object_init_f)of_meter_features_stats_request_init,           /* 68 */
-    (of_object_init_f)of_meter_mod_init,                              /* 69 */
-    (of_object_init_f)of_meter_stats_reply_init,                      /* 70 */
-    (of_object_init_f)of_meter_stats_request_init,                    /* 71 */
-    (of_object_init_f)of_nicira_controller_role_reply_init,           /* 72 */
-    (of_object_init_f)of_nicira_controller_role_request_init,         /* 73 */
-    (of_object_init_f)of_nicira_header_init,                          /* 74 */
-    (of_object_init_f)of_packet_in_init,                              /* 75 */
-    (of_object_init_f)of_packet_out_init,                             /* 76 */
-    (of_object_init_f)of_port_desc_stats_reply_init,                  /* 77 */
-    (of_object_init_f)of_port_desc_stats_request_init,                /* 78 */
-    (of_object_init_f)of_port_mod_init,                               /* 79 */
-    (of_object_init_f)of_port_stats_reply_init,                       /* 80 */
-    (of_object_init_f)of_port_stats_request_init,                     /* 81 */
-    (of_object_init_f)of_port_status_init,                            /* 82 */
-    (of_object_init_f)of_queue_get_config_reply_init,                 /* 83 */
-    (of_object_init_f)of_queue_get_config_request_init,               /* 84 */
-    (of_object_init_f)of_queue_stats_reply_init,                      /* 85 */
-    (of_object_init_f)of_queue_stats_request_init,                    /* 86 */
-    (of_object_init_f)of_role_reply_init,                             /* 87 */
-    (of_object_init_f)of_role_request_init,                           /* 88 */
-    (of_object_init_f)of_set_config_init,                             /* 89 */
-    (of_object_init_f)of_stats_reply_init,                            /* 90 */
-    (of_object_init_f)of_stats_request_init,                          /* 91 */
-    (of_object_init_f)of_table_features_stats_reply_init,             /* 92 */
-    (of_object_init_f)of_table_features_stats_request_init,           /* 93 */
-    (of_object_init_f)of_table_mod_init,                              /* 94 */
-    (of_object_init_f)of_table_stats_reply_init,                      /* 95 */
-    (of_object_init_f)of_table_stats_request_init,                    /* 96 */
-    (of_object_init_f)of_action_header_init,                          /* 97 */
-    (of_object_init_f)of_action_bsn_init,                             /* 98 */
-    (of_object_init_f)of_action_bsn_mirror_init,                      /* 99 */
-    (of_object_init_f)of_action_bsn_set_tunnel_dst_init,              /* 100 */
-    (of_object_init_f)of_action_copy_ttl_in_init,                     /* 101 */
-    (of_object_init_f)of_action_copy_ttl_out_init,                    /* 102 */
-    (of_object_init_f)of_action_dec_mpls_ttl_init,                    /* 103 */
-    (of_object_init_f)of_action_dec_nw_ttl_init,                      /* 104 */
-    (of_object_init_f)of_action_enqueue_init,                         /* 105 */
-    (of_object_init_f)of_action_experimenter_init,                    /* 106 */
-    (of_object_init_f)of_action_group_init,                           /* 107 */
-    (of_object_init_f)of_action_header_init,                          /* 108 */
-    (of_object_init_f)of_action_id_header_init,                       /* 109 */
-    (of_object_init_f)of_action_id_bsn_init,                          /* 110 */
-    (of_object_init_f)of_action_id_bsn_mirror_init,                   /* 111 */
-    (of_object_init_f)of_action_id_bsn_set_tunnel_dst_init,           /* 112 */
-    (of_object_init_f)of_action_id_copy_ttl_in_init,                  /* 113 */
-    (of_object_init_f)of_action_id_copy_ttl_out_init,                 /* 114 */
-    (of_object_init_f)of_action_id_dec_mpls_ttl_init,                 /* 115 */
-    (of_object_init_f)of_action_id_dec_nw_ttl_init,                   /* 116 */
-    (of_object_init_f)of_action_id_experimenter_init,                 /* 117 */
-    (of_object_init_f)of_action_id_group_init,                        /* 118 */
-    (of_object_init_f)of_action_id_header_init,                       /* 119 */
-    (of_object_init_f)of_action_id_nicira_init,                       /* 120 */
-    (of_object_init_f)of_action_id_nicira_dec_ttl_init,               /* 121 */
-    (of_object_init_f)of_action_id_output_init,                       /* 122 */
-    (of_object_init_f)of_action_id_pop_mpls_init,                     /* 123 */
-    (of_object_init_f)of_action_id_pop_pbb_init,                      /* 124 */
-    (of_object_init_f)of_action_id_pop_vlan_init,                     /* 125 */
-    (of_object_init_f)of_action_id_push_mpls_init,                    /* 126 */
-    (of_object_init_f)of_action_id_push_pbb_init,                     /* 127 */
-    (of_object_init_f)of_action_id_push_vlan_init,                    /* 128 */
-    (of_object_init_f)of_action_id_set_field_init,                    /* 129 */
-    (of_object_init_f)of_action_id_set_mpls_ttl_init,                 /* 130 */
-    (of_object_init_f)of_action_id_set_nw_ttl_init,                   /* 131 */
-    (of_object_init_f)of_action_id_set_queue_init,                    /* 132 */
-    (of_object_init_f)of_action_nicira_init,                          /* 133 */
-    (of_object_init_f)of_action_nicira_dec_ttl_init,                  /* 134 */
-    (of_object_init_f)of_action_output_init,                          /* 135 */
-    (of_object_init_f)of_action_pop_mpls_init,                        /* 136 */
-    (of_object_init_f)of_action_pop_pbb_init,                         /* 137 */
-    (of_object_init_f)of_action_pop_vlan_init,                        /* 138 */
-    (of_object_init_f)of_action_push_mpls_init,                       /* 139 */
-    (of_object_init_f)of_action_push_pbb_init,                        /* 140 */
-    (of_object_init_f)of_action_push_vlan_init,                       /* 141 */
-    (of_object_init_f)of_action_set_dl_dst_init,                      /* 142 */
-    (of_object_init_f)of_action_set_dl_src_init,                      /* 143 */
-    (of_object_init_f)of_action_set_field_init,                       /* 144 */
-    (of_object_init_f)of_action_set_mpls_label_init,                  /* 145 */
-    (of_object_init_f)of_action_set_mpls_tc_init,                     /* 146 */
-    (of_object_init_f)of_action_set_mpls_ttl_init,                    /* 147 */
-    (of_object_init_f)of_action_set_nw_dst_init,                      /* 148 */
-    (of_object_init_f)of_action_set_nw_ecn_init,                      /* 149 */
-    (of_object_init_f)of_action_set_nw_src_init,                      /* 150 */
-    (of_object_init_f)of_action_set_nw_tos_init,                      /* 151 */
-    (of_object_init_f)of_action_set_nw_ttl_init,                      /* 152 */
-    (of_object_init_f)of_action_set_queue_init,                       /* 153 */
-    (of_object_init_f)of_action_set_tp_dst_init,                      /* 154 */
-    (of_object_init_f)of_action_set_tp_src_init,                      /* 155 */
-    (of_object_init_f)of_action_set_vlan_pcp_init,                    /* 156 */
-    (of_object_init_f)of_action_set_vlan_vid_init,                    /* 157 */
-    (of_object_init_f)of_action_strip_vlan_init,                      /* 158 */
-    (of_object_init_f)of_bsn_interface_init,                          /* 159 */
-    (of_object_init_f)of_bsn_vport_header_init,                       /* 160 */
-    (of_object_init_f)of_bsn_vport_header_init,                       /* 161 */
-    (of_object_init_f)of_bsn_vport_q_in_q_init,                       /* 162 */
-    (of_object_init_f)of_bucket_init,                                 /* 163 */
-    (of_object_init_f)of_bucket_counter_init,                         /* 164 */
-    (of_object_init_f)of_experimenter_multipart_header_init,          /* 165 */
-    (of_object_init_f)of_flow_stats_entry_init,                       /* 166 */
-    (of_object_init_f)of_group_desc_stats_entry_init,                 /* 167 */
-    (of_object_init_f)of_group_stats_entry_init,                      /* 168 */
-    (of_object_init_f)of_header_init,                                 /* 169 */
-    (of_object_init_f)of_hello_elem_header_init,                      /* 170 */
-    (of_object_init_f)of_hello_elem_header_init,                      /* 171 */
-    (of_object_init_f)of_hello_elem_versionbitmap_init,               /* 172 */
-    (of_object_init_f)of_instruction_header_init,                     /* 173 */
-    (of_object_init_f)of_instruction_apply_actions_init,              /* 174 */
-    (of_object_init_f)of_instruction_clear_actions_init,              /* 175 */
-    (of_object_init_f)of_instruction_experimenter_init,               /* 176 */
-    (of_object_init_f)of_instruction_goto_table_init,                 /* 177 */
-    (of_object_init_f)of_instruction_header_init,                     /* 178 */
-    (of_object_init_f)of_instruction_meter_init,                      /* 179 */
-    (of_object_init_f)of_instruction_write_actions_init,              /* 180 */
-    (of_object_init_f)of_instruction_write_metadata_init,             /* 181 */
-    (of_object_init_f)of_match_v1_init,                               /* 182 */
-    (of_object_init_f)of_match_v2_init,                               /* 183 */
-    (of_object_init_f)of_match_v3_init,                               /* 184 */
-    (of_object_init_f)of_meter_band_header_init,                      /* 185 */
-    (of_object_init_f)of_meter_band_drop_init,                        /* 186 */
-    (of_object_init_f)of_meter_band_dscp_remark_init,                 /* 187 */
-    (of_object_init_f)of_meter_band_experimenter_init,                /* 188 */
-    (of_object_init_f)of_meter_band_header_init,                      /* 189 */
-    (of_object_init_f)of_meter_band_stats_init,                       /* 190 */
-    (of_object_init_f)of_meter_config_init,                           /* 191 */
-    (of_object_init_f)of_meter_features_init,                         /* 192 */
-    (of_object_init_f)of_meter_stats_init,                            /* 193 */
-    (of_object_init_f)of_oxm_header_init,                             /* 194 */
-    (of_object_init_f)of_oxm_arp_op_init,                             /* 195 */
-    (of_object_init_f)of_oxm_arp_op_masked_init,                      /* 196 */
-    (of_object_init_f)of_oxm_arp_sha_init,                            /* 197 */
-    (of_object_init_f)of_oxm_arp_sha_masked_init,                     /* 198 */
-    (of_object_init_f)of_oxm_arp_spa_init,                            /* 199 */
-    (of_object_init_f)of_oxm_arp_spa_masked_init,                     /* 200 */
-    (of_object_init_f)of_oxm_arp_tha_init,                            /* 201 */
-    (of_object_init_f)of_oxm_arp_tha_masked_init,                     /* 202 */
-    (of_object_init_f)of_oxm_arp_tpa_init,                            /* 203 */
-    (of_object_init_f)of_oxm_arp_tpa_masked_init,                     /* 204 */
-    (of_object_init_f)of_oxm_eth_dst_init,                            /* 205 */
-    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 206 */
-    (of_object_init_f)of_oxm_eth_src_init,                            /* 207 */
-    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 208 */
-    (of_object_init_f)of_oxm_eth_type_init,                           /* 209 */
-    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 210 */
-    (of_object_init_f)of_oxm_header_init,                             /* 211 */
-    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 212 */
-    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 213 */
-    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 214 */
-    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 215 */
-    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 216 */
-    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 217 */
-    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 218 */
-    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 219 */
-    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 220 */
-    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 221 */
-    (of_object_init_f)of_oxm_in_port_init,                            /* 222 */
-    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 223 */
-    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 224 */
-    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 225 */
-    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 226 */
-    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 227 */
-    (of_object_init_f)of_oxm_ip_proto_init,                           /* 228 */
-    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 229 */
-    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 230 */
-    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 231 */
-    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 232 */
-    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 233 */
-    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 234 */
-    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 235 */
-    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 236 */
-    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 237 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 238 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 239 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 240 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 241 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 242 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 243 */
-    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 244 */
-    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 245 */
-    (of_object_init_f)of_oxm_metadata_init,                           /* 246 */
-    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 247 */
-    (of_object_init_f)of_oxm_mpls_label_init,                         /* 248 */
-    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 249 */
-    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 250 */
-    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 251 */
-    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 252 */
-    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 253 */
-    (of_object_init_f)of_oxm_sctp_src_init,                           /* 254 */
-    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 255 */
-    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 256 */
-    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 257 */
-    (of_object_init_f)of_oxm_tcp_src_init,                            /* 258 */
-    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 259 */
-    (of_object_init_f)of_oxm_udp_dst_init,                            /* 260 */
-    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 261 */
-    (of_object_init_f)of_oxm_udp_src_init,                            /* 262 */
-    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 263 */
-    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 264 */
-    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 265 */
-    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 266 */
-    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 267 */
-    (of_object_init_f)of_packet_queue_init,                           /* 268 */
-    (of_object_init_f)of_port_desc_init,                              /* 269 */
-    (of_object_init_f)of_port_stats_entry_init,                       /* 270 */
-    (of_object_init_f)of_queue_prop_header_init,                      /* 271 */
-    (of_object_init_f)of_queue_prop_experimenter_init,                /* 272 */
+    (of_object_init_f)of_bsn_hybrid_get_reply_init,                   /* 23 */
+    (of_object_init_f)of_bsn_hybrid_get_request_init,                 /* 24 */
+    (of_object_init_f)of_bsn_set_ip_mask_init,                        /* 25 */
+    (of_object_init_f)of_bsn_set_l2_table_reply_init,                 /* 26 */
+    (of_object_init_f)of_bsn_set_l2_table_request_init,               /* 27 */
+    (of_object_init_f)of_bsn_set_mirroring_init,                      /* 28 */
+    (of_object_init_f)of_bsn_set_pktin_suppression_reply_init,        /* 29 */
+    (of_object_init_f)of_bsn_set_pktin_suppression_request_init,      /* 30 */
+    (of_object_init_f)of_bsn_shell_command_init,                      /* 31 */
+    (of_object_init_f)of_bsn_shell_output_init,                       /* 32 */
+    (of_object_init_f)of_bsn_shell_status_init,                       /* 33 */
+    (of_object_init_f)of_bsn_virtual_port_create_reply_init,          /* 34 */
+    (of_object_init_f)of_bsn_virtual_port_create_request_init,        /* 35 */
+    (of_object_init_f)of_bsn_virtual_port_remove_reply_init,          /* 36 */
+    (of_object_init_f)of_bsn_virtual_port_remove_request_init,        /* 37 */
+    (of_object_init_f)of_desc_stats_reply_init,                       /* 38 */
+    (of_object_init_f)of_desc_stats_request_init,                     /* 39 */
+    (of_object_init_f)of_echo_reply_init,                             /* 40 */
+    (of_object_init_f)of_echo_request_init,                           /* 41 */
+    (of_object_init_f)of_error_msg_init,                              /* 42 */
+    (of_object_init_f)of_experimenter_init,                           /* 43 */
+    (of_object_init_f)of_experimenter_stats_reply_init,               /* 44 */
+    (of_object_init_f)of_experimenter_stats_request_init,             /* 45 */
+    (of_object_init_f)of_features_reply_init,                         /* 46 */
+    (of_object_init_f)of_features_request_init,                       /* 47 */
+    (of_object_init_f)of_flow_add_init,                               /* 48 */
+    (of_object_init_f)of_flow_delete_init,                            /* 49 */
+    (of_object_init_f)of_flow_delete_strict_init,                     /* 50 */
+    (of_object_init_f)of_flow_mod_init,                               /* 51 */
+    (of_object_init_f)of_flow_modify_init,                            /* 52 */
+    (of_object_init_f)of_flow_modify_strict_init,                     /* 53 */
+    (of_object_init_f)of_flow_removed_init,                           /* 54 */
+    (of_object_init_f)of_flow_stats_reply_init,                       /* 55 */
+    (of_object_init_f)of_flow_stats_request_init,                     /* 56 */
+    (of_object_init_f)of_get_config_reply_init,                       /* 57 */
+    (of_object_init_f)of_get_config_request_init,                     /* 58 */
+    (of_object_init_f)of_group_desc_stats_reply_init,                 /* 59 */
+    (of_object_init_f)of_group_desc_stats_request_init,               /* 60 */
+    (of_object_init_f)of_group_features_stats_reply_init,             /* 61 */
+    (of_object_init_f)of_group_features_stats_request_init,           /* 62 */
+    (of_object_init_f)of_group_mod_init,                              /* 63 */
+    (of_object_init_f)of_group_stats_reply_init,                      /* 64 */
+    (of_object_init_f)of_group_stats_request_init,                    /* 65 */
+    (of_object_init_f)of_hello_init,                                  /* 66 */
+    (of_object_init_f)of_meter_config_stats_reply_init,               /* 67 */
+    (of_object_init_f)of_meter_config_stats_request_init,             /* 68 */
+    (of_object_init_f)of_meter_features_stats_reply_init,             /* 69 */
+    (of_object_init_f)of_meter_features_stats_request_init,           /* 70 */
+    (of_object_init_f)of_meter_mod_init,                              /* 71 */
+    (of_object_init_f)of_meter_stats_reply_init,                      /* 72 */
+    (of_object_init_f)of_meter_stats_request_init,                    /* 73 */
+    (of_object_init_f)of_nicira_controller_role_reply_init,           /* 74 */
+    (of_object_init_f)of_nicira_controller_role_request_init,         /* 75 */
+    (of_object_init_f)of_nicira_header_init,                          /* 76 */
+    (of_object_init_f)of_packet_in_init,                              /* 77 */
+    (of_object_init_f)of_packet_out_init,                             /* 78 */
+    (of_object_init_f)of_port_desc_stats_reply_init,                  /* 79 */
+    (of_object_init_f)of_port_desc_stats_request_init,                /* 80 */
+    (of_object_init_f)of_port_mod_init,                               /* 81 */
+    (of_object_init_f)of_port_stats_reply_init,                       /* 82 */
+    (of_object_init_f)of_port_stats_request_init,                     /* 83 */
+    (of_object_init_f)of_port_status_init,                            /* 84 */
+    (of_object_init_f)of_queue_get_config_reply_init,                 /* 85 */
+    (of_object_init_f)of_queue_get_config_request_init,               /* 86 */
+    (of_object_init_f)of_queue_stats_reply_init,                      /* 87 */
+    (of_object_init_f)of_queue_stats_request_init,                    /* 88 */
+    (of_object_init_f)of_role_reply_init,                             /* 89 */
+    (of_object_init_f)of_role_request_init,                           /* 90 */
+    (of_object_init_f)of_set_config_init,                             /* 91 */
+    (of_object_init_f)of_stats_reply_init,                            /* 92 */
+    (of_object_init_f)of_stats_request_init,                          /* 93 */
+    (of_object_init_f)of_table_features_stats_reply_init,             /* 94 */
+    (of_object_init_f)of_table_features_stats_request_init,           /* 95 */
+    (of_object_init_f)of_table_mod_init,                              /* 96 */
+    (of_object_init_f)of_table_stats_reply_init,                      /* 97 */
+    (of_object_init_f)of_table_stats_request_init,                    /* 98 */
+    (of_object_init_f)of_action_header_init,                          /* 99 */
+    (of_object_init_f)of_action_bsn_init,                             /* 100 */
+    (of_object_init_f)of_action_bsn_mirror_init,                      /* 101 */
+    (of_object_init_f)of_action_bsn_set_tunnel_dst_init,              /* 102 */
+    (of_object_init_f)of_action_copy_ttl_in_init,                     /* 103 */
+    (of_object_init_f)of_action_copy_ttl_out_init,                    /* 104 */
+    (of_object_init_f)of_action_dec_mpls_ttl_init,                    /* 105 */
+    (of_object_init_f)of_action_dec_nw_ttl_init,                      /* 106 */
+    (of_object_init_f)of_action_enqueue_init,                         /* 107 */
+    (of_object_init_f)of_action_experimenter_init,                    /* 108 */
+    (of_object_init_f)of_action_group_init,                           /* 109 */
+    (of_object_init_f)of_action_header_init,                          /* 110 */
+    (of_object_init_f)of_action_id_header_init,                       /* 111 */
+    (of_object_init_f)of_action_id_bsn_init,                          /* 112 */
+    (of_object_init_f)of_action_id_bsn_mirror_init,                   /* 113 */
+    (of_object_init_f)of_action_id_bsn_set_tunnel_dst_init,           /* 114 */
+    (of_object_init_f)of_action_id_copy_ttl_in_init,                  /* 115 */
+    (of_object_init_f)of_action_id_copy_ttl_out_init,                 /* 116 */
+    (of_object_init_f)of_action_id_dec_mpls_ttl_init,                 /* 117 */
+    (of_object_init_f)of_action_id_dec_nw_ttl_init,                   /* 118 */
+    (of_object_init_f)of_action_id_experimenter_init,                 /* 119 */
+    (of_object_init_f)of_action_id_group_init,                        /* 120 */
+    (of_object_init_f)of_action_id_header_init,                       /* 121 */
+    (of_object_init_f)of_action_id_nicira_init,                       /* 122 */
+    (of_object_init_f)of_action_id_nicira_dec_ttl_init,               /* 123 */
+    (of_object_init_f)of_action_id_output_init,                       /* 124 */
+    (of_object_init_f)of_action_id_pop_mpls_init,                     /* 125 */
+    (of_object_init_f)of_action_id_pop_pbb_init,                      /* 126 */
+    (of_object_init_f)of_action_id_pop_vlan_init,                     /* 127 */
+    (of_object_init_f)of_action_id_push_mpls_init,                    /* 128 */
+    (of_object_init_f)of_action_id_push_pbb_init,                     /* 129 */
+    (of_object_init_f)of_action_id_push_vlan_init,                    /* 130 */
+    (of_object_init_f)of_action_id_set_field_init,                    /* 131 */
+    (of_object_init_f)of_action_id_set_mpls_ttl_init,                 /* 132 */
+    (of_object_init_f)of_action_id_set_nw_ttl_init,                   /* 133 */
+    (of_object_init_f)of_action_id_set_queue_init,                    /* 134 */
+    (of_object_init_f)of_action_nicira_init,                          /* 135 */
+    (of_object_init_f)of_action_nicira_dec_ttl_init,                  /* 136 */
+    (of_object_init_f)of_action_output_init,                          /* 137 */
+    (of_object_init_f)of_action_pop_mpls_init,                        /* 138 */
+    (of_object_init_f)of_action_pop_pbb_init,                         /* 139 */
+    (of_object_init_f)of_action_pop_vlan_init,                        /* 140 */
+    (of_object_init_f)of_action_push_mpls_init,                       /* 141 */
+    (of_object_init_f)of_action_push_pbb_init,                        /* 142 */
+    (of_object_init_f)of_action_push_vlan_init,                       /* 143 */
+    (of_object_init_f)of_action_set_dl_dst_init,                      /* 144 */
+    (of_object_init_f)of_action_set_dl_src_init,                      /* 145 */
+    (of_object_init_f)of_action_set_field_init,                       /* 146 */
+    (of_object_init_f)of_action_set_mpls_label_init,                  /* 147 */
+    (of_object_init_f)of_action_set_mpls_tc_init,                     /* 148 */
+    (of_object_init_f)of_action_set_mpls_ttl_init,                    /* 149 */
+    (of_object_init_f)of_action_set_nw_dst_init,                      /* 150 */
+    (of_object_init_f)of_action_set_nw_ecn_init,                      /* 151 */
+    (of_object_init_f)of_action_set_nw_src_init,                      /* 152 */
+    (of_object_init_f)of_action_set_nw_tos_init,                      /* 153 */
+    (of_object_init_f)of_action_set_nw_ttl_init,                      /* 154 */
+    (of_object_init_f)of_action_set_queue_init,                       /* 155 */
+    (of_object_init_f)of_action_set_tp_dst_init,                      /* 156 */
+    (of_object_init_f)of_action_set_tp_src_init,                      /* 157 */
+    (of_object_init_f)of_action_set_vlan_pcp_init,                    /* 158 */
+    (of_object_init_f)of_action_set_vlan_vid_init,                    /* 159 */
+    (of_object_init_f)of_action_strip_vlan_init,                      /* 160 */
+    (of_object_init_f)of_bsn_interface_init,                          /* 161 */
+    (of_object_init_f)of_bsn_vport_header_init,                       /* 162 */
+    (of_object_init_f)of_bsn_vport_header_init,                       /* 163 */
+    (of_object_init_f)of_bsn_vport_q_in_q_init,                       /* 164 */
+    (of_object_init_f)of_bucket_init,                                 /* 165 */
+    (of_object_init_f)of_bucket_counter_init,                         /* 166 */
+    (of_object_init_f)of_experimenter_multipart_header_init,          /* 167 */
+    (of_object_init_f)of_flow_stats_entry_init,                       /* 168 */
+    (of_object_init_f)of_group_desc_stats_entry_init,                 /* 169 */
+    (of_object_init_f)of_group_stats_entry_init,                      /* 170 */
+    (of_object_init_f)of_header_init,                                 /* 171 */
+    (of_object_init_f)of_hello_elem_header_init,                      /* 172 */
+    (of_object_init_f)of_hello_elem_header_init,                      /* 173 */
+    (of_object_init_f)of_hello_elem_versionbitmap_init,               /* 174 */
+    (of_object_init_f)of_instruction_header_init,                     /* 175 */
+    (of_object_init_f)of_instruction_apply_actions_init,              /* 176 */
+    (of_object_init_f)of_instruction_clear_actions_init,              /* 177 */
+    (of_object_init_f)of_instruction_experimenter_init,               /* 178 */
+    (of_object_init_f)of_instruction_goto_table_init,                 /* 179 */
+    (of_object_init_f)of_instruction_header_init,                     /* 180 */
+    (of_object_init_f)of_instruction_meter_init,                      /* 181 */
+    (of_object_init_f)of_instruction_write_actions_init,              /* 182 */
+    (of_object_init_f)of_instruction_write_metadata_init,             /* 183 */
+    (of_object_init_f)of_match_v1_init,                               /* 184 */
+    (of_object_init_f)of_match_v2_init,                               /* 185 */
+    (of_object_init_f)of_match_v3_init,                               /* 186 */
+    (of_object_init_f)of_meter_band_header_init,                      /* 187 */
+    (of_object_init_f)of_meter_band_drop_init,                        /* 188 */
+    (of_object_init_f)of_meter_band_dscp_remark_init,                 /* 189 */
+    (of_object_init_f)of_meter_band_experimenter_init,                /* 190 */
+    (of_object_init_f)of_meter_band_header_init,                      /* 191 */
+    (of_object_init_f)of_meter_band_stats_init,                       /* 192 */
+    (of_object_init_f)of_meter_config_init,                           /* 193 */
+    (of_object_init_f)of_meter_features_init,                         /* 194 */
+    (of_object_init_f)of_meter_stats_init,                            /* 195 */
+    (of_object_init_f)of_oxm_header_init,                             /* 196 */
+    (of_object_init_f)of_oxm_arp_op_init,                             /* 197 */
+    (of_object_init_f)of_oxm_arp_op_masked_init,                      /* 198 */
+    (of_object_init_f)of_oxm_arp_sha_init,                            /* 199 */
+    (of_object_init_f)of_oxm_arp_sha_masked_init,                     /* 200 */
+    (of_object_init_f)of_oxm_arp_spa_init,                            /* 201 */
+    (of_object_init_f)of_oxm_arp_spa_masked_init,                     /* 202 */
+    (of_object_init_f)of_oxm_arp_tha_init,                            /* 203 */
+    (of_object_init_f)of_oxm_arp_tha_masked_init,                     /* 204 */
+    (of_object_init_f)of_oxm_arp_tpa_init,                            /* 205 */
+    (of_object_init_f)of_oxm_arp_tpa_masked_init,                     /* 206 */
+    (of_object_init_f)of_oxm_eth_dst_init,                            /* 207 */
+    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 208 */
+    (of_object_init_f)of_oxm_eth_src_init,                            /* 209 */
+    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 210 */
+    (of_object_init_f)of_oxm_eth_type_init,                           /* 211 */
+    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 212 */
+    (of_object_init_f)of_oxm_header_init,                             /* 213 */
+    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 214 */
+    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 215 */
+    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 216 */
+    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 217 */
+    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 218 */
+    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 219 */
+    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 220 */
+    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 221 */
+    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 222 */
+    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 223 */
+    (of_object_init_f)of_oxm_in_port_init,                            /* 224 */
+    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 225 */
+    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 226 */
+    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 227 */
+    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 228 */
+    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 229 */
+    (of_object_init_f)of_oxm_ip_proto_init,                           /* 230 */
+    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 231 */
+    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 232 */
+    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 233 */
+    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 234 */
+    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 235 */
+    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 236 */
+    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 237 */
+    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 238 */
+    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 239 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 240 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 241 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 242 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 243 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 244 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 245 */
+    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 246 */
+    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 247 */
+    (of_object_init_f)of_oxm_metadata_init,                           /* 248 */
+    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 249 */
+    (of_object_init_f)of_oxm_mpls_label_init,                         /* 250 */
+    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 251 */
+    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 252 */
+    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 253 */
+    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 254 */
+    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 255 */
+    (of_object_init_f)of_oxm_sctp_src_init,                           /* 256 */
+    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 257 */
+    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 258 */
+    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 259 */
+    (of_object_init_f)of_oxm_tcp_src_init,                            /* 260 */
+    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 261 */
+    (of_object_init_f)of_oxm_udp_dst_init,                            /* 262 */
+    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 263 */
+    (of_object_init_f)of_oxm_udp_src_init,                            /* 264 */
+    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 265 */
+    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 266 */
+    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 267 */
+    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 268 */
+    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 269 */
+    (of_object_init_f)of_packet_queue_init,                           /* 270 */
+    (of_object_init_f)of_port_desc_init,                              /* 271 */
+    (of_object_init_f)of_port_stats_entry_init,                       /* 272 */
     (of_object_init_f)of_queue_prop_header_init,                      /* 273 */
-    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 274 */
-    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 275 */
-    (of_object_init_f)of_queue_stats_entry_init,                      /* 276 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 277 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 278 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 279 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 280 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 281 */
-    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 282 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 283 */
-    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 284 */
-    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 285 */
-    (of_object_init_f)of_table_feature_prop_match_init,               /* 286 */
-    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 287 */
-    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 288 */
-    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 289 */
-    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 290 */
-    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 291 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 292 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 293 */
-    (of_object_init_f)of_table_features_init,                         /* 294 */
-    (of_object_init_f)of_table_stats_entry_init,                      /* 295 */
-    (of_object_init_f)of_uint32_init,                                 /* 296 */
-    (of_object_init_f)of_uint8_init,                                  /* 297 */
-    (of_object_init_f)of_list_action_init,                            /* 298 */
-    (of_object_init_f)of_list_action_id_init,                         /* 299 */
-    (of_object_init_f)of_list_bsn_interface_init,                     /* 300 */
-    (of_object_init_f)of_list_bucket_init,                            /* 301 */
-    (of_object_init_f)of_list_bucket_counter_init,                    /* 302 */
-    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 303 */
-    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 304 */
-    (of_object_init_f)of_list_group_stats_entry_init,                 /* 305 */
-    (of_object_init_f)of_list_hello_elem_init,                        /* 306 */
-    (of_object_init_f)of_list_instruction_init,                       /* 307 */
-    (of_object_init_f)of_list_meter_band_init,                        /* 308 */
-    (of_object_init_f)of_list_meter_band_stats_init,                  /* 309 */
-    (of_object_init_f)of_list_meter_stats_init,                       /* 310 */
-    (of_object_init_f)of_list_oxm_init,                               /* 311 */
-    (of_object_init_f)of_list_packet_queue_init,                      /* 312 */
-    (of_object_init_f)of_list_port_desc_init,                         /* 313 */
-    (of_object_init_f)of_list_port_stats_entry_init,                  /* 314 */
-    (of_object_init_f)of_list_queue_prop_init,                        /* 315 */
-    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 316 */
-    (of_object_init_f)of_list_table_feature_prop_init,                /* 317 */
-    (of_object_init_f)of_list_table_features_init,                    /* 318 */
-    (of_object_init_f)of_list_table_stats_entry_init,                 /* 319 */
-    (of_object_init_f)of_list_uint32_init,                            /* 320 */
-    (of_object_init_f)of_list_uint8_init                              /* 321 */
+    (of_object_init_f)of_queue_prop_experimenter_init,                /* 274 */
+    (of_object_init_f)of_queue_prop_header_init,                      /* 275 */
+    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 276 */
+    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 277 */
+    (of_object_init_f)of_queue_stats_entry_init,                      /* 278 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 279 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 280 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 281 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 282 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 283 */
+    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 284 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 285 */
+    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 286 */
+    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 287 */
+    (of_object_init_f)of_table_feature_prop_match_init,               /* 288 */
+    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 289 */
+    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 290 */
+    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 291 */
+    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 292 */
+    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 293 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 294 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 295 */
+    (of_object_init_f)of_table_features_init,                         /* 296 */
+    (of_object_init_f)of_table_stats_entry_init,                      /* 297 */
+    (of_object_init_f)of_uint32_init,                                 /* 298 */
+    (of_object_init_f)of_uint8_init,                                  /* 299 */
+    (of_object_init_f)of_list_action_init,                            /* 300 */
+    (of_object_init_f)of_list_action_id_init,                         /* 301 */
+    (of_object_init_f)of_list_bsn_interface_init,                     /* 302 */
+    (of_object_init_f)of_list_bucket_init,                            /* 303 */
+    (of_object_init_f)of_list_bucket_counter_init,                    /* 304 */
+    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 305 */
+    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 306 */
+    (of_object_init_f)of_list_group_stats_entry_init,                 /* 307 */
+    (of_object_init_f)of_list_hello_elem_init,                        /* 308 */
+    (of_object_init_f)of_list_instruction_init,                       /* 309 */
+    (of_object_init_f)of_list_meter_band_init,                        /* 310 */
+    (of_object_init_f)of_list_meter_band_stats_init,                  /* 311 */
+    (of_object_init_f)of_list_meter_stats_init,                       /* 312 */
+    (of_object_init_f)of_list_oxm_init,                               /* 313 */
+    (of_object_init_f)of_list_packet_queue_init,                      /* 314 */
+    (of_object_init_f)of_list_port_desc_init,                         /* 315 */
+    (of_object_init_f)of_list_port_stats_entry_init,                  /* 316 */
+    (of_object_init_f)of_list_queue_prop_init,                        /* 317 */
+    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 318 */
+    (of_object_init_f)of_list_table_feature_prop_init,                /* 319 */
+    (of_object_init_f)of_list_table_features_init,                    /* 320 */
+    (of_object_init_f)of_list_table_stats_entry_init,                 /* 321 */
+    (of_object_init_f)of_list_uint32_init,                            /* 322 */
+    (of_object_init_f)of_list_uint8_init                              /* 323 */
 };
 
 /* This code should be broken out to a different file */
