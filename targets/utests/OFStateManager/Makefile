@@ -18,7 +18,8 @@
 ################################################################
 MODULE := OFStateManager_utest
 TEST_MODULE := OFStateManager
-NOMODULEMAKE=1
+
+MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 
 LOCI_SOURCE_DIR = $(loci_BASEDIR)/src
 
@@ -44,5 +45,5 @@ DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Con
 
 GLOBAL_LINK_LIBS += -lm
 
+include $(BUILDER)/build-unit-test.mk
 
-include ../../make/utestmodule.mk

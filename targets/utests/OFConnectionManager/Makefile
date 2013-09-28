@@ -20,6 +20,7 @@ MODULE := OFConnectionManager_utest
 TEST_MODULE := OFConnectionManager
 NOMODULEMAKE=1
 
+MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := AIM SocketManager indigo loci BigList cjson Configuration
 
 # These indicate Linux specific implementations to be used for
@@ -35,4 +36,4 @@ GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
 
 GLOBAL_LINK_LIBS += -lm
 
-include ../../make/utestmodule.mk
+include $(BUILDER)/build-unit-test.mk

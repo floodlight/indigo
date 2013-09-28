@@ -18,9 +18,9 @@
 ################################################################
 
 MODULE := locitest_utest
-NOMODULEMAKE := 1
-TEST_MODULE :=  locitest
+TEST_MODULE := locitest
 
+MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES += loci BigList AIM
 
 LOCI_SRC_DIR = $(loci_BASEDIR)/src
@@ -34,4 +34,5 @@ GLOBAL_CFLAGS += -DINDIGO_MEM_STDLIB
 GLOBAL_CFLAGS += -DOF_OBJECT_TRACKING
 GLOBAL_CFLAGS += -I$(LOCI_SRC_DIR)
 
-include ../make/utestmodule.mk
+include $(BUILDER)/build-unit-test.mk
+

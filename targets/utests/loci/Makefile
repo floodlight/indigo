@@ -18,8 +18,9 @@
 ################################################################
 
 MODULE := loci_utest
-NOMODULEMAKE := 1
 TEST_MODULE :=  loci
+MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := BigList AIM
 GLOBAL_CFLAGS += -DOF_OBJECT_TRACKING
-include ../make/utestmodule.mk
+include $(BUILDER)/build-unit-test.mk
+

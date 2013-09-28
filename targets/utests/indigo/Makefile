@@ -18,7 +18,6 @@
 ################################################################
 
 MODULE := indigo_utest
-NOMODULEMAKE := 1
 TEST_MODULE :=  indigo
 
 # These indicate Linux specific implementations to be used for
@@ -28,5 +27,7 @@ GLOBAL_CFLAGS += -DINDIGO_LINUX_TIME
 GLOBAL_CFLAGS += -DINDIGO_FAULT_ON_ASSERT
 GLOBAL_CFLAGS += -DINDIGO_MEM_STDLIB
 
+MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := AIM loci BigList
-include ../../make/utestmodule.mk
+
+include $(BUILDER)/build-unit-test.mk
