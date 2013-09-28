@@ -45,7 +45,7 @@
 #include <AIM/aim.h>
 /**
  * OFCONNECTIONMANAGER_CONFIG_INCLUDE_LOGGING
- * 
+ *
  * Include or exclude logging. */
 
 
@@ -55,7 +55,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_LOG_OPTIONS_DEFAULT
- * 
+ *
  * Default enabled log options. */
 
 
@@ -65,7 +65,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_LOG_BITS_DEFAULT
- * 
+ *
  * Default enabled log bits. */
 
 
@@ -75,7 +75,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_LOG_CUSTOM_BITS_DEFAULT
- * 
+ *
  * Default enabled custom log bits. */
 
 
@@ -85,7 +85,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_PORTING_STDLIB
- * 
+ *
  * Default all porting macros to use the C standard libraries. */
 
 
@@ -95,7 +95,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS
- * 
+ *
  * Include standard library headers for stdlib porting macros. */
 
 
@@ -105,7 +105,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI
- * 
+ *
  * Include generic uCli support. */
 
 
@@ -115,7 +115,7 @@
 
 /**
  * OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION
- * 
+ *
  * Optimize echo requests based on controller activity. Otherwise echo requests are sent periodically regardless of other activity. */
 
 
@@ -143,13 +143,13 @@ extern ofconnectionmanager_config_settings_t ofconnectionmanager_config_settings
 
 /**
  * @brief Lookup a configuration setting.
- * @param setting The name of the configuration option to lookup. 
+ * @param setting The name of the configuration option to lookup.
  */
 const char* ofconnectionmanager_config_lookup(const char* setting);
 
 /**
  * @brief Show the compile-time configuration.
- * @param pvs The output stream. 
+ * @param pvs The output stream.
  */
 int ofconnectionmanager_config_show(struct aim_pvs_s* pvs);
 
