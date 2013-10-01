@@ -70,34 +70,34 @@ SUPERCLEAN_BUILD_DIR := $(BUILD_DIR)
 # Various environment options for build paths
 #
 ifdef BUILDER_BUILD_DIR_ADD_PREFIX
-BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_PREFIX)
+override BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_PREFIX)
 endif
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_CHROOT
 ifdef SCHROOT_CHROOT_NAME
-BUILD_DIR:=$(BUILD_DIR)/$(SCHROOT_CHROOT_NAME)
+override BUILD_DIR:=$(BUILD_DIR)/$(SCHROOT_CHROOT_NAME)
 endif
 endif
 
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_HOSTNAME
-BUILD_DIR:=$(BUILD_DIR)/$(shell hostname)
+override BUILD_DIR:=$(BUILD_DIR)/$(shell hostname)
 endif
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_ARCH
-BUILD_DIR:=$(BUILD_DIR)/$(shell arch)
+override BUILD_DIR:=$(BUILD_DIR)/$(shell arch)
 endif
 
 ifdef BUILDER_BUILD_DIR_ADD_SUFFIX
-BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_SUFFIX)
+override BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_SUFFIX)
 endif
 
 # Substitute problem characters that may have been introduced
 # through a prefix or suffix
-BUILD_DIR := $(subst :,.,$(BUILD_DIR))
+override BUILD_DIR := $(subst :,.,$(BUILD_DIR))
 
 ifdef TOOLCHAIN
-BUILD_DIR:=$(BUILD_DIR)/$(TOOLCHAIN)
+override BUILD_DIR:=$(BUILD_DIR)/$(TOOLCHAIN)
 endif
 
 
