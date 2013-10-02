@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <cjson/cJSON.h>
 #include <Configuration/configuration.h>
+#include <loci/loci_idents.h>
 
 /* <auto.start.cdefs(OFCONNECTIONMANAGER_CONFIG_HEADER).source> */
 #define __ofconnectionmanager_config_STRINGIFY_NAME(_x) #_x
@@ -125,7 +126,7 @@ static struct config {
     struct controller controllers[MAX_CONTROLLERS];
 } staged_config, current_config;
 
-/* Parse a controller string like "tcp:127.0.0.1:6633". */
+/* Parse a controller string like "tcp:127.0.0.1:6653". */
 static indigo_error_t
 parse_controller(struct controller *controller, cJSON *root)
 {
@@ -166,7 +167,7 @@ parse_controller(struct controller *controller, cJSON *root)
     err = ind_cfg_lookup_int(root, "port", &port);
     if (err == INDIGO_ERROR_NOT_FOUND) {
         /* Allow default protocol value */
-        port = 6633;
+        port = OF_TCP_PORT;
     } else if (err < 0) {
         if (err == INDIGO_ERROR_PARAM) {
             AIM_LOG_ERROR("Config: 'port' must be an integer");

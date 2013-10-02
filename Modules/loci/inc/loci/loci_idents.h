@@ -278,8 +278,8 @@
  * Original name OFP_SSL_PORT
  */
 #define OF_SSL_PORT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
-#define OF_SSL_PORT (0x19e9)
-#define OF_SSL_PORT_BY_VERSION(version) (0x19e9)
+#define OF_SSL_PORT (0x19fd)
+#define OF_SSL_PORT_BY_VERSION(version) (0x19fd)
 #define OF_SSL_PORT_GENERIC 18
 
 /*
@@ -287,8 +287,8 @@
  * Original name OFP_TCP_PORT
  */
 #define OF_TCP_PORT_SUPPORTED(version) OF_IDENT_IN_ALL_VERSIONS
-#define OF_TCP_PORT (0x19e9)
-#define OF_TCP_PORT_BY_VERSION(version) (0x19e9)
+#define OF_TCP_PORT (0x19fd)
+#define OF_TCP_PORT_BY_VERSION(version) (0x19fd)
 #define OF_TCP_PORT_GENERIC 19
 
 /*
