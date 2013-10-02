@@ -36,11 +36,6 @@
 #endif
 
 
-#ifndef OFSTATEMANAGER_CONFIG_INCLUDE_UCLI
-#define OFSTATEMANAGER_CONFIG_INCLUDE_UCLI 1
-#endif
-
-
 
 /* <auto.start.cdefs(OFSTATEMANAGER_CONFIG_HEADER).header> */
 #include <AIM/aim.h>
