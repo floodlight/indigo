@@ -35,10 +35,6 @@
 #include <ofconnectionmanager_custom_config.h>
 #endif
 
-#ifndef OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI
-#define OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI 1
-#endif
-
 
 
 /* <auto.start.cdefs(OFCONNECTIONMANAGER_CONFIG_HEADER).header> */

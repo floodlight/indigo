@@ -16,19 +16,9 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  Makefile
-#
-#  SocketManager Makefile
-#
-###############################################################################
-
+include ../../init.mk
 
 MODULE :=  SocketManager
 AUTOMODULE :=  SocketManager
-ifndef BUILDER
-export BUILDER=../../../Builder/unix
-endif
+
 include $(BUILDER)/definemodule.mk

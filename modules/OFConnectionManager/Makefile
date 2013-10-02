@@ -16,6 +16,8 @@
 # License.
 #
 ################################################################
+include ../../init.mk
+
 MODULE :=  OFConnectionManager
 AUTOMODULE :=  OFConnectionManager
 

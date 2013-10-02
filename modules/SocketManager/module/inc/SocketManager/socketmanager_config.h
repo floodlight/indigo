@@ -36,11 +36,6 @@
 #endif
 
 
-#ifndef SOCKETMANAGER_CONFIG_INCLUDE_UCLI
-#define SOCKETMANAGER_CONFIG_INCLUDE_UCLI 1
-#endif
-
-
 /* <auto.start.cdefs(SOCKETMANAGER_CONFIG_HEADER).header> */
 #include <AIM/aim.h>
 /**

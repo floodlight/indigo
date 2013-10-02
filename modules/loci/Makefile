@@ -16,11 +16,10 @@
 # License.
 #
 ################################################################
+include ../../init.mk
 
 MODULE :=  loci
 AUTOMODULE :=  loci
 
 include $(BUILDER)/definemodule.mk
 
-modulemake::
-	$(MAKE) -C ../LoxiGen all

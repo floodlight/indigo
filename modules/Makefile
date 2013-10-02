@@ -16,10 +16,7 @@
 # License.
 #
 ################################################################
-
-ifndef BUILDER
-export BUILDER=$(dir $(lastword $(MAKEFILE_LIST)))../Builder/unix
-endif
+include ../init.mk
 
 -include Manifest.mk
 

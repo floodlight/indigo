@@ -30,7 +30,6 @@
 
 
 #if SOCKETMANAGER_CONFIG_INCLUDE_UCLI == 1
-
 #include <uCli/ucli.h>
 #include <uCli/ucli_argparse.h>
 #include <uCli/ucli_handler_macros.h>

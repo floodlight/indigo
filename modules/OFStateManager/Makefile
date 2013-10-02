@@ -16,6 +16,7 @@
 # License.
 #
 ################################################################
+include ../../init.mk
 
 MODULE :=  OFStateManager
 AUTOMODULE :=  OFStateManager

@@ -16,19 +16,8 @@
 # License.
 #
 ################################################################
-
-###############################################################################
-#
-#  Makefile
-#
-#  Configuration Makefile
-#
-###############################################################################
-
+include ../../init.mk
 
 MODULE :=  Configuration
 AUTOMODULE :=  Configuration
-ifndef BUILDER
-export BUILDER=../../../Builder/unix
-endif
 include $(BUILDER)/definemodule.mk
