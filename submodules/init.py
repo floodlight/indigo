@@ -73,7 +73,7 @@ if ops.update:
             if status[0] == '-':
                 # This submodule has not yet been updated
                 print "Updating submodule %s" % module
-                if subprocess.check_call(['git', 'submodule', 'update', '--init', '--recursive', 'submodules/%s' % module]) != 0:
+                if subprocess.check_call(['git', 'submodule', 'update', '--init', 'submodules/%s' % module]) != 0:
                     print "git error updating module '%s'." % (module, switchlight_root, module)
                     sys.exit(1)
             else:
