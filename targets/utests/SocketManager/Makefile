@@ -16,11 +16,11 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
 
 MODULE := SocketManager_utest
 TEST_MODULE := SocketManager
 
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := AIM loci indigo BigList cjson Configuration
 
 # These indicate Linux specific implementations to be used for

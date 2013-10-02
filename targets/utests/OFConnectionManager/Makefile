@@ -16,11 +16,11 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
+
 MODULE := OFConnectionManager_utest
 TEST_MODULE := OFConnectionManager
-NOMODULEMAKE=1
 
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := AIM SocketManager indigo loci BigList cjson Configuration
 
 # These indicate Linux specific implementations to be used for

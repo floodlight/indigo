@@ -16,11 +16,11 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
 
 MODULE := locitest_utest
 TEST_MODULE := locitest
 
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES += loci BigList AIM
 
 LOCI_SRC_DIR = $(loci_BASEDIR)/src

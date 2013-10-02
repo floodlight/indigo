@@ -16,9 +16,12 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
 
 MODULE := indigo_utest
 TEST_MODULE :=  indigo
+
+DEPENDMODULES := AIM loci BigList
 
 # These indicate Linux specific implementations to be used for
 # various features
@@ -26,8 +29,5 @@ GLOBAL_CFLAGS += -DINDIGO_LINUX_LOGGING
 GLOBAL_CFLAGS += -DINDIGO_LINUX_TIME
 GLOBAL_CFLAGS += -DINDIGO_FAULT_ON_ASSERT
 GLOBAL_CFLAGS += -DINDIGO_MEM_STDLIB
-
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
-DEPENDMODULES := AIM loci BigList
 
 include $(BUILDER)/build-unit-test.mk

@@ -16,10 +16,10 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
+
 MODULE := OFStateManager_utest
 TEST_MODULE := OFStateManager
-
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 
 LOCI_SOURCE_DIR = $(loci_BASEDIR)/src
 

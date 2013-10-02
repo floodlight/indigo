@@ -16,11 +16,12 @@
 # License.
 #
 ################################################################
+include ../../../init.mk
 
 MODULE := loci_utest
 TEST_MODULE :=  loci
-MODULE_DIRS := ../../../modules ../../../submodules/infra/modules ../../../submodules/bigcode/modules
 DEPENDMODULES := BigList AIM
+
 GLOBAL_CFLAGS += -DOF_OBJECT_TRACKING
 include $(BUILDER)/build-unit-test.mk
 
