@@ -325,6 +325,8 @@ typedef of_object_t of_oxm_arp_tha_t;
 typedef of_object_t of_oxm_arp_tha_masked_t;
 typedef of_object_t of_oxm_arp_tpa_t;
 typedef of_object_t of_oxm_arp_tpa_masked_t;
+typedef of_object_t of_oxm_bsn_in_ports_128_t;
+typedef of_object_t of_oxm_bsn_in_ports_128_masked_t;
 typedef of_object_t of_oxm_eth_dst_t;
 typedef of_object_t of_oxm_eth_dst_masked_t;
 typedef of_object_t of_oxm_eth_src_t;
@@ -2529,6 +2531,20 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_in_ports_128_new(version) \
+    of_oxm_bsn_in_ports_128_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_in_ports_128_masked_new(version) \
+    of_oxm_bsn_in_ports_128_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_tracking(of_version_t version,
         const char *file, int line);
@@ -4164,6 +4180,12 @@ extern of_list_uint8_t *
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_(version)
 
+#define of_oxm_bsn_in_ports_128_new(version) \
+    of_oxm_bsn_in_ports_128_new_(version)
+
+#define of_oxm_bsn_in_ports_128_masked_new(version) \
+    of_oxm_bsn_in_ports_128_masked_new_(version)
+
 #define of_oxm_eth_dst_new(version) \
     of_oxm_eth_dst_new_(version)
 
@@ -5742,6 +5764,16 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_(of_version_t version);
 extern void of_oxm_arp_tpa_masked_init(
     of_oxm_arp_tpa_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_new_(of_version_t version);
+extern void of_oxm_bsn_in_ports_128_init(
+    of_oxm_bsn_in_ports_128_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_new_(of_version_t version);
+extern void of_oxm_bsn_in_ports_128_masked_init(
+    of_oxm_bsn_in_ports_128_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_(of_version_t version);
@@ -8598,6 +8630,28 @@ of_oxm_arp_tpa_delete(of_oxm_arp_tpa_t *obj) {
  */
 static inline void
 of_oxm_arp_tpa_masked_delete(of_oxm_arp_tpa_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_in_ports_128_t
+ * @param obj An instance of type of_oxm_bsn_in_ports_128_t
+ *
+ * \ingroup of_oxm_bsn_in_ports_128
+ */
+static inline void
+of_oxm_bsn_in_ports_128_delete(of_oxm_bsn_in_ports_128_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_in_ports_128_masked_t
+ * @param obj An instance of type of_oxm_bsn_in_ports_128_masked_t
+ *
+ * \ingroup of_oxm_bsn_in_ports_128_masked
+ */
+static inline void
+of_oxm_bsn_in_ports_128_masked_delete(of_oxm_bsn_in_ports_128_masked_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -14773,6 +14827,31 @@ extern void of_oxm_arp_tpa_masked_value_mask_get(
     of_oxm_arp_tpa_masked_t *obj,
     uint32_t *value_mask);
 
+/* Unified accessor functions for of_oxm_bsn_in_ports_128 */
+
+extern void of_oxm_bsn_in_ports_128_value_set(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t value);
+extern void of_oxm_bsn_in_ports_128_value_get(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_in_ports_128_masked */
+
+extern void of_oxm_bsn_in_ports_128_masked_value_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value);
+extern void of_oxm_bsn_in_ports_128_masked_value_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value);
+
+extern void of_oxm_bsn_in_ports_128_masked_value_mask_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value_mask);
+extern void of_oxm_bsn_in_ports_128_masked_value_mask_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value_mask);
+
 /* Unified accessor functions for of_oxm_eth_dst */
 
 extern void of_oxm_eth_dst_value_set(
@@ -17092,6 +17171,8 @@ union of_generic_u {
     of_oxm_arp_tha_masked_t of_oxm_arp_tha_masked;
     of_oxm_arp_tpa_t of_oxm_arp_tpa;
     of_oxm_arp_tpa_masked_t of_oxm_arp_tpa_masked;
+    of_oxm_bsn_in_ports_128_t of_oxm_bsn_in_ports_128;
+    of_oxm_bsn_in_ports_128_masked_t of_oxm_bsn_in_ports_128_masked;
     of_oxm_eth_dst_t of_oxm_eth_dst;
     of_oxm_eth_dst_masked_t of_oxm_eth_dst_masked;
     of_oxm_eth_src_t of_oxm_eth_src;
@@ -17415,6 +17496,8 @@ union of_oxm_u {
     of_oxm_arp_tha_masked_t arp_tha_masked;
     of_oxm_arp_tpa_t arp_tpa;
     of_oxm_arp_tpa_masked_t arp_tpa_masked;
+    of_oxm_bsn_in_ports_128_t bsn_in_ports_128;
+    of_oxm_bsn_in_ports_128_masked_t bsn_in_ports_128_masked;
     of_oxm_eth_dst_t eth_dst;
     of_oxm_eth_dst_masked_t eth_dst_masked;
     of_oxm_eth_src_t eth_src;
@@ -17888,16 +17971,30 @@ extern const of_object_id_t *const of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
  *
  */
 static inline of_object_id_t
-of_oxm_to_object_id(int oxm, of_version_t version)
+of_oxm_to_object_id(uint32_t type_len, of_version_t version)
 {
     if (!OF_VERSION_OKAY(version)) {
         return OF_OBJECT_INVALID;
     }
-    if (oxm < 0 || oxm >= OF_OXM_ITEM_COUNT) {
+
+    uint16_t class = (type_len >> 16) & 0xffff;
+    uint8_t masked_type = (type_len >> 8) & 0xff;
+
+    if (class == 0x8000) {
+        if (masked_type < 0 || masked_type >= OF_OXM_ITEM_COUNT) {
+            return OF_OBJECT_INVALID;
+        }
+
+        return of_oxm_type_to_id[version][masked_type];
+    } else if (class == 0x0003) {
+        switch (masked_type) {
+        case 0x00: return OF_OXM_BSN_IN_PORTS_128;
+        case 0x01: return OF_OXM_BSN_IN_PORTS_128_MASKED;
+        default: return OF_OBJECT_INVALID;
+        }
+    } else {
         return OF_OBJECT_INVALID;
     }
-
-    return of_oxm_type_to_id[version][oxm];
 }
 
 /**
@@ -18911,11 +19008,6 @@ extern void of_meter_band_wire_object_id_get(of_object_t *obj,
     of_object_id_t *id);
 extern void of_hello_elem_wire_object_id_get(of_object_t *obj,
     of_object_id_t *id);
-
-/* XXX Hardcoded to the OpenFlow Basic OXM class */
-#define OF_OXM_MASKED_TYPE_GET(hdr) (((hdr) >> 8) & 0xff)
-#define OF_OXM_MASKED_TYPE_SET(hdr, val)                    \
-    (hdr) = ((hdr) & 0x000000ff) + 0x80000000 + (((val) & 0xff) << 8)
 
 #define OF_OXM_LENGTH_GET(hdr) (((hdr) & 0xff) + 4)
 #define OF_OXM_LENGTH_SET(hdr, val)                         \

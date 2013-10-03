@@ -172,6 +172,10 @@ of_match_v1_compat_check(of_match_t *match)
         return 0;
     }
 
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
+        return 0;
+    }
+
     if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(match)) {
         return 0;
     }
@@ -382,6 +386,10 @@ of_match_v2_compat_check(of_match_t *match)
     }
 
     if (OF_MATCH_MASK_ICMPV6_TYPE_ACTIVE_TEST(match)) {
+        return 0;
+    }
+
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
         return 0;
     }
 
@@ -764,6 +772,27 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_icmpv6_type_value_set(elt, src->fields.icmpv6_type);
+        }
+    }
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_BSN_IN_PORTS_128_EXACT_TEST(src)) {
+            of_oxm_bsn_in_ports_128_masked_t *elt;
+            elt = &oxm_entry.bsn_in_ports_128_masked;
+
+            of_oxm_bsn_in_ports_128_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_bsn_in_ports_128_masked_value_set(elt,
+                   src->fields.bsn_in_ports_128);
+            of_oxm_bsn_in_ports_128_masked_value_mask_set(elt,
+                   src->masks.bsn_in_ports_128);
+        } else {  /* Active, but not masked */
+            of_oxm_bsn_in_ports_128_t *elt;
+            elt = &oxm_entry.bsn_in_ports_128;
+            of_oxm_bsn_in_ports_128_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_bsn_in_ports_128_value_set(elt, src->fields.bsn_in_ports_128);
         }
     }
     if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(src)) {
@@ -1716,6 +1745,21 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
             of_oxm_icmpv6_type_value_get(
                 &oxm_entry.icmpv6_type,
                 &dst->fields.icmpv6_type);
+            break;
+
+        case OF_OXM_BSN_IN_PORTS_128_MASKED:
+            of_oxm_bsn_in_ports_128_masked_value_mask_get(
+                &oxm_entry.bsn_in_ports_128_masked,
+                &dst->masks.bsn_in_ports_128);
+            of_oxm_bsn_in_ports_128_masked_value_get(
+                &oxm_entry.bsn_in_ports_128,
+                &dst->fields.bsn_in_ports_128);
+            break;
+        case OF_OXM_BSN_IN_PORTS_128:
+            OF_MATCH_MASK_BSN_IN_PORTS_128_EXACT_SET(dst);
+            of_oxm_bsn_in_ports_128_value_get(
+                &oxm_entry.bsn_in_ports_128,
+                &dst->fields.bsn_in_ports_128);
             break;
 
         case OF_OXM_ARP_SHA_MASKED:
