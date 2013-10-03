@@ -48,6 +48,10 @@ endif
 # the directories which follow explicitly.
 #
 ################################################################################
+ifndef BUILD_DIR_BASE
+BUILD_DIR_BASE := ./build
+endif
+
 ifndef BUILD_DIR
 # Check for module-specified BUILD_DIR
 ifdef $(MODULE)_BUILD_DIR
@@ -57,7 +61,7 @@ endif
 
 
 ifndef BUILD_DIR
-BUILD_DIR := ./build
+BUILD_DIR := $(BUILD_DIR_BASE)
 endif
 
 
@@ -70,34 +74,34 @@ SUPERCLEAN_BUILD_DIR := $(BUILD_DIR)
 # Various environment options for build paths
 #
 ifdef BUILDER_BUILD_DIR_ADD_PREFIX
-override BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_PREFIX)
+BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_PREFIX)
 endif
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_CHROOT
 ifdef SCHROOT_CHROOT_NAME
-override BUILD_DIR:=$(BUILD_DIR)/$(SCHROOT_CHROOT_NAME)
+BUILD_DIR:=$(BUILD_DIR)/$(SCHROOT_CHROOT_NAME)
 endif
 endif
 
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_HOSTNAME
-override BUILD_DIR:=$(BUILD_DIR)/$(shell hostname)
+BUILD_DIR:=$(BUILD_DIR)/$(shell hostname)
 endif
 
 ifdef BUILDER_BUILD_DIR_INCLUDES_ARCH
-override BUILD_DIR:=$(BUILD_DIR)/$(shell arch)
+BUILD_DIR:=$(BUILD_DIR)/$(shell arch)
 endif
 
 ifdef BUILDER_BUILD_DIR_ADD_SUFFIX
-override BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_SUFFIX)
+BUILD_DIR:=$(BUILD_DIR)/$(BUILDER_BUILD_DIR_ADD_SUFFIX)
 endif
 
 # Substitute problem characters that may have been introduced
 # through a prefix or suffix
-override BUILD_DIR := $(subst :,.,$(BUILD_DIR))
+BUILD_DIR := $(subst :,.,$(BUILD_DIR))
 
 ifdef TOOLCHAIN
-override BUILD_DIR:=$(BUILD_DIR)/$(TOOLCHAIN)
+BUILD_DIR:=$(BUILD_DIR)/$(TOOLCHAIN)
 endif
 
 
