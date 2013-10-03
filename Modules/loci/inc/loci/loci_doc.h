@@ -3965,6 +3965,32 @@ typedef struct of_oxm_arp_tpa_s of_oxm_arp_tpa_t;
 typedef struct of_oxm_arp_tpa_masked_s of_oxm_arp_tpa_masked_t;
 
 /**
+ * Structure for of_oxm_bsn_in_ports_128 object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type of_bitmap_128.  Functions
+ *   are of type of_oxm_bsn_in_ports_128_of_bitmap_128_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_in_ports_128_s of_oxm_bsn_in_ports_128_t;
+
+/**
+ * Structure for of_oxm_bsn_in_ports_128_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type of_bitmap_128.  Functions
+ *   are of type of_oxm_bsn_in_ports_128_masked_of_bitmap_128_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type of_bitmap_128.  Functions
+ *   are of type of_oxm_bsn_in_ports_128_masked_of_bitmap_128_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_in_ports_128_masked_s of_oxm_bsn_in_ports_128_masked_t;
+
+/**
  * Structure for of_oxm_eth_dst object.  Get/set
  * accessors available in all versions unless noted otherwise
  *

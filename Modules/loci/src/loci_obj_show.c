@@ -10485,6 +10485,39 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of
 }
 
 int
+of_oxm_bsn_in_ports_128_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    of_oxm_bsn_in_ports_128_value_get(obj, &bitmap_128);
+    out += writer(cookie, "value=");
+    out += LOCI_SHOW_bitmap_128_value(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    of_oxm_bsn_in_ports_128_masked_value_get(obj, &bitmap_128);
+    out += writer(cookie, "value=");
+    out += LOCI_SHOW_bitmap_128_value(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(obj, &bitmap_128);
+    out += writer(cookie, "value_mask=");
+    out += LOCI_SHOW_bitmap_128_value_mask(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    return out;
+}
+
+int
 of_oxm_eth_dst_OF_VERSION_1_2_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -16267,6 +16300,39 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of
 }
 
 int
+of_oxm_bsn_in_ports_128_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    of_oxm_bsn_in_ports_128_value_get(obj, &bitmap_128);
+    out += writer(cookie, "value=");
+    out += LOCI_SHOW_bitmap_128_value(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    of_oxm_bsn_in_ports_128_masked_value_get(obj, &bitmap_128);
+    out += writer(cookie, "value=");
+    out += LOCI_SHOW_bitmap_128_value(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(obj, &bitmap_128);
+    out += writer(cookie, "value_mask=");
+    out += LOCI_SHOW_bitmap_128_value_mask(writer, cookie, bitmap_128);
+    out += writer(cookie, " ");
+
+    return out;
+}
+
+int
 of_oxm_eth_dst_OF_VERSION_1_3_show(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj)
 {
     int out = 0;
@@ -18242,6 +18308,14 @@ loci_show_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, " ");
     }
 
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
+        out += writer(cookie, "bsn_in_ports_128 active=");
+        out += LOCI_SHOW_bitmap_128_bsn_in_ports_128(writer, cookie, match->fields.bsn_in_ports_128);
+        out += writer(cookie, "/");
+        out += LOCI_SHOW_bitmap_128_bsn_in_ports_128(writer, cookie, match->masks.bsn_in_ports_128);
+        out += writer(cookie, " ");
+    }
+
     if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(match)) {
         out += writer(cookie, "arp_sha active=");
         out += LOCI_SHOW_mac_arp_sha(writer, cookie, match->fields.arp_sha);
@@ -18756,6 +18830,8 @@ static const loci_obj_show_f show_funs_v1[OF_OBJECT_COUNT] = {
     unknown_show,
     unknown_show,
     unknown_show,
+    unknown_show,
+    unknown_show,
     of_packet_queue_OF_VERSION_1_0_show,
     of_port_desc_OF_VERSION_1_0_show,
     of_port_stats_entry_OF_VERSION_1_0_show,
@@ -19000,6 +19076,8 @@ static const loci_obj_show_f show_funs_v2[OF_OBJECT_COUNT] = {
     of_instruction_write_metadata_OF_VERSION_1_1_show,
     unknown_show,
     of_match_v2_OF_VERSION_1_1_show,
+    unknown_show,
+    unknown_show,
     unknown_show,
     unknown_show,
     unknown_show,
@@ -19349,6 +19427,8 @@ static const loci_obj_show_f show_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_2_show,
     of_oxm_arp_tpa_OF_VERSION_1_2_show,
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_show,
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_2_show,
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_show,
     of_oxm_eth_dst_OF_VERSION_1_2_show,
     of_oxm_eth_dst_masked_OF_VERSION_1_2_show,
     of_oxm_eth_src_OF_VERSION_1_2_show,
@@ -19677,6 +19757,8 @@ static const loci_obj_show_f show_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_3_show,
     of_oxm_arp_tpa_OF_VERSION_1_3_show,
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_show,
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_3_show,
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_show,
     of_oxm_eth_dst_OF_VERSION_1_3_show,
     of_oxm_eth_dst_masked_OF_VERSION_1_3_show,
     of_oxm_eth_src_OF_VERSION_1_3_show,

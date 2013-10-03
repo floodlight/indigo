@@ -412,6 +412,8 @@ int of_oxm_arp_tha_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_ox
 int of_oxm_arp_tha_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tha_masked_t *obj);
 int of_oxm_arp_tpa_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_t *obj);
 int of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_masked_t *obj);
+int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj);
+int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj);
 int of_oxm_eth_dst_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj);
 int of_oxm_eth_dst_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_masked_t *obj);
 int of_oxm_eth_src_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_eth_src_t *obj);
@@ -666,6 +668,8 @@ int of_oxm_arp_tha_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_ox
 int of_oxm_arp_tha_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tha_masked_t *obj);
 int of_oxm_arp_tpa_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_t *obj);
 int of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_arp_tpa_masked_t *obj);
+int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj);
+int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj);
 int of_oxm_eth_dst_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_t *obj);
 int of_oxm_eth_dst_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_eth_dst_masked_t *obj);
 int of_oxm_eth_src_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_eth_src_t *obj);

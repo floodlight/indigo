@@ -838,6 +838,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_dup(
         of_oxm_eth_dst_t *src);
@@ -2830,6 +2838,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
+
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_2_dup(
         of_oxm_eth_dst_t *src);
@@ -3877,6 +3893,14 @@ extern of_oxm_arp_tpa_t *
 extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
         of_oxm_arp_tpa_masked_t *src);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_3_dup(

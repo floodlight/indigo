@@ -1046,6 +1046,42 @@ test_of10_table_stats_entry(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/oxm_bsn_in_ports_masked_128.data */
+static int
+test_of13_oxm_bsn_in_ports_masked_128(void) {
+    uint8_t binary[] = {
+        0x00, 0x03, 0x01, 0x20, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xfe, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xfd, 0xff, 0xfe, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_oxm_bsn_in_ports_128_masked_new(OF_VERSION_1_3);
+    {
+        of_bitmap_128_t bmap = { 0, 0 };
+        of_oxm_bsn_in_ports_128_masked_value_set(obj, bmap);
+    }
+    {
+        of_bitmap_128_t bmap = { 0xfffffffeffffffff , 0xfffffffffffdfffe };
+        of_oxm_bsn_in_ports_128_masked_value_mask_set(obj, bmap);
+    }
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 
 int
 test_datafiles(void)
@@ -1065,5 +1101,6 @@ test_datafiles(void)
     RUN_TEST(of10_port_status);
     RUN_TEST(of10_queue_get_config_reply);
     RUN_TEST(of10_table_stats_entry);
+    RUN_TEST(of13_oxm_bsn_in_ports_masked_128);
     return TEST_PASS;
 }
