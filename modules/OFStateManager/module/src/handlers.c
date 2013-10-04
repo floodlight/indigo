@@ -519,6 +519,10 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
         /* Could check object_id is delete or delete_strict */
         of_flow_add_out_port_get(obj, &(query->out_port));
     }
+    if (query_mode != OF_MATCH_OVERLAP && obj->version >= OF_VERSION_1_1) {
+        of_flow_add_cookie_get(obj, &query->cookie);
+        of_flow_add_cookie_mask_get(obj, &query->cookie_mask);
+    }
 
     return INDIGO_ERROR_NONE;
 }
@@ -1302,8 +1306,12 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
     of_flow_stats_request_table_id_get(obj, &(query.table_id));
+    if (obj->version >= OF_VERSION_1_1) {
+        of_flow_stats_request_cookie_get(obj, &query.cookie);
+        of_flow_stats_request_cookie_mask_get(obj, &query.cookie_mask);
+    }
 
-    /* Non strict; do not check priority, cookie or overlap */
+    /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
     state = INDIGO_MEM_ALLOC(sizeof(*state) + sizeof(*priv));
@@ -1426,8 +1434,12 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     }
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
     of_aggregate_stats_request_table_id_get(obj, &(query.table_id));
+    if (obj->version >= OF_VERSION_1_1) {
+        of_aggregate_stats_request_cookie_get(obj, &query.cookie);
+        of_aggregate_stats_request_cookie_mask_get(obj, &query.cookie_mask);
+    }
 
-    /* Non strict; do not check priority, cookie or overlap */
+    /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
     state = INDIGO_MEM_ALLOC(sizeof(*state) + sizeof(*priv));
