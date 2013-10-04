@@ -1,2 +1,2 @@
-stage-indigo
-============
+Indigo
+======
