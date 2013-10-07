@@ -57,6 +57,12 @@
 #include "ft_entry.h"
 
 /**
+ * Length of the prefix used for bucketing flows by cookie.
+ */
+#define FT_COOKIE_PREFIX_LEN 8
+#define FT_COOKIE_PREFIX_MASK (~(uint64_t)0 << (64-FT_COOKIE_PREFIX_LEN))
+
+/**
  * Forward declaration of flowtable handle for other typedefs
  */
 
@@ -127,6 +133,7 @@ struct ft_public_s {
 
     list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
+    list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
@@ -142,6 +149,7 @@ struct ft_public_s {
 typedef struct ft_iterator_s {
     list_head_t *head;             /* List head for this iteration */
     ft_entry_t *next_entry;        /* Entry to be returned on next() */
+    int links_offset;              /* Offset of the links we're using in the flowtable entry */
     list_links_t entry_links;      /* Linked into next_entry->iterators if next_entry != NULL */
     bool use_query;                /* Whether 'query' is valid */
     of_meta_match_t query;         /* Optional query to filter by */
