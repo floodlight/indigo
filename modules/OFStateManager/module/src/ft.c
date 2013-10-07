@@ -386,8 +386,6 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 struct ft_iter_task_state {
     ft_iter_task_callback_f callback;
     void *cookie;
-    of_meta_match_t query;
-    int use_query;
     ft_iterator_t iter;
 };
 
@@ -405,14 +403,6 @@ ft_iter_task_callback(void *cookie)
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-                continue;
-            }
-
-            if (state->use_query && !ft_entry_meta_match(&state->query, entry)) {
-                continue;
-            }
-
             state->callback(state->cookie, entry);
         }
     } while (!ind_soc_should_yield());
@@ -437,14 +427,7 @@ ft_spawn_iter_task(ft_instance_t instance,
     state->callback = callback;
     state->cookie = cookie;
 
-    if (query != NULL) {
-        state->query = *query;
-        state->use_query = 1;
-    } else {
-        state->use_query = 0;
-    }
-
-    ft_iterator_init(&state->iter, instance);
+    ft_iterator_init(&state->iter, instance, query);
 
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
@@ -456,8 +439,15 @@ ft_spawn_iter_task(ft_instance_t instance,
 }
 
 void
-ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query)
 {
+    if (query != NULL) {
+        iter->query = *query;
+        iter->use_query = true;
+    } else {
+        iter->use_query = false;
+    }
+
     iter->head = &ft->all_list;
     if (list_empty(iter->head)) {
         iter->next_entry = NULL;
@@ -470,25 +460,32 @@ ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
 ft_entry_t *
 ft_iterator_next(ft_iterator_t *iter)
 {
-    if (iter->next_entry == NULL) {
-        /* Already at end */
-        return NULL;
+    while (iter->next_entry != NULL) {
+        ft_entry_t *entry = iter->next_entry;
+
+        list_remove(&iter->entry_links);
+
+        list_links_t *next_links = iter->next_entry->table_links.next;
+        if (next_links == &iter->head->links) {
+            /* Finished iteration */
+            iter->next_entry = NULL;
+        } else {
+            iter->next_entry = FT_ENTRY_CONTAINER(next_links, table);
+            list_push(&iter->next_entry->iterators, &iter->entry_links);
+        }
+
+        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
+            continue;
+        }
+
+        if (iter->use_query && !ft_entry_meta_match(&iter->query, entry)) {
+            continue;
+        }
+
+        return entry;
     }
 
-    ft_entry_t *result = iter->next_entry;
-
-    list_remove(&iter->entry_links);
-
-    list_links_t *next_links = iter->next_entry->table_links.next;
-    if (next_links == &iter->head->links) {
-        /* Finished iteration */
-        iter->next_entry = NULL;
-    } else {
-        iter->next_entry = FT_ENTRY_CONTAINER(next_links, table);
-        list_push(&iter->next_entry->iterators, &iter->entry_links);
-    }
-
-    return result;
+    return NULL;
 }
 
 void

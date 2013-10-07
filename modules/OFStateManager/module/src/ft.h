@@ -52,6 +52,7 @@
 #include <loci/loci.h>
 #include <BigList/biglist.h>
 #include <AIM/aim_list.h>
+#include <stdbool.h>
 
 #include "ft_entry.h"
 
@@ -132,7 +133,7 @@ struct ft_public_s {
 #define FT_STATUS(_ft) (&(_ft)->status)
 
 /**
- * Safe iterator for the entire flowtable
+ * Safe iterator for the flowtable
  *
  * See ft_iterator_init, ft_iterator_next, and ft_iterator_cleanup.
  *
@@ -142,6 +143,8 @@ typedef struct ft_iterator_s {
     list_head_t *head;             /* List head for this iteration */
     ft_entry_t *next_entry;        /* Entry to be returned on next() */
     list_links_t entry_links;      /* Linked into next_entry->iterators if next_entry != NULL */
+    bool use_query;                /* Whether 'query' is valid */
+    of_meta_match_t query;         /* Optional query to filter by */
 } ft_iterator_t;
 
 /**
@@ -315,15 +318,16 @@ ft_spawn_iter_task(ft_instance_t instance,
 /**
  * Initialize a flowtable iterator
  *
- * This will iterate over the entire flowtable. It is safe to use with
- * concurrent modification of the flowtable.
+ * This will iterate over the flowtable, returning the subset matching 'query'
+ * (or the entire flowtable if 'query' is NULL). It is safe to use with concurrent
+ * modification of the flowtable.
  *
  * This iterator does not guarantee a consistent view of the flowtable over
  * the course of the iteration. Flows added during the iteration may or may
  * not be returned by the iterator.
  */
 void
-ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft);
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query);
 
 /**
  * Yield the next entry from an iterator

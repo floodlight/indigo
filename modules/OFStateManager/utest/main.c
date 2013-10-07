@@ -665,6 +665,7 @@ add_flow(ft_instance_t ft, int id, ft_entry_t **entry_p)
     flow_add = of_flow_add_new(OF_VERSION_1_0);
     of_flow_add_OF_VERSION_1_0_populate(flow_add, id);
     of_flow_add_flags_set(flow_add, 0);
+    of_flow_add_cookie_set(flow_add, id);
     TEST_INDIGO_OK(ft_add(ft, id, flow_add, &entry));
     of_object_delete(flow_add);
     *entry_p = entry;
@@ -693,14 +694,14 @@ test_ft_iterator(void)
     /* Cleanup at start */
     {
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         ft_iterator_cleanup(&iter);
     }
 
     /* Cleanup in middle */
     {
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         ft_iterator_next(&iter);
         ft_iterator_cleanup(&iter);
     }
@@ -708,7 +709,7 @@ test_ft_iterator(void)
     /* Cleanup at end */
     {
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         while (ft_iterator_next(&iter) != NULL);
         ft_iterator_cleanup(&iter);
     }
@@ -718,7 +719,7 @@ test_ft_iterator(void)
         ft_entry_t *results[num_flows];
         ft_entry_t *entry;
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         memset(results, 0, sizeof(results));
         while ((entry = ft_iterator_next(&iter)) != NULL) {
             TEST_ASSERT(entry->id >= 0 && entry->id < 3);
@@ -737,7 +738,7 @@ test_ft_iterator(void)
         ft_entry_t *results[num_flows];
         ft_entry_t *entry;
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         memset(results, 0, sizeof(results));
         while ((entry = ft_iterator_next(&iter)) != NULL) {
             TEST_ASSERT(entry->id >= 0 && entry->id < 3);
@@ -762,7 +763,7 @@ test_ft_iterator(void)
     /* Implementation dependent */
     {
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         for (i = 0; i < num_flows; i++) {
             TEST_ASSERT(ft_iterator_next(&iter) == entries[i]);
         }
@@ -775,7 +776,7 @@ test_ft_iterator(void)
     /* Implementation dependent */
     {
         ft_iterator_t iter;
-        ft_iterator_init(&iter, ft);
+        ft_iterator_init(&iter, ft, NULL);
         TEST_ASSERT(ft_iterator_next(&iter) == entries[0]);
         ft_delete(ft, entries[0]);
         TEST_ASSERT(ft_iterator_next(&iter) == entries[1]);
@@ -783,6 +784,40 @@ test_ft_iterator(void)
         TEST_ASSERT(ft_iterator_next(&iter) == entries[2]);
         TEST_ASSERT(ft_iterator_next(&iter) == entries[0]);
         TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        ft_iterator_cleanup(&iter);
+    }
+
+    /* Check query by cookie */
+    /* Wildcards lowest cookie bit, so cookies 0 and 1 match while 2 does not */
+    {
+        of_meta_match_t query;
+        ft_entry_t *results[num_flows];
+        ft_entry_t *entry;
+        ft_iterator_t iter;
+        memset(&query, 0, sizeof(query));
+        query.mode = OF_MATCH_NON_STRICT;
+        query.cookie = 0;
+        query.cookie_mask = 0xfffffffffffffffeULL;
+        query.out_port = OF_PORT_DEST_WILDCARD;
+        query.table_id = TABLE_ID_ANY;
+        ft_iterator_init(&iter, ft, &query);
+        memset(results, 0, sizeof(results));
+        while ((entry = ft_iterator_next(&iter)) != NULL) {
+            TEST_ASSERT(entry->id >= 0 && entry->id < 3);
+            TEST_ASSERT(entry == entries[entry->id]);
+            TEST_ASSERT(results[entry->id] == NULL);
+            results[entry->id] = entry;
+            ft_delete(ft, entry);
+        }
+        TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        TEST_ASSERT(ft_iterator_next(&iter) == NULL);
+        for (i = 0; i < num_flows; i++) {
+            if (i == 0 || i == 1) {
+                TEST_ASSERT(results[i] == entries[i]);
+            } else {
+                TEST_ASSERT(results[i] == NULL);
+            }
+        }
         ft_iterator_cleanup(&iter);
     }
 
