@@ -502,10 +502,12 @@ ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query)
 ft_entry_t *
 ft_iterator_next(ft_iterator_t *iter)
 {
+    if (iter->next_entry != NULL) {
+        list_remove(&iter->entry_links);
+    }
+
     while (iter->next_entry != NULL) {
         ft_entry_t *entry = iter->next_entry;
-
-        list_remove(&iter->entry_links);
 
         list_links_t *next_links = ft_iterator_entry_to_links(iter, iter->next_entry)->next;
         if (next_links == &iter->head->links) {
@@ -513,7 +515,6 @@ ft_iterator_next(ft_iterator_t *iter)
             iter->next_entry = NULL;
         } else {
             iter->next_entry = ft_iterator_links_to_entry(iter, next_links);
-            list_push(&iter->next_entry->iterators, &iter->entry_links);
         }
 
         if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
@@ -522,6 +523,10 @@ ft_iterator_next(ft_iterator_t *iter)
 
         if (iter->use_query && !ft_entry_meta_match(&iter->query, entry)) {
             continue;
+        }
+
+        if (iter->next_entry != NULL) {
+            list_push(&iter->next_entry->iterators, &iter->entry_links);
         }
 
         return entry;
