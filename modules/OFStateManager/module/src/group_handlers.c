@@ -160,12 +160,47 @@ ind_core_group_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     return INDIGO_ERROR_NONE;
 }
 
+/* TODO segment long replies */
 indigo_error_t
 ind_core_group_desc_stats_request_handler(of_object_t *_obj,
                                           indigo_cxn_id_t cxn_id)
 {
     of_group_desc_stats_request_t *obj = _obj;
-    ind_core_unhandled_message(obj, cxn_id);
+    of_group_desc_stats_reply_t *reply;
+    of_list_group_desc_stats_entry_t entries;
+    of_group_desc_stats_entry_t *entry;
+    uint32_t xid;
+    list_links_t *cur, *next;
+
+    reply = of_group_desc_stats_reply_new(obj->version);
+    AIM_TRUE_OR_DIE(reply != NULL);
+
+    of_group_desc_stats_request_xid_get(obj, &xid);
+    of_group_desc_stats_reply_xid_set(reply, xid);
+    of_group_desc_stats_reply_entries_bind(reply, &entries);
+
+    entry = of_group_desc_stats_entry_new(entries.version);
+    AIM_TRUE_OR_DIE(entry != NULL);
+
+    LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
+        ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
+        /* XXX not supported by loci
+        of_group_desc_stats_entry_group_type_set(entry, group->type);
+        */
+        of_group_desc_stats_entry_group_id_set(entry, group->id);
+        if (of_group_desc_stats_entry_buckets_set(entry, group->buckets) < 0) {
+            AIM_DIE("unexpected failure setting group desc stats entry buckets");
+        }
+
+        if (of_list_append(&entries, entry) < 0) {
+            break;
+        }
+    }
+
+    of_object_delete(entry);
+    of_object_delete(obj);
+
+    IND_CORE_MSG_SEND(cxn_id, reply);
     return INDIGO_ERROR_NONE;
 }
 
