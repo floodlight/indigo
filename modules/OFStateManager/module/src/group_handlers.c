@@ -162,11 +162,70 @@ error:
     return INDIGO_ERROR_UNKNOWN;
 }
 
+static void
+ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
+                                    ind_core_group_t *group)
+{
+    of_group_stats_entry_group_id_set(entry, group->id);
+    /* TODO duration */
+
+    indigo_fwd_group_stats_get(group->id, entry);
+}
+
+/* TODO segment long replies */
 indigo_error_t
-ind_core_group_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
+ind_core_group_stats_request_handler(of_object_t *_obj,
+                                     indigo_cxn_id_t cxn_id)
 {
     of_group_stats_request_t *obj = _obj;
-    ind_core_unhandled_message(obj, cxn_id);
+    of_group_stats_reply_t *reply;
+    of_list_group_stats_entry_t entries;
+    of_group_stats_entry_t *entry;
+    uint32_t xid;
+    uint32_t id;
+    list_links_t *cur, *next;
+
+    of_group_stats_request_group_id_get(obj, &id);
+
+    reply = of_group_stats_reply_new(obj->version);
+    AIM_TRUE_OR_DIE(reply != NULL);
+
+    of_group_stats_request_xid_get(obj, &xid);
+    of_group_stats_reply_xid_set(reply, xid);
+    of_group_stats_reply_entries_bind(reply, &entries);
+
+    entry = of_group_stats_entry_new(entries.version);
+    AIM_TRUE_OR_DIE(entry != NULL);
+
+    if (id == OF_GROUP_ALL) {
+        LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
+            ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
+            ind_core_group_stats_entry_populate(entry, group);
+
+            if (of_list_append(&entries, entry) < 0) {
+                break;
+            }
+
+            /* HACK unable to truncate existing object */
+            of_object_delete(entry);
+            entry = of_group_stats_entry_new(entries.version);
+            AIM_TRUE_OR_DIE(entry != NULL);
+        }
+    } else if (id <= OF_GROUP_MAX) {
+        ind_core_group_t *group = ind_core_group_lookup(id);
+        if (group != NULL) {
+            ind_core_group_stats_entry_populate(entry, group);
+
+            if (of_list_append(&entries, entry) < 0) {
+                AIM_DIE("unexpected failure appending single group stats entry");
+            }
+        }
+    }
+
+    of_object_delete(entry);
+    of_object_delete(obj);
+
+    IND_CORE_MSG_SEND(cxn_id, reply);
     return INDIGO_ERROR_NONE;
 }
 
