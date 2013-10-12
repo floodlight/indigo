@@ -42,6 +42,7 @@ typedef struct ind_core_group_s {
     uint32_t id;
     uint32_t type;
     of_list_bucket_t *buckets;
+    indigo_time_t creation_time;
 } ind_core_group_t;
 
 static LIST_DEFINE(ind_core_groups_list);
@@ -113,6 +114,7 @@ ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         group->type = type;
         group->buckets = of_object_dup(&buckets);
         AIM_TRUE_OR_DIE(group->buckets != NULL);
+        group->creation_time = INDIGO_CURRENT_TIME;
 
         list_push(&ind_core_groups_list, &group->links);
     } else if (command == OF_GROUP_MODIFY) {
@@ -164,10 +166,16 @@ error:
 
 static void
 ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
-                                    ind_core_group_t *group)
+                                    ind_core_group_t *group,
+                                    indigo_time_t current_time)
 {
+    uint32_t duration_sec, duration_nsec;
+
     of_group_stats_entry_group_id_set(entry, group->id);
-    /* TODO duration */
+
+    calc_duration(current_time, group->creation_time, &duration_sec, &duration_nsec);
+    of_group_stats_entry_duration_sec_set(entry, duration_sec);
+    of_group_stats_entry_duration_nsec_set(entry, duration_nsec);
 
     indigo_fwd_group_stats_get(group->id, entry);
 }
@@ -184,6 +192,7 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     uint32_t xid;
     uint32_t id;
     list_links_t *cur, *next;
+    indigo_time_t current_time = INDIGO_CURRENT_TIME;
 
     of_group_stats_request_group_id_get(obj, &id);
 
@@ -200,7 +209,7 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     if (id == OF_GROUP_ALL) {
         LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
             ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
-            ind_core_group_stats_entry_populate(entry, group);
+            ind_core_group_stats_entry_populate(entry, group, current_time);
 
             if (of_list_append(&entries, entry) < 0) {
                 break;
@@ -214,7 +223,7 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     } else if (id <= OF_GROUP_MAX) {
         ind_core_group_t *group = ind_core_group_lookup(id);
         if (group != NULL) {
-            ind_core_group_stats_entry_populate(entry, group);
+            ind_core_group_stats_entry_populate(entry, group, current_time);
 
             if (of_list_append(&entries, entry) < 0) {
                 AIM_DIE("unexpected failure appending single group stats entry");
