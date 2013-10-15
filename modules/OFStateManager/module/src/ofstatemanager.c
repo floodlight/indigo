@@ -296,6 +296,26 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         break;
 
     /****************************************************************
+     * Group messages
+     ****************************************************************/
+
+    case OF_GROUP_MOD:
+        rv = ind_core_group_mod_handler(obj, cxn);
+        break;
+
+    case OF_GROUP_STATS_REQUEST:
+        rv = ind_core_group_stats_request_handler(obj, cxn);
+        break;
+
+    case OF_GROUP_DESC_STATS_REQUEST:
+        rv = ind_core_group_desc_stats_request_handler(obj, cxn);
+        break;
+
+    case OF_GROUP_FEATURES_STATS_REQUEST:
+        rv = ind_core_group_features_stats_request_handler(obj, cxn);
+        break;
+
+    /****************************************************************
      * Extension messages
      ****************************************************************/
 
@@ -340,14 +360,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_EXPERIMENTER_STATS_REQUEST:
         rv = ind_core_experimenter_stats_request_handler(obj, cxn);
         break;
-
-    case OF_GROUP_DESC_STATS_REQUEST:
-        rv = ind_core_group_desc_stats_request_handler(obj, cxn);
-        break;
-
-    case OF_GROUP_FEATURES_STATS_REQUEST:
-        rv = ind_core_group_features_stats_request_handler(obj, cxn);
-        break;
 #endif
 
     /****************************************************************
@@ -364,9 +376,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_GET_CONFIG_REPLY:
     case OF_GROUP_DESC_STATS_REPLY:
     case OF_GROUP_FEATURES_STATS_REPLY:
-    case OF_GROUP_MOD:
     case OF_GROUP_STATS_REPLY:
-    case OF_GROUP_STATS_REQUEST:
     case OF_PACKET_IN:
     case OF_PORT_STATS_REPLY:
     case OF_PORT_STATUS:

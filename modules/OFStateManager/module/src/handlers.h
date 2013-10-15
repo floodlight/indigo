@@ -29,6 +29,7 @@
 #include <loci/loci.h>
 #include <indigo/of_connection_manager.h>
 
+/* handlers.c */
 extern indigo_error_t ind_core_unhandled_message(
     of_object_t *obj,
     indigo_cxn_id_t cxn);
@@ -123,6 +124,20 @@ extern indigo_error_t ind_core_bsn_set_ip_mask_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 extern indigo_error_t ind_core_bsn_hybrid_get_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+
+/* group_handlers.c */
+indigo_error_t ind_core_group_mod_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+indigo_error_t ind_core_group_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+indigo_error_t ind_core_group_desc_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+indigo_error_t ind_core_group_features_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 

@@ -1831,50 +1831,6 @@ ind_core_experimenter_stats_request_handler(of_object_t *_obj,
     return INDIGO_ERROR_NONE;
 }
 
-/**
- * Handle a group_desc_stats_request message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-indigo_error_t
-ind_core_group_desc_stats_request_handler(of_object_t *_obj,
-                                          indigo_cxn_id_t cxn_id)
-{
-    of_group_desc_stats_request_t *obj;
-
-    obj = (of_group_desc_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_group_desc_stats_request message: %p.", obj);
-
-    /* Handle object of type of_group_desc_stats_request_t */
-    ind_core_unhandled_message(_obj, cxn_id);
-
-    return INDIGO_ERROR_NONE;
-}
-
-/**
- * Handle a group_features_stats_request message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-indigo_error_t
-ind_core_group_features_stats_request_handler(of_object_t *_obj,
-                                              indigo_cxn_id_t cxn_id)
-{
-    of_group_features_stats_request_t *obj;
-
-    obj = (of_group_features_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_group_features_stats_request message: %p.", obj);
-
-    /* Handle object of type of_group_features_stats_request_t */
-    ind_core_unhandled_message(_obj, cxn_id);
-
-    return INDIGO_ERROR_NONE;
-}
-
 /****************************************************************
  *
  * Extension message handling

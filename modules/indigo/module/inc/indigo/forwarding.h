@@ -182,6 +182,46 @@ extern indigo_error_t indigo_fwd_experimenter(
 extern indigo_error_t indigo_fwd_expiration_enable_set(int is_enabled);
 extern indigo_error_t indigo_fwd_expiration_enable_get(int *is_enabled);
 
+/**
+ * Group management
+ *
+ * These interfaces largely map to the OpenFlow group-mod message, but with a
+ * few differences for easier Forwarding implementation:
+ *
+ *  - Delete of OFPG_ALL is turned into a series of deletes of single groups.
+ *  - Modify with a changed type is turned into a delete and add.
+ */
+
+/**
+ * @brief Add a group
+ * @param id Group ID
+ * @param group_type OpenFlow group type
+ * @param buckets LOCI bucket list
+ */
+indigo_error_t indigo_fwd_group_add(uint32_t id, uint8_t group_type, of_list_bucket_t *buckets);
+
+/**
+ * @brief Modify an existing group
+ * @param id Group ID
+ * @param buckets LOCI bucket list
+ */
+indigo_error_t indigo_fwd_group_modify(uint32_t id, of_list_bucket_t *buckets);
+
+/**
+ * @brief Delete an existing group
+ * @param id Group ID
+ */
+void indigo_fwd_group_delete(uint32_t id);
+
+/**
+ * @brief Retrieve stats for a group
+ * @param id Group ID
+ * @param entry LOCI of_group_stats_entry_t to be filled in with stats
+ *
+ * Forwarding should set the packet_count, byte_count, and bucket_stats fields.
+ */
+void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
+
 /****************************************************************
  * Function provided for port manager
  ****************************************************************/
