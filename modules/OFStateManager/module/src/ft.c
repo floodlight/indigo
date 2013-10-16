@@ -61,6 +61,12 @@ ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
             ft->config.flow_id_bucket_count);
 }
 
+static int
+ft_cookie_to_bucket_index(ft_instance_t ft, uint64_t cookie)
+{
+    return cookie >> (64-FT_COOKIE_PREFIX_LEN);
+}
+
 ft_instance_t
 ft_create(ft_config_t *config)
 {
@@ -102,6 +108,18 @@ ft_create(ft_config_t *config)
     INDIGO_MEM_SET(ft->flow_id_buckets, 0, bytes);
     for (idx = 0; idx < config->flow_id_bucket_count; idx++) {
         list_init(&ft->flow_id_buckets[idx]);
+    }
+
+    bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
+    ft->cookie_buckets = INDIGO_MEM_ALLOC(bytes);
+    if (ft->cookie_buckets == NULL) {
+        LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
+        ft_destroy(ft);
+        return NULL;
+    }
+    INDIGO_MEM_SET(ft->cookie_buckets, 0, bytes);
+    for (idx = 0; idx < (1 << FT_COOKIE_PREFIX_LEN); idx++) {
+        list_init(&ft->cookie_buckets[idx]);
     }
 
     return ft;
@@ -147,6 +165,10 @@ ft_destroy(ft_instance_t ft)
         CHECK_BUCKETS(flow_id);
         INDIGO_MEM_FREE(ft->flow_id_buckets);
         ft->flow_id_buckets = NULL;
+    }
+    if (ft->cookie_buckets != NULL) {
+        INDIGO_MEM_FREE(ft->cookie_buckets);
+        ft->cookie_buckets = NULL;
     }
 
     INDIGO_MEM_FREE(ft);
@@ -386,8 +408,6 @@ ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
 struct ft_iter_task_state {
     ft_iter_task_callback_f callback;
     void *cookie;
-    of_meta_match_t query;
-    int use_query;
     ft_iterator_t iter;
 };
 
@@ -405,14 +425,6 @@ ft_iter_task_callback(void *cookie)
             INDIGO_MEM_FREE(state);
             return IND_SOC_TASK_FINISHED;
         } else {
-            if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-                continue;
-            }
-
-            if (state->use_query && !ft_entry_meta_match(&state->query, entry)) {
-                continue;
-            }
-
             state->callback(state->cookie, entry);
         }
     } while (!ind_soc_should_yield());
@@ -437,14 +449,7 @@ ft_spawn_iter_task(ft_instance_t instance,
     state->callback = callback;
     state->cookie = cookie;
 
-    if (query != NULL) {
-        state->query = *query;
-        state->use_query = 1;
-    } else {
-        state->use_query = 0;
-    }
-
-    ft_iterator_init(&state->iter, instance);
+    ft_iterator_init(&state->iter, instance, query);
 
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
@@ -455,14 +460,41 @@ ft_spawn_iter_task(ft_instance_t instance,
     return INDIGO_ERROR_NONE;
 }
 
-void
-ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
+static ft_entry_t *
+ft_iterator_links_to_entry(ft_iterator_t *iter, list_links_t *links)
 {
-    iter->head = &ft->all_list;
+    return (ft_entry_t *)(((char *)links) - iter->links_offset);
+}
+
+static list_links_t *
+ft_iterator_entry_to_links(ft_iterator_t *iter, ft_entry_t *entry)
+{
+    return (list_links_t *)(((char *)entry) + iter->links_offset);
+}
+
+void
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query)
+{
+    if (query != NULL) {
+        iter->query = *query;
+        iter->use_query = true;
+    } else {
+        iter->use_query = false;
+    }
+
+    if (query && (query->cookie_mask & FT_COOKIE_PREFIX_MASK) == FT_COOKIE_PREFIX_MASK) {
+        /* Using cookie bucket */
+        iter->head = &ft->cookie_buckets[ft_cookie_to_bucket_index(ft, query->cookie)];
+        iter->links_offset = offsetof(ft_entry_t, cookie_links);
+    } else {
+        iter->head = &ft->all_list;
+        iter->links_offset = offsetof(ft_entry_t, table_links);
+    }
+
     if (list_empty(iter->head)) {
         iter->next_entry = NULL;
     } else {
-        iter->next_entry = FT_ENTRY_CONTAINER(iter->head->links.next, table);
+        iter->next_entry = ft_iterator_links_to_entry(iter, iter->head->links.next);
         list_push(&iter->next_entry->iterators, &iter->entry_links);
     }
 }
@@ -470,25 +502,37 @@ ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft)
 ft_entry_t *
 ft_iterator_next(ft_iterator_t *iter)
 {
-    if (iter->next_entry == NULL) {
-        /* Already at end */
-        return NULL;
+    if (iter->next_entry != NULL) {
+        list_remove(&iter->entry_links);
     }
 
-    ft_entry_t *result = iter->next_entry;
+    while (iter->next_entry != NULL) {
+        ft_entry_t *entry = iter->next_entry;
 
-    list_remove(&iter->entry_links);
+        list_links_t *next_links = ft_iterator_entry_to_links(iter, iter->next_entry)->next;
+        if (next_links == &iter->head->links) {
+            /* Finished iteration */
+            iter->next_entry = NULL;
+        } else {
+            iter->next_entry = ft_iterator_links_to_entry(iter, next_links);
+        }
 
-    list_links_t *next_links = iter->next_entry->table_links.next;
-    if (next_links == &iter->head->links) {
-        /* Finished iteration */
-        iter->next_entry = NULL;
-    } else {
-        iter->next_entry = FT_ENTRY_CONTAINER(next_links, table);
-        list_push(&iter->next_entry->iterators, &iter->entry_links);
+        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
+            continue;
+        }
+
+        if (iter->use_query && !ft_entry_meta_match(&iter->query, entry)) {
+            continue;
+        }
+
+        if (iter->next_entry != NULL) {
+            list_push(&iter->next_entry->iterators, &iter->entry_links);
+        }
+
+        return entry;
     }
 
-    return result;
+    return NULL;
 }
 
 void
@@ -524,6 +568,10 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     if (ft->flow_id_buckets) { /* Flow ID hash */
         idx = ft_flow_id_to_bucket_index(ft, &entry->id);
         list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
+    }
+    if (ft->cookie_buckets) { /* Cookie prefix */
+        idx = ft_cookie_to_bucket_index(ft, entry->cookie);
+        list_push(&ft->cookie_buckets[idx], &entry->cookie_links);
     }
 
     list_init(&entry->iterators);
@@ -561,6 +609,11 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
         INDIGO_ASSERT(!list_empty(&ft->flow_id_buckets[ft_flow_id_to_bucket_index(ft,
             &entry->id)]));
         list_remove(&entry->flow_id_links);
+    }
+    if (ft->cookie_buckets) { /* Cookie prefix */
+        INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
+            entry->cookie)]));
+        list_remove(&entry->cookie_links);
     }
 }
 

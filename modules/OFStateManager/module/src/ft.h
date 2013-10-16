@@ -52,8 +52,15 @@
 #include <loci/loci.h>
 #include <BigList/biglist.h>
 #include <AIM/aim_list.h>
+#include <stdbool.h>
 
 #include "ft_entry.h"
+
+/**
+ * Length of the prefix used for bucketing flows by cookie.
+ */
+#define FT_COOKIE_PREFIX_LEN 8
+#define FT_COOKIE_PREFIX_MASK (~(uint64_t)0 << (64-FT_COOKIE_PREFIX_LEN))
 
 /**
  * Forward declaration of flowtable handle for other typedefs
@@ -126,13 +133,14 @@ struct ft_public_s {
 
     list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
+    list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
 #define FT_STATUS(_ft) (&(_ft)->status)
 
 /**
- * Safe iterator for the entire flowtable
+ * Safe iterator for the flowtable
  *
  * See ft_iterator_init, ft_iterator_next, and ft_iterator_cleanup.
  *
@@ -141,7 +149,10 @@ struct ft_public_s {
 typedef struct ft_iterator_s {
     list_head_t *head;             /* List head for this iteration */
     ft_entry_t *next_entry;        /* Entry to be returned on next() */
+    int links_offset;              /* Offset of the links we're using in the flowtable entry */
     list_links_t entry_links;      /* Linked into next_entry->iterators if next_entry != NULL */
+    bool use_query;                /* Whether 'query' is valid */
+    of_meta_match_t query;         /* Optional query to filter by */
 } ft_iterator_t;
 
 /**
@@ -315,15 +326,16 @@ ft_spawn_iter_task(ft_instance_t instance,
 /**
  * Initialize a flowtable iterator
  *
- * This will iterate over the entire flowtable. It is safe to use with
- * concurrent modification of the flowtable.
+ * This will iterate over the flowtable, returning the subset matching 'query'
+ * (or the entire flowtable if 'query' is NULL). It is safe to use with concurrent
+ * modification of the flowtable.
  *
  * This iterator does not guarantee a consistent view of the flowtable over
  * the course of the iteration. Flows added during the iteration may or may
  * not be returned by the iterator.
  */
 void
-ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft);
+ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query);
 
 /**
  * Yield the next entry from an iterator
