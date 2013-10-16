@@ -107,6 +107,72 @@ of_aggregate_stats_request_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_bad_action_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_action_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_OF_VERSION_1_0_dup(
+    of_bad_action_error_msg_t *src)
+{
+    of_bad_action_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_action_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_xid_get(src, &val32);
+    of_bad_action_error_msg_xid_set(dst, val32);
+
+    of_bad_action_error_msg_code_get(src, &val16);
+    of_bad_action_error_msg_code_set(dst, val16);
+
+    of_bad_action_error_msg_data_get(src, &octets);
+    of_bad_action_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_request_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_request_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_OF_VERSION_1_0_dup(
+    of_bad_request_error_msg_t *src)
+{
+    of_bad_request_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_request_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_xid_get(src, &val32);
+    of_bad_request_error_msg_xid_set(dst, val32);
+
+    of_bad_request_error_msg_code_get(src, &val16);
+    of_bad_request_error_msg_code_set(dst, val16);
+
+    of_bad_request_error_msg_data_get(src, &octets);
+    of_bad_request_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_barrier_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -742,6 +808,205 @@ of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(
 
     of_bsn_hybrid_get_request_subtype_get(src, &val32);
     of_bsn_hybrid_get_request_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_OF_VERSION_1_0_dup(
+    of_bsn_pdu_rx_reply_t *src)
+{
+    of_bsn_pdu_rx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_rx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_xid_get(src, &val32);
+    of_bsn_pdu_rx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_rx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_status_get(src, &val32);
+    of_bsn_pdu_rx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_OF_VERSION_1_0_dup(
+    of_bsn_pdu_rx_request_t *src)
+{
+    of_bsn_pdu_rx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_rx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_xid_get(src, &val32);
+    of_bsn_pdu_rx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_request_subtype_get(src, &val32);
+    of_bsn_pdu_rx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_request_timeout_ms_get(src, &val32);
+    of_bsn_pdu_rx_request_timeout_ms_set(dst, val32);
+
+    of_bsn_pdu_rx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_rx_request_data_get(src, &octets);
+    of_bsn_pdu_rx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_timeout
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_timeout.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_OF_VERSION_1_0_dup(
+    of_bsn_pdu_rx_timeout_t *src)
+{
+    of_bsn_pdu_rx_timeout_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    if ((dst = of_bsn_pdu_rx_timeout_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_xid_get(src, &val32);
+    of_bsn_pdu_rx_timeout_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_timeout_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_subtype_get(src, &val32);
+    of_bsn_pdu_rx_timeout_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_timeout_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_timeout_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_timeout_slot_num_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_OF_VERSION_1_0_dup(
+    of_bsn_pdu_tx_reply_t *src)
+{
+    of_bsn_pdu_tx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_tx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_xid_get(src, &val32);
+    of_bsn_pdu_tx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_tx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_status_get(src, &val32);
+    of_bsn_pdu_tx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_OF_VERSION_1_0_dup(
+    of_bsn_pdu_tx_request_t *src)
+{
+    of_bsn_pdu_tx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_tx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_xid_get(src, &val32);
+    of_bsn_pdu_tx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_request_subtype_get(src, &val32);
+    of_bsn_pdu_tx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(src, &val32);
+    of_bsn_pdu_tx_request_tx_interval_ms_set(dst, val32);
+
+    of_bsn_pdu_tx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_tx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_tx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_tx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_tx_request_data_get(src, &octets);
+    of_bsn_pdu_tx_request_data_set(dst, &octets);
 
     return dst;
 }
@@ -1386,8 +1651,6 @@ of_error_msg_OF_VERSION_1_0_dup(
 {
     of_error_msg_t *dst;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     if ((dst = of_error_msg_new(src->version)) == NULL) {
         return NULL;
@@ -1395,15 +1658,6 @@ of_error_msg_OF_VERSION_1_0_dup(
 
     of_error_msg_xid_get(src, &val32);
     of_error_msg_xid_set(dst, val32);
-
-    of_error_msg_err_type_get(src, &val16);
-    of_error_msg_err_type_set(dst, val16);
-
-    of_error_msg_code_get(src, &val16);
-    of_error_msg_code_set(dst, val16);
-
-    of_error_msg_data_get(src, &octets);
-    of_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -1860,6 +2114,39 @@ of_flow_mod_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_flow_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_OF_VERSION_1_0_dup(
+    of_flow_mod_failed_error_msg_t *src)
+{
+    of_flow_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_flow_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_xid_get(src, &val32);
+    of_flow_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_flow_mod_failed_error_msg_code_get(src, &val16);
+    of_flow_mod_failed_error_msg_code_set(dst, val16);
+
+    of_flow_mod_failed_error_msg_data_get(src, &octets);
+    of_flow_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_flow_modify
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -2213,6 +2500,39 @@ of_hello_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_hello_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_hello_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_OF_VERSION_1_0_dup(
+    of_hello_failed_error_msg_t *src)
+{
+    of_hello_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_hello_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_xid_get(src, &val32);
+    of_hello_failed_error_msg_xid_set(dst, val32);
+
+    of_hello_failed_error_msg_code_get(src, &val16);
+    of_hello_failed_error_msg_code_set(dst, val16);
+
+    of_hello_failed_error_msg_data_get(src, &octets);
+    of_hello_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_nicira_controller_role_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -2447,6 +2767,39 @@ of_port_mod_OF_VERSION_1_0_dup(
 }
 
 /**
+ * Duplicate an object of type of_port_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_port_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_OF_VERSION_1_0_dup(
+    of_port_mod_failed_error_msg_t *src)
+{
+    of_port_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_port_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_xid_get(src, &val32);
+    of_port_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_port_mod_failed_error_msg_code_get(src, &val16);
+    of_port_mod_failed_error_msg_code_set(dst, val16);
+
+    of_port_mod_failed_error_msg_data_get(src, &octets);
+    of_port_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_port_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -2630,6 +2983,39 @@ of_queue_get_config_request_OF_VERSION_1_0_dup(
 
     of_queue_get_config_request_port_get(src, &port_no);
     of_queue_get_config_request_port_set(dst, port_no);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_queue_op_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_queue_op_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_OF_VERSION_1_0_dup(
+    of_queue_op_failed_error_msg_t *src)
+{
+    of_queue_op_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_queue_op_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_xid_get(src, &val32);
+    of_queue_op_failed_error_msg_xid_set(dst, val32);
+
+    of_queue_op_failed_error_msg_code_get(src, &val16);
+    of_queue_op_failed_error_msg_code_set(dst, val16);
+
+    of_queue_op_failed_error_msg_data_get(src, &octets);
+    of_queue_op_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -4499,6 +4885,138 @@ of_aggregate_stats_request_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_bad_action_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_action_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_OF_VERSION_1_1_dup(
+    of_bad_action_error_msg_t *src)
+{
+    of_bad_action_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_action_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_xid_get(src, &val32);
+    of_bad_action_error_msg_xid_set(dst, val32);
+
+    of_bad_action_error_msg_code_get(src, &val16);
+    of_bad_action_error_msg_code_set(dst, val16);
+
+    of_bad_action_error_msg_data_get(src, &octets);
+    of_bad_action_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_instruction_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_instruction_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_OF_VERSION_1_1_dup(
+    of_bad_instruction_error_msg_t *src)
+{
+    of_bad_instruction_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_instruction_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_instruction_error_msg_xid_get(src, &val32);
+    of_bad_instruction_error_msg_xid_set(dst, val32);
+
+    of_bad_instruction_error_msg_code_get(src, &val16);
+    of_bad_instruction_error_msg_code_set(dst, val16);
+
+    of_bad_instruction_error_msg_data_get(src, &octets);
+    of_bad_instruction_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_match_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_match_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_OF_VERSION_1_1_dup(
+    of_bad_match_error_msg_t *src)
+{
+    of_bad_match_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_match_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_match_error_msg_xid_get(src, &val32);
+    of_bad_match_error_msg_xid_set(dst, val32);
+
+    of_bad_match_error_msg_code_get(src, &val16);
+    of_bad_match_error_msg_code_set(dst, val16);
+
+    of_bad_match_error_msg_data_get(src, &octets);
+    of_bad_match_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_request_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_request_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_OF_VERSION_1_1_dup(
+    of_bad_request_error_msg_t *src)
+{
+    of_bad_request_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_request_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_xid_get(src, &val32);
+    of_bad_request_error_msg_xid_set(dst, val32);
+
+    of_bad_request_error_msg_code_get(src, &val16);
+    of_bad_request_error_msg_code_set(dst, val16);
+
+    of_bad_request_error_msg_data_get(src, &octets);
+    of_bad_request_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_barrier_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -4926,6 +5444,205 @@ of_bsn_header_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_pdu_rx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_OF_VERSION_1_1_dup(
+    of_bsn_pdu_rx_reply_t *src)
+{
+    of_bsn_pdu_rx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_rx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_xid_get(src, &val32);
+    of_bsn_pdu_rx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_rx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_status_get(src, &val32);
+    of_bsn_pdu_rx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_OF_VERSION_1_1_dup(
+    of_bsn_pdu_rx_request_t *src)
+{
+    of_bsn_pdu_rx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_rx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_xid_get(src, &val32);
+    of_bsn_pdu_rx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_request_subtype_get(src, &val32);
+    of_bsn_pdu_rx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_request_timeout_ms_get(src, &val32);
+    of_bsn_pdu_rx_request_timeout_ms_set(dst, val32);
+
+    of_bsn_pdu_rx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_rx_request_data_get(src, &octets);
+    of_bsn_pdu_rx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_timeout
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_timeout.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_OF_VERSION_1_1_dup(
+    of_bsn_pdu_rx_timeout_t *src)
+{
+    of_bsn_pdu_rx_timeout_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    if ((dst = of_bsn_pdu_rx_timeout_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_xid_get(src, &val32);
+    of_bsn_pdu_rx_timeout_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_timeout_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_subtype_get(src, &val32);
+    of_bsn_pdu_rx_timeout_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_timeout_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_timeout_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_timeout_slot_num_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_OF_VERSION_1_1_dup(
+    of_bsn_pdu_tx_reply_t *src)
+{
+    of_bsn_pdu_tx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_tx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_xid_get(src, &val32);
+    of_bsn_pdu_tx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_tx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_status_get(src, &val32);
+    of_bsn_pdu_tx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_OF_VERSION_1_1_dup(
+    of_bsn_pdu_tx_request_t *src)
+{
+    of_bsn_pdu_tx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_tx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_xid_get(src, &val32);
+    of_bsn_pdu_tx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_request_subtype_get(src, &val32);
+    of_bsn_pdu_tx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(src, &val32);
+    of_bsn_pdu_tx_request_tx_interval_ms_set(dst, val32);
+
+    of_bsn_pdu_tx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_tx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_tx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_tx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_tx_request_data_get(src, &octets);
+    of_bsn_pdu_tx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -5339,8 +6056,6 @@ of_error_msg_OF_VERSION_1_1_dup(
 {
     of_error_msg_t *dst;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     if ((dst = of_error_msg_new(src->version)) == NULL) {
         return NULL;
@@ -5348,15 +6063,6 @@ of_error_msg_OF_VERSION_1_1_dup(
 
     of_error_msg_xid_get(src, &val32);
     of_error_msg_xid_set(dst, val32);
-
-    of_error_msg_err_type_get(src, &val16);
-    of_error_msg_err_type_set(dst, val16);
-
-    of_error_msg_code_get(src, &val16);
-    of_error_msg_code_set(dst, val16);
-
-    of_error_msg_data_get(src, &octets);
-    of_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -5853,6 +6559,39 @@ of_flow_mod_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_flow_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_OF_VERSION_1_1_dup(
+    of_flow_mod_failed_error_msg_t *src)
+{
+    of_flow_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_flow_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_xid_get(src, &val32);
+    of_flow_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_flow_mod_failed_error_msg_code_get(src, &val16);
+    of_flow_mod_failed_error_msg_code_set(dst, val16);
+
+    of_flow_mod_failed_error_msg_data_get(src, &octets);
+    of_flow_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_flow_modify
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6334,6 +7073,39 @@ of_group_mod_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_group_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_group_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_OF_VERSION_1_1_dup(
+    of_group_mod_failed_error_msg_t *src)
+{
+    of_group_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_group_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_group_mod_failed_error_msg_xid_get(src, &val32);
+    of_group_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_group_mod_failed_error_msg_code_get(src, &val16);
+    of_group_mod_failed_error_msg_code_set(dst, val16);
+
+    of_group_mod_failed_error_msg_data_get(src, &octets);
+    of_group_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_group_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6428,6 +7200,39 @@ of_hello_OF_VERSION_1_1_dup(
 
     of_hello_xid_get(src, &val32);
     of_hello_xid_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_hello_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_hello_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_OF_VERSION_1_1_dup(
+    of_hello_failed_error_msg_t *src)
+{
+    of_hello_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_hello_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_xid_get(src, &val32);
+    of_hello_failed_error_msg_xid_set(dst, val32);
+
+    of_hello_failed_error_msg_code_get(src, &val16);
+    of_hello_failed_error_msg_code_set(dst, val16);
+
+    of_hello_failed_error_msg_data_get(src, &octets);
+    of_hello_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -6600,6 +7405,39 @@ of_port_mod_OF_VERSION_1_1_dup(
 
     of_port_mod_advertise_get(src, &val32);
     of_port_mod_advertise_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_port_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_port_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_OF_VERSION_1_1_dup(
+    of_port_mod_failed_error_msg_t *src)
+{
+    of_port_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_port_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_xid_get(src, &val32);
+    of_port_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_port_mod_failed_error_msg_code_get(src, &val16);
+    of_port_mod_failed_error_msg_code_set(dst, val16);
+
+    of_port_mod_failed_error_msg_data_get(src, &octets);
+    of_port_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -6793,6 +7631,39 @@ of_queue_get_config_request_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_queue_op_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_queue_op_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_OF_VERSION_1_1_dup(
+    of_queue_op_failed_error_msg_t *src)
+{
+    of_queue_op_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_queue_op_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_xid_get(src, &val32);
+    of_queue_op_failed_error_msg_xid_set(dst, val32);
+
+    of_queue_op_failed_error_msg_code_get(src, &val16);
+    of_queue_op_failed_error_msg_code_set(dst, val16);
+
+    of_queue_op_failed_error_msg_data_get(src, &octets);
+    of_queue_op_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_queue_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6961,6 +7832,39 @@ of_stats_request_OF_VERSION_1_1_dup(
 }
 
 /**
+ * Duplicate an object of type of_switch_config_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_switch_config_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_OF_VERSION_1_1_dup(
+    of_switch_config_failed_error_msg_t *src)
+{
+    of_switch_config_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_switch_config_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_switch_config_failed_error_msg_xid_get(src, &val32);
+    of_switch_config_failed_error_msg_xid_set(dst, val32);
+
+    of_switch_config_failed_error_msg_code_get(src, &val16);
+    of_switch_config_failed_error_msg_code_set(dst, val16);
+
+    of_switch_config_failed_error_msg_data_get(src, &octets);
+    of_switch_config_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_mod
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -6988,6 +7892,39 @@ of_table_mod_OF_VERSION_1_1_dup(
 
     of_table_mod_config_get(src, &val32);
     of_table_mod_config_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_OF_VERSION_1_1_dup(
+    of_table_mod_failed_error_msg_t *src)
+{
+    of_table_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_table_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_mod_failed_error_msg_xid_get(src, &val32);
+    of_table_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_table_mod_failed_error_msg_code_get(src, &val16);
+    of_table_mod_failed_error_msg_code_set(dst, val16);
+
+    of_table_mod_failed_error_msg_data_get(src, &octets);
+    of_table_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -8322,6 +9259,7 @@ of_group_desc_stats_entry_OF_VERSION_1_1_dup(
     of_group_desc_stats_entry_t *src)
 {
     of_group_desc_stats_entry_t *dst;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t src_list;
@@ -8330,6 +9268,9 @@ of_group_desc_stats_entry_OF_VERSION_1_1_dup(
     if ((dst = of_group_desc_stats_entry_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_group_desc_stats_entry_group_type_get(src, &val8);
+    of_group_desc_stats_entry_group_type_set(dst, val8);
 
     of_group_desc_stats_entry_group_id_get(src, &val32);
     of_group_desc_stats_entry_group_id_set(dst, val32);
@@ -9642,6 +10583,138 @@ of_aggregate_stats_request_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_bad_action_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_action_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_OF_VERSION_1_2_dup(
+    of_bad_action_error_msg_t *src)
+{
+    of_bad_action_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_action_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_xid_get(src, &val32);
+    of_bad_action_error_msg_xid_set(dst, val32);
+
+    of_bad_action_error_msg_code_get(src, &val16);
+    of_bad_action_error_msg_code_set(dst, val16);
+
+    of_bad_action_error_msg_data_get(src, &octets);
+    of_bad_action_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_instruction_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_instruction_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_OF_VERSION_1_2_dup(
+    of_bad_instruction_error_msg_t *src)
+{
+    of_bad_instruction_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_instruction_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_instruction_error_msg_xid_get(src, &val32);
+    of_bad_instruction_error_msg_xid_set(dst, val32);
+
+    of_bad_instruction_error_msg_code_get(src, &val16);
+    of_bad_instruction_error_msg_code_set(dst, val16);
+
+    of_bad_instruction_error_msg_data_get(src, &octets);
+    of_bad_instruction_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_match_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_match_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_OF_VERSION_1_2_dup(
+    of_bad_match_error_msg_t *src)
+{
+    of_bad_match_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_match_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_match_error_msg_xid_get(src, &val32);
+    of_bad_match_error_msg_xid_set(dst, val32);
+
+    of_bad_match_error_msg_code_get(src, &val16);
+    of_bad_match_error_msg_code_set(dst, val16);
+
+    of_bad_match_error_msg_data_get(src, &octets);
+    of_bad_match_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_request_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_request_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_OF_VERSION_1_2_dup(
+    of_bad_request_error_msg_t *src)
+{
+    of_bad_request_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_request_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_xid_get(src, &val32);
+    of_bad_request_error_msg_xid_set(dst, val32);
+
+    of_bad_request_error_msg_code_get(src, &val16);
+    of_bad_request_error_msg_code_set(dst, val16);
+
+    of_bad_request_error_msg_data_get(src, &octets);
+    of_bad_request_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_barrier_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -10069,6 +11142,205 @@ of_bsn_header_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_pdu_rx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_OF_VERSION_1_2_dup(
+    of_bsn_pdu_rx_reply_t *src)
+{
+    of_bsn_pdu_rx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_rx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_xid_get(src, &val32);
+    of_bsn_pdu_rx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_rx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_status_get(src, &val32);
+    of_bsn_pdu_rx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_OF_VERSION_1_2_dup(
+    of_bsn_pdu_rx_request_t *src)
+{
+    of_bsn_pdu_rx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_rx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_xid_get(src, &val32);
+    of_bsn_pdu_rx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_request_subtype_get(src, &val32);
+    of_bsn_pdu_rx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_request_timeout_ms_get(src, &val32);
+    of_bsn_pdu_rx_request_timeout_ms_set(dst, val32);
+
+    of_bsn_pdu_rx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_rx_request_data_get(src, &octets);
+    of_bsn_pdu_rx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_timeout
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_timeout.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_OF_VERSION_1_2_dup(
+    of_bsn_pdu_rx_timeout_t *src)
+{
+    of_bsn_pdu_rx_timeout_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    if ((dst = of_bsn_pdu_rx_timeout_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_xid_get(src, &val32);
+    of_bsn_pdu_rx_timeout_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_timeout_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_subtype_get(src, &val32);
+    of_bsn_pdu_rx_timeout_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_timeout_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_timeout_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_timeout_slot_num_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_OF_VERSION_1_2_dup(
+    of_bsn_pdu_tx_reply_t *src)
+{
+    of_bsn_pdu_tx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_tx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_xid_get(src, &val32);
+    of_bsn_pdu_tx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_tx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_status_get(src, &val32);
+    of_bsn_pdu_tx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_OF_VERSION_1_2_dup(
+    of_bsn_pdu_tx_request_t *src)
+{
+    of_bsn_pdu_tx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_tx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_xid_get(src, &val32);
+    of_bsn_pdu_tx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_request_subtype_get(src, &val32);
+    of_bsn_pdu_tx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(src, &val32);
+    of_bsn_pdu_tx_request_tx_interval_ms_set(dst, val32);
+
+    of_bsn_pdu_tx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_tx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_tx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_tx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_tx_request_data_get(src, &octets);
+    of_bsn_pdu_tx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_set_mirroring
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -10482,8 +11754,6 @@ of_error_msg_OF_VERSION_1_2_dup(
 {
     of_error_msg_t *dst;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     if ((dst = of_error_msg_new(src->version)) == NULL) {
         return NULL;
@@ -10491,15 +11761,6 @@ of_error_msg_OF_VERSION_1_2_dup(
 
     of_error_msg_xid_get(src, &val32);
     of_error_msg_xid_set(dst, val32);
-
-    of_error_msg_err_type_get(src, &val16);
-    of_error_msg_err_type_set(dst, val16);
-
-    of_error_msg_code_get(src, &val16);
-    of_error_msg_code_set(dst, val16);
-
-    of_error_msg_data_get(src, &octets);
-    of_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -10535,6 +11796,42 @@ of_experimenter_OF_VERSION_1_2_dup(
 
     of_experimenter_data_get(src, &octets);
     of_experimenter_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_experimenter_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_experimenter_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_OF_VERSION_1_2_dup(
+    of_experimenter_error_msg_t *src)
+{
+    of_experimenter_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_experimenter_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_experimenter_error_msg_xid_get(src, &val32);
+    of_experimenter_error_msg_xid_set(dst, val32);
+
+    of_experimenter_error_msg_subtype_get(src, &val16);
+    of_experimenter_error_msg_subtype_set(dst, val16);
+
+    of_experimenter_error_msg_experimenter_get(src, &val32);
+    of_experimenter_error_msg_experimenter_set(dst, val32);
+
+    of_experimenter_error_msg_data_get(src, &octets);
+    of_experimenter_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -10997,6 +12294,39 @@ of_flow_mod_OF_VERSION_1_2_dup(
     }
     of_flow_mod_instructions_set(dst, dst_list);
     of_list_instruction_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_flow_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_OF_VERSION_1_2_dup(
+    of_flow_mod_failed_error_msg_t *src)
+{
+    of_flow_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_flow_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_xid_get(src, &val32);
+    of_flow_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_flow_mod_failed_error_msg_code_get(src, &val16);
+    of_flow_mod_failed_error_msg_code_set(dst, val16);
+
+    of_flow_mod_failed_error_msg_data_get(src, &octets);
+    of_flow_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -11574,6 +12904,39 @@ of_group_mod_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_group_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_group_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_OF_VERSION_1_2_dup(
+    of_group_mod_failed_error_msg_t *src)
+{
+    of_group_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_group_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_group_mod_failed_error_msg_xid_get(src, &val32);
+    of_group_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_group_mod_failed_error_msg_code_get(src, &val16);
+    of_group_mod_failed_error_msg_code_set(dst, val16);
+
+    of_group_mod_failed_error_msg_data_get(src, &octets);
+    of_group_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_group_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -11668,6 +13031,39 @@ of_hello_OF_VERSION_1_2_dup(
 
     of_hello_xid_get(src, &val32);
     of_hello_xid_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_hello_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_hello_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_OF_VERSION_1_2_dup(
+    of_hello_failed_error_msg_t *src)
+{
+    of_hello_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_hello_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_xid_get(src, &val32);
+    of_hello_failed_error_msg_xid_set(dst, val32);
+
+    of_hello_failed_error_msg_code_get(src, &val16);
+    of_hello_failed_error_msg_code_set(dst, val16);
+
+    of_hello_failed_error_msg_data_get(src, &octets);
+    of_hello_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -11837,6 +13233,39 @@ of_port_mod_OF_VERSION_1_2_dup(
 
     of_port_mod_advertise_get(src, &val32);
     of_port_mod_advertise_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_port_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_port_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_OF_VERSION_1_2_dup(
+    of_port_mod_failed_error_msg_t *src)
+{
+    of_port_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_port_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_xid_get(src, &val32);
+    of_port_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_port_mod_failed_error_msg_code_get(src, &val16);
+    of_port_mod_failed_error_msg_code_set(dst, val16);
+
+    of_port_mod_failed_error_msg_data_get(src, &octets);
+    of_port_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -12030,6 +13459,39 @@ of_queue_get_config_request_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_queue_op_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_queue_op_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_OF_VERSION_1_2_dup(
+    of_queue_op_failed_error_msg_t *src)
+{
+    of_queue_op_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_queue_op_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_xid_get(src, &val32);
+    of_queue_op_failed_error_msg_xid_set(dst, val32);
+
+    of_queue_op_failed_error_msg_code_get(src, &val16);
+    of_queue_op_failed_error_msg_code_set(dst, val16);
+
+    of_queue_op_failed_error_msg_data_get(src, &octets);
+    of_queue_op_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_queue_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -12169,6 +13631,39 @@ of_role_request_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_role_request_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_role_request_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_OF_VERSION_1_2_dup(
+    of_role_request_failed_error_msg_t *src)
+{
+    of_role_request_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_role_request_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_role_request_failed_error_msg_xid_get(src, &val32);
+    of_role_request_failed_error_msg_xid_set(dst, val32);
+
+    of_role_request_failed_error_msg_code_get(src, &val16);
+    of_role_request_failed_error_msg_code_set(dst, val16);
+
+    of_role_request_failed_error_msg_data_get(src, &octets);
+    of_role_request_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_set_config
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -12259,6 +13754,39 @@ of_stats_request_OF_VERSION_1_2_dup(
 }
 
 /**
+ * Duplicate an object of type of_switch_config_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_switch_config_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_OF_VERSION_1_2_dup(
+    of_switch_config_failed_error_msg_t *src)
+{
+    of_switch_config_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_switch_config_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_switch_config_failed_error_msg_xid_get(src, &val32);
+    of_switch_config_failed_error_msg_xid_set(dst, val32);
+
+    of_switch_config_failed_error_msg_code_get(src, &val16);
+    of_switch_config_failed_error_msg_code_set(dst, val16);
+
+    of_switch_config_failed_error_msg_data_get(src, &octets);
+    of_switch_config_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_table_mod
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -12286,6 +13814,39 @@ of_table_mod_OF_VERSION_1_2_dup(
 
     of_table_mod_config_get(src, &val32);
     of_table_mod_config_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_OF_VERSION_1_2_dup(
+    of_table_mod_failed_error_msg_t *src)
+{
+    of_table_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_table_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_mod_failed_error_msg_xid_get(src, &val32);
+    of_table_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_table_mod_failed_error_msg_code_get(src, &val16);
+    of_table_mod_failed_error_msg_code_set(dst, val16);
+
+    of_table_mod_failed_error_msg_data_get(src, &octets);
+    of_table_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -13290,6 +14851,7 @@ of_group_desc_stats_entry_OF_VERSION_1_2_dup(
     of_group_desc_stats_entry_t *src)
 {
     of_group_desc_stats_entry_t *dst;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t src_list;
@@ -13298,6 +14860,9 @@ of_group_desc_stats_entry_OF_VERSION_1_2_dup(
     if ((dst = of_group_desc_stats_entry_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_group_desc_stats_entry_group_type_get(src, &val8);
+    of_group_desc_stats_entry_group_type_set(dst, val8);
 
     of_group_desc_stats_entry_group_id_get(src, &val32);
     of_group_desc_stats_entry_group_id_set(dst, val32);
@@ -13736,6 +15301,11 @@ of_oxm_OF_VERSION_1_2_dup(
             &src->icmpv6_type);
     }
 
+    if (src->header.object_id == OF_OXM_BSN_IN_PORTS_128) {
+        return (of_oxm_t *)of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(
+            &src->bsn_in_ports_128);
+    }
+
     if (src->header.object_id == OF_OXM_ARP_SHA) {
         return (of_oxm_t *)of_oxm_arp_sha_OF_VERSION_1_2_dup(
             &src->arp_sha);
@@ -13816,9 +15386,9 @@ of_oxm_OF_VERSION_1_2_dup(
             &src->vlan_vid_masked);
     }
 
-    if (src->header.object_id == OF_OXM_UDP_DST) {
-        return (of_oxm_t *)of_oxm_udp_dst_OF_VERSION_1_2_dup(
-            &src->udp_dst);
+    if (src->header.object_id == OF_OXM_IPV6_ND_SLL) {
+        return (of_oxm_t *)of_oxm_ipv6_nd_sll_OF_VERSION_1_2_dup(
+            &src->ipv6_nd_sll);
     }
 
     if (src->header.object_id == OF_OXM_ARP_OP) {
@@ -13871,9 +15441,9 @@ of_oxm_OF_VERSION_1_2_dup(
             &src->ip_dscp);
     }
 
-    if (src->header.object_id == OF_OXM_IPV6_ND_SLL) {
-        return (of_oxm_t *)of_oxm_ipv6_nd_sll_OF_VERSION_1_2_dup(
-            &src->ipv6_nd_sll);
+    if (src->header.object_id == OF_OXM_BSN_IN_PORTS_128_MASKED) {
+        return (of_oxm_t *)of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(
+            &src->bsn_in_ports_128_masked);
     }
 
     if (src->header.object_id == OF_OXM_VLAN_PCP) {
@@ -14024,6 +15594,11 @@ of_oxm_OF_VERSION_1_2_dup(
     if (src->header.object_id == OF_OXM_METADATA) {
         return (of_oxm_t *)of_oxm_metadata_OF_VERSION_1_2_dup(
             &src->metadata);
+    }
+
+    if (src->header.object_id == OF_OXM_UDP_DST) {
+        return (of_oxm_t *)of_oxm_udp_dst_OF_VERSION_1_2_dup(
+            &src->udp_dst);
     }
 
     if (src->header.object_id == OF_OXM_ARP_SPA_MASKED) {
@@ -14295,6 +15870,59 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
 
     of_oxm_arp_tpa_masked_value_mask_get(src, &val32);
     of_oxm_arp_tpa_masked_value_mask_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_oxm_bsn_in_ports_128
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_oxm_bsn_in_ports_128.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_oxm_bsn_in_ports_128_t *
+of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(
+    of_oxm_bsn_in_ports_128_t *src)
+{
+    of_oxm_bsn_in_ports_128_t *dst;
+    of_bitmap_128_t bitmap_128;
+
+    if ((dst = of_oxm_bsn_in_ports_128_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_value_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_value_set(dst, bitmap_128);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_oxm_bsn_in_ports_128_masked
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_oxm_bsn_in_ports_128_masked.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_oxm_bsn_in_ports_128_masked_t *
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(
+    of_oxm_bsn_in_ports_128_masked_t *src)
+{
+    of_oxm_bsn_in_ports_128_masked_t *dst;
+    of_bitmap_128_t bitmap_128;
+
+    if ((dst = of_oxm_bsn_in_ports_128_masked_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_masked_value_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_masked_value_set(dst, bitmap_128);
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_masked_value_mask_set(dst, bitmap_128);
 
     return dst;
 }
@@ -17099,6 +18727,138 @@ of_async_set_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_bad_action_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_action_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_OF_VERSION_1_3_dup(
+    of_bad_action_error_msg_t *src)
+{
+    of_bad_action_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_action_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_xid_get(src, &val32);
+    of_bad_action_error_msg_xid_set(dst, val32);
+
+    of_bad_action_error_msg_code_get(src, &val16);
+    of_bad_action_error_msg_code_set(dst, val16);
+
+    of_bad_action_error_msg_data_get(src, &octets);
+    of_bad_action_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_instruction_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_instruction_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_OF_VERSION_1_3_dup(
+    of_bad_instruction_error_msg_t *src)
+{
+    of_bad_instruction_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_instruction_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_instruction_error_msg_xid_get(src, &val32);
+    of_bad_instruction_error_msg_xid_set(dst, val32);
+
+    of_bad_instruction_error_msg_code_get(src, &val16);
+    of_bad_instruction_error_msg_code_set(dst, val16);
+
+    of_bad_instruction_error_msg_data_get(src, &octets);
+    of_bad_instruction_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_match_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_match_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_OF_VERSION_1_3_dup(
+    of_bad_match_error_msg_t *src)
+{
+    of_bad_match_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_match_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_match_error_msg_xid_get(src, &val32);
+    of_bad_match_error_msg_xid_set(dst, val32);
+
+    of_bad_match_error_msg_code_get(src, &val16);
+    of_bad_match_error_msg_code_set(dst, val16);
+
+    of_bad_match_error_msg_data_get(src, &octets);
+    of_bad_match_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bad_request_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bad_request_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_OF_VERSION_1_3_dup(
+    of_bad_request_error_msg_t *src)
+{
+    of_bad_request_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_bad_request_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_xid_get(src, &val32);
+    of_bad_request_error_msg_xid_set(dst, val32);
+
+    of_bad_request_error_msg_code_get(src, &val16);
+    of_bad_request_error_msg_code_set(dst, val16);
+
+    of_bad_request_error_msg_data_get(src, &octets);
+    of_bad_request_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_barrier_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -17350,6 +19110,189 @@ of_bsn_bw_enable_set_request_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_bsn_flow_idle
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_flow_idle.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_OF_VERSION_1_3_dup(
+    of_bsn_flow_idle_t *src)
+{
+    of_bsn_flow_idle_t *dst;
+    uint32_t val32;
+    uint64_t val64;
+    uint16_t val16;
+    uint8_t val8;
+    of_match_t match;
+
+    if ((dst = of_bsn_flow_idle_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_xid_get(src, &val32);
+    of_bsn_flow_idle_xid_set(dst, val32);
+
+    of_bsn_flow_idle_experimenter_get(src, &val32);
+    of_bsn_flow_idle_experimenter_set(dst, val32);
+
+    of_bsn_flow_idle_subtype_get(src, &val32);
+    of_bsn_flow_idle_subtype_set(dst, val32);
+
+    of_bsn_flow_idle_cookie_get(src, &val64);
+    of_bsn_flow_idle_cookie_set(dst, val64);
+
+    of_bsn_flow_idle_priority_get(src, &val16);
+    of_bsn_flow_idle_priority_set(dst, val16);
+
+    of_bsn_flow_idle_table_id_get(src, &val8);
+    of_bsn_flow_idle_table_id_set(dst, val8);
+
+    of_bsn_flow_idle_match_get(src, &match);
+    of_bsn_flow_idle_match_set(dst, &match);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_flow_idle_enable_get_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_flow_idle_enable_get_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_dup(
+    of_bsn_flow_idle_enable_get_reply_t *src)
+{
+    of_bsn_flow_idle_enable_get_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_flow_idle_enable_get_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_reply_xid_get(src, &val32);
+    of_bsn_flow_idle_enable_get_reply_xid_set(dst, val32);
+
+    of_bsn_flow_idle_enable_get_reply_experimenter_get(src, &val32);
+    of_bsn_flow_idle_enable_get_reply_experimenter_set(dst, val32);
+
+    of_bsn_flow_idle_enable_get_reply_subtype_get(src, &val32);
+    of_bsn_flow_idle_enable_get_reply_subtype_set(dst, val32);
+
+    of_bsn_flow_idle_enable_get_reply_enabled_get(src, &val32);
+    of_bsn_flow_idle_enable_get_reply_enabled_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_flow_idle_enable_get_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_flow_idle_enable_get_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_dup(
+    of_bsn_flow_idle_enable_get_request_t *src)
+{
+    of_bsn_flow_idle_enable_get_request_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_flow_idle_enable_get_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_request_xid_get(src, &val32);
+    of_bsn_flow_idle_enable_get_request_xid_set(dst, val32);
+
+    of_bsn_flow_idle_enable_get_request_experimenter_get(src, &val32);
+    of_bsn_flow_idle_enable_get_request_experimenter_set(dst, val32);
+
+    of_bsn_flow_idle_enable_get_request_subtype_get(src, &val32);
+    of_bsn_flow_idle_enable_get_request_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_flow_idle_enable_set_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_flow_idle_enable_set_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_dup(
+    of_bsn_flow_idle_enable_set_reply_t *src)
+{
+    of_bsn_flow_idle_enable_set_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_flow_idle_enable_set_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_reply_xid_get(src, &val32);
+    of_bsn_flow_idle_enable_set_reply_xid_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_reply_experimenter_get(src, &val32);
+    of_bsn_flow_idle_enable_set_reply_experimenter_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_reply_subtype_get(src, &val32);
+    of_bsn_flow_idle_enable_set_reply_subtype_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_reply_enable_get(src, &val32);
+    of_bsn_flow_idle_enable_set_reply_enable_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_reply_status_get(src, &val32);
+    of_bsn_flow_idle_enable_set_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_flow_idle_enable_set_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_flow_idle_enable_set_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_dup(
+    of_bsn_flow_idle_enable_set_request_t *src)
+{
+    of_bsn_flow_idle_enable_set_request_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_flow_idle_enable_set_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_request_xid_get(src, &val32);
+    of_bsn_flow_idle_enable_set_request_xid_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_request_experimenter_get(src, &val32);
+    of_bsn_flow_idle_enable_set_request_experimenter_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_request_subtype_get(src, &val32);
+    of_bsn_flow_idle_enable_set_request_subtype_set(dst, val32);
+
+    of_bsn_flow_idle_enable_set_request_enable_get(src, &val32);
+    of_bsn_flow_idle_enable_set_request_enable_set(dst, val32);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_bsn_get_interfaces_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -17521,6 +19464,205 @@ of_bsn_header_OF_VERSION_1_3_dup(
 
     of_bsn_header_subtype_get(src, &val32);
     of_bsn_header_subtype_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_OF_VERSION_1_3_dup(
+    of_bsn_pdu_rx_reply_t *src)
+{
+    of_bsn_pdu_rx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_rx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_xid_get(src, &val32);
+    of_bsn_pdu_rx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_rx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_reply_status_get(src, &val32);
+    of_bsn_pdu_rx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_OF_VERSION_1_3_dup(
+    of_bsn_pdu_rx_request_t *src)
+{
+    of_bsn_pdu_rx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_rx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_xid_get(src, &val32);
+    of_bsn_pdu_rx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_request_subtype_get(src, &val32);
+    of_bsn_pdu_rx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_request_timeout_ms_get(src, &val32);
+    of_bsn_pdu_rx_request_timeout_ms_set(dst, val32);
+
+    of_bsn_pdu_rx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_rx_request_data_get(src, &octets);
+    of_bsn_pdu_rx_request_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_rx_timeout
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_rx_timeout.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_OF_VERSION_1_3_dup(
+    of_bsn_pdu_rx_timeout_t *src)
+{
+    of_bsn_pdu_rx_timeout_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    if ((dst = of_bsn_pdu_rx_timeout_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_xid_get(src, &val32);
+    of_bsn_pdu_rx_timeout_xid_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_experimenter_get(src, &val32);
+    of_bsn_pdu_rx_timeout_experimenter_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_subtype_get(src, &val32);
+    of_bsn_pdu_rx_timeout_subtype_set(dst, val32);
+
+    of_bsn_pdu_rx_timeout_port_no_get(src, &port_no);
+    of_bsn_pdu_rx_timeout_port_no_set(dst, port_no);
+
+    of_bsn_pdu_rx_timeout_slot_num_get(src, &val8);
+    of_bsn_pdu_rx_timeout_slot_num_set(dst, val8);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_reply
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_reply.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_OF_VERSION_1_3_dup(
+    of_bsn_pdu_tx_reply_t *src)
+{
+    of_bsn_pdu_tx_reply_t *dst;
+    uint32_t val32;
+
+    if ((dst = of_bsn_pdu_tx_reply_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_xid_get(src, &val32);
+    of_bsn_pdu_tx_reply_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_reply_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_subtype_get(src, &val32);
+    of_bsn_pdu_tx_reply_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_reply_status_get(src, &val32);
+    of_bsn_pdu_tx_reply_status_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_bsn_pdu_tx_request
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_bsn_pdu_tx_request.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_OF_VERSION_1_3_dup(
+    of_bsn_pdu_tx_request_t *src)
+{
+    of_bsn_pdu_tx_request_t *dst;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    if ((dst = of_bsn_pdu_tx_request_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_xid_get(src, &val32);
+    of_bsn_pdu_tx_request_xid_set(dst, val32);
+
+    of_bsn_pdu_tx_request_experimenter_get(src, &val32);
+    of_bsn_pdu_tx_request_experimenter_set(dst, val32);
+
+    of_bsn_pdu_tx_request_subtype_get(src, &val32);
+    of_bsn_pdu_tx_request_subtype_set(dst, val32);
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(src, &val32);
+    of_bsn_pdu_tx_request_tx_interval_ms_set(dst, val32);
+
+    of_bsn_pdu_tx_request_port_no_get(src, &port_no);
+    of_bsn_pdu_tx_request_port_no_set(dst, port_no);
+
+    of_bsn_pdu_tx_request_slot_num_get(src, &val8);
+    of_bsn_pdu_tx_request_slot_num_set(dst, val8);
+
+    of_bsn_pdu_tx_request_data_get(src, &octets);
+    of_bsn_pdu_tx_request_data_set(dst, &octets);
 
     return dst;
 }
@@ -17939,8 +20081,6 @@ of_error_msg_OF_VERSION_1_3_dup(
 {
     of_error_msg_t *dst;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     if ((dst = of_error_msg_new(src->version)) == NULL) {
         return NULL;
@@ -17948,15 +20088,6 @@ of_error_msg_OF_VERSION_1_3_dup(
 
     of_error_msg_xid_get(src, &val32);
     of_error_msg_xid_set(dst, val32);
-
-    of_error_msg_err_type_get(src, &val16);
-    of_error_msg_err_type_set(dst, val16);
-
-    of_error_msg_code_get(src, &val16);
-    of_error_msg_code_set(dst, val16);
-
-    of_error_msg_data_get(src, &octets);
-    of_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -17992,6 +20123,42 @@ of_experimenter_OF_VERSION_1_3_dup(
 
     of_experimenter_data_get(src, &octets);
     of_experimenter_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_experimenter_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_experimenter_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_OF_VERSION_1_3_dup(
+    of_experimenter_error_msg_t *src)
+{
+    of_experimenter_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_experimenter_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_experimenter_error_msg_xid_get(src, &val32);
+    of_experimenter_error_msg_xid_set(dst, val32);
+
+    of_experimenter_error_msg_subtype_get(src, &val16);
+    of_experimenter_error_msg_subtype_set(dst, val16);
+
+    of_experimenter_error_msg_experimenter_get(src, &val32);
+    of_experimenter_error_msg_experimenter_set(dst, val32);
+
+    of_experimenter_error_msg_data_get(src, &octets);
+    of_experimenter_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -18366,6 +20533,39 @@ of_flow_mod_OF_VERSION_1_3_dup(
     }
     of_flow_mod_instructions_set(dst, dst_list);
     of_list_instruction_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_flow_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_flow_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_OF_VERSION_1_3_dup(
+    of_flow_mod_failed_error_msg_t *src)
+{
+    of_flow_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_flow_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_xid_get(src, &val32);
+    of_flow_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_flow_mod_failed_error_msg_code_get(src, &val16);
+    of_flow_mod_failed_error_msg_code_set(dst, val16);
+
+    of_flow_mod_failed_error_msg_data_get(src, &octets);
+    of_flow_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -18943,6 +21143,39 @@ of_group_mod_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_group_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_group_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_OF_VERSION_1_3_dup(
+    of_group_mod_failed_error_msg_t *src)
+{
+    of_group_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_group_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_group_mod_failed_error_msg_xid_get(src, &val32);
+    of_group_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_group_mod_failed_error_msg_code_get(src, &val16);
+    of_group_mod_failed_error_msg_code_set(dst, val16);
+
+    of_group_mod_failed_error_msg_data_get(src, &octets);
+    of_group_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_group_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -19050,6 +21283,39 @@ of_hello_OF_VERSION_1_3_dup(
     }
     of_hello_elements_set(dst, dst_list);
     of_list_hello_elem_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_hello_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_hello_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_OF_VERSION_1_3_dup(
+    of_hello_failed_error_msg_t *src)
+{
+    of_hello_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_hello_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_xid_get(src, &val32);
+    of_hello_failed_error_msg_xid_set(dst, val32);
+
+    of_hello_failed_error_msg_code_get(src, &val16);
+    of_hello_failed_error_msg_code_set(dst, val16);
+
+    of_hello_failed_error_msg_data_get(src, &octets);
+    of_hello_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -19243,6 +21509,39 @@ of_meter_mod_OF_VERSION_1_3_dup(
     }
     of_meter_mod_meters_set(dst, dst_list);
     of_list_meter_band_delete(dst_list);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_meter_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_meter_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_OF_VERSION_1_3_dup(
+    of_meter_mod_failed_error_msg_t *src)
+{
+    of_meter_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_meter_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_meter_mod_failed_error_msg_xid_get(src, &val32);
+    of_meter_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_meter_mod_failed_error_msg_code_get(src, &val16);
+    of_meter_mod_failed_error_msg_code_set(dst, val16);
+
+    of_meter_mod_failed_error_msg_data_get(src, &octets);
+    of_meter_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -19566,6 +21865,39 @@ of_port_mod_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_port_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_port_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_OF_VERSION_1_3_dup(
+    of_port_mod_failed_error_msg_t *src)
+{
+    of_port_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_port_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_xid_get(src, &val32);
+    of_port_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_port_mod_failed_error_msg_code_get(src, &val16);
+    of_port_mod_failed_error_msg_code_set(dst, val16);
+
+    of_port_mod_failed_error_msg_data_get(src, &octets);
+    of_port_mod_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_port_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -19754,6 +22086,39 @@ of_queue_get_config_request_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_queue_op_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_queue_op_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_OF_VERSION_1_3_dup(
+    of_queue_op_failed_error_msg_t *src)
+{
+    of_queue_op_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_queue_op_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_xid_get(src, &val32);
+    of_queue_op_failed_error_msg_xid_set(dst, val32);
+
+    of_queue_op_failed_error_msg_code_get(src, &val16);
+    of_queue_op_failed_error_msg_code_set(dst, val16);
+
+    of_queue_op_failed_error_msg_data_get(src, &octets);
+    of_queue_op_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_queue_stats_reply
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -19893,6 +22258,39 @@ of_role_request_OF_VERSION_1_3_dup(
 }
 
 /**
+ * Duplicate an object of type of_role_request_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_role_request_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_OF_VERSION_1_3_dup(
+    of_role_request_failed_error_msg_t *src)
+{
+    of_role_request_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_role_request_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_role_request_failed_error_msg_xid_get(src, &val32);
+    of_role_request_failed_error_msg_xid_set(dst, val32);
+
+    of_role_request_failed_error_msg_code_get(src, &val16);
+    of_role_request_failed_error_msg_code_set(dst, val16);
+
+    of_role_request_failed_error_msg_data_get(src, &octets);
+    of_role_request_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
  * Duplicate an object of type of_set_config
  * using accessor functions
  * @param src Pointer to object to be duplicated
@@ -19978,6 +22376,72 @@ of_stats_request_OF_VERSION_1_3_dup(
 
     of_stats_request_flags_get(src, &val16);
     of_stats_request_flags_set(dst, val16);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_switch_config_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_switch_config_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_OF_VERSION_1_3_dup(
+    of_switch_config_failed_error_msg_t *src)
+{
+    of_switch_config_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_switch_config_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_switch_config_failed_error_msg_xid_get(src, &val32);
+    of_switch_config_failed_error_msg_xid_set(dst, val32);
+
+    of_switch_config_failed_error_msg_code_get(src, &val16);
+    of_switch_config_failed_error_msg_code_set(dst, val16);
+
+    of_switch_config_failed_error_msg_data_get(src, &octets);
+    of_switch_config_failed_error_msg_data_set(dst, &octets);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_features_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_features_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_OF_VERSION_1_3_dup(
+    of_table_features_failed_error_msg_t *src)
+{
+    of_table_features_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_table_features_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_features_failed_error_msg_xid_get(src, &val32);
+    of_table_features_failed_error_msg_xid_set(dst, val32);
+
+    of_table_features_failed_error_msg_code_get(src, &val16);
+    of_table_features_failed_error_msg_code_set(dst, val16);
+
+    of_table_features_failed_error_msg_data_get(src, &octets);
+    of_table_features_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -20094,6 +22558,39 @@ of_table_mod_OF_VERSION_1_3_dup(
 
     of_table_mod_config_get(src, &val32);
     of_table_mod_config_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_table_mod_failed_error_msg
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_table_mod_failed_error_msg.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_OF_VERSION_1_3_dup(
+    of_table_mod_failed_error_msg_t *src)
+{
+    of_table_mod_failed_error_msg_t *dst;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    if ((dst = of_table_mod_failed_error_msg_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_table_mod_failed_error_msg_xid_get(src, &val32);
+    of_table_mod_failed_error_msg_xid_set(dst, val32);
+
+    of_table_mod_failed_error_msg_code_get(src, &val16);
+    of_table_mod_failed_error_msg_code_set(dst, val16);
+
+    of_table_mod_failed_error_msg_data_get(src, &octets);
+    of_table_mod_failed_error_msg_data_set(dst, &octets);
 
     return dst;
 }
@@ -21703,29 +24200,29 @@ of_bucket_counter_OF_VERSION_1_3_dup(
 }
 
 /**
- * Duplicate an object of type of_experimenter_multipart_header
+ * Duplicate an object of type of_experimenter_stats_header
  * using accessor functions
  * @param src Pointer to object to be duplicated
- * @returns A new object of type of_experimenter_multipart_header.
+ * @returns A new object of type of_experimenter_stats_header.
  *
  * The caller is responsible for deleting the returned value
  */
-of_experimenter_multipart_header_t *
-of_experimenter_multipart_header_OF_VERSION_1_3_dup(
-    of_experimenter_multipart_header_t *src)
+of_experimenter_stats_header_t *
+of_experimenter_stats_header_OF_VERSION_1_3_dup(
+    of_experimenter_stats_header_t *src)
 {
-    of_experimenter_multipart_header_t *dst;
+    of_experimenter_stats_header_t *dst;
     uint32_t val32;
 
-    if ((dst = of_experimenter_multipart_header_new(src->version)) == NULL) {
+    if ((dst = of_experimenter_stats_header_new(src->version)) == NULL) {
         return NULL;
     }
 
-    of_experimenter_multipart_header_experimenter_get(src, &val32);
-    of_experimenter_multipart_header_experimenter_set(dst, val32);
+    of_experimenter_stats_header_experimenter_get(src, &val32);
+    of_experimenter_stats_header_experimenter_set(dst, val32);
 
-    of_experimenter_multipart_header_subtype_get(src, &val32);
-    of_experimenter_multipart_header_subtype_set(dst, val32);
+    of_experimenter_stats_header_subtype_get(src, &val32);
+    of_experimenter_stats_header_subtype_set(dst, val32);
 
     return dst;
 }
@@ -21815,6 +24312,7 @@ of_group_desc_stats_entry_OF_VERSION_1_3_dup(
     of_group_desc_stats_entry_t *src)
 {
     of_group_desc_stats_entry_t *dst;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t src_list;
@@ -21823,6 +24321,9 @@ of_group_desc_stats_entry_OF_VERSION_1_3_dup(
     if ((dst = of_group_desc_stats_entry_new(src->version)) == NULL) {
         return NULL;
     }
+
+    of_group_desc_stats_entry_group_type_get(src, &val8);
+    of_group_desc_stats_entry_group_type_set(dst, val8);
 
     of_group_desc_stats_entry_group_id_get(src, &val32);
     of_group_desc_stats_entry_group_id_set(dst, val32);
@@ -22676,6 +25177,11 @@ of_oxm_OF_VERSION_1_3_dup(
             &src->icmpv6_type);
     }
 
+    if (src->header.object_id == OF_OXM_BSN_IN_PORTS_128) {
+        return (of_oxm_t *)of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(
+            &src->bsn_in_ports_128);
+    }
+
     if (src->header.object_id == OF_OXM_ARP_SHA) {
         return (of_oxm_t *)of_oxm_arp_sha_OF_VERSION_1_3_dup(
             &src->arp_sha);
@@ -22756,9 +25262,9 @@ of_oxm_OF_VERSION_1_3_dup(
             &src->vlan_vid_masked);
     }
 
-    if (src->header.object_id == OF_OXM_UDP_DST) {
-        return (of_oxm_t *)of_oxm_udp_dst_OF_VERSION_1_3_dup(
-            &src->udp_dst);
+    if (src->header.object_id == OF_OXM_IPV6_ND_SLL) {
+        return (of_oxm_t *)of_oxm_ipv6_nd_sll_OF_VERSION_1_3_dup(
+            &src->ipv6_nd_sll);
     }
 
     if (src->header.object_id == OF_OXM_ARP_OP) {
@@ -22811,9 +25317,9 @@ of_oxm_OF_VERSION_1_3_dup(
             &src->ip_dscp);
     }
 
-    if (src->header.object_id == OF_OXM_IPV6_ND_SLL) {
-        return (of_oxm_t *)of_oxm_ipv6_nd_sll_OF_VERSION_1_3_dup(
-            &src->ipv6_nd_sll);
+    if (src->header.object_id == OF_OXM_BSN_IN_PORTS_128_MASKED) {
+        return (of_oxm_t *)of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(
+            &src->bsn_in_ports_128_masked);
     }
 
     if (src->header.object_id == OF_OXM_VLAN_PCP) {
@@ -22964,6 +25470,11 @@ of_oxm_OF_VERSION_1_3_dup(
     if (src->header.object_id == OF_OXM_METADATA) {
         return (of_oxm_t *)of_oxm_metadata_OF_VERSION_1_3_dup(
             &src->metadata);
+    }
+
+    if (src->header.object_id == OF_OXM_UDP_DST) {
+        return (of_oxm_t *)of_oxm_udp_dst_OF_VERSION_1_3_dup(
+            &src->udp_dst);
     }
 
     if (src->header.object_id == OF_OXM_ARP_SPA_MASKED) {
@@ -23235,6 +25746,59 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
 
     of_oxm_arp_tpa_masked_value_mask_get(src, &val32);
     of_oxm_arp_tpa_masked_value_mask_set(dst, val32);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_oxm_bsn_in_ports_128
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_oxm_bsn_in_ports_128.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_oxm_bsn_in_ports_128_t *
+of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(
+    of_oxm_bsn_in_ports_128_t *src)
+{
+    of_oxm_bsn_in_ports_128_t *dst;
+    of_bitmap_128_t bitmap_128;
+
+    if ((dst = of_oxm_bsn_in_ports_128_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_value_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_value_set(dst, bitmap_128);
+
+    return dst;
+}
+
+/**
+ * Duplicate an object of type of_oxm_bsn_in_ports_128_masked
+ * using accessor functions
+ * @param src Pointer to object to be duplicated
+ * @returns A new object of type of_oxm_bsn_in_ports_128_masked.
+ *
+ * The caller is responsible for deleting the returned value
+ */
+of_oxm_bsn_in_ports_128_masked_t *
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(
+    of_oxm_bsn_in_ports_128_masked_t *src)
+{
+    of_oxm_bsn_in_ports_128_masked_t *dst;
+    of_bitmap_128_t bitmap_128;
+
+    if ((dst = of_oxm_bsn_in_ports_128_masked_new(src->version)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_masked_value_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_masked_value_set(dst, bitmap_128);
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(src, &bitmap_128);
+    of_oxm_bsn_in_ports_128_masked_value_mask_set(dst, bitmap_128);
 
     return dst;
 }
@@ -26913,6 +29477,98 @@ of_async_set_dup(
     return NULL;
 }
 
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_dup(
+    of_bad_action_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bad_action_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bad_action_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bad_action_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bad_action_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_dup(
+    of_bad_instruction_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bad_instruction_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bad_instruction_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bad_instruction_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_dup(
+    of_bad_match_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bad_match_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bad_match_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bad_match_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_dup(
+    of_bad_request_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bad_request_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bad_request_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bad_request_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bad_request_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_barrier_reply_t *
 of_barrier_reply_dup(
     of_barrier_reply_t *src)
@@ -27107,6 +29763,71 @@ of_bsn_bw_enable_set_request_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_bsn_bw_enable_set_request_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_dup(
+    of_bsn_flow_idle_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_flow_idle_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_dup(
+    of_bsn_flow_idle_enable_get_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_dup(
+    of_bsn_flow_idle_enable_get_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_dup(
+    of_bsn_flow_idle_enable_set_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_dup(
+    of_bsn_flow_idle_enable_set_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -27310,6 +30031,131 @@ of_bsn_hybrid_get_request_dup(
 
     if (src->version == OF_VERSION_1_0) {
         return of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_dup(
+    of_bsn_pdu_rx_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_pdu_rx_reply_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_pdu_rx_reply_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_pdu_rx_reply_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_pdu_rx_reply_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_dup(
+    of_bsn_pdu_rx_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_pdu_rx_request_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_pdu_rx_request_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_pdu_rx_request_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_pdu_rx_request_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_dup(
+    of_bsn_pdu_rx_timeout_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_pdu_rx_timeout_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_pdu_rx_timeout_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_pdu_rx_timeout_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_pdu_rx_timeout_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_dup(
+    of_bsn_pdu_tx_reply_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_pdu_tx_reply_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_pdu_tx_reply_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_pdu_tx_reply_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_pdu_tx_reply_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_dup(
+    of_bsn_pdu_tx_request_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_bsn_pdu_tx_request_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_bsn_pdu_tx_request_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_bsn_pdu_tx_request_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_bsn_pdu_tx_request_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -27719,6 +30565,23 @@ of_experimenter_dup(
     return NULL;
 }
 
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_dup(
+    of_experimenter_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_experimenter_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_experimenter_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_experimenter_stats_reply_t *
 of_experimenter_stats_reply_dup(
     of_experimenter_stats_reply_t *src)
@@ -27905,6 +30768,31 @@ of_flow_mod_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_flow_mod_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_dup(
+    of_flow_mod_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_flow_mod_failed_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_flow_mod_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_flow_mod_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_flow_mod_failed_error_msg_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -28183,6 +31071,27 @@ of_group_mod_dup(
     return NULL;
 }
 
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_dup(
+    of_group_mod_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_group_mod_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_group_mod_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_group_mod_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_group_stats_reply_t *
 of_group_stats_reply_dup(
     of_group_stats_reply_t *src)
@@ -28250,6 +31159,31 @@ of_hello_dup(
     return NULL;
 }
 
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_dup(
+    of_hello_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_hello_failed_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_hello_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_hello_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_hello_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_meter_config_stats_reply_t *
 of_meter_config_stats_reply_dup(
     of_meter_config_stats_reply_t *src)
@@ -28309,6 +31243,19 @@ of_meter_mod_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_meter_mod_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_dup(
+    of_meter_mod_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_meter_mod_failed_error_msg_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -28493,6 +31440,31 @@ of_port_mod_dup(
     return NULL;
 }
 
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_dup(
+    of_port_mod_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_port_mod_failed_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_port_mod_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_port_mod_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_port_mod_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_port_stats_reply_t *
 of_port_stats_reply_dup(
     of_port_stats_reply_t *src)
@@ -28618,6 +31590,31 @@ of_queue_get_config_request_dup(
     return NULL;
 }
 
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_dup(
+    of_queue_op_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_0) {
+        return of_queue_op_failed_error_msg_OF_VERSION_1_0_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_queue_op_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_queue_op_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_queue_op_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_queue_stats_reply_t *
 of_queue_stats_reply_dup(
     of_queue_stats_reply_t *src)
@@ -28702,6 +31699,23 @@ of_role_request_dup(
     return NULL;
 }
 
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_dup(
+    of_role_request_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_role_request_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_role_request_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_set_config_t *
 of_set_config_dup(
     of_set_config_t *src)
@@ -28777,6 +31791,40 @@ of_stats_request_dup(
     return NULL;
 }
 
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_dup(
+    of_switch_config_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_switch_config_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_switch_config_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_switch_config_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_dup(
+    of_table_features_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_table_features_failed_error_msg_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
 of_table_features_stats_reply_t *
 of_table_features_stats_reply_dup(
     of_table_features_stats_reply_t *src)
@@ -28822,6 +31870,27 @@ of_table_mod_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_table_mod_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_dup(
+    of_table_mod_failed_error_msg_t *src)
+{
+
+    if (src->version == OF_VERSION_1_1) {
+        return of_table_mod_failed_error_msg_OF_VERSION_1_1_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_table_mod_failed_error_msg_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_table_mod_failed_error_msg_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -30070,13 +33139,13 @@ of_bucket_counter_dup(
     return NULL;
 }
 
-of_experimenter_multipart_header_t *
-of_experimenter_multipart_header_dup(
-    of_experimenter_multipart_header_t *src)
+of_experimenter_stats_header_t *
+of_experimenter_stats_header_dup(
+    of_experimenter_stats_header_t *src)
 {
 
     if (src->version == OF_VERSION_1_3) {
-        return of_experimenter_multipart_header_OF_VERSION_1_3_dup(src);
+        return of_experimenter_stats_header_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */
@@ -30736,6 +33805,40 @@ of_oxm_arp_tpa_masked_dup(
 
     if (src->version == OF_VERSION_1_3) {
         return of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_oxm_bsn_in_ports_128_t *
+of_oxm_bsn_in_ports_128_dup(
+    of_oxm_bsn_in_ports_128_t *src)
+{
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(src);
+    }
+
+    /* Class not supported in given version */
+    return NULL;
+}
+
+of_oxm_bsn_in_ports_128_masked_t *
+of_oxm_bsn_in_ports_128_masked_dup(
+    of_oxm_bsn_in_ports_128_masked_t *src)
+{
+
+    if (src->version == OF_VERSION_1_2) {
+        return of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(src);
+    }
+
+    if (src->version == OF_VERSION_1_3) {
+        return of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(src);
     }
 
     /* Class not supported in given version */

@@ -172,6 +172,10 @@ of_match_v1_compat_check(of_match_t *match)
         return 0;
     }
 
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
+        return 0;
+    }
+
     if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(match)) {
         return 0;
     }
@@ -382,6 +386,10 @@ of_match_v2_compat_check(of_match_t *match)
     }
 
     if (OF_MATCH_MASK_ICMPV6_TYPE_ACTIVE_TEST(match)) {
+        return 0;
+    }
+
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
         return 0;
     }
 
@@ -640,384 +648,6 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
     of_oxm_t oxm_entry;
 
     /* For each active member, add an OXM entry to the list */
-    if (OF_MATCH_MASK_IPV6_FLABEL_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_FLABEL_EXACT_TEST(src)) {
-            of_oxm_ipv6_flabel_masked_t *elt;
-            elt = &oxm_entry.ipv6_flabel_masked;
-
-            of_oxm_ipv6_flabel_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_flabel_masked_value_set(elt,
-                   src->fields.ipv6_flabel);
-            of_oxm_ipv6_flabel_masked_value_mask_set(elt,
-                   src->masks.ipv6_flabel);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_flabel_t *elt;
-            elt = &oxm_entry.ipv6_flabel;
-            of_oxm_ipv6_flabel_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_flabel_value_set(elt, src->fields.ipv6_flabel);
-        }
-    }
-    if (OF_MATCH_MASK_VLAN_PCP_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_VLAN_PCP_EXACT_TEST(src)) {
-            of_oxm_vlan_pcp_masked_t *elt;
-            elt = &oxm_entry.vlan_pcp_masked;
-
-            of_oxm_vlan_pcp_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_vlan_pcp_masked_value_set(elt,
-                   src->fields.vlan_pcp);
-            of_oxm_vlan_pcp_masked_value_mask_set(elt,
-                   src->masks.vlan_pcp);
-        } else {  /* Active, but not masked */
-            of_oxm_vlan_pcp_t *elt;
-            elt = &oxm_entry.vlan_pcp;
-            of_oxm_vlan_pcp_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_vlan_pcp_value_set(elt, src->fields.vlan_pcp);
-        }
-    }
-    if (OF_MATCH_MASK_IPV4_SRC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV4_SRC_EXACT_TEST(src)) {
-            of_oxm_ipv4_src_masked_t *elt;
-            elt = &oxm_entry.ipv4_src_masked;
-
-            of_oxm_ipv4_src_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv4_src_masked_value_set(elt,
-                   src->fields.ipv4_src);
-            of_oxm_ipv4_src_masked_value_mask_set(elt,
-                   src->masks.ipv4_src);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv4_src_t *elt;
-            elt = &oxm_entry.ipv4_src;
-            of_oxm_ipv4_src_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv4_src_value_set(elt, src->fields.ipv4_src);
-        }
-    }
-    if (OF_MATCH_MASK_IPV6_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_DST_EXACT_TEST(src)) {
-            of_oxm_ipv6_dst_masked_t *elt;
-            elt = &oxm_entry.ipv6_dst_masked;
-
-            of_oxm_ipv6_dst_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_dst_masked_value_set(elt,
-                   src->fields.ipv6_dst);
-            of_oxm_ipv6_dst_masked_value_mask_set(elt,
-                   src->masks.ipv6_dst);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_dst_t *elt;
-            elt = &oxm_entry.ipv6_dst;
-            of_oxm_ipv6_dst_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_dst_value_set(elt, src->fields.ipv6_dst);
-        }
-    }
-    if (OF_MATCH_MASK_ARP_TPA_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ARP_TPA_EXACT_TEST(src)) {
-            of_oxm_arp_tpa_masked_t *elt;
-            elt = &oxm_entry.arp_tpa_masked;
-
-            of_oxm_arp_tpa_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_tpa_masked_value_set(elt,
-                   src->fields.arp_tpa);
-            of_oxm_arp_tpa_masked_value_mask_set(elt,
-                   src->masks.arp_tpa);
-        } else {  /* Active, but not masked */
-            of_oxm_arp_tpa_t *elt;
-            elt = &oxm_entry.arp_tpa;
-            of_oxm_arp_tpa_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_tpa_value_set(elt, src->fields.arp_tpa);
-        }
-    }
-    if (OF_MATCH_MASK_ICMPV6_TYPE_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ICMPV6_TYPE_EXACT_TEST(src)) {
-            of_oxm_icmpv6_type_masked_t *elt;
-            elt = &oxm_entry.icmpv6_type_masked;
-
-            of_oxm_icmpv6_type_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv6_type_masked_value_set(elt,
-                   src->fields.icmpv6_type);
-            of_oxm_icmpv6_type_masked_value_mask_set(elt,
-                   src->masks.icmpv6_type);
-        } else {  /* Active, but not masked */
-            of_oxm_icmpv6_type_t *elt;
-            elt = &oxm_entry.icmpv6_type;
-            of_oxm_icmpv6_type_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv6_type_value_set(elt, src->fields.icmpv6_type);
-        }
-    }
-    if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ARP_SHA_EXACT_TEST(src)) {
-            of_oxm_arp_sha_masked_t *elt;
-            elt = &oxm_entry.arp_sha_masked;
-
-            of_oxm_arp_sha_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_sha_masked_value_set(elt,
-                   src->fields.arp_sha);
-            of_oxm_arp_sha_masked_value_mask_set(elt,
-                   src->masks.arp_sha);
-        } else {  /* Active, but not masked */
-            of_oxm_arp_sha_t *elt;
-            elt = &oxm_entry.arp_sha;
-            of_oxm_arp_sha_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_sha_value_set(elt, src->fields.arp_sha);
-        }
-    }
-    if (OF_MATCH_MASK_IPV6_SRC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_SRC_EXACT_TEST(src)) {
-            of_oxm_ipv6_src_masked_t *elt;
-            elt = &oxm_entry.ipv6_src_masked;
-
-            of_oxm_ipv6_src_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_src_masked_value_set(elt,
-                   src->fields.ipv6_src);
-            of_oxm_ipv6_src_masked_value_mask_set(elt,
-                   src->masks.ipv6_src);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_src_t *elt;
-            elt = &oxm_entry.ipv6_src;
-            of_oxm_ipv6_src_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_src_value_set(elt, src->fields.ipv6_src);
-        }
-    }
-    if (OF_MATCH_MASK_SCTP_SRC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_SCTP_SRC_EXACT_TEST(src)) {
-            of_oxm_sctp_src_masked_t *elt;
-            elt = &oxm_entry.sctp_src_masked;
-
-            of_oxm_sctp_src_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_sctp_src_masked_value_set(elt,
-                   src->fields.sctp_src);
-            of_oxm_sctp_src_masked_value_mask_set(elt,
-                   src->masks.sctp_src);
-        } else {  /* Active, but not masked */
-            of_oxm_sctp_src_t *elt;
-            elt = &oxm_entry.sctp_src;
-            of_oxm_sctp_src_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_sctp_src_value_set(elt, src->fields.sctp_src);
-        }
-    }
-    if (OF_MATCH_MASK_ICMPV6_CODE_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ICMPV6_CODE_EXACT_TEST(src)) {
-            of_oxm_icmpv6_code_masked_t *elt;
-            elt = &oxm_entry.icmpv6_code_masked;
-
-            of_oxm_icmpv6_code_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv6_code_masked_value_set(elt,
-                   src->fields.icmpv6_code);
-            of_oxm_icmpv6_code_masked_value_mask_set(elt,
-                   src->masks.icmpv6_code);
-        } else {  /* Active, but not masked */
-            of_oxm_icmpv6_code_t *elt;
-            elt = &oxm_entry.icmpv6_code;
-            of_oxm_icmpv6_code_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv6_code_value_set(elt, src->fields.icmpv6_code);
-        }
-    }
-    if (OF_MATCH_MASK_ETH_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ETH_DST_EXACT_TEST(src)) {
-            of_oxm_eth_dst_masked_t *elt;
-            elt = &oxm_entry.eth_dst_masked;
-
-            of_oxm_eth_dst_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_eth_dst_masked_value_set(elt,
-                   src->fields.eth_dst);
-            of_oxm_eth_dst_masked_value_mask_set(elt,
-                   src->masks.eth_dst);
-        } else {  /* Active, but not masked */
-            of_oxm_eth_dst_t *elt;
-            elt = &oxm_entry.eth_dst;
-            of_oxm_eth_dst_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_eth_dst_value_set(elt, src->fields.eth_dst);
-        }
-    }
-    if (OF_MATCH_MASK_IPV6_ND_SLL_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_ND_SLL_EXACT_TEST(src)) {
-            of_oxm_ipv6_nd_sll_masked_t *elt;
-            elt = &oxm_entry.ipv6_nd_sll_masked;
-
-            of_oxm_ipv6_nd_sll_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_sll_masked_value_set(elt,
-                   src->fields.ipv6_nd_sll);
-            of_oxm_ipv6_nd_sll_masked_value_mask_set(elt,
-                   src->masks.ipv6_nd_sll);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_nd_sll_t *elt;
-            elt = &oxm_entry.ipv6_nd_sll;
-            of_oxm_ipv6_nd_sll_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_sll_value_set(elt, src->fields.ipv6_nd_sll);
-        }
-    }
-    if (OF_MATCH_MASK_MPLS_TC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_MPLS_TC_EXACT_TEST(src)) {
-            of_oxm_mpls_tc_masked_t *elt;
-            elt = &oxm_entry.mpls_tc_masked;
-
-            of_oxm_mpls_tc_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_mpls_tc_masked_value_set(elt,
-                   src->fields.mpls_tc);
-            of_oxm_mpls_tc_masked_value_mask_set(elt,
-                   src->masks.mpls_tc);
-        } else {  /* Active, but not masked */
-            of_oxm_mpls_tc_t *elt;
-            elt = &oxm_entry.mpls_tc;
-            of_oxm_mpls_tc_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_mpls_tc_value_set(elt, src->fields.mpls_tc);
-        }
-    }
-    if (OF_MATCH_MASK_ARP_OP_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ARP_OP_EXACT_TEST(src)) {
-            of_oxm_arp_op_masked_t *elt;
-            elt = &oxm_entry.arp_op_masked;
-
-            of_oxm_arp_op_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_op_masked_value_set(elt,
-                   src->fields.arp_op);
-            of_oxm_arp_op_masked_value_mask_set(elt,
-                   src->masks.arp_op);
-        } else {  /* Active, but not masked */
-            of_oxm_arp_op_t *elt;
-            elt = &oxm_entry.arp_op;
-            of_oxm_arp_op_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_op_value_set(elt, src->fields.arp_op);
-        }
-    }
-    if (OF_MATCH_MASK_ETH_TYPE_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ETH_TYPE_EXACT_TEST(src)) {
-            of_oxm_eth_type_masked_t *elt;
-            elt = &oxm_entry.eth_type_masked;
-
-            of_oxm_eth_type_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_eth_type_masked_value_set(elt,
-                   src->fields.eth_type);
-            of_oxm_eth_type_masked_value_mask_set(elt,
-                   src->masks.eth_type);
-        } else {  /* Active, but not masked */
-            of_oxm_eth_type_t *elt;
-            elt = &oxm_entry.eth_type;
-            of_oxm_eth_type_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_eth_type_value_set(elt, src->fields.eth_type);
-        }
-    }
-    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(src)) {
-            of_oxm_ipv6_nd_target_masked_t *elt;
-            elt = &oxm_entry.ipv6_nd_target_masked;
-
-            of_oxm_ipv6_nd_target_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_target_masked_value_set(elt,
-                   src->fields.ipv6_nd_target);
-            of_oxm_ipv6_nd_target_masked_value_mask_set(elt,
-                   src->masks.ipv6_nd_target);
-        } else {  /* Active, but not masked */
-            of_oxm_ipv6_nd_target_t *elt;
-            elt = &oxm_entry.ipv6_nd_target;
-            of_oxm_ipv6_nd_target_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_target_value_set(elt, src->fields.ipv6_nd_target);
-        }
-    }
-    if (OF_MATCH_MASK_VLAN_VID_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_VLAN_VID_EXACT_TEST(src)) {
-            of_oxm_vlan_vid_masked_t *elt;
-            elt = &oxm_entry.vlan_vid_masked;
-
-            of_oxm_vlan_vid_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_vlan_vid_masked_value_set(elt,
-                   src->fields.vlan_vid);
-            of_oxm_vlan_vid_masked_value_mask_set(elt,
-                   src->masks.vlan_vid);
-        } else {  /* Active, but not masked */
-            of_oxm_vlan_vid_t *elt;
-            elt = &oxm_entry.vlan_vid;
-            of_oxm_vlan_vid_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_vlan_vid_value_set(elt, src->fields.vlan_vid);
-        }
-    }
-    if (OF_MATCH_MASK_ARP_THA_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ARP_THA_EXACT_TEST(src)) {
-            of_oxm_arp_tha_masked_t *elt;
-            elt = &oxm_entry.arp_tha_masked;
-
-            of_oxm_arp_tha_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_tha_masked_value_set(elt,
-                   src->fields.arp_tha);
-            of_oxm_arp_tha_masked_value_mask_set(elt,
-                   src->masks.arp_tha);
-        } else {  /* Active, but not masked */
-            of_oxm_arp_tha_t *elt;
-            elt = &oxm_entry.arp_tha;
-            of_oxm_arp_tha_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_tha_value_set(elt, src->fields.arp_tha);
-        }
-    }
     if (OF_MATCH_MASK_IN_PORT_ACTIVE_TEST(src)) {
         if (!OF_MATCH_MASK_IN_PORT_EXACT_TEST(src)) {
             of_oxm_in_port_masked_t *elt;
@@ -1037,153 +667,6 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
             of_oxm_in_port_value_set(elt, src->fields.in_port);
-        }
-    }
-    if (OF_MATCH_MASK_IP_DSCP_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IP_DSCP_EXACT_TEST(src)) {
-            of_oxm_ip_dscp_masked_t *elt;
-            elt = &oxm_entry.ip_dscp_masked;
-
-            of_oxm_ip_dscp_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ip_dscp_masked_value_set(elt,
-                   src->fields.ip_dscp);
-            of_oxm_ip_dscp_masked_value_mask_set(elt,
-                   src->masks.ip_dscp);
-        } else {  /* Active, but not masked */
-            of_oxm_ip_dscp_t *elt;
-            elt = &oxm_entry.ip_dscp;
-            of_oxm_ip_dscp_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ip_dscp_value_set(elt, src->fields.ip_dscp);
-        }
-    }
-    if (OF_MATCH_MASK_SCTP_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_SCTP_DST_EXACT_TEST(src)) {
-            of_oxm_sctp_dst_masked_t *elt;
-            elt = &oxm_entry.sctp_dst_masked;
-
-            of_oxm_sctp_dst_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_sctp_dst_masked_value_set(elt,
-                   src->fields.sctp_dst);
-            of_oxm_sctp_dst_masked_value_mask_set(elt,
-                   src->masks.sctp_dst);
-        } else {  /* Active, but not masked */
-            of_oxm_sctp_dst_t *elt;
-            elt = &oxm_entry.sctp_dst;
-            of_oxm_sctp_dst_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_sctp_dst_value_set(elt, src->fields.sctp_dst);
-        }
-    }
-    if (OF_MATCH_MASK_ICMPV4_CODE_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ICMPV4_CODE_EXACT_TEST(src)) {
-            of_oxm_icmpv4_code_masked_t *elt;
-            elt = &oxm_entry.icmpv4_code_masked;
-
-            of_oxm_icmpv4_code_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv4_code_masked_value_set(elt,
-                   src->fields.icmpv4_code);
-            of_oxm_icmpv4_code_masked_value_mask_set(elt,
-                   src->masks.icmpv4_code);
-        } else {  /* Active, but not masked */
-            of_oxm_icmpv4_code_t *elt;
-            elt = &oxm_entry.icmpv4_code;
-            of_oxm_icmpv4_code_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv4_code_value_set(elt, src->fields.icmpv4_code);
-        }
-    }
-    if (OF_MATCH_MASK_TCP_SRC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_TCP_SRC_EXACT_TEST(src)) {
-            of_oxm_tcp_src_masked_t *elt;
-            elt = &oxm_entry.tcp_src_masked;
-
-            of_oxm_tcp_src_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_tcp_src_masked_value_set(elt,
-                   src->fields.tcp_src);
-            of_oxm_tcp_src_masked_value_mask_set(elt,
-                   src->masks.tcp_src);
-        } else {  /* Active, but not masked */
-            of_oxm_tcp_src_t *elt;
-            elt = &oxm_entry.tcp_src;
-            of_oxm_tcp_src_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_tcp_src_value_set(elt, src->fields.tcp_src);
-        }
-    }
-    if (OF_MATCH_MASK_ARP_SPA_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ARP_SPA_EXACT_TEST(src)) {
-            of_oxm_arp_spa_masked_t *elt;
-            elt = &oxm_entry.arp_spa_masked;
-
-            of_oxm_arp_spa_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_spa_masked_value_set(elt,
-                   src->fields.arp_spa);
-            of_oxm_arp_spa_masked_value_mask_set(elt,
-                   src->masks.arp_spa);
-        } else {  /* Active, but not masked */
-            of_oxm_arp_spa_t *elt;
-            elt = &oxm_entry.arp_spa;
-            of_oxm_arp_spa_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_arp_spa_value_set(elt, src->fields.arp_spa);
-        }
-    }
-    if (OF_MATCH_MASK_IP_ECN_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IP_ECN_EXACT_TEST(src)) {
-            of_oxm_ip_ecn_masked_t *elt;
-            elt = &oxm_entry.ip_ecn_masked;
-
-            of_oxm_ip_ecn_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ip_ecn_masked_value_set(elt,
-                   src->fields.ip_ecn);
-            of_oxm_ip_ecn_masked_value_mask_set(elt,
-                   src->masks.ip_ecn);
-        } else {  /* Active, but not masked */
-            of_oxm_ip_ecn_t *elt;
-            elt = &oxm_entry.ip_ecn;
-            of_oxm_ip_ecn_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ip_ecn_value_set(elt, src->fields.ip_ecn);
-        }
-    }
-    if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_UDP_DST_EXACT_TEST(src)) {
-            of_oxm_udp_dst_masked_t *elt;
-            elt = &oxm_entry.udp_dst_masked;
-
-            of_oxm_udp_dst_masked_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_udp_dst_masked_value_set(elt,
-                   src->fields.udp_dst);
-            of_oxm_udp_dst_masked_value_mask_set(elt,
-                   src->masks.udp_dst);
-        } else {  /* Active, but not masked */
-            of_oxm_udp_dst_t *elt;
-            elt = &oxm_entry.udp_dst;
-            of_oxm_udp_dst_init(elt,
-                oxm_list->version, -1, 1);
-            of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_udp_dst_value_set(elt, src->fields.udp_dst);
         }
     }
     if (OF_MATCH_MASK_IN_PHY_PORT_ACTIVE_TEST(src)) {
@@ -1207,25 +690,46 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_in_phy_port_value_set(elt, src->fields.in_phy_port);
         }
     }
-    if (OF_MATCH_MASK_IPV4_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV4_DST_EXACT_TEST(src)) {
-            of_oxm_ipv4_dst_masked_t *elt;
-            elt = &oxm_entry.ipv4_dst_masked;
+    if (OF_MATCH_MASK_METADATA_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_METADATA_EXACT_TEST(src)) {
+            of_oxm_metadata_masked_t *elt;
+            elt = &oxm_entry.metadata_masked;
 
-            of_oxm_ipv4_dst_masked_init(elt,
+            of_oxm_metadata_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv4_dst_masked_value_set(elt,
-                   src->fields.ipv4_dst);
-            of_oxm_ipv4_dst_masked_value_mask_set(elt,
-                   src->masks.ipv4_dst);
+            of_oxm_metadata_masked_value_set(elt,
+                   src->fields.metadata);
+            of_oxm_metadata_masked_value_mask_set(elt,
+                   src->masks.metadata);
         } else {  /* Active, but not masked */
-            of_oxm_ipv4_dst_t *elt;
-            elt = &oxm_entry.ipv4_dst;
-            of_oxm_ipv4_dst_init(elt,
+            of_oxm_metadata_t *elt;
+            elt = &oxm_entry.metadata;
+            of_oxm_metadata_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv4_dst_value_set(elt, src->fields.ipv4_dst);
+            of_oxm_metadata_value_set(elt, src->fields.metadata);
+        }
+    }
+    if (OF_MATCH_MASK_ETH_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ETH_DST_EXACT_TEST(src)) {
+            of_oxm_eth_dst_masked_t *elt;
+            elt = &oxm_entry.eth_dst_masked;
+
+            of_oxm_eth_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_eth_dst_masked_value_set(elt,
+                   src->fields.eth_dst);
+            of_oxm_eth_dst_masked_value_mask_set(elt,
+                   src->masks.eth_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_eth_dst_t *elt;
+            elt = &oxm_entry.eth_dst;
+            of_oxm_eth_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_eth_dst_value_set(elt, src->fields.eth_dst);
         }
     }
     if (OF_MATCH_MASK_ETH_SRC_ACTIVE_TEST(src)) {
@@ -1249,109 +753,109 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_eth_src_value_set(elt, src->fields.eth_src);
         }
     }
-    if (OF_MATCH_MASK_UDP_SRC_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_UDP_SRC_EXACT_TEST(src)) {
-            of_oxm_udp_src_masked_t *elt;
-            elt = &oxm_entry.udp_src_masked;
+    if (OF_MATCH_MASK_ETH_TYPE_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ETH_TYPE_EXACT_TEST(src)) {
+            of_oxm_eth_type_masked_t *elt;
+            elt = &oxm_entry.eth_type_masked;
 
-            of_oxm_udp_src_masked_init(elt,
+            of_oxm_eth_type_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_udp_src_masked_value_set(elt,
-                   src->fields.udp_src);
-            of_oxm_udp_src_masked_value_mask_set(elt,
-                   src->masks.udp_src);
+            of_oxm_eth_type_masked_value_set(elt,
+                   src->fields.eth_type);
+            of_oxm_eth_type_masked_value_mask_set(elt,
+                   src->masks.eth_type);
         } else {  /* Active, but not masked */
-            of_oxm_udp_src_t *elt;
-            elt = &oxm_entry.udp_src;
-            of_oxm_udp_src_init(elt,
+            of_oxm_eth_type_t *elt;
+            elt = &oxm_entry.eth_type;
+            of_oxm_eth_type_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_udp_src_value_set(elt, src->fields.udp_src);
+            of_oxm_eth_type_value_set(elt, src->fields.eth_type);
         }
     }
-    if (OF_MATCH_MASK_IPV6_ND_TLL_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_IPV6_ND_TLL_EXACT_TEST(src)) {
-            of_oxm_ipv6_nd_tll_masked_t *elt;
-            elt = &oxm_entry.ipv6_nd_tll_masked;
+    if (OF_MATCH_MASK_VLAN_VID_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_VLAN_VID_EXACT_TEST(src)) {
+            of_oxm_vlan_vid_masked_t *elt;
+            elt = &oxm_entry.vlan_vid_masked;
 
-            of_oxm_ipv6_nd_tll_masked_init(elt,
+            of_oxm_vlan_vid_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_tll_masked_value_set(elt,
-                   src->fields.ipv6_nd_tll);
-            of_oxm_ipv6_nd_tll_masked_value_mask_set(elt,
-                   src->masks.ipv6_nd_tll);
+            of_oxm_vlan_vid_masked_value_set(elt,
+                   src->fields.vlan_vid);
+            of_oxm_vlan_vid_masked_value_mask_set(elt,
+                   src->masks.vlan_vid);
         } else {  /* Active, but not masked */
-            of_oxm_ipv6_nd_tll_t *elt;
-            elt = &oxm_entry.ipv6_nd_tll;
-            of_oxm_ipv6_nd_tll_init(elt,
+            of_oxm_vlan_vid_t *elt;
+            elt = &oxm_entry.vlan_vid;
+            of_oxm_vlan_vid_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_ipv6_nd_tll_value_set(elt, src->fields.ipv6_nd_tll);
+            of_oxm_vlan_vid_value_set(elt, src->fields.vlan_vid);
         }
     }
-    if (OF_MATCH_MASK_ICMPV4_TYPE_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_ICMPV4_TYPE_EXACT_TEST(src)) {
-            of_oxm_icmpv4_type_masked_t *elt;
-            elt = &oxm_entry.icmpv4_type_masked;
+    if (OF_MATCH_MASK_VLAN_PCP_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_VLAN_PCP_EXACT_TEST(src)) {
+            of_oxm_vlan_pcp_masked_t *elt;
+            elt = &oxm_entry.vlan_pcp_masked;
 
-            of_oxm_icmpv4_type_masked_init(elt,
+            of_oxm_vlan_pcp_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv4_type_masked_value_set(elt,
-                   src->fields.icmpv4_type);
-            of_oxm_icmpv4_type_masked_value_mask_set(elt,
-                   src->masks.icmpv4_type);
+            of_oxm_vlan_pcp_masked_value_set(elt,
+                   src->fields.vlan_pcp);
+            of_oxm_vlan_pcp_masked_value_mask_set(elt,
+                   src->masks.vlan_pcp);
         } else {  /* Active, but not masked */
-            of_oxm_icmpv4_type_t *elt;
-            elt = &oxm_entry.icmpv4_type;
-            of_oxm_icmpv4_type_init(elt,
+            of_oxm_vlan_pcp_t *elt;
+            elt = &oxm_entry.vlan_pcp;
+            of_oxm_vlan_pcp_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_icmpv4_type_value_set(elt, src->fields.icmpv4_type);
+            of_oxm_vlan_pcp_value_set(elt, src->fields.vlan_pcp);
         }
     }
-    if (OF_MATCH_MASK_MPLS_LABEL_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_MPLS_LABEL_EXACT_TEST(src)) {
-            of_oxm_mpls_label_masked_t *elt;
-            elt = &oxm_entry.mpls_label_masked;
+    if (OF_MATCH_MASK_IP_DSCP_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IP_DSCP_EXACT_TEST(src)) {
+            of_oxm_ip_dscp_masked_t *elt;
+            elt = &oxm_entry.ip_dscp_masked;
 
-            of_oxm_mpls_label_masked_init(elt,
+            of_oxm_ip_dscp_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_mpls_label_masked_value_set(elt,
-                   src->fields.mpls_label);
-            of_oxm_mpls_label_masked_value_mask_set(elt,
-                   src->masks.mpls_label);
+            of_oxm_ip_dscp_masked_value_set(elt,
+                   src->fields.ip_dscp);
+            of_oxm_ip_dscp_masked_value_mask_set(elt,
+                   src->masks.ip_dscp);
         } else {  /* Active, but not masked */
-            of_oxm_mpls_label_t *elt;
-            elt = &oxm_entry.mpls_label;
-            of_oxm_mpls_label_init(elt,
+            of_oxm_ip_dscp_t *elt;
+            elt = &oxm_entry.ip_dscp;
+            of_oxm_ip_dscp_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_mpls_label_value_set(elt, src->fields.mpls_label);
+            of_oxm_ip_dscp_value_set(elt, src->fields.ip_dscp);
         }
     }
-    if (OF_MATCH_MASK_TCP_DST_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_TCP_DST_EXACT_TEST(src)) {
-            of_oxm_tcp_dst_masked_t *elt;
-            elt = &oxm_entry.tcp_dst_masked;
+    if (OF_MATCH_MASK_IP_ECN_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IP_ECN_EXACT_TEST(src)) {
+            of_oxm_ip_ecn_masked_t *elt;
+            elt = &oxm_entry.ip_ecn_masked;
 
-            of_oxm_tcp_dst_masked_init(elt,
+            of_oxm_ip_ecn_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_tcp_dst_masked_value_set(elt,
-                   src->fields.tcp_dst);
-            of_oxm_tcp_dst_masked_value_mask_set(elt,
-                   src->masks.tcp_dst);
+            of_oxm_ip_ecn_masked_value_set(elt,
+                   src->fields.ip_ecn);
+            of_oxm_ip_ecn_masked_value_mask_set(elt,
+                   src->masks.ip_ecn);
         } else {  /* Active, but not masked */
-            of_oxm_tcp_dst_t *elt;
-            elt = &oxm_entry.tcp_dst;
-            of_oxm_tcp_dst_init(elt,
+            of_oxm_ip_ecn_t *elt;
+            elt = &oxm_entry.ip_ecn;
+            of_oxm_ip_ecn_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_tcp_dst_value_set(elt, src->fields.tcp_dst);
+            of_oxm_ip_ecn_value_set(elt, src->fields.ip_ecn);
         }
     }
     if (OF_MATCH_MASK_IP_PROTO_ACTIVE_TEST(src)) {
@@ -1375,25 +879,550 @@ populate_oxm_list(of_match_t *src, of_list_oxm_t *oxm_list)
             of_oxm_ip_proto_value_set(elt, src->fields.ip_proto);
         }
     }
-    if (OF_MATCH_MASK_METADATA_ACTIVE_TEST(src)) {
-        if (!OF_MATCH_MASK_METADATA_EXACT_TEST(src)) {
-            of_oxm_metadata_masked_t *elt;
-            elt = &oxm_entry.metadata_masked;
+    if (OF_MATCH_MASK_IPV4_SRC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV4_SRC_EXACT_TEST(src)) {
+            of_oxm_ipv4_src_masked_t *elt;
+            elt = &oxm_entry.ipv4_src_masked;
 
-            of_oxm_metadata_masked_init(elt,
+            of_oxm_ipv4_src_masked_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_metadata_masked_value_set(elt,
-                   src->fields.metadata);
-            of_oxm_metadata_masked_value_mask_set(elt,
-                   src->masks.metadata);
+            of_oxm_ipv4_src_masked_value_set(elt,
+                   src->fields.ipv4_src);
+            of_oxm_ipv4_src_masked_value_mask_set(elt,
+                   src->masks.ipv4_src);
         } else {  /* Active, but not masked */
-            of_oxm_metadata_t *elt;
-            elt = &oxm_entry.metadata;
-            of_oxm_metadata_init(elt,
+            of_oxm_ipv4_src_t *elt;
+            elt = &oxm_entry.ipv4_src;
+            of_oxm_ipv4_src_init(elt,
                 oxm_list->version, -1, 1);
             of_list_oxm_append_bind(oxm_list, &oxm_entry);
-            of_oxm_metadata_value_set(elt, src->fields.metadata);
+            of_oxm_ipv4_src_value_set(elt, src->fields.ipv4_src);
+        }
+    }
+    if (OF_MATCH_MASK_IPV4_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV4_DST_EXACT_TEST(src)) {
+            of_oxm_ipv4_dst_masked_t *elt;
+            elt = &oxm_entry.ipv4_dst_masked;
+
+            of_oxm_ipv4_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv4_dst_masked_value_set(elt,
+                   src->fields.ipv4_dst);
+            of_oxm_ipv4_dst_masked_value_mask_set(elt,
+                   src->masks.ipv4_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv4_dst_t *elt;
+            elt = &oxm_entry.ipv4_dst;
+            of_oxm_ipv4_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv4_dst_value_set(elt, src->fields.ipv4_dst);
+        }
+    }
+    if (OF_MATCH_MASK_TCP_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_TCP_DST_EXACT_TEST(src)) {
+            of_oxm_tcp_dst_masked_t *elt;
+            elt = &oxm_entry.tcp_dst_masked;
+
+            of_oxm_tcp_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_tcp_dst_masked_value_set(elt,
+                   src->fields.tcp_dst);
+            of_oxm_tcp_dst_masked_value_mask_set(elt,
+                   src->masks.tcp_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_tcp_dst_t *elt;
+            elt = &oxm_entry.tcp_dst;
+            of_oxm_tcp_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_tcp_dst_value_set(elt, src->fields.tcp_dst);
+        }
+    }
+    if (OF_MATCH_MASK_TCP_SRC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_TCP_SRC_EXACT_TEST(src)) {
+            of_oxm_tcp_src_masked_t *elt;
+            elt = &oxm_entry.tcp_src_masked;
+
+            of_oxm_tcp_src_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_tcp_src_masked_value_set(elt,
+                   src->fields.tcp_src);
+            of_oxm_tcp_src_masked_value_mask_set(elt,
+                   src->masks.tcp_src);
+        } else {  /* Active, but not masked */
+            of_oxm_tcp_src_t *elt;
+            elt = &oxm_entry.tcp_src;
+            of_oxm_tcp_src_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_tcp_src_value_set(elt, src->fields.tcp_src);
+        }
+    }
+    if (OF_MATCH_MASK_UDP_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_UDP_DST_EXACT_TEST(src)) {
+            of_oxm_udp_dst_masked_t *elt;
+            elt = &oxm_entry.udp_dst_masked;
+
+            of_oxm_udp_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_udp_dst_masked_value_set(elt,
+                   src->fields.udp_dst);
+            of_oxm_udp_dst_masked_value_mask_set(elt,
+                   src->masks.udp_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_udp_dst_t *elt;
+            elt = &oxm_entry.udp_dst;
+            of_oxm_udp_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_udp_dst_value_set(elt, src->fields.udp_dst);
+        }
+    }
+    if (OF_MATCH_MASK_UDP_SRC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_UDP_SRC_EXACT_TEST(src)) {
+            of_oxm_udp_src_masked_t *elt;
+            elt = &oxm_entry.udp_src_masked;
+
+            of_oxm_udp_src_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_udp_src_masked_value_set(elt,
+                   src->fields.udp_src);
+            of_oxm_udp_src_masked_value_mask_set(elt,
+                   src->masks.udp_src);
+        } else {  /* Active, but not masked */
+            of_oxm_udp_src_t *elt;
+            elt = &oxm_entry.udp_src;
+            of_oxm_udp_src_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_udp_src_value_set(elt, src->fields.udp_src);
+        }
+    }
+    if (OF_MATCH_MASK_SCTP_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_SCTP_DST_EXACT_TEST(src)) {
+            of_oxm_sctp_dst_masked_t *elt;
+            elt = &oxm_entry.sctp_dst_masked;
+
+            of_oxm_sctp_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_sctp_dst_masked_value_set(elt,
+                   src->fields.sctp_dst);
+            of_oxm_sctp_dst_masked_value_mask_set(elt,
+                   src->masks.sctp_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_sctp_dst_t *elt;
+            elt = &oxm_entry.sctp_dst;
+            of_oxm_sctp_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_sctp_dst_value_set(elt, src->fields.sctp_dst);
+        }
+    }
+    if (OF_MATCH_MASK_SCTP_SRC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_SCTP_SRC_EXACT_TEST(src)) {
+            of_oxm_sctp_src_masked_t *elt;
+            elt = &oxm_entry.sctp_src_masked;
+
+            of_oxm_sctp_src_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_sctp_src_masked_value_set(elt,
+                   src->fields.sctp_src);
+            of_oxm_sctp_src_masked_value_mask_set(elt,
+                   src->masks.sctp_src);
+        } else {  /* Active, but not masked */
+            of_oxm_sctp_src_t *elt;
+            elt = &oxm_entry.sctp_src;
+            of_oxm_sctp_src_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_sctp_src_value_set(elt, src->fields.sctp_src);
+        }
+    }
+    if (OF_MATCH_MASK_ICMPV4_TYPE_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ICMPV4_TYPE_EXACT_TEST(src)) {
+            of_oxm_icmpv4_type_masked_t *elt;
+            elt = &oxm_entry.icmpv4_type_masked;
+
+            of_oxm_icmpv4_type_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv4_type_masked_value_set(elt,
+                   src->fields.icmpv4_type);
+            of_oxm_icmpv4_type_masked_value_mask_set(elt,
+                   src->masks.icmpv4_type);
+        } else {  /* Active, but not masked */
+            of_oxm_icmpv4_type_t *elt;
+            elt = &oxm_entry.icmpv4_type;
+            of_oxm_icmpv4_type_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv4_type_value_set(elt, src->fields.icmpv4_type);
+        }
+    }
+    if (OF_MATCH_MASK_ICMPV4_CODE_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ICMPV4_CODE_EXACT_TEST(src)) {
+            of_oxm_icmpv4_code_masked_t *elt;
+            elt = &oxm_entry.icmpv4_code_masked;
+
+            of_oxm_icmpv4_code_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv4_code_masked_value_set(elt,
+                   src->fields.icmpv4_code);
+            of_oxm_icmpv4_code_masked_value_mask_set(elt,
+                   src->masks.icmpv4_code);
+        } else {  /* Active, but not masked */
+            of_oxm_icmpv4_code_t *elt;
+            elt = &oxm_entry.icmpv4_code;
+            of_oxm_icmpv4_code_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv4_code_value_set(elt, src->fields.icmpv4_code);
+        }
+    }
+    if (OF_MATCH_MASK_ARP_OP_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ARP_OP_EXACT_TEST(src)) {
+            of_oxm_arp_op_masked_t *elt;
+            elt = &oxm_entry.arp_op_masked;
+
+            of_oxm_arp_op_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_op_masked_value_set(elt,
+                   src->fields.arp_op);
+            of_oxm_arp_op_masked_value_mask_set(elt,
+                   src->masks.arp_op);
+        } else {  /* Active, but not masked */
+            of_oxm_arp_op_t *elt;
+            elt = &oxm_entry.arp_op;
+            of_oxm_arp_op_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_op_value_set(elt, src->fields.arp_op);
+        }
+    }
+    if (OF_MATCH_MASK_ARP_SPA_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ARP_SPA_EXACT_TEST(src)) {
+            of_oxm_arp_spa_masked_t *elt;
+            elt = &oxm_entry.arp_spa_masked;
+
+            of_oxm_arp_spa_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_spa_masked_value_set(elt,
+                   src->fields.arp_spa);
+            of_oxm_arp_spa_masked_value_mask_set(elt,
+                   src->masks.arp_spa);
+        } else {  /* Active, but not masked */
+            of_oxm_arp_spa_t *elt;
+            elt = &oxm_entry.arp_spa;
+            of_oxm_arp_spa_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_spa_value_set(elt, src->fields.arp_spa);
+        }
+    }
+    if (OF_MATCH_MASK_ARP_TPA_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ARP_TPA_EXACT_TEST(src)) {
+            of_oxm_arp_tpa_masked_t *elt;
+            elt = &oxm_entry.arp_tpa_masked;
+
+            of_oxm_arp_tpa_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_tpa_masked_value_set(elt,
+                   src->fields.arp_tpa);
+            of_oxm_arp_tpa_masked_value_mask_set(elt,
+                   src->masks.arp_tpa);
+        } else {  /* Active, but not masked */
+            of_oxm_arp_tpa_t *elt;
+            elt = &oxm_entry.arp_tpa;
+            of_oxm_arp_tpa_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_tpa_value_set(elt, src->fields.arp_tpa);
+        }
+    }
+    if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ARP_SHA_EXACT_TEST(src)) {
+            of_oxm_arp_sha_masked_t *elt;
+            elt = &oxm_entry.arp_sha_masked;
+
+            of_oxm_arp_sha_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_sha_masked_value_set(elt,
+                   src->fields.arp_sha);
+            of_oxm_arp_sha_masked_value_mask_set(elt,
+                   src->masks.arp_sha);
+        } else {  /* Active, but not masked */
+            of_oxm_arp_sha_t *elt;
+            elt = &oxm_entry.arp_sha;
+            of_oxm_arp_sha_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_sha_value_set(elt, src->fields.arp_sha);
+        }
+    }
+    if (OF_MATCH_MASK_ARP_THA_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ARP_THA_EXACT_TEST(src)) {
+            of_oxm_arp_tha_masked_t *elt;
+            elt = &oxm_entry.arp_tha_masked;
+
+            of_oxm_arp_tha_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_tha_masked_value_set(elt,
+                   src->fields.arp_tha);
+            of_oxm_arp_tha_masked_value_mask_set(elt,
+                   src->masks.arp_tha);
+        } else {  /* Active, but not masked */
+            of_oxm_arp_tha_t *elt;
+            elt = &oxm_entry.arp_tha;
+            of_oxm_arp_tha_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_arp_tha_value_set(elt, src->fields.arp_tha);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_SRC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_SRC_EXACT_TEST(src)) {
+            of_oxm_ipv6_src_masked_t *elt;
+            elt = &oxm_entry.ipv6_src_masked;
+
+            of_oxm_ipv6_src_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_src_masked_value_set(elt,
+                   src->fields.ipv6_src);
+            of_oxm_ipv6_src_masked_value_mask_set(elt,
+                   src->masks.ipv6_src);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_src_t *elt;
+            elt = &oxm_entry.ipv6_src;
+            of_oxm_ipv6_src_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_src_value_set(elt, src->fields.ipv6_src);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_DST_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_DST_EXACT_TEST(src)) {
+            of_oxm_ipv6_dst_masked_t *elt;
+            elt = &oxm_entry.ipv6_dst_masked;
+
+            of_oxm_ipv6_dst_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_dst_masked_value_set(elt,
+                   src->fields.ipv6_dst);
+            of_oxm_ipv6_dst_masked_value_mask_set(elt,
+                   src->masks.ipv6_dst);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_dst_t *elt;
+            elt = &oxm_entry.ipv6_dst;
+            of_oxm_ipv6_dst_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_dst_value_set(elt, src->fields.ipv6_dst);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_FLABEL_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_FLABEL_EXACT_TEST(src)) {
+            of_oxm_ipv6_flabel_masked_t *elt;
+            elt = &oxm_entry.ipv6_flabel_masked;
+
+            of_oxm_ipv6_flabel_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_flabel_masked_value_set(elt,
+                   src->fields.ipv6_flabel);
+            of_oxm_ipv6_flabel_masked_value_mask_set(elt,
+                   src->masks.ipv6_flabel);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_flabel_t *elt;
+            elt = &oxm_entry.ipv6_flabel;
+            of_oxm_ipv6_flabel_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_flabel_value_set(elt, src->fields.ipv6_flabel);
+        }
+    }
+    if (OF_MATCH_MASK_ICMPV6_TYPE_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ICMPV6_TYPE_EXACT_TEST(src)) {
+            of_oxm_icmpv6_type_masked_t *elt;
+            elt = &oxm_entry.icmpv6_type_masked;
+
+            of_oxm_icmpv6_type_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv6_type_masked_value_set(elt,
+                   src->fields.icmpv6_type);
+            of_oxm_icmpv6_type_masked_value_mask_set(elt,
+                   src->masks.icmpv6_type);
+        } else {  /* Active, but not masked */
+            of_oxm_icmpv6_type_t *elt;
+            elt = &oxm_entry.icmpv6_type;
+            of_oxm_icmpv6_type_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv6_type_value_set(elt, src->fields.icmpv6_type);
+        }
+    }
+    if (OF_MATCH_MASK_ICMPV6_CODE_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_ICMPV6_CODE_EXACT_TEST(src)) {
+            of_oxm_icmpv6_code_masked_t *elt;
+            elt = &oxm_entry.icmpv6_code_masked;
+
+            of_oxm_icmpv6_code_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv6_code_masked_value_set(elt,
+                   src->fields.icmpv6_code);
+            of_oxm_icmpv6_code_masked_value_mask_set(elt,
+                   src->masks.icmpv6_code);
+        } else {  /* Active, but not masked */
+            of_oxm_icmpv6_code_t *elt;
+            elt = &oxm_entry.icmpv6_code;
+            of_oxm_icmpv6_code_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_icmpv6_code_value_set(elt, src->fields.icmpv6_code);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_ND_TARGET_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_ND_TARGET_EXACT_TEST(src)) {
+            of_oxm_ipv6_nd_target_masked_t *elt;
+            elt = &oxm_entry.ipv6_nd_target_masked;
+
+            of_oxm_ipv6_nd_target_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_target_masked_value_set(elt,
+                   src->fields.ipv6_nd_target);
+            of_oxm_ipv6_nd_target_masked_value_mask_set(elt,
+                   src->masks.ipv6_nd_target);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_nd_target_t *elt;
+            elt = &oxm_entry.ipv6_nd_target;
+            of_oxm_ipv6_nd_target_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_target_value_set(elt, src->fields.ipv6_nd_target);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_ND_SLL_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_ND_SLL_EXACT_TEST(src)) {
+            of_oxm_ipv6_nd_sll_masked_t *elt;
+            elt = &oxm_entry.ipv6_nd_sll_masked;
+
+            of_oxm_ipv6_nd_sll_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_sll_masked_value_set(elt,
+                   src->fields.ipv6_nd_sll);
+            of_oxm_ipv6_nd_sll_masked_value_mask_set(elt,
+                   src->masks.ipv6_nd_sll);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_nd_sll_t *elt;
+            elt = &oxm_entry.ipv6_nd_sll;
+            of_oxm_ipv6_nd_sll_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_sll_value_set(elt, src->fields.ipv6_nd_sll);
+        }
+    }
+    if (OF_MATCH_MASK_IPV6_ND_TLL_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_IPV6_ND_TLL_EXACT_TEST(src)) {
+            of_oxm_ipv6_nd_tll_masked_t *elt;
+            elt = &oxm_entry.ipv6_nd_tll_masked;
+
+            of_oxm_ipv6_nd_tll_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_tll_masked_value_set(elt,
+                   src->fields.ipv6_nd_tll);
+            of_oxm_ipv6_nd_tll_masked_value_mask_set(elt,
+                   src->masks.ipv6_nd_tll);
+        } else {  /* Active, but not masked */
+            of_oxm_ipv6_nd_tll_t *elt;
+            elt = &oxm_entry.ipv6_nd_tll;
+            of_oxm_ipv6_nd_tll_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_ipv6_nd_tll_value_set(elt, src->fields.ipv6_nd_tll);
+        }
+    }
+    if (OF_MATCH_MASK_MPLS_LABEL_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_MPLS_LABEL_EXACT_TEST(src)) {
+            of_oxm_mpls_label_masked_t *elt;
+            elt = &oxm_entry.mpls_label_masked;
+
+            of_oxm_mpls_label_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_mpls_label_masked_value_set(elt,
+                   src->fields.mpls_label);
+            of_oxm_mpls_label_masked_value_mask_set(elt,
+                   src->masks.mpls_label);
+        } else {  /* Active, but not masked */
+            of_oxm_mpls_label_t *elt;
+            elt = &oxm_entry.mpls_label;
+            of_oxm_mpls_label_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_mpls_label_value_set(elt, src->fields.mpls_label);
+        }
+    }
+    if (OF_MATCH_MASK_MPLS_TC_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_MPLS_TC_EXACT_TEST(src)) {
+            of_oxm_mpls_tc_masked_t *elt;
+            elt = &oxm_entry.mpls_tc_masked;
+
+            of_oxm_mpls_tc_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_mpls_tc_masked_value_set(elt,
+                   src->fields.mpls_tc);
+            of_oxm_mpls_tc_masked_value_mask_set(elt,
+                   src->masks.mpls_tc);
+        } else {  /* Active, but not masked */
+            of_oxm_mpls_tc_t *elt;
+            elt = &oxm_entry.mpls_tc;
+            of_oxm_mpls_tc_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_mpls_tc_value_set(elt, src->fields.mpls_tc);
+        }
+    }
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(src)) {
+        if (!OF_MATCH_MASK_BSN_IN_PORTS_128_EXACT_TEST(src)) {
+            of_oxm_bsn_in_ports_128_masked_t *elt;
+            elt = &oxm_entry.bsn_in_ports_128_masked;
+
+            of_oxm_bsn_in_ports_128_masked_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_bsn_in_ports_128_masked_value_set(elt,
+                   src->fields.bsn_in_ports_128);
+            of_oxm_bsn_in_ports_128_masked_value_mask_set(elt,
+                   src->masks.bsn_in_ports_128);
+        } else {  /* Active, but not masked */
+            of_oxm_bsn_in_ports_128_t *elt;
+            elt = &oxm_entry.bsn_in_ports_128;
+            of_oxm_bsn_in_ports_128_init(elt,
+                oxm_list->version, -1, 1);
+            of_list_oxm_append_bind(oxm_list, &oxm_entry);
+            of_oxm_bsn_in_ports_128_value_set(elt, src->fields.bsn_in_ports_128);
         }
     }
 
@@ -1716,6 +1745,21 @@ of_match_v3_to_match(of_match_v3_t *src, of_match_t *dst)
             of_oxm_icmpv6_type_value_get(
                 &oxm_entry.icmpv6_type,
                 &dst->fields.icmpv6_type);
+            break;
+
+        case OF_OXM_BSN_IN_PORTS_128_MASKED:
+            of_oxm_bsn_in_ports_128_masked_value_mask_get(
+                &oxm_entry.bsn_in_ports_128_masked,
+                &dst->masks.bsn_in_ports_128);
+            of_oxm_bsn_in_ports_128_masked_value_get(
+                &oxm_entry.bsn_in_ports_128,
+                &dst->fields.bsn_in_ports_128);
+            break;
+        case OF_OXM_BSN_IN_PORTS_128:
+            OF_MATCH_MASK_BSN_IN_PORTS_128_EXACT_SET(dst);
+            of_oxm_bsn_in_ports_128_value_get(
+                &oxm_entry.bsn_in_ports_128,
+                &dst->fields.bsn_in_ports_128);
             break;
 
         case OF_OXM_ARP_SHA_MASKED:

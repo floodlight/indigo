@@ -34,6 +34,22 @@ extern of_async_set_t *
     of_async_set_dup(
         of_async_set_t *src);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_dup(
+        of_bad_action_error_msg_t *src);
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_dup(
+        of_bad_instruction_error_msg_t *src);
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_dup(
+        of_bad_match_error_msg_t *src);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_dup(
+        of_bad_request_error_msg_t *src);
+
 extern of_barrier_reply_t *
     of_barrier_reply_dup(
         of_barrier_reply_t *src);
@@ -65,6 +81,26 @@ extern of_bsn_bw_enable_set_reply_t *
 extern of_bsn_bw_enable_set_request_t *
     of_bsn_bw_enable_set_request_dup(
         of_bsn_bw_enable_set_request_t *src);
+
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_dup(
+        of_bsn_flow_idle_t *src);
+
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_dup(
+        of_bsn_flow_idle_enable_get_reply_t *src);
+
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_dup(
+        of_bsn_flow_idle_enable_get_request_t *src);
+
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_dup(
+        of_bsn_flow_idle_enable_set_reply_t *src);
+
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_dup(
+        of_bsn_flow_idle_enable_set_request_t *src);
 
 extern of_bsn_get_interfaces_reply_t *
     of_bsn_get_interfaces_reply_dup(
@@ -109,6 +145,26 @@ extern of_bsn_hybrid_get_reply_t *
 extern of_bsn_hybrid_get_request_t *
     of_bsn_hybrid_get_request_dup(
         of_bsn_hybrid_get_request_t *src);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_dup(
+        of_bsn_pdu_rx_reply_t *src);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_dup(
+        of_bsn_pdu_rx_request_t *src);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_dup(
+        of_bsn_pdu_rx_timeout_t *src);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_dup(
+        of_bsn_pdu_tx_reply_t *src);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_dup(
+        of_bsn_pdu_tx_request_t *src);
 
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_dup(
@@ -186,6 +242,10 @@ extern of_experimenter_t *
     of_experimenter_dup(
         of_experimenter_t *src);
 
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_dup(
+        of_experimenter_error_msg_t *src);
+
 extern of_experimenter_stats_reply_t *
     of_experimenter_stats_reply_dup(
         of_experimenter_stats_reply_t *src);
@@ -217,6 +277,10 @@ extern of_flow_delete_strict_t *
 extern of_flow_mod_t *
     of_flow_mod_dup(
         of_flow_mod_t *src);
+
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_dup(
+        of_flow_mod_failed_error_msg_t *src);
 
 extern of_flow_modify_t *
     of_flow_modify_dup(
@@ -266,6 +330,10 @@ extern of_group_mod_t *
     of_group_mod_dup(
         of_group_mod_t *src);
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_dup(
+        of_group_mod_failed_error_msg_t *src);
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_dup(
         of_group_stats_reply_t *src);
@@ -277,6 +345,10 @@ extern of_group_stats_request_t *
 extern of_hello_t *
     of_hello_dup(
         of_hello_t *src);
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_dup(
+        of_hello_failed_error_msg_t *src);
 
 extern of_meter_config_stats_reply_t *
     of_meter_config_stats_reply_dup(
@@ -297,6 +369,10 @@ extern of_meter_features_stats_request_t *
 extern of_meter_mod_t *
     of_meter_mod_dup(
         of_meter_mod_t *src);
+
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_dup(
+        of_meter_mod_failed_error_msg_t *src);
 
 extern of_meter_stats_reply_t *
     of_meter_stats_reply_dup(
@@ -338,6 +414,10 @@ extern of_port_mod_t *
     of_port_mod_dup(
         of_port_mod_t *src);
 
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_dup(
+        of_port_mod_failed_error_msg_t *src);
+
 extern of_port_stats_reply_t *
     of_port_stats_reply_dup(
         of_port_stats_reply_t *src);
@@ -358,6 +438,10 @@ extern of_queue_get_config_request_t *
     of_queue_get_config_request_dup(
         of_queue_get_config_request_t *src);
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_dup(
+        of_queue_op_failed_error_msg_t *src);
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_dup(
         of_queue_stats_reply_t *src);
@@ -374,6 +458,10 @@ extern of_role_request_t *
     of_role_request_dup(
         of_role_request_t *src);
 
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_dup(
+        of_role_request_failed_error_msg_t *src);
+
 extern of_set_config_t *
     of_set_config_dup(
         of_set_config_t *src);
@@ -386,6 +474,14 @@ extern of_stats_request_t *
     of_stats_request_dup(
         of_stats_request_t *src);
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_dup(
+        of_switch_config_failed_error_msg_t *src);
+
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_dup(
+        of_table_features_failed_error_msg_t *src);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_dup(
         of_table_features_stats_reply_t *src);
@@ -397,6 +493,10 @@ extern of_table_features_stats_request_t *
 extern of_table_mod_t *
     of_table_mod_dup(
         of_table_mod_t *src);
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_dup(
+        of_table_mod_failed_error_msg_t *src);
 
 extern of_table_stats_reply_t *
     of_table_stats_reply_dup(
@@ -678,9 +778,9 @@ extern of_bucket_counter_t *
     of_bucket_counter_dup(
         of_bucket_counter_t *src);
 
-extern of_experimenter_multipart_header_t *
-    of_experimenter_multipart_header_dup(
-        of_experimenter_multipart_header_t *src);
+extern of_experimenter_stats_header_t *
+    of_experimenter_stats_header_dup(
+        of_experimenter_stats_header_t *src);
 
 extern of_flow_stats_entry_t *
     of_flow_stats_entry_dup(
@@ -837,6 +937,14 @@ extern of_oxm_arp_tpa_t *
 extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_dup(
         of_oxm_arp_tpa_masked_t *src);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_dup(
@@ -1314,6 +1422,14 @@ extern of_aggregate_stats_request_t *
     of_aggregate_stats_request_OF_VERSION_1_0_dup(
         of_aggregate_stats_request_t *src);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_OF_VERSION_1_0_dup(
+        of_bad_action_error_msg_t *src);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_OF_VERSION_1_0_dup(
+        of_bad_request_error_msg_t *src);
+
 extern of_barrier_reply_t *
     of_barrier_reply_OF_VERSION_1_0_dup(
         of_barrier_reply_t *src);
@@ -1389,6 +1505,26 @@ extern of_bsn_hybrid_get_reply_t *
 extern of_bsn_hybrid_get_request_t *
     of_bsn_hybrid_get_request_OF_VERSION_1_0_dup(
         of_bsn_hybrid_get_request_t *src);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_OF_VERSION_1_0_dup(
+        of_bsn_pdu_rx_reply_t *src);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_OF_VERSION_1_0_dup(
+        of_bsn_pdu_rx_request_t *src);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_0_dup(
+        of_bsn_pdu_rx_timeout_t *src);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_OF_VERSION_1_0_dup(
+        of_bsn_pdu_tx_reply_t *src);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_OF_VERSION_1_0_dup(
+        of_bsn_pdu_tx_request_t *src);
 
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_OF_VERSION_1_0_dup(
@@ -1498,6 +1634,10 @@ extern of_flow_mod_t *
     of_flow_mod_OF_VERSION_1_0_dup(
         of_flow_mod_t *src);
 
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_OF_VERSION_1_0_dup(
+        of_flow_mod_failed_error_msg_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_0_dup(
         of_flow_modify_t *src);
@@ -1530,6 +1670,10 @@ extern of_hello_t *
     of_hello_OF_VERSION_1_0_dup(
         of_hello_t *src);
 
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_OF_VERSION_1_0_dup(
+        of_hello_failed_error_msg_t *src);
+
 extern of_nicira_controller_role_reply_t *
     of_nicira_controller_role_reply_OF_VERSION_1_0_dup(
         of_nicira_controller_role_reply_t *src);
@@ -1554,6 +1698,10 @@ extern of_port_mod_t *
     of_port_mod_OF_VERSION_1_0_dup(
         of_port_mod_t *src);
 
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_OF_VERSION_1_0_dup(
+        of_port_mod_failed_error_msg_t *src);
+
 extern of_port_stats_reply_t *
     of_port_stats_reply_OF_VERSION_1_0_dup(
         of_port_stats_reply_t *src);
@@ -1573,6 +1721,10 @@ extern of_queue_get_config_reply_t *
 extern of_queue_get_config_request_t *
     of_queue_get_config_request_OF_VERSION_1_0_dup(
         of_queue_get_config_request_t *src);
+
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_OF_VERSION_1_0_dup(
+        of_queue_op_failed_error_msg_t *src);
 
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_OF_VERSION_1_0_dup(
@@ -1790,6 +1942,22 @@ extern of_aggregate_stats_request_t *
     of_aggregate_stats_request_OF_VERSION_1_1_dup(
         of_aggregate_stats_request_t *src);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_OF_VERSION_1_1_dup(
+        of_bad_action_error_msg_t *src);
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_OF_VERSION_1_1_dup(
+        of_bad_instruction_error_msg_t *src);
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_OF_VERSION_1_1_dup(
+        of_bad_match_error_msg_t *src);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_OF_VERSION_1_1_dup(
+        of_bad_request_error_msg_t *src);
+
 extern of_barrier_reply_t *
     of_barrier_reply_OF_VERSION_1_1_dup(
         of_barrier_reply_t *src);
@@ -1841,6 +2009,26 @@ extern of_bsn_get_mirroring_request_t *
 extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_1_dup(
         of_bsn_header_t *src);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_OF_VERSION_1_1_dup(
+        of_bsn_pdu_rx_reply_t *src);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_OF_VERSION_1_1_dup(
+        of_bsn_pdu_rx_request_t *src);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_1_dup(
+        of_bsn_pdu_rx_timeout_t *src);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_OF_VERSION_1_1_dup(
+        of_bsn_pdu_tx_reply_t *src);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_OF_VERSION_1_1_dup(
+        of_bsn_pdu_tx_request_t *src);
 
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_1_dup(
@@ -1926,6 +2114,10 @@ extern of_flow_mod_t *
     of_flow_mod_OF_VERSION_1_1_dup(
         of_flow_mod_t *src);
 
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_OF_VERSION_1_1_dup(
+        of_flow_mod_failed_error_msg_t *src);
+
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_1_dup(
         of_flow_modify_t *src);
@@ -1966,6 +2158,10 @@ extern of_group_mod_t *
     of_group_mod_OF_VERSION_1_1_dup(
         of_group_mod_t *src);
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_OF_VERSION_1_1_dup(
+        of_group_mod_failed_error_msg_t *src);
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_1_dup(
         of_group_stats_reply_t *src);
@@ -1977,6 +2173,10 @@ extern of_group_stats_request_t *
 extern of_hello_t *
     of_hello_OF_VERSION_1_1_dup(
         of_hello_t *src);
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_OF_VERSION_1_1_dup(
+        of_hello_failed_error_msg_t *src);
 
 extern of_nicira_header_t *
     of_nicira_header_OF_VERSION_1_1_dup(
@@ -1993,6 +2193,10 @@ extern of_packet_out_t *
 extern of_port_mod_t *
     of_port_mod_OF_VERSION_1_1_dup(
         of_port_mod_t *src);
+
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_OF_VERSION_1_1_dup(
+        of_port_mod_failed_error_msg_t *src);
 
 extern of_port_stats_reply_t *
     of_port_stats_reply_OF_VERSION_1_1_dup(
@@ -2014,6 +2218,10 @@ extern of_queue_get_config_request_t *
     of_queue_get_config_request_OF_VERSION_1_1_dup(
         of_queue_get_config_request_t *src);
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_OF_VERSION_1_1_dup(
+        of_queue_op_failed_error_msg_t *src);
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_OF_VERSION_1_1_dup(
         of_queue_stats_reply_t *src);
@@ -2034,9 +2242,17 @@ extern of_stats_request_t *
     of_stats_request_OF_VERSION_1_1_dup(
         of_stats_request_t *src);
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_OF_VERSION_1_1_dup(
+        of_switch_config_failed_error_msg_t *src);
+
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_1_dup(
         of_table_mod_t *src);
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_OF_VERSION_1_1_dup(
+        of_table_mod_failed_error_msg_t *src);
 
 extern of_table_stats_reply_t *
     of_table_stats_reply_OF_VERSION_1_1_dup(
@@ -2350,6 +2566,22 @@ extern of_aggregate_stats_request_t *
     of_aggregate_stats_request_OF_VERSION_1_2_dup(
         of_aggregate_stats_request_t *src);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_OF_VERSION_1_2_dup(
+        of_bad_action_error_msg_t *src);
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_OF_VERSION_1_2_dup(
+        of_bad_instruction_error_msg_t *src);
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_OF_VERSION_1_2_dup(
+        of_bad_match_error_msg_t *src);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_OF_VERSION_1_2_dup(
+        of_bad_request_error_msg_t *src);
+
 extern of_barrier_reply_t *
     of_barrier_reply_OF_VERSION_1_2_dup(
         of_barrier_reply_t *src);
@@ -2401,6 +2633,26 @@ extern of_bsn_get_mirroring_request_t *
 extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_2_dup(
         of_bsn_header_t *src);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_OF_VERSION_1_2_dup(
+        of_bsn_pdu_rx_reply_t *src);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_OF_VERSION_1_2_dup(
+        of_bsn_pdu_rx_request_t *src);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_2_dup(
+        of_bsn_pdu_rx_timeout_t *src);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_OF_VERSION_1_2_dup(
+        of_bsn_pdu_tx_reply_t *src);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_OF_VERSION_1_2_dup(
+        of_bsn_pdu_tx_request_t *src);
 
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_2_dup(
@@ -2454,6 +2706,10 @@ extern of_experimenter_t *
     of_experimenter_OF_VERSION_1_2_dup(
         of_experimenter_t *src);
 
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_OF_VERSION_1_2_dup(
+        of_experimenter_error_msg_t *src);
+
 extern of_experimenter_stats_reply_t *
     of_experimenter_stats_reply_OF_VERSION_1_2_dup(
         of_experimenter_stats_reply_t *src);
@@ -2485,6 +2741,10 @@ extern of_flow_delete_strict_t *
 extern of_flow_mod_t *
     of_flow_mod_OF_VERSION_1_2_dup(
         of_flow_mod_t *src);
+
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_OF_VERSION_1_2_dup(
+        of_flow_mod_failed_error_msg_t *src);
 
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_2_dup(
@@ -2534,6 +2794,10 @@ extern of_group_mod_t *
     of_group_mod_OF_VERSION_1_2_dup(
         of_group_mod_t *src);
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_OF_VERSION_1_2_dup(
+        of_group_mod_failed_error_msg_t *src);
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_2_dup(
         of_group_stats_reply_t *src);
@@ -2545,6 +2809,10 @@ extern of_group_stats_request_t *
 extern of_hello_t *
     of_hello_OF_VERSION_1_2_dup(
         of_hello_t *src);
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_OF_VERSION_1_2_dup(
+        of_hello_failed_error_msg_t *src);
 
 extern of_nicira_header_t *
     of_nicira_header_OF_VERSION_1_2_dup(
@@ -2561,6 +2829,10 @@ extern of_packet_out_t *
 extern of_port_mod_t *
     of_port_mod_OF_VERSION_1_2_dup(
         of_port_mod_t *src);
+
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_OF_VERSION_1_2_dup(
+        of_port_mod_failed_error_msg_t *src);
 
 extern of_port_stats_reply_t *
     of_port_stats_reply_OF_VERSION_1_2_dup(
@@ -2582,6 +2854,10 @@ extern of_queue_get_config_request_t *
     of_queue_get_config_request_OF_VERSION_1_2_dup(
         of_queue_get_config_request_t *src);
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_OF_VERSION_1_2_dup(
+        of_queue_op_failed_error_msg_t *src);
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_OF_VERSION_1_2_dup(
         of_queue_stats_reply_t *src);
@@ -2598,6 +2874,10 @@ extern of_role_request_t *
     of_role_request_OF_VERSION_1_2_dup(
         of_role_request_t *src);
 
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_OF_VERSION_1_2_dup(
+        of_role_request_failed_error_msg_t *src);
+
 extern of_set_config_t *
     of_set_config_OF_VERSION_1_2_dup(
         of_set_config_t *src);
@@ -2610,9 +2890,17 @@ extern of_stats_request_t *
     of_stats_request_OF_VERSION_1_2_dup(
         of_stats_request_t *src);
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_OF_VERSION_1_2_dup(
+        of_switch_config_failed_error_msg_t *src);
+
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_2_dup(
         of_table_mod_t *src);
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_OF_VERSION_1_2_dup(
+        of_table_mod_failed_error_msg_t *src);
 
 extern of_table_stats_reply_t *
     of_table_stats_reply_OF_VERSION_1_2_dup(
@@ -2829,6 +3117,14 @@ extern of_oxm_arp_tpa_t *
 extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
         of_oxm_arp_tpa_masked_t *src);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_2_dup(
@@ -3202,6 +3498,22 @@ extern of_async_set_t *
     of_async_set_OF_VERSION_1_3_dup(
         of_async_set_t *src);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_OF_VERSION_1_3_dup(
+        of_bad_action_error_msg_t *src);
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_OF_VERSION_1_3_dup(
+        of_bad_instruction_error_msg_t *src);
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_OF_VERSION_1_3_dup(
+        of_bad_match_error_msg_t *src);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_OF_VERSION_1_3_dup(
+        of_bad_request_error_msg_t *src);
+
 extern of_barrier_reply_t *
     of_barrier_reply_OF_VERSION_1_3_dup(
         of_barrier_reply_t *src);
@@ -3234,6 +3546,26 @@ extern of_bsn_bw_enable_set_request_t *
     of_bsn_bw_enable_set_request_OF_VERSION_1_3_dup(
         of_bsn_bw_enable_set_request_t *src);
 
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_OF_VERSION_1_3_dup(
+        of_bsn_flow_idle_t *src);
+
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_dup(
+        of_bsn_flow_idle_enable_get_reply_t *src);
+
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_dup(
+        of_bsn_flow_idle_enable_get_request_t *src);
+
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_dup(
+        of_bsn_flow_idle_enable_set_reply_t *src);
+
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_dup(
+        of_bsn_flow_idle_enable_set_request_t *src);
+
 extern of_bsn_get_interfaces_reply_t *
     of_bsn_get_interfaces_reply_OF_VERSION_1_3_dup(
         of_bsn_get_interfaces_reply_t *src);
@@ -3253,6 +3585,26 @@ extern of_bsn_get_mirroring_request_t *
 extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_3_dup(
         of_bsn_header_t *src);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_OF_VERSION_1_3_dup(
+        of_bsn_pdu_rx_reply_t *src);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_OF_VERSION_1_3_dup(
+        of_bsn_pdu_rx_request_t *src);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_3_dup(
+        of_bsn_pdu_rx_timeout_t *src);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_OF_VERSION_1_3_dup(
+        of_bsn_pdu_tx_reply_t *src);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_OF_VERSION_1_3_dup(
+        of_bsn_pdu_tx_request_t *src);
 
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_3_dup(
@@ -3306,6 +3658,10 @@ extern of_experimenter_t *
     of_experimenter_OF_VERSION_1_3_dup(
         of_experimenter_t *src);
 
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_OF_VERSION_1_3_dup(
+        of_experimenter_error_msg_t *src);
+
 extern of_features_reply_t *
     of_features_reply_OF_VERSION_1_3_dup(
         of_features_reply_t *src);
@@ -3329,6 +3685,10 @@ extern of_flow_delete_strict_t *
 extern of_flow_mod_t *
     of_flow_mod_OF_VERSION_1_3_dup(
         of_flow_mod_t *src);
+
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_OF_VERSION_1_3_dup(
+        of_flow_mod_failed_error_msg_t *src);
 
 extern of_flow_modify_t *
     of_flow_modify_OF_VERSION_1_3_dup(
@@ -3378,6 +3738,10 @@ extern of_group_mod_t *
     of_group_mod_OF_VERSION_1_3_dup(
         of_group_mod_t *src);
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_OF_VERSION_1_3_dup(
+        of_group_mod_failed_error_msg_t *src);
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_3_dup(
         of_group_stats_reply_t *src);
@@ -3389,6 +3753,10 @@ extern of_group_stats_request_t *
 extern of_hello_t *
     of_hello_OF_VERSION_1_3_dup(
         of_hello_t *src);
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_OF_VERSION_1_3_dup(
+        of_hello_failed_error_msg_t *src);
 
 extern of_meter_config_stats_reply_t *
     of_meter_config_stats_reply_OF_VERSION_1_3_dup(
@@ -3409,6 +3777,10 @@ extern of_meter_features_stats_request_t *
 extern of_meter_mod_t *
     of_meter_mod_OF_VERSION_1_3_dup(
         of_meter_mod_t *src);
+
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_OF_VERSION_1_3_dup(
+        of_meter_mod_failed_error_msg_t *src);
 
 extern of_meter_stats_reply_t *
     of_meter_stats_reply_OF_VERSION_1_3_dup(
@@ -3442,6 +3814,10 @@ extern of_port_mod_t *
     of_port_mod_OF_VERSION_1_3_dup(
         of_port_mod_t *src);
 
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_OF_VERSION_1_3_dup(
+        of_port_mod_failed_error_msg_t *src);
+
 extern of_port_stats_reply_t *
     of_port_stats_reply_OF_VERSION_1_3_dup(
         of_port_stats_reply_t *src);
@@ -3462,6 +3838,10 @@ extern of_queue_get_config_request_t *
     of_queue_get_config_request_OF_VERSION_1_3_dup(
         of_queue_get_config_request_t *src);
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_OF_VERSION_1_3_dup(
+        of_queue_op_failed_error_msg_t *src);
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_OF_VERSION_1_3_dup(
         of_queue_stats_reply_t *src);
@@ -3478,6 +3858,10 @@ extern of_role_request_t *
     of_role_request_OF_VERSION_1_3_dup(
         of_role_request_t *src);
 
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_OF_VERSION_1_3_dup(
+        of_role_request_failed_error_msg_t *src);
+
 extern of_set_config_t *
     of_set_config_OF_VERSION_1_3_dup(
         of_set_config_t *src);
@@ -3490,6 +3874,14 @@ extern of_stats_request_t *
     of_stats_request_OF_VERSION_1_3_dup(
         of_stats_request_t *src);
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_OF_VERSION_1_3_dup(
+        of_switch_config_failed_error_msg_t *src);
+
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_OF_VERSION_1_3_dup(
+        of_table_features_failed_error_msg_t *src);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_OF_VERSION_1_3_dup(
         of_table_features_stats_reply_t *src);
@@ -3501,6 +3893,10 @@ extern of_table_features_stats_request_t *
 extern of_table_mod_t *
     of_table_mod_OF_VERSION_1_3_dup(
         of_table_mod_t *src);
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_OF_VERSION_1_3_dup(
+        of_table_mod_failed_error_msg_t *src);
 
 extern of_table_stats_reply_t *
     of_table_stats_reply_OF_VERSION_1_3_dup(
@@ -3726,9 +4122,9 @@ extern of_bucket_counter_t *
     of_bucket_counter_OF_VERSION_1_3_dup(
         of_bucket_counter_t *src);
 
-extern of_experimenter_multipart_header_t *
-    of_experimenter_multipart_header_OF_VERSION_1_3_dup(
-        of_experimenter_multipart_header_t *src);
+extern of_experimenter_stats_header_t *
+    of_experimenter_stats_header_OF_VERSION_1_3_dup(
+        of_experimenter_stats_header_t *src);
 
 extern of_flow_stats_entry_t *
     of_flow_stats_entry_OF_VERSION_1_3_dup(
@@ -3877,6 +4273,14 @@ extern of_oxm_arp_tpa_t *
 extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
         of_oxm_arp_tpa_masked_t *src);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(
+        of_oxm_bsn_in_ports_128_t *src);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_in_ports_128_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_3_dup(

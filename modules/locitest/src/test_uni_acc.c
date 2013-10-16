@@ -89,6 +89,82 @@ test_of_aggregate_stats_request_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_bad_action_error_msg_OF_VERSION_1_0(void)
+{
+    of_bad_action_error_msg_t *obj;
+    obj = of_bad_action_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_ACTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bad_action_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_request_error_msg_OF_VERSION_1_0(void)
+{
+    of_bad_request_error_msg_t *obj;
+    obj = of_bad_request_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_REQUEST_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bad_request_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_barrier_reply_OF_VERSION_1_0(void)
 {
     of_barrier_reply_t *obj;
@@ -790,6 +866,196 @@ test_of_bsn_hybrid_get_request_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_bsn_pdu_rx_reply_OF_VERSION_1_0(void)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+    obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_request_OF_VERSION_1_0(void)
+{
+    of_bsn_pdu_rx_request_t *obj;
+    obj = of_bsn_pdu_rx_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 26);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 26);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_timeout_OF_VERSION_1_0(void)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+    obj = of_bsn_pdu_rx_timeout_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 19);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 19);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_TIMEOUT);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_timeout_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_reply_OF_VERSION_1_0(void)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+    obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_request_OF_VERSION_1_0(void)
+{
+    of_bsn_pdu_tx_request_t *obj;
+    obj = of_bsn_pdu_tx_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 26);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 26);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_ip_mask_OF_VERSION_1_0(void)
 {
     of_bsn_set_ip_mask_t *obj;
@@ -1442,30 +1708,9 @@ test_of_error_msg_OF_VERSION_1_0(void)
     obj = of_error_msg_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->length == 10);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ERROR_MSG);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 12);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_ERROR_MSG);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_0_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_0_check(
-        obj, 1) != 0);
 
     of_error_msg_delete(obj);
 
@@ -1795,6 +2040,44 @@ test_of_flow_mod_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_flow_mod_failed_error_msg_OF_VERSION_1_0(void)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+    obj = of_flow_mod_failed_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_flow_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_flow_modify_OF_VERSION_1_0(void)
 {
     of_flow_modify_t *obj;
@@ -2099,6 +2382,44 @@ test_of_hello_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_hello_failed_error_msg_OF_VERSION_1_0(void)
+{
+    of_hello_failed_error_msg_t *obj;
+    obj = of_hello_failed_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_HELLO_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_hello_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_nicira_controller_role_reply_OF_VERSION_1_0(void)
 {
     of_nicira_controller_role_reply_t *obj;
@@ -2306,6 +2627,44 @@ test_of_port_mod_OF_VERSION_1_0(void)
 }
 
 static int
+test_of_port_mod_failed_error_msg_OF_VERSION_1_0(void)
+{
+    of_port_mod_failed_error_msg_t *obj;
+    obj = of_port_mod_failed_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_port_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_port_stats_reply_OF_VERSION_1_0(void)
 {
     of_port_stats_reply_t *obj;
@@ -2490,6 +2849,44 @@ test_of_queue_get_config_request_OF_VERSION_1_0(void)
         obj, 1) != 0);
 
     of_queue_get_config_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_queue_op_failed_error_msg_OF_VERSION_1_0(void)
+{
+    of_queue_op_failed_error_msg_t *obj;
+    obj = of_queue_op_failed_error_msg_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_0_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_0_check(
+        obj, 1) != 0);
+
+    of_queue_op_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -4266,6 +4663,158 @@ test_of_aggregate_stats_request_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_bad_action_error_msg_OF_VERSION_1_1(void)
+{
+    of_bad_action_error_msg_t *obj;
+    obj = of_bad_action_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_ACTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bad_action_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_instruction_error_msg_OF_VERSION_1_1(void)
+{
+    of_bad_instruction_error_msg_t *obj;
+    obj = of_bad_instruction_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bad_instruction_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_match_error_msg_OF_VERSION_1_1(void)
+{
+    of_bad_match_error_msg_t *obj;
+    obj = of_bad_match_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_MATCH_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bad_match_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_request_error_msg_OF_VERSION_1_1(void)
+{
+    of_bad_request_error_msg_t *obj;
+    obj = of_bad_request_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_REQUEST_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bad_request_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_barrier_reply_OF_VERSION_1_1(void)
 {
     of_barrier_reply_t *obj;
@@ -4739,6 +5288,196 @@ test_of_bsn_header_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_bsn_pdu_rx_reply_OF_VERSION_1_1(void)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+    obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_request_OF_VERSION_1_1(void)
+{
+    of_bsn_pdu_rx_request_t *obj;
+    obj = of_bsn_pdu_rx_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_timeout_OF_VERSION_1_1(void)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+    obj = of_bsn_pdu_rx_timeout_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 21);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 21);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_TIMEOUT);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_timeout_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_reply_OF_VERSION_1_1(void)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+    obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_request_OF_VERSION_1_1(void)
+{
+    of_bsn_pdu_tx_request_t *obj;
+    obj = of_bsn_pdu_tx_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_1(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -5163,30 +5902,9 @@ test_of_error_msg_OF_VERSION_1_1(void)
     obj = of_error_msg_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->length == 10);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ERROR_MSG);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 12);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_ERROR_MSG);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_1_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_1_check(
-        obj, 1) != 0);
 
     of_error_msg_delete(obj);
 
@@ -5510,6 +6228,44 @@ test_of_flow_mod_OF_VERSION_1_1(void)
     TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
 
     of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_flow_mod_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+    obj = of_flow_mod_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_flow_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -5896,6 +6652,44 @@ test_of_group_mod_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_group_mod_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_group_mod_failed_error_msg_t *obj;
+    obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_group_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_group_stats_reply_OF_VERSION_1_1(void)
 {
     of_group_stats_reply_t *obj;
@@ -6004,6 +6798,44 @@ test_of_hello_OF_VERSION_1_1(void)
         obj, 1) != 0);
 
     of_hello_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_hello_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_hello_failed_error_msg_t *obj;
+    obj = of_hello_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_HELLO_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_hello_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -6135,6 +6967,44 @@ test_of_port_mod_OF_VERSION_1_1(void)
         obj, 1) != 0);
 
     of_port_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_port_mod_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_port_mod_failed_error_msg_t *obj;
+    obj = of_port_mod_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_port_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -6331,6 +7201,44 @@ test_of_queue_get_config_request_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_queue_op_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_queue_op_failed_error_msg_t *obj;
+    obj = of_queue_op_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_queue_op_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_queue_stats_reply_OF_VERSION_1_1(void)
 {
     of_queue_stats_reply_t *obj;
@@ -6479,6 +7387,44 @@ test_of_stats_request_OF_VERSION_1_1(void)
 }
 
 static int
+test_of_switch_config_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_switch_config_failed_error_msg_t *obj;
+    obj = of_switch_config_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_switch_config_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_mod_OF_VERSION_1_1(void)
 {
     of_table_mod_t *obj;
@@ -6511,6 +7457,44 @@ test_of_table_mod_OF_VERSION_1_1(void)
         obj, 1) != 0);
 
     of_table_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_mod_failed_error_msg_OF_VERSION_1_1(void)
+{
+    of_table_mod_failed_error_msg_t *obj;
+    obj = of_table_mod_failed_error_msg_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_1_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_1_check(
+        obj, 1) != 0);
+
+    of_table_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -9182,6 +10166,158 @@ test_of_aggregate_stats_request_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_bad_action_error_msg_OF_VERSION_1_2(void)
+{
+    of_bad_action_error_msg_t *obj;
+    obj = of_bad_action_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_ACTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bad_action_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_instruction_error_msg_OF_VERSION_1_2(void)
+{
+    of_bad_instruction_error_msg_t *obj;
+    obj = of_bad_instruction_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bad_instruction_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_match_error_msg_OF_VERSION_1_2(void)
+{
+    of_bad_match_error_msg_t *obj;
+    obj = of_bad_match_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_MATCH_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bad_match_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_request_error_msg_OF_VERSION_1_2(void)
+{
+    of_bad_request_error_msg_t *obj;
+    obj = of_bad_request_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_REQUEST_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bad_request_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_barrier_reply_OF_VERSION_1_2(void)
 {
     of_barrier_reply_t *obj;
@@ -9655,6 +10791,196 @@ test_of_bsn_header_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_bsn_pdu_rx_reply_OF_VERSION_1_2(void)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+    obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_request_OF_VERSION_1_2(void)
+{
+    of_bsn_pdu_rx_request_t *obj;
+    obj = of_bsn_pdu_rx_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_timeout_OF_VERSION_1_2(void)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+    obj = of_bsn_pdu_rx_timeout_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 21);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 21);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_TIMEOUT);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_timeout_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_reply_OF_VERSION_1_2(void)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+    obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_request_OF_VERSION_1_2(void)
+{
+    of_bsn_pdu_tx_request_t *obj;
+    obj = of_bsn_pdu_tx_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_set_mirroring_OF_VERSION_1_2(void)
 {
     of_bsn_set_mirroring_t *obj;
@@ -10079,30 +11405,9 @@ test_of_error_msg_OF_VERSION_1_2(void)
     obj = of_error_msg_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->length == 10);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ERROR_MSG);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 12);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_ERROR_MSG);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_2_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_2_check(
-        obj, 1) != 0);
 
     of_error_msg_delete(obj);
 
@@ -10143,6 +11448,44 @@ test_of_experimenter_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_experimenter_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_experimenter_error_msg_OF_VERSION_1_2(void)
+{
+    of_experimenter_error_msg_t *obj;
+    obj = of_experimenter_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_EXPERIMENTER_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_experimenter_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_experimenter_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_experimenter_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -10426,6 +11769,44 @@ test_of_flow_mod_OF_VERSION_1_2(void)
     TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
 
     of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_flow_mod_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+    obj = of_flow_mod_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_flow_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -10888,6 +12269,44 @@ test_of_group_mod_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_group_mod_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_group_mod_failed_error_msg_t *obj;
+    obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_group_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_group_stats_reply_OF_VERSION_1_2(void)
 {
     of_group_stats_reply_t *obj;
@@ -10996,6 +12415,44 @@ test_of_hello_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_hello_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_hello_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_hello_failed_error_msg_t *obj;
+    obj = of_hello_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_HELLO_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_hello_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -11127,6 +12584,44 @@ test_of_port_mod_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_port_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_port_mod_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_port_mod_failed_error_msg_t *obj;
+    obj = of_port_mod_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_port_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -11323,6 +12818,44 @@ test_of_queue_get_config_request_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_queue_op_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_queue_op_failed_error_msg_t *obj;
+    obj = of_queue_op_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_queue_op_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_queue_stats_reply_OF_VERSION_1_2(void)
 {
     of_queue_stats_reply_t *obj;
@@ -11475,6 +13008,44 @@ test_of_role_request_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_role_request_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_role_request_failed_error_msg_t *obj;
+    obj = of_role_request_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_role_request_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_role_request_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_role_request_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_set_config_OF_VERSION_1_2(void)
 {
     of_set_config_t *obj;
@@ -11547,6 +13118,44 @@ test_of_stats_request_OF_VERSION_1_2(void)
 }
 
 static int
+test_of_switch_config_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_switch_config_failed_error_msg_t *obj;
+    obj = of_switch_config_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_switch_config_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_table_mod_OF_VERSION_1_2(void)
 {
     of_table_mod_t *obj;
@@ -11579,6 +13188,44 @@ test_of_table_mod_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_table_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_mod_failed_error_msg_OF_VERSION_1_2(void)
+{
+    of_table_mod_failed_error_msg_t *obj;
+    obj = of_table_mod_failed_error_msg_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_table_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -13353,6 +15000,82 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_2(void)
         obj, 1) != 0);
 
     of_oxm_arp_tpa_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_bsn_in_ports_128_OF_VERSION_1_2(void)
+{
+    of_oxm_bsn_in_ports_128_t *obj;
+    obj = of_oxm_bsn_in_ports_128_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_BSN_IN_PORTS_128);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_bsn_in_ports_128_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2(void)
+{
+    of_oxm_bsn_in_ports_128_masked_t *obj;
+    obj = of_oxm_bsn_in_ports_128_masked_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 36);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 36);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_check(
+        obj, 1) != 0);
+
+    of_oxm_bsn_in_ports_128_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16813,6 +18536,158 @@ test_of_async_set_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_bad_action_error_msg_OF_VERSION_1_3(void)
+{
+    of_bad_action_error_msg_t *obj;
+    obj = of_bad_action_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_ACTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_action_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bad_action_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_instruction_error_msg_OF_VERSION_1_3(void)
+{
+    of_bad_instruction_error_msg_t *obj;
+    obj = of_bad_instruction_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_instruction_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bad_instruction_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_match_error_msg_OF_VERSION_1_3(void)
+{
+    of_bad_match_error_msg_t *obj;
+    obj = of_bad_match_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_MATCH_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_match_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bad_match_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bad_request_error_msg_OF_VERSION_1_3(void)
+{
+    of_bad_request_error_msg_t *obj;
+    obj = of_bad_request_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BAD_REQUEST_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bad_request_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bad_request_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_barrier_reply_OF_VERSION_1_3(void)
 {
     of_barrier_reply_t *obj;
@@ -17117,6 +18992,196 @@ test_of_bsn_bw_enable_set_request_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_bsn_flow_idle_OF_VERSION_1_3(void)
+{
+    of_bsn_flow_idle_t *obj;
+    obj = of_bsn_flow_idle_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 40);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 40);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_FLOW_IDLE);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_flow_idle_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_flow_idle_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_flow_idle_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3(void)
+{
+    of_bsn_flow_idle_enable_get_reply_t *obj;
+    obj = of_bsn_flow_idle_enable_get_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_flow_idle_enable_get_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3(void)
+{
+    of_bsn_flow_idle_enable_get_request_t *obj;
+    obj = of_bsn_flow_idle_enable_get_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_flow_idle_enable_get_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3(void)
+{
+    of_bsn_flow_idle_enable_set_reply_t *obj;
+    obj = of_bsn_flow_idle_enable_set_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_flow_idle_enable_set_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3(void)
+{
+    of_bsn_flow_idle_enable_set_request_t *obj;
+    obj = of_bsn_flow_idle_enable_set_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_flow_idle_enable_set_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_get_interfaces_reply_OF_VERSION_1_3(void)
 {
     of_bsn_get_interfaces_reply_t *obj;
@@ -17280,6 +19345,196 @@ test_of_bsn_header_OF_VERSION_1_3(void)
     TEST_ASSERT(obj->object_id == OF_BSN_HEADER);
 
     of_bsn_header_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_reply_OF_VERSION_1_3(void)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+    obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_reply_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_request_OF_VERSION_1_3(void)
+{
+    of_bsn_pdu_rx_request_t *obj;
+    obj = of_bsn_pdu_rx_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_request_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_rx_timeout_OF_VERSION_1_3(void)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+    obj = of_bsn_pdu_rx_timeout_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 21);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 21);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_RX_TIMEOUT);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_rx_timeout_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_rx_timeout_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_reply_OF_VERSION_1_3(void)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+    obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REPLY);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_reply_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_pdu_tx_request_OF_VERSION_1_3(void)
+{
+    of_bsn_pdu_tx_request_t *obj;
+    obj = of_bsn_pdu_tx_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 28);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 28);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_BSN_PDU_TX_REQUEST);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_bsn_pdu_tx_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -17710,30 +19965,9 @@ test_of_error_msg_OF_VERSION_1_3(void)
     obj = of_error_msg_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->length == 10);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ERROR_MSG);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 12);
-    }
-    if (obj->wire_type_get != NULL) {
-        of_object_id_t obj_id;
-
-        obj->wire_type_get((of_object_t *)obj, &obj_id);
-        TEST_ASSERT(obj_id == OF_ERROR_MSG);
-    }
-
-    /* Set up incrementing values for members */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_3_populate(
-        obj, 1) != 0);
-
-    /* Check values just set */
-    TEST_ASSERT(of_error_msg_OF_VERSION_1_3_check(
-        obj, 1) != 0);
 
     of_error_msg_delete(obj);
 
@@ -17774,6 +20008,44 @@ test_of_experimenter_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_experimenter_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_experimenter_error_msg_OF_VERSION_1_3(void)
+{
+    of_experimenter_error_msg_t *obj;
+    obj = of_experimenter_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_EXPERIMENTER_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_experimenter_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_experimenter_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_experimenter_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -17981,6 +20253,44 @@ test_of_flow_mod_OF_VERSION_1_3(void)
     TEST_ASSERT(obj->object_id == OF_FLOW_MOD);
 
     of_flow_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_flow_mod_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+    obj = of_flow_mod_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_flow_mod_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_flow_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -18443,6 +20753,44 @@ test_of_group_mod_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_group_mod_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_group_mod_failed_error_msg_t *obj;
+    obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_group_mod_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_group_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_group_stats_reply_OF_VERSION_1_3(void)
 {
     of_group_stats_reply_t *obj;
@@ -18551,6 +20899,44 @@ test_of_hello_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_hello_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_hello_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_hello_failed_error_msg_t *obj;
+    obj = of_hello_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_HELLO_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_hello_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_hello_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -18741,6 +21127,44 @@ test_of_meter_mod_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_meter_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_meter_mod_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_meter_mod_failed_error_msg_t *obj;
+    obj = of_meter_mod_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_meter_mod_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_meter_mod_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_meter_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -19030,6 +21454,44 @@ test_of_port_mod_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_port_mod_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_port_mod_failed_error_msg_t *obj;
+    obj = of_port_mod_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_port_mod_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_port_mod_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_port_stats_reply_OF_VERSION_1_3(void)
 {
     of_port_stats_reply_t *obj;
@@ -19220,6 +21682,44 @@ test_of_queue_get_config_request_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_queue_op_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_queue_op_failed_error_msg_t *obj;
+    obj = of_queue_op_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_queue_op_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_queue_op_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_queue_stats_reply_OF_VERSION_1_3(void)
 {
     of_queue_stats_reply_t *obj;
@@ -19372,6 +21872,44 @@ test_of_role_request_OF_VERSION_1_3(void)
 }
 
 static int
+test_of_role_request_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_role_request_failed_error_msg_t *obj;
+    obj = of_role_request_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_role_request_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_role_request_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_role_request_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_set_config_OF_VERSION_1_3(void)
 {
     of_set_config_t *obj;
@@ -19438,6 +21976,82 @@ test_of_stats_request_OF_VERSION_1_3(void)
     TEST_ASSERT(obj->object_id == OF_STATS_REQUEST);
 
     of_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_switch_config_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_switch_config_failed_error_msg_t *obj;
+    obj = of_switch_config_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_switch_config_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_switch_config_failed_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_features_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_table_features_failed_error_msg_t *obj;
+    obj = of_table_features_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_table_features_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_features_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_table_features_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -19552,6 +22166,44 @@ test_of_table_mod_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_table_mod_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_table_mod_failed_error_msg_OF_VERSION_1_3(void)
+{
+    of_table_mod_failed_error_msg_t *obj;
+    obj = of_table_mod_failed_error_msg_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 12);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 12);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_table_mod_failed_error_msg_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_table_mod_failed_error_msg_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -21425,17 +24077,17 @@ test_of_bucket_counter_OF_VERSION_1_3(void)
 }
 
 static int
-test_of_experimenter_multipart_header_OF_VERSION_1_3(void)
+test_of_experimenter_stats_header_OF_VERSION_1_3(void)
 {
-    of_experimenter_multipart_header_t *obj;
-    obj = of_experimenter_multipart_header_new(OF_VERSION_1_3);
+    of_experimenter_stats_header_t *obj;
+    obj = of_experimenter_stats_header_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
     TEST_ASSERT(obj->length == 8);
     TEST_ASSERT(obj->parent == NULL);
-    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_MULTIPART_HEADER);
+    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_HEADER);
 
-    of_experimenter_multipart_header_delete(obj);
+    of_experimenter_stats_header_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -22606,6 +25258,82 @@ test_of_oxm_arp_tpa_masked_OF_VERSION_1_3(void)
         obj, 1) != 0);
 
     of_oxm_arp_tpa_masked_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_bsn_in_ports_128_OF_VERSION_1_3(void)
+{
+    of_oxm_bsn_in_ports_128_t *obj;
+    obj = of_oxm_bsn_in_ports_128_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 20);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_BSN_IN_PORTS_128);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_bsn_in_ports_128_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3(void)
+{
+    of_oxm_bsn_in_ports_128_masked_t *obj;
+    obj = of_oxm_bsn_in_ports_128_masked_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 36);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 36);
+    }
+    if (obj->wire_type_get != NULL) {
+        of_object_id_t obj_id;
+
+        obj->wire_type_get((of_object_t *)obj, &obj_id);
+        TEST_ASSERT(obj_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    }
+
+    /* Set up incrementing values for members */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_populate(
+        obj, 1) != 0);
+
+    /* Check values just set */
+    TEST_ASSERT(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_check(
+        obj, 1) != 0);
+
+    of_oxm_bsn_in_ports_128_masked_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -26923,6 +29651,8 @@ run_unified_accessor_tests(void)
 {
     RUN_TEST(of_aggregate_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_aggregate_stats_request_OF_VERSION_1_0);
+    RUN_TEST(of_bad_action_error_msg_OF_VERSION_1_0);
+    RUN_TEST(of_bad_request_error_msg_OF_VERSION_1_0);
     RUN_TEST(of_barrier_reply_OF_VERSION_1_0);
     RUN_TEST(of_barrier_request_OF_VERSION_1_0);
     RUN_TEST(of_bsn_bw_clear_data_reply_OF_VERSION_1_0);
@@ -26942,6 +29672,11 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_header_OF_VERSION_1_0);
     RUN_TEST(of_bsn_hybrid_get_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_hybrid_get_request_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_pdu_rx_reply_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_pdu_rx_request_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_pdu_rx_timeout_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_pdu_tx_reply_OF_VERSION_1_0);
+    RUN_TEST(of_bsn_pdu_tx_request_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_ip_mask_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_reply_OF_VERSION_1_0);
     RUN_TEST(of_bsn_set_l2_table_request_OF_VERSION_1_0);
@@ -26969,6 +29704,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_delete_OF_VERSION_1_0);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_0);
     RUN_TEST(of_flow_mod_OF_VERSION_1_0);
+    RUN_TEST(of_flow_mod_failed_error_msg_OF_VERSION_1_0);
     RUN_TEST(of_flow_modify_OF_VERSION_1_0);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_0);
     RUN_TEST(of_flow_removed_OF_VERSION_1_0);
@@ -26977,17 +29713,20 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_get_config_reply_OF_VERSION_1_0);
     RUN_TEST(of_get_config_request_OF_VERSION_1_0);
     RUN_TEST(of_hello_OF_VERSION_1_0);
+    RUN_TEST(of_hello_failed_error_msg_OF_VERSION_1_0);
     RUN_TEST(of_nicira_controller_role_reply_OF_VERSION_1_0);
     RUN_TEST(of_nicira_controller_role_request_OF_VERSION_1_0);
     RUN_TEST(of_nicira_header_OF_VERSION_1_0);
     RUN_TEST(of_packet_in_OF_VERSION_1_0);
     RUN_TEST(of_packet_out_OF_VERSION_1_0);
     RUN_TEST(of_port_mod_OF_VERSION_1_0);
+    RUN_TEST(of_port_mod_failed_error_msg_OF_VERSION_1_0);
     RUN_TEST(of_port_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_port_stats_request_OF_VERSION_1_0);
     RUN_TEST(of_port_status_OF_VERSION_1_0);
     RUN_TEST(of_queue_get_config_reply_OF_VERSION_1_0);
     RUN_TEST(of_queue_get_config_request_OF_VERSION_1_0);
+    RUN_TEST(of_queue_op_failed_error_msg_OF_VERSION_1_0);
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_0);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_0);
     RUN_TEST(of_set_config_OF_VERSION_1_0);
@@ -27039,6 +29778,10 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_list_table_stats_entry_OF_VERSION_1_0);
     RUN_TEST(of_aggregate_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_aggregate_stats_request_OF_VERSION_1_1);
+    RUN_TEST(of_bad_action_error_msg_OF_VERSION_1_1);
+    RUN_TEST(of_bad_instruction_error_msg_OF_VERSION_1_1);
+    RUN_TEST(of_bad_match_error_msg_OF_VERSION_1_1);
+    RUN_TEST(of_bad_request_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_barrier_reply_OF_VERSION_1_1);
     RUN_TEST(of_barrier_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_bw_clear_data_reply_OF_VERSION_1_1);
@@ -27052,6 +29795,11 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_header_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_pdu_rx_reply_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_pdu_rx_request_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_pdu_rx_timeout_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_pdu_tx_reply_OF_VERSION_1_1);
+    RUN_TEST(of_bsn_pdu_tx_request_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1);
@@ -27073,6 +29821,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_delete_OF_VERSION_1_1);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_1);
     RUN_TEST(of_flow_mod_OF_VERSION_1_1);
+    RUN_TEST(of_flow_mod_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_flow_modify_OF_VERSION_1_1);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_1);
     RUN_TEST(of_flow_removed_OF_VERSION_1_1);
@@ -27083,24 +29832,30 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_group_desc_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_group_desc_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_group_mod_OF_VERSION_1_1);
+    RUN_TEST(of_group_mod_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_group_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_group_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_hello_OF_VERSION_1_1);
+    RUN_TEST(of_hello_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_nicira_header_OF_VERSION_1_1);
     RUN_TEST(of_packet_in_OF_VERSION_1_1);
     RUN_TEST(of_packet_out_OF_VERSION_1_1);
     RUN_TEST(of_port_mod_OF_VERSION_1_1);
+    RUN_TEST(of_port_mod_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_port_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_port_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_port_status_OF_VERSION_1_1);
     RUN_TEST(of_queue_get_config_reply_OF_VERSION_1_1);
     RUN_TEST(of_queue_get_config_request_OF_VERSION_1_1);
+    RUN_TEST(of_queue_op_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_set_config_OF_VERSION_1_1);
     RUN_TEST(of_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_stats_request_OF_VERSION_1_1);
+    RUN_TEST(of_switch_config_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_table_mod_OF_VERSION_1_1);
+    RUN_TEST(of_table_mod_failed_error_msg_OF_VERSION_1_1);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_1);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_1);
     RUN_TEST(of_action_bsn_OF_VERSION_1_1);
@@ -27175,6 +29930,10 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_list_table_stats_entry_OF_VERSION_1_1);
     RUN_TEST(of_aggregate_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_aggregate_stats_request_OF_VERSION_1_2);
+    RUN_TEST(of_bad_action_error_msg_OF_VERSION_1_2);
+    RUN_TEST(of_bad_instruction_error_msg_OF_VERSION_1_2);
+    RUN_TEST(of_bad_match_error_msg_OF_VERSION_1_2);
+    RUN_TEST(of_bad_request_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_barrier_reply_OF_VERSION_1_2);
     RUN_TEST(of_barrier_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_bw_clear_data_reply_OF_VERSION_1_2);
@@ -27188,6 +29947,11 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_header_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_pdu_rx_reply_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_pdu_rx_request_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_pdu_rx_timeout_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_pdu_tx_reply_OF_VERSION_1_2);
+    RUN_TEST(of_bsn_pdu_tx_request_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2);
@@ -27201,6 +29965,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_echo_request_OF_VERSION_1_2);
     RUN_TEST(of_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_experimenter_OF_VERSION_1_2);
+    RUN_TEST(of_experimenter_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_experimenter_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_experimenter_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_features_reply_OF_VERSION_1_2);
@@ -27209,6 +29974,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_flow_delete_OF_VERSION_1_2);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_2);
     RUN_TEST(of_flow_mod_OF_VERSION_1_2);
+    RUN_TEST(of_flow_mod_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_flow_modify_OF_VERSION_1_2);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_2);
     RUN_TEST(of_flow_removed_OF_VERSION_1_2);
@@ -27221,26 +29987,33 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_group_features_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_group_features_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_group_mod_OF_VERSION_1_2);
+    RUN_TEST(of_group_mod_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_group_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_group_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_hello_OF_VERSION_1_2);
+    RUN_TEST(of_hello_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_nicira_header_OF_VERSION_1_2);
     RUN_TEST(of_packet_in_OF_VERSION_1_2);
     RUN_TEST(of_packet_out_OF_VERSION_1_2);
     RUN_TEST(of_port_mod_OF_VERSION_1_2);
+    RUN_TEST(of_port_mod_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_port_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_port_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_port_status_OF_VERSION_1_2);
     RUN_TEST(of_queue_get_config_reply_OF_VERSION_1_2);
     RUN_TEST(of_queue_get_config_request_OF_VERSION_1_2);
+    RUN_TEST(of_queue_op_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_role_reply_OF_VERSION_1_2);
     RUN_TEST(of_role_request_OF_VERSION_1_2);
+    RUN_TEST(of_role_request_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_set_config_OF_VERSION_1_2);
     RUN_TEST(of_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_stats_request_OF_VERSION_1_2);
+    RUN_TEST(of_switch_config_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_table_mod_OF_VERSION_1_2);
+    RUN_TEST(of_table_mod_failed_error_msg_OF_VERSION_1_2);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_2);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_2);
     RUN_TEST(of_action_bsn_OF_VERSION_1_2);
@@ -27291,6 +30064,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_2);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_bsn_in_ports_128_OF_VERSION_1_2);
+    RUN_TEST(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_2);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_2);
@@ -27383,6 +30158,10 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_async_get_reply_OF_VERSION_1_3);
     RUN_TEST(of_async_get_request_OF_VERSION_1_3);
     RUN_TEST(of_async_set_OF_VERSION_1_3);
+    RUN_TEST(of_bad_action_error_msg_OF_VERSION_1_3);
+    RUN_TEST(of_bad_instruction_error_msg_OF_VERSION_1_3);
+    RUN_TEST(of_bad_match_error_msg_OF_VERSION_1_3);
+    RUN_TEST(of_bad_request_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_barrier_reply_OF_VERSION_1_3);
     RUN_TEST(of_barrier_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_bw_clear_data_reply_OF_VERSION_1_3);
@@ -27391,11 +30170,21 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_bw_enable_get_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_bw_enable_set_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_bw_enable_set_request_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_flow_idle_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_interfaces_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_interfaces_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_header_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_pdu_rx_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_pdu_rx_request_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_pdu_rx_timeout_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_pdu_tx_reply_OF_VERSION_1_3);
+    RUN_TEST(of_bsn_pdu_tx_request_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3);
@@ -27409,12 +30198,14 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_echo_request_OF_VERSION_1_3);
     RUN_TEST(of_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_experimenter_OF_VERSION_1_3);
+    RUN_TEST(of_experimenter_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_features_reply_OF_VERSION_1_3);
     RUN_TEST(of_features_request_OF_VERSION_1_3);
     RUN_TEST(of_flow_add_OF_VERSION_1_3);
     RUN_TEST(of_flow_delete_OF_VERSION_1_3);
     RUN_TEST(of_flow_delete_strict_OF_VERSION_1_3);
     RUN_TEST(of_flow_mod_OF_VERSION_1_3);
+    RUN_TEST(of_flow_mod_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_flow_modify_OF_VERSION_1_3);
     RUN_TEST(of_flow_modify_strict_OF_VERSION_1_3);
     RUN_TEST(of_flow_removed_OF_VERSION_1_3);
@@ -27427,14 +30218,17 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_group_features_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_group_features_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_group_mod_OF_VERSION_1_3);
+    RUN_TEST(of_group_mod_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_group_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_group_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_hello_OF_VERSION_1_3);
+    RUN_TEST(of_hello_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_meter_config_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_meter_config_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_meter_features_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_meter_features_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_meter_mod_OF_VERSION_1_3);
+    RUN_TEST(of_meter_mod_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_meter_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_meter_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_nicira_header_OF_VERSION_1_3);
@@ -27443,21 +30237,27 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_port_desc_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_port_desc_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_port_mod_OF_VERSION_1_3);
+    RUN_TEST(of_port_mod_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_port_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_port_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_port_status_OF_VERSION_1_3);
     RUN_TEST(of_queue_get_config_reply_OF_VERSION_1_3);
     RUN_TEST(of_queue_get_config_request_OF_VERSION_1_3);
+    RUN_TEST(of_queue_op_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_queue_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_queue_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_role_reply_OF_VERSION_1_3);
     RUN_TEST(of_role_request_OF_VERSION_1_3);
+    RUN_TEST(of_role_request_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_set_config_OF_VERSION_1_3);
     RUN_TEST(of_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_stats_request_OF_VERSION_1_3);
+    RUN_TEST(of_switch_config_failed_error_msg_OF_VERSION_1_3);
+    RUN_TEST(of_table_features_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_table_features_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_table_features_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_table_mod_OF_VERSION_1_3);
+    RUN_TEST(of_table_mod_failed_error_msg_OF_VERSION_1_3);
     RUN_TEST(of_table_stats_reply_OF_VERSION_1_3);
     RUN_TEST(of_table_stats_request_OF_VERSION_1_3);
     RUN_TEST(of_action_bsn_OF_VERSION_1_3);
@@ -27511,7 +30311,7 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_bsn_vport_q_in_q_OF_VERSION_1_3);
     RUN_TEST(of_bucket_OF_VERSION_1_3);
     RUN_TEST(of_bucket_counter_OF_VERSION_1_3);
-    RUN_TEST(of_experimenter_multipart_header_OF_VERSION_1_3);
+    RUN_TEST(of_experimenter_stats_header_OF_VERSION_1_3);
     RUN_TEST(of_flow_stats_entry_OF_VERSION_1_3);
     RUN_TEST(of_group_desc_stats_entry_OF_VERSION_1_3);
     RUN_TEST(of_group_stats_entry_OF_VERSION_1_3);
@@ -27545,6 +30345,8 @@ run_unified_accessor_tests(void)
     RUN_TEST(of_oxm_arp_tha_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_OF_VERSION_1_3);
     RUN_TEST(of_oxm_arp_tpa_masked_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_bsn_in_ports_128_OF_VERSION_1_3);
+    RUN_TEST(of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_dst_masked_OF_VERSION_1_3);
     RUN_TEST(of_oxm_eth_src_OF_VERSION_1_3);

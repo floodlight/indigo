@@ -65,6 +65,10 @@ const char *const of_object_id_str[] = {
     "of_async_get_reply",
     "of_async_get_request",
     "of_async_set",
+    "of_bad_action_error_msg",
+    "of_bad_instruction_error_msg",
+    "of_bad_match_error_msg",
+    "of_bad_request_error_msg",
     "of_barrier_reply",
     "of_barrier_request",
     "of_bsn_bw_clear_data_reply",
@@ -73,6 +77,11 @@ const char *const of_object_id_str[] = {
     "of_bsn_bw_enable_get_request",
     "of_bsn_bw_enable_set_reply",
     "of_bsn_bw_enable_set_request",
+    "of_bsn_flow_idle",
+    "of_bsn_flow_idle_enable_get_reply",
+    "of_bsn_flow_idle_enable_get_request",
+    "of_bsn_flow_idle_enable_set_reply",
+    "of_bsn_flow_idle_enable_set_request",
     "of_bsn_get_interfaces_reply",
     "of_bsn_get_interfaces_request",
     "of_bsn_get_ip_mask_reply",
@@ -84,6 +93,11 @@ const char *const of_object_id_str[] = {
     "of_bsn_header",
     "of_bsn_hybrid_get_reply",
     "of_bsn_hybrid_get_request",
+    "of_bsn_pdu_rx_reply",
+    "of_bsn_pdu_rx_request",
+    "of_bsn_pdu_rx_timeout",
+    "of_bsn_pdu_tx_reply",
+    "of_bsn_pdu_tx_request",
     "of_bsn_set_ip_mask",
     "of_bsn_set_l2_table_reply",
     "of_bsn_set_l2_table_request",
@@ -103,6 +117,7 @@ const char *const of_object_id_str[] = {
     "of_echo_request",
     "of_error_msg",
     "of_experimenter",
+    "of_experimenter_error_msg",
     "of_experimenter_stats_reply",
     "of_experimenter_stats_request",
     "of_features_reply",
@@ -111,6 +126,7 @@ const char *const of_object_id_str[] = {
     "of_flow_delete",
     "of_flow_delete_strict",
     "of_flow_mod",
+    "of_flow_mod_failed_error_msg",
     "of_flow_modify",
     "of_flow_modify_strict",
     "of_flow_removed",
@@ -123,14 +139,17 @@ const char *const of_object_id_str[] = {
     "of_group_features_stats_reply",
     "of_group_features_stats_request",
     "of_group_mod",
+    "of_group_mod_failed_error_msg",
     "of_group_stats_reply",
     "of_group_stats_request",
     "of_hello",
+    "of_hello_failed_error_msg",
     "of_meter_config_stats_reply",
     "of_meter_config_stats_request",
     "of_meter_features_stats_reply",
     "of_meter_features_stats_request",
     "of_meter_mod",
+    "of_meter_mod_failed_error_msg",
     "of_meter_stats_reply",
     "of_meter_stats_request",
     "of_nicira_controller_role_reply",
@@ -141,21 +160,27 @@ const char *const of_object_id_str[] = {
     "of_port_desc_stats_reply",
     "of_port_desc_stats_request",
     "of_port_mod",
+    "of_port_mod_failed_error_msg",
     "of_port_stats_reply",
     "of_port_stats_request",
     "of_port_status",
     "of_queue_get_config_reply",
     "of_queue_get_config_request",
+    "of_queue_op_failed_error_msg",
     "of_queue_stats_reply",
     "of_queue_stats_request",
     "of_role_reply",
     "of_role_request",
+    "of_role_request_failed_error_msg",
     "of_set_config",
     "of_stats_reply",
     "of_stats_request",
+    "of_switch_config_failed_error_msg",
+    "of_table_features_failed_error_msg",
     "of_table_features_stats_reply",
     "of_table_features_stats_request",
     "of_table_mod",
+    "of_table_mod_failed_error_msg",
     "of_table_stats_reply",
     "of_table_stats_request",
 
@@ -228,7 +253,7 @@ const char *const of_object_id_str[] = {
     "of_bsn_vport_q_in_q",
     "of_bucket",
     "of_bucket_counter",
-    "of_experimenter_multipart_header",
+    "of_experimenter_stats_header",
     "of_flow_stats_entry",
     "of_group_desc_stats_entry",
     "of_group_stats_entry",
@@ -268,6 +293,8 @@ const char *const of_object_id_str[] = {
     "of_oxm_arp_tha_masked",
     "of_oxm_arp_tpa",
     "of_oxm_arp_tpa_masked",
+    "of_oxm_bsn_in_ports_128",
+    "of_oxm_bsn_in_ports_128_masked",
     "of_oxm_eth_dst",
     "of_oxm_eth_dst_masked",
     "of_oxm_eth_src",
@@ -3481,6 +3508,1098 @@ of_async_set_flow_removed_mask_slave_set(
 
 /** @} */
 
+/* Unified accessor functions for of_bad_action_error_msg */
+/** \ingroup of_bad_action_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bad_action_error_msg_xid_get(
+    of_bad_action_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_bad_action_error_msg_xid_set(
+    of_bad_action_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bad_action_error_msg_code_get(
+    of_bad_action_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_bad_action_error_msg_code_set(
+    of_bad_action_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bad_action_error_msg_data_get(
+    of_bad_action_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bad_action_error_msg.
+ * @param obj Pointer to an object of type of_bad_action_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bad_action_error_msg_data_set(
+    of_bad_action_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BAD_ACTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bad_instruction_error_msg */
+/** \ingroup of_bad_instruction_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bad_instruction_error_msg_xid_get(
+    of_bad_instruction_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_bad_instruction_error_msg_xid_set(
+    of_bad_instruction_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bad_instruction_error_msg_code_get(
+    of_bad_instruction_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_bad_instruction_error_msg_code_set(
+    of_bad_instruction_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bad_instruction_error_msg_data_get(
+    of_bad_instruction_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bad_instruction_error_msg.
+ * @param obj Pointer to an object of type of_bad_instruction_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bad_instruction_error_msg_data_set(
+    of_bad_instruction_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BAD_INSTRUCTION_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bad_match_error_msg */
+/** \ingroup of_bad_match_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bad_match_error_msg_xid_get(
+    of_bad_match_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_bad_match_error_msg_xid_set(
+    of_bad_match_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bad_match_error_msg_code_get(
+    of_bad_match_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_bad_match_error_msg_code_set(
+    of_bad_match_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bad_match_error_msg_data_get(
+    of_bad_match_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bad_match_error_msg.
+ * @param obj Pointer to an object of type of_bad_match_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bad_match_error_msg_data_set(
+    of_bad_match_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BAD_MATCH_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bad_request_error_msg */
+/** \ingroup of_bad_request_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bad_request_error_msg_xid_get(
+    of_bad_request_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_bad_request_error_msg_xid_set(
+    of_bad_request_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bad_request_error_msg_code_get(
+    of_bad_request_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_bad_request_error_msg_code_set(
+    of_bad_request_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bad_request_error_msg_data_get(
+    of_bad_request_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bad_request_error_msg.
+ * @param obj Pointer to an object of type of_bad_request_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bad_request_error_msg_data_set(
+    of_bad_request_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BAD_REQUEST_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_barrier_reply */
 /** \ingroup of_barrier_reply 
  * @{ */
@@ -5611,6 +6730,1862 @@ of_bsn_bw_enable_set_request_enable_set(
     case OF_VERSION_1_0:
     case OF_VERSION_1_1:
     case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_flow_idle */
+/** \ingroup of_bsn_flow_idle 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_xid_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_flow_idle_xid_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_experimenter_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_flow_idle_experimenter_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_subtype_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_flow_idle_subtype_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get cookie from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param cookie Pointer to the child object of type
+ * uint64_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_cookie_get(
+    of_bsn_flow_idle_t *obj,
+    uint64_t *cookie)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u64_get(wbuf, abs_offset, cookie);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set cookie in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param cookie The value to write into the object
+ */
+void
+of_bsn_flow_idle_cookie_set(
+    of_bsn_flow_idle_t *obj,
+    uint64_t cookie)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u64_set(wbuf, abs_offset, cookie);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get priority from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param priority Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_priority_get(
+    of_bsn_flow_idle_t *obj,
+    uint16_t *priority)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, priority);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set priority in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param priority The value to write into the object
+ */
+void
+of_bsn_flow_idle_priority_set(
+    of_bsn_flow_idle_t *obj,
+    uint16_t priority)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, priority);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get table_id from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param table_id Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_table_id_get(
+    of_bsn_flow_idle_t *obj,
+    uint8_t *table_id)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 26;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, table_id);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set table_id in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param table_id The value to write into the object
+ */
+void
+of_bsn_flow_idle_table_id_set(
+    of_bsn_flow_idle_t *obj,
+    uint8_t table_id)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 26;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, table_id);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get match from an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param match Pointer to the child object of type
+ * of_match_t to be filled out.
+ *
+ */
+int WARN_UNUSED_RESULT
+of_bsn_flow_idle_match_get(
+    of_bsn_flow_idle_t *obj,
+    of_match_t *match)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    of_octets_t match_octets; /* Serialized string for match */
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 32;
+        cur_len = _WIRE_MATCH_PADDED_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    match_octets.bytes = cur_len;
+    match_octets.data = OF_OBJECT_BUFFER_INDEX(obj, offset);
+    OF_TRY(of_match_deserialize(ver, match, &match_octets));
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Set match in an object of type of_bsn_flow_idle.
+ * @param obj Pointer to an object of type of_bsn_flow_idle.
+ * @param match Pointer to the child of type of_match_t.
+ *
+ * If the child's wire buffer is the same as the parent's, then
+ * nothing is done as the changes have already been registered in the
+ * parent.  Otherwise, the data in the child's wire buffer is inserted
+ * into the parent's and the appropriate lengths are updated.
+ */
+int WARN_UNUSED_RESULT
+of_bsn_flow_idle_match_set(
+    of_bsn_flow_idle_t *obj,
+    of_match_t *match)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+    of_octets_t match_octets; /* Serialized string for match */
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 32;
+        cur_len = _WIRE_MATCH_PADDED_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+
+    /* Match object */
+    OF_TRY(of_match_serialize(ver, match, &match_octets));
+    new_len = match_octets.bytes;
+    of_wire_buffer_replace_data(wbuf, abs_offset, cur_len,
+        match_octets.data, new_len);
+    /* Free match serialized octets */
+    FREE(match_octets.data);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_get_reply */
+/** \ingroup of_bsn_flow_idle_enable_get_reply 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_reply_xid_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_reply_xid_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_reply_experimenter_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_reply_experimenter_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_reply_subtype_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_reply_subtype_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get enabled from an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param enabled Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_reply_enabled_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *enabled)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, enabled);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set enabled in an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_reply.
+ * @param enabled The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_reply_enabled_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t enabled)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, enabled);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_get_request */
+/** \ingroup of_bsn_flow_idle_enable_get_request 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_request_xid_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_request_xid_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_request_experimenter_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_request_experimenter_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_get_request_subtype_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_flow_idle_enable_get_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_get_request.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_get_request_subtype_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_set_reply */
+/** \ingroup of_bsn_flow_idle_enable_set_reply 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_reply_xid_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_reply_xid_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_reply_experimenter_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_reply_experimenter_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_reply_subtype_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_reply_subtype_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get enable from an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param enable Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_reply_enable_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set enable in an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param enable The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_reply_enable_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get status from an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param status Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_reply_status_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set status in an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_reply.
+ * @param status The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_reply_status_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_set_request */
+/** \ingroup of_bsn_flow_idle_enable_set_request 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_request_xid_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_request_xid_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_request_experimenter_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_request_experimenter_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_request_subtype_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_request_subtype_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get enable from an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param enable Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_flow_idle_enable_set_request_enable_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, enable);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set enable in an object of type of_bsn_flow_idle_enable_set_request.
+ * @param obj Pointer to an object of type of_bsn_flow_idle_enable_set_request.
+ * @param enable The value to write into the object
+ */
+void
+of_bsn_flow_idle_enable_set_request_enable_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t enable)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
     case OF_VERSION_1_3:
         offset = 16;
         break;
@@ -9223,6 +12198,2379 @@ of_bsn_hybrid_get_request_subtype_set(
     OF_LENGTH_CHECK_ASSERT(obj);
 
     return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_pdu_rx_reply */
+/** \ingroup of_bsn_pdu_rx_reply 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_reply_xid_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_pdu_rx_reply_xid_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_reply_experimenter_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_pdu_rx_reply_experimenter_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_reply_subtype_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_pdu_rx_reply_subtype_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get status from an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param status Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_reply_status_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set status in an object of type of_bsn_pdu_rx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_reply.
+ * @param status The value to write into the object
+ */
+void
+of_bsn_pdu_rx_reply_status_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_pdu_rx_request */
+/** \ingroup of_bsn_pdu_rx_request 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_xid_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_xid_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_experimenter_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_experimenter_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_subtype_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_subtype_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get timeout_ms from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param timeout_ms Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_timeout_ms_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *timeout_ms)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, timeout_ms);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set timeout_ms in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param timeout_ms The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_timeout_ms_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t timeout_ms)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, timeout_ms);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get port_no from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param port_no Pointer to the child object of type
+ * of_port_no_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_port_no_get(
+    of_bsn_pdu_rx_request_t *obj,
+    of_port_no_t *port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 20;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_get(ver, wbuf, abs_offset, port_no);
+    OF_PORT_NO_VALUE_CHECK(*port_no, ver);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set port_no in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param port_no The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_port_no_set(
+    of_bsn_pdu_rx_request_t *obj,
+    of_port_no_t port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 20;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_set(ver, wbuf, abs_offset, port_no);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get slot_num from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param slot_num Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_slot_num_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint8_t *slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 22;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set slot_num in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param slot_num The value to write into the object
+ */
+void
+of_bsn_pdu_rx_request_slot_num_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint8_t slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 22;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_request_data_get(
+    of_bsn_pdu_rx_request_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 26;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 28;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bsn_pdu_rx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_request.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bsn_pdu_rx_request_data_set(
+    of_bsn_pdu_rx_request_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 26;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 28;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_pdu_rx_timeout */
+/** \ingroup of_bsn_pdu_rx_timeout 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_timeout_xid_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_pdu_rx_timeout_xid_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_timeout_experimenter_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_pdu_rx_timeout_experimenter_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_timeout_subtype_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_pdu_rx_timeout_subtype_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get port_no from an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param port_no Pointer to the child object of type
+ * of_port_no_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_timeout_port_no_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    of_port_no_t *port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 16;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_get(ver, wbuf, abs_offset, port_no);
+    OF_PORT_NO_VALUE_CHECK(*port_no, ver);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set port_no in an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param port_no The value to write into the object
+ */
+void
+of_bsn_pdu_rx_timeout_port_no_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    of_port_no_t port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 16;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_set(ver, wbuf, abs_offset, port_no);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get slot_num from an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param slot_num Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_rx_timeout_slot_num_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint8_t *slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 18;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set slot_num in an object of type of_bsn_pdu_rx_timeout.
+ * @param obj Pointer to an object of type of_bsn_pdu_rx_timeout.
+ * @param slot_num The value to write into the object
+ */
+void
+of_bsn_pdu_rx_timeout_slot_num_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint8_t slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_RX_TIMEOUT);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 18;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_pdu_tx_reply */
+/** \ingroup of_bsn_pdu_tx_reply 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_reply_xid_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_pdu_tx_reply_xid_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_reply_experimenter_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_pdu_tx_reply_experimenter_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_reply_subtype_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_pdu_tx_reply_subtype_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get status from an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param status Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_reply_status_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set status in an object of type of_bsn_pdu_tx_reply.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_reply.
+ * @param status The value to write into the object
+ */
+void
+of_bsn_pdu_tx_reply_status_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t status)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, status);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_bsn_pdu_tx_request */
+/** \ingroup of_bsn_pdu_tx_request 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_xid_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param xid The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_xid_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_experimenter_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param experimenter The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_experimenter_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param subtype Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_subtype_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param subtype The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_subtype_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get tx_interval_ms from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param tx_interval_ms Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_tx_interval_ms_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *tx_interval_ms)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, tx_interval_ms);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set tx_interval_ms in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param tx_interval_ms The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_tx_interval_ms_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t tx_interval_ms)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, tx_interval_ms);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get port_no from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param port_no Pointer to the child object of type
+ * of_port_no_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_port_no_get(
+    of_bsn_pdu_tx_request_t *obj,
+    of_port_no_t *port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 20;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_get(ver, wbuf, abs_offset, port_no);
+    OF_PORT_NO_VALUE_CHECK(*port_no, ver);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set port_no in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param port_no The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_port_no_set(
+    of_bsn_pdu_tx_request_t *obj,
+    of_port_no_t port_no)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 20;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_port_no_set(ver, wbuf, abs_offset, port_no);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get slot_num from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param slot_num Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_slot_num_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint8_t *slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 22;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set slot_num in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param slot_num The value to write into the object
+ */
+void
+of_bsn_pdu_tx_request_slot_num_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint8_t slot_num)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 22;
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 24;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, slot_num);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_bsn_pdu_tx_request_data_get(
+    of_bsn_pdu_tx_request_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 26;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 28;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_bsn_pdu_tx_request.
+ * @param obj Pointer to an object of type of_bsn_pdu_tx_request.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_bsn_pdu_tx_request_data_set(
+    of_bsn_pdu_tx_request_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_BSN_PDU_TX_REQUEST);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+        offset = 26;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 28;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
 }
 
 /** @} */
@@ -15705,276 +21053,6 @@ of_error_msg_xid_set(
     return ;
 }
 
-/**
- * Get err_type from an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param err_type Pointer to the child object of type
- * uint16_t to be filled out.
- *
- */
-void
-of_error_msg_err_type_get(
-    of_error_msg_t *obj,
-    uint16_t *err_type)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 8;
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    of_wire_buffer_u16_get(wbuf, abs_offset, err_type);
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return ;
-}
-
-/**
- * Set err_type in an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param err_type The value to write into the object
- */
-void
-of_error_msg_err_type_set(
-    of_error_msg_t *obj,
-    uint16_t err_type)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 8;
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    of_wire_buffer_u16_set(wbuf, abs_offset, err_type);
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return ;
-}
-
-/**
- * Get code from an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param code Pointer to the child object of type
- * uint16_t to be filled out.
- *
- */
-void
-of_error_msg_code_get(
-    of_error_msg_t *obj,
-    uint16_t *code)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 10;
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    of_wire_buffer_u16_get(wbuf, abs_offset, code);
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return ;
-}
-
-/**
- * Set code in an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param code The value to write into the object
- */
-void
-of_error_msg_code_set(
-    of_error_msg_t *obj,
-    uint16_t code)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 10;
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    of_wire_buffer_u16_set(wbuf, abs_offset, code);
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return ;
-}
-
-/**
- * Get data from an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param data Pointer to the child object of type
- * of_octets_t to be filled out.
- *
- */
-void
-of_error_msg_data_get(
-    of_error_msg_t *obj,
-    of_octets_t *data)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-    int cur_len = 0; /* Current length of object data */
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 12;
-        cur_len = _END_LEN(obj, offset);
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
-    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
-    data->bytes = cur_len;
-    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return ;
-}
-
-/**
- * Set data in an object of type of_error_msg.
- * @param obj Pointer to an object of type of_error_msg.
- * @param data The value to write into the object
- */
-int WARN_UNUSED_RESULT
-of_error_msg_data_set(
-    of_error_msg_t *obj,
-    of_octets_t *data)
-{
-    of_wire_buffer_t *wbuf;
-    int offset = 0; /* Offset of value relative to the start obj */
-    int abs_offset; /* Offset of value relative to start of wbuf */
-    of_version_t ver;
-    int cur_len = 0; /* Current length of object data */
-    int new_len, delta; /* For set, need new length and delta */
-
-    ASSERT(obj->object_id == OF_ERROR_MSG);
-    ver = obj->version;
-    wbuf = OF_OBJECT_TO_WBUF(obj);
-    ASSERT(wbuf != NULL);
-
-    /* By version, determine offset and current length (where needed) */
-    switch (ver) {
-    case OF_VERSION_1_0:
-    case OF_VERSION_1_1:
-    case OF_VERSION_1_2:
-    case OF_VERSION_1_3:
-        offset = 12;
-        cur_len = _END_LEN(obj, offset);
-        break;
-    default:
-        ASSERT(0);
-    }
-
-    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
-    ASSERT(abs_offset >= 0);
-    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
-    new_len = data->bytes;
-    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
-    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
-
-    /* Not scalar, update lengths if needed */
-    delta = new_len - cur_len;
-    if (delta != 0) {
-        /* Update parent(s) */
-        of_object_parent_length_update((of_object_t *)obj, delta);
-    }
-
-    OF_LENGTH_CHECK_ASSERT(obj);
-
-    return OF_ERROR_NONE;
-}
-
 /** @} */
 
 /* Unified accessor functions for of_experimenter */
@@ -16307,6 +21385,350 @@ of_experimenter_data_set(
     switch (ver) {
     case OF_VERSION_1_0:
     case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_experimenter_error_msg */
+/** \ingroup of_experimenter_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_experimenter_error_msg_xid_get(
+    of_experimenter_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_experimenter_error_msg_xid_set(
+    of_experimenter_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get subtype from an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param subtype Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_experimenter_error_msg_subtype_get(
+    of_experimenter_error_msg_t *obj,
+    uint16_t *subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set subtype in an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param subtype The value to write into the object
+ */
+void
+of_experimenter_error_msg_subtype_set(
+    of_experimenter_error_msg_t *obj,
+    uint16_t subtype)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, subtype);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get experimenter from an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param experimenter Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_experimenter_error_msg_experimenter_get(
+    of_experimenter_error_msg_t *obj,
+    uint32_t *experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set experimenter in an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param experimenter The value to write into the object
+ */
+void
+of_experimenter_error_msg_experimenter_set(
+    of_experimenter_error_msg_t *obj,
+    uint32_t experimenter)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, experimenter);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_experimenter_error_msg_data_get(
+    of_experimenter_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_experimenter_error_msg.
+ * @param obj Pointer to an object of type of_experimenter_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_experimenter_error_msg_data_set(
+    of_experimenter_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_EXPERIMENTER_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
         offset = 16;
@@ -23656,6 +29078,282 @@ of_flow_mod_actions_set(
     if (actions->wire_length_set != NULL) {
         actions->wire_length_set((of_object_t *)actions, actions->length);
     }
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_flow_mod_failed_error_msg */
+/** \ingroup of_flow_mod_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_flow_mod_failed_error_msg_xid_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_flow_mod_failed_error_msg_xid_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_flow_mod_failed_error_msg_code_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_flow_mod_failed_error_msg_code_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_flow_mod_failed_error_msg_data_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_flow_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_flow_mod_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_flow_mod_failed_error_msg_data_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_FLOW_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
 
     /* Not scalar, update lengths if needed */
     delta = new_len - cur_len;
@@ -31046,6 +36744,276 @@ of_group_mod_buckets_set(
 
 /** @} */
 
+/* Unified accessor functions for of_group_mod_failed_error_msg */
+/** \ingroup of_group_mod_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_group_mod_failed_error_msg_xid_get(
+    of_group_mod_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_group_mod_failed_error_msg_xid_set(
+    of_group_mod_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_group_mod_failed_error_msg_code_get(
+    of_group_mod_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_group_mod_failed_error_msg_code_set(
+    of_group_mod_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_group_mod_failed_error_msg_data_get(
+    of_group_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_group_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_group_mod_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_group_mod_failed_error_msg_data_set(
+    of_group_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_GROUP_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_group_stats_reply */
 /** \ingroup of_group_stats_reply 
  * @{ */
@@ -31843,6 +37811,282 @@ of_hello_elements_set(
     if (elements->wire_length_set != NULL) {
         elements->wire_length_set((of_object_t *)elements, elements->length);
     }
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_hello_failed_error_msg */
+/** \ingroup of_hello_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_hello_failed_error_msg_xid_get(
+    of_hello_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_hello_failed_error_msg_xid_set(
+    of_hello_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_hello_failed_error_msg_code_get(
+    of_hello_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_hello_failed_error_msg_code_set(
+    of_hello_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_hello_failed_error_msg_data_get(
+    of_hello_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_hello_failed_error_msg.
+ * @param obj Pointer to an object of type of_hello_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_hello_failed_error_msg_data_set(
+    of_hello_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_HELLO_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
 
     /* Not scalar, update lengths if needed */
     delta = new_len - cur_len;
@@ -33331,6 +39575,264 @@ of_meter_mod_meters_set(
     if (meters->wire_length_set != NULL) {
         meters->wire_length_set((of_object_t *)meters, meters->length);
     }
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_meter_mod_failed_error_msg */
+/** \ingroup of_meter_mod_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_meter_mod_failed_error_msg_xid_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_meter_mod_failed_error_msg_xid_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_meter_mod_failed_error_msg_code_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_meter_mod_failed_error_msg_code_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_meter_mod_failed_error_msg_data_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_meter_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_meter_mod_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_meter_mod_failed_error_msg_data_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_METER_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
 
     /* Not scalar, update lengths if needed */
     delta = new_len - cur_len;
@@ -37234,6 +43736,282 @@ of_port_mod_advertise_set(
 
 /** @} */
 
+/* Unified accessor functions for of_port_mod_failed_error_msg */
+/** \ingroup of_port_mod_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_port_mod_failed_error_msg_xid_get(
+    of_port_mod_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_port_mod_failed_error_msg_xid_set(
+    of_port_mod_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_port_mod_failed_error_msg_code_get(
+    of_port_mod_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_port_mod_failed_error_msg_code_set(
+    of_port_mod_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_port_mod_failed_error_msg_data_get(
+    of_port_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_port_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_port_mod_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_port_mod_failed_error_msg_data_set(
+    of_port_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_PORT_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_port_stats_reply */
 /** \ingroup of_port_stats_reply 
  * @{ */
@@ -38677,6 +45455,282 @@ of_queue_get_config_request_port_set(
 
 /** @} */
 
+/* Unified accessor functions for of_queue_op_failed_error_msg */
+/** \ingroup of_queue_op_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_queue_op_failed_error_msg_xid_get(
+    of_queue_op_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_queue_op_failed_error_msg_xid_set(
+    of_queue_op_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_queue_op_failed_error_msg_code_get(
+    of_queue_op_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_queue_op_failed_error_msg_code_set(
+    of_queue_op_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_queue_op_failed_error_msg_data_get(
+    of_queue_op_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_queue_op_failed_error_msg.
+ * @param obj Pointer to an object of type of_queue_op_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_queue_op_failed_error_msg_data_set(
+    of_queue_op_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_QUEUE_OP_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_0:
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_queue_stats_reply */
 /** \ingroup of_queue_stats_reply 
  * @{ */
@@ -39792,6 +46846,270 @@ of_role_request_generation_id_set(
 
 /** @} */
 
+/* Unified accessor functions for of_role_request_failed_error_msg */
+/** \ingroup of_role_request_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_role_request_failed_error_msg_xid_get(
+    of_role_request_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_role_request_failed_error_msg_xid_set(
+    of_role_request_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_role_request_failed_error_msg_code_get(
+    of_role_request_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_role_request_failed_error_msg_code_set(
+    of_role_request_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_role_request_failed_error_msg_data_get(
+    of_role_request_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_role_request_failed_error_msg.
+ * @param obj Pointer to an object of type of_role_request_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_role_request_failed_error_msg_data_set(
+    of_role_request_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_ROLE_REQUEST_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_set_config */
 /** \ingroup of_set_config 
  * @{ */
@@ -40394,6 +47712,534 @@ of_stats_request_flags_set(
     OF_LENGTH_CHECK_ASSERT(obj);
 
     return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_switch_config_failed_error_msg */
+/** \ingroup of_switch_config_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_switch_config_failed_error_msg_xid_get(
+    of_switch_config_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_switch_config_failed_error_msg_xid_set(
+    of_switch_config_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_switch_config_failed_error_msg_code_get(
+    of_switch_config_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_switch_config_failed_error_msg_code_set(
+    of_switch_config_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_switch_config_failed_error_msg_data_get(
+    of_switch_config_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_switch_config_failed_error_msg.
+ * @param obj Pointer to an object of type of_switch_config_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_switch_config_failed_error_msg_data_set(
+    of_switch_config_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_SWITCH_CONFIG_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_table_features_failed_error_msg */
+/** \ingroup of_table_features_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_table_features_failed_error_msg_xid_get(
+    of_table_features_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_table_features_failed_error_msg_xid_set(
+    of_table_features_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_table_features_failed_error_msg_code_get(
+    of_table_features_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_table_features_failed_error_msg_code_set(
+    of_table_features_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_table_features_failed_error_msg_data_get(
+    of_table_features_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_table_features_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_features_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_table_features_failed_error_msg_data_set(
+    of_table_features_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_TABLE_FEATURES_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
 }
 
 /** @} */
@@ -41272,6 +49118,276 @@ of_table_mod_config_set(
     OF_LENGTH_CHECK_ASSERT(obj);
 
     return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_table_mod_failed_error_msg */
+/** \ingroup of_table_mod_failed_error_msg 
+ * @{ */
+
+/**
+ * Get xid from an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param xid Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_table_mod_failed_error_msg_xid_get(
+    of_table_mod_failed_error_msg_t *obj,
+    uint32_t *xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set xid in an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param xid The value to write into the object
+ */
+void
+of_table_mod_failed_error_msg_xid_set(
+    of_table_mod_failed_error_msg_t *obj,
+    uint32_t xid)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, xid);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get code from an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param code Pointer to the child object of type
+ * uint16_t to be filled out.
+ *
+ */
+void
+of_table_mod_failed_error_msg_code_get(
+    of_table_mod_failed_error_msg_t *obj,
+    uint16_t *code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_get(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set code in an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param code The value to write into the object
+ */
+void
+of_table_mod_failed_error_msg_code_set(
+    of_table_mod_failed_error_msg_t *obj,
+    uint16_t code)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 10;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u16_set(wbuf, abs_offset, code);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get data from an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param data Pointer to the child object of type
+ * of_octets_t to be filled out.
+ *
+ */
+void
+of_table_mod_failed_error_msg_data_get(
+    of_table_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
+    data->bytes = cur_len;
+    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set data in an object of type of_table_mod_failed_error_msg.
+ * @param obj Pointer to an object of type of_table_mod_failed_error_msg.
+ * @param data The value to write into the object
+ */
+int WARN_UNUSED_RESULT
+of_table_mod_failed_error_msg_data_set(
+    of_table_mod_failed_error_msg_t *obj,
+    of_octets_t *data)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+    int cur_len = 0; /* Current length of object data */
+    int new_len, delta; /* For set, need new length and delta */
+
+    ASSERT(obj->object_id == OF_TABLE_MOD_FAILED_ERROR_MSG);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 12;
+        cur_len = _END_LEN(obj, offset);
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
+    new_len = data->bytes;
+    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
+    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
+
+    /* Not scalar, update lengths if needed */
+    delta = new_len - cur_len;
+    if (delta != 0) {
+        /* Update parent(s) */
+        of_object_parent_length_update((of_object_t *)obj, delta);
+    }
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return OF_ERROR_NONE;
 }
 
 /** @} */
@@ -47445,20 +55561,20 @@ of_bucket_counter_byte_count_set(
 
 /** @} */
 
-/* Unified accessor functions for of_experimenter_multipart_header */
-/** \ingroup of_experimenter_multipart_header 
+/* Unified accessor functions for of_experimenter_stats_header */
+/** \ingroup of_experimenter_stats_header 
  * @{ */
 
 /**
- * Get experimenter from an object of type of_experimenter_multipart_header.
- * @param obj Pointer to an object of type of_experimenter_multipart_header.
+ * Get experimenter from an object of type of_experimenter_stats_header.
+ * @param obj Pointer to an object of type of_experimenter_stats_header.
  * @param experimenter Pointer to the child object of type
  * uint32_t to be filled out.
  *
  */
 void
-of_experimenter_multipart_header_experimenter_get(
-    of_experimenter_multipart_header_t *obj,
+of_experimenter_stats_header_experimenter_get(
+    of_experimenter_stats_header_t *obj,
     uint32_t *experimenter)
 {
     of_wire_buffer_t *wbuf;
@@ -47466,7 +55582,7 @@ of_experimenter_multipart_header_experimenter_get(
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
 
-    ASSERT(obj->object_id == OF_EXPERIMENTER_MULTIPART_HEADER);
+    ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_HEADER);
     ver = obj->version;
     wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
@@ -47490,13 +55606,13 @@ of_experimenter_multipart_header_experimenter_get(
 }
 
 /**
- * Set experimenter in an object of type of_experimenter_multipart_header.
- * @param obj Pointer to an object of type of_experimenter_multipart_header.
+ * Set experimenter in an object of type of_experimenter_stats_header.
+ * @param obj Pointer to an object of type of_experimenter_stats_header.
  * @param experimenter The value to write into the object
  */
 void
-of_experimenter_multipart_header_experimenter_set(
-    of_experimenter_multipart_header_t *obj,
+of_experimenter_stats_header_experimenter_set(
+    of_experimenter_stats_header_t *obj,
     uint32_t experimenter)
 {
     of_wire_buffer_t *wbuf;
@@ -47504,7 +55620,7 @@ of_experimenter_multipart_header_experimenter_set(
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
 
-    ASSERT(obj->object_id == OF_EXPERIMENTER_MULTIPART_HEADER);
+    ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_HEADER);
     ver = obj->version;
     wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
@@ -47528,15 +55644,15 @@ of_experimenter_multipart_header_experimenter_set(
 }
 
 /**
- * Get subtype from an object of type of_experimenter_multipart_header.
- * @param obj Pointer to an object of type of_experimenter_multipart_header.
+ * Get subtype from an object of type of_experimenter_stats_header.
+ * @param obj Pointer to an object of type of_experimenter_stats_header.
  * @param subtype Pointer to the child object of type
  * uint32_t to be filled out.
  *
  */
 void
-of_experimenter_multipart_header_subtype_get(
-    of_experimenter_multipart_header_t *obj,
+of_experimenter_stats_header_subtype_get(
+    of_experimenter_stats_header_t *obj,
     uint32_t *subtype)
 {
     of_wire_buffer_t *wbuf;
@@ -47544,7 +55660,7 @@ of_experimenter_multipart_header_subtype_get(
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
 
-    ASSERT(obj->object_id == OF_EXPERIMENTER_MULTIPART_HEADER);
+    ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_HEADER);
     ver = obj->version;
     wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
@@ -47568,13 +55684,13 @@ of_experimenter_multipart_header_subtype_get(
 }
 
 /**
- * Set subtype in an object of type of_experimenter_multipart_header.
- * @param obj Pointer to an object of type of_experimenter_multipart_header.
+ * Set subtype in an object of type of_experimenter_stats_header.
+ * @param obj Pointer to an object of type of_experimenter_stats_header.
  * @param subtype The value to write into the object
  */
 void
-of_experimenter_multipart_header_subtype_set(
-    of_experimenter_multipart_header_t *obj,
+of_experimenter_stats_header_subtype_set(
+    of_experimenter_stats_header_t *obj,
     uint32_t subtype)
 {
     of_wire_buffer_t *wbuf;
@@ -47582,7 +55698,7 @@ of_experimenter_multipart_header_subtype_set(
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
 
-    ASSERT(obj->object_id == OF_EXPERIMENTER_MULTIPART_HEADER);
+    ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_HEADER);
     ver = obj->version;
     wbuf = OF_OBJECT_TO_WBUF(obj);
     ASSERT(wbuf != NULL);
@@ -48916,6 +57032,88 @@ of_flow_stats_entry_actions_set(
 /* Unified accessor functions for of_group_desc_stats_entry */
 /** \ingroup of_group_desc_stats_entry 
  * @{ */
+
+/**
+ * Get group_type from an object of type of_group_desc_stats_entry.
+ * @param obj Pointer to an object of type of_group_desc_stats_entry.
+ * @param group_type Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_group_desc_stats_entry_group_type_get(
+    of_group_desc_stats_entry_t *obj,
+    uint8_t *group_type)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_DESC_STATS_ENTRY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 2;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, group_type);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set group_type in an object of type of_group_desc_stats_entry.
+ * @param obj Pointer to an object of type of_group_desc_stats_entry.
+ * @param group_type The value to write into the object
+ */
+void
+of_group_desc_stats_entry_group_type_set(
+    of_group_desc_stats_entry_t *obj,
+    uint8_t group_type)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_GROUP_DESC_STATS_ENTRY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_1:
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 2;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, group_type);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
 
 /**
  * Get group_id from an object of type of_group_desc_stats_entry.
@@ -57121,6 +65319,258 @@ of_oxm_arp_tpa_masked_value_mask_set(
     abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
     ASSERT(abs_offset >= 0);
     of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_in_ports_128 */
+/** \ingroup of_oxm_bsn_in_ports_128 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_in_ports_128.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128.
+ * @param value Pointer to the child object of type
+ * of_bitmap_128_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_in_ports_128_value_get(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_in_ports_128.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_in_ports_128_value_set(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_in_ports_128_masked */
+/** \ingroup of_oxm_bsn_in_ports_128_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param value Pointer to the child object of type
+ * of_bitmap_128_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_in_ports_128_masked_value_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_in_ports_128_masked_value_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param value_mask Pointer to the child object of type
+ * of_bitmap_128_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_in_ports_128_masked_value_mask_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_in_ports_128_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_in_ports_128_masked_value_mask_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_IN_PORTS_128_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 20;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_bitmap_128_set(wbuf, abs_offset, value_mask);
 
     OF_LENGTH_CHECK_ASSERT(obj);
 
@@ -76283,6 +84733,766 @@ of_async_set_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_bad_action_error_msg */
+
+/**
+ * \defgroup of_bad_action_error_msg of_bad_action_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bad_action_error_msg_push_wire_values(of_bad_action_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BAD_ACTION_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bad_action_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bad_action_error_msg
+ */
+
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_new_(of_version_t version)
+{
+    of_bad_action_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BAD_ACTION_ERROR_MSG] + of_object_extra_len[version][OF_BAD_ACTION_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bad_action_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_init(obj, version, bytes, 0);
+
+    if (of_bad_action_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bad_action_error_msg_t *obj;
+
+    obj = of_bad_action_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bad_action_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bad_action_error_msg_init(of_bad_action_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BAD_ACTION_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BAD_ACTION_ERROR_MSG] + of_object_extra_len[version][OF_BAD_ACTION_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BAD_ACTION_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bad_action_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bad_action_error_msg
+ */
+
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_new_from_message_(of_message_t msg)
+{
+    of_bad_action_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bad_action_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_action_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_action_error_msg_t *
+of_bad_action_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bad_action_error_msg_t *obj;
+
+    obj = of_bad_action_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bad_instruction_error_msg */
+
+/**
+ * \defgroup of_bad_instruction_error_msg of_bad_instruction_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bad_instruction_error_msg_push_wire_values(of_bad_instruction_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BAD_INSTRUCTION_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bad_instruction_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bad_instruction_error_msg
+ */
+
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_new_(of_version_t version)
+{
+    of_bad_instruction_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BAD_INSTRUCTION_ERROR_MSG] + of_object_extra_len[version][OF_BAD_INSTRUCTION_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bad_instruction_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_instruction_error_msg_init(obj, version, bytes, 0);
+
+    if (of_bad_instruction_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bad_instruction_error_msg_t *obj;
+
+    obj = of_bad_instruction_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bad_instruction_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bad_instruction_error_msg_init(of_bad_instruction_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BAD_INSTRUCTION_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BAD_INSTRUCTION_ERROR_MSG] + of_object_extra_len[version][OF_BAD_INSTRUCTION_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BAD_INSTRUCTION_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bad_instruction_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bad_instruction_error_msg
+ */
+
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_new_from_message_(of_message_t msg)
+{
+    of_bad_instruction_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bad_instruction_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_instruction_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_instruction_error_msg_t *
+of_bad_instruction_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bad_instruction_error_msg_t *obj;
+
+    obj = of_bad_instruction_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bad_match_error_msg */
+
+/**
+ * \defgroup of_bad_match_error_msg of_bad_match_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bad_match_error_msg_push_wire_values(of_bad_match_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BAD_MATCH_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bad_match_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bad_match_error_msg
+ */
+
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_new_(of_version_t version)
+{
+    of_bad_match_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BAD_MATCH_ERROR_MSG] + of_object_extra_len[version][OF_BAD_MATCH_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bad_match_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_match_error_msg_init(obj, version, bytes, 0);
+
+    if (of_bad_match_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bad_match_error_msg_t *obj;
+
+    obj = of_bad_match_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bad_match_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bad_match_error_msg_init(of_bad_match_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BAD_MATCH_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BAD_MATCH_ERROR_MSG] + of_object_extra_len[version][OF_BAD_MATCH_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BAD_MATCH_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bad_match_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bad_match_error_msg
+ */
+
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_new_from_message_(of_message_t msg)
+{
+    of_bad_match_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bad_match_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_match_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_match_error_msg_t *
+of_bad_match_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bad_match_error_msg_t *obj;
+
+    obj = of_bad_match_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bad_request_error_msg */
+
+/**
+ * \defgroup of_bad_request_error_msg of_bad_request_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bad_request_error_msg_push_wire_values(of_bad_request_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BAD_REQUEST_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bad_request_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bad_request_error_msg
+ */
+
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_new_(of_version_t version)
+{
+    of_bad_request_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BAD_REQUEST_ERROR_MSG] + of_object_extra_len[version][OF_BAD_REQUEST_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bad_request_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_init(obj, version, bytes, 0);
+
+    if (of_bad_request_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bad_request_error_msg_t *obj;
+
+    obj = of_bad_request_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bad_request_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bad_request_error_msg_init(of_bad_request_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BAD_REQUEST_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BAD_REQUEST_ERROR_MSG] + of_object_extra_len[version][OF_BAD_REQUEST_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BAD_REQUEST_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bad_request_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bad_request_error_msg
+ */
+
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_new_from_message_(of_message_t msg)
+{
+    of_bad_request_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bad_request_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bad_request_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bad_request_error_msg_t *
+of_bad_request_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bad_request_error_msg_t *obj;
+
+    obj = of_bad_request_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_barrier_reply */
 
 /**
@@ -77965,6 +87175,991 @@ of_bsn_bw_enable_set_request_new_from_message_tracking(of_message_t msg,
     of_bsn_bw_enable_set_request_t *obj;
 
     obj = of_bsn_bw_enable_set_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_flow_idle */
+
+/**
+ * \defgroup of_bsn_flow_idle of_bsn_flow_idle
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_flow_idle_push_wire_values(of_bsn_flow_idle_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_FLOW_IDLE));
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            40);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_flow_idle object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_flow_idle
+ */
+
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_new_(of_version_t version)
+{
+    of_bsn_flow_idle_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE] + of_object_extra_len[version][OF_BSN_FLOW_IDLE];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_flow_idle_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_init(obj, version, bytes, 0);
+
+    if (of_bsn_flow_idle_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_flow_idle_t *obj;
+
+    obj = of_bsn_flow_idle_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_flow_idle.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_flow_idle_init(of_bsn_flow_idle_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_FLOW_IDLE] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE] + of_object_extra_len[version][OF_BSN_FLOW_IDLE];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_FLOW_IDLE;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_flow_idle object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_flow_idle
+ */
+
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_new_from_message_(of_message_t msg)
+{
+    of_bsn_flow_idle_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_flow_idle_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_t *
+of_bsn_flow_idle_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_flow_idle_t *obj;
+
+    obj = of_bsn_flow_idle_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_flow_idle_enable_get_reply */
+
+/**
+ * \defgroup of_bsn_flow_idle_enable_get_reply of_bsn_flow_idle_enable_get_reply
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_flow_idle_enable_get_reply_push_wire_values(of_bsn_flow_idle_enable_get_reply_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY));
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            39);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_flow_idle_enable_get_reply object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_reply
+ */
+
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_new_(of_version_t version)
+{
+    of_bsn_flow_idle_enable_get_reply_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_flow_idle_enable_get_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_reply_init(obj, version, bytes, 0);
+
+    if (of_bsn_flow_idle_enable_get_reply_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_flow_idle_enable_get_reply_t *obj;
+
+    obj = of_bsn_flow_idle_enable_get_reply_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_flow_idle_enable_get_reply.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_flow_idle_enable_get_reply_init(of_bsn_flow_idle_enable_get_reply_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_flow_idle_enable_get_reply object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_reply
+ */
+
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_new_from_message_(of_message_t msg)
+{
+    of_bsn_flow_idle_enable_get_reply_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_flow_idle_enable_get_reply_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_reply_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_get_reply_t *
+of_bsn_flow_idle_enable_get_reply_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_flow_idle_enable_get_reply_t *obj;
+
+    obj = of_bsn_flow_idle_enable_get_reply_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_flow_idle_enable_get_request */
+
+/**
+ * \defgroup of_bsn_flow_idle_enable_get_request of_bsn_flow_idle_enable_get_request
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_flow_idle_enable_get_request_push_wire_values(of_bsn_flow_idle_enable_get_request_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST));
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            38);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_flow_idle_enable_get_request object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_request
+ */
+
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_new_(of_version_t version)
+{
+    of_bsn_flow_idle_enable_get_request_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_flow_idle_enable_get_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_request_init(obj, version, bytes, 0);
+
+    if (of_bsn_flow_idle_enable_get_request_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_flow_idle_enable_get_request_t *obj;
+
+    obj = of_bsn_flow_idle_enable_get_request_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_flow_idle_enable_get_request.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_flow_idle_enable_get_request_init(of_bsn_flow_idle_enable_get_request_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_flow_idle_enable_get_request object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_request
+ */
+
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_new_from_message_(of_message_t msg)
+{
+    of_bsn_flow_idle_enable_get_request_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_flow_idle_enable_get_request_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_get_request_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_get_request_t *
+of_bsn_flow_idle_enable_get_request_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_flow_idle_enable_get_request_t *obj;
+
+    obj = of_bsn_flow_idle_enable_get_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_flow_idle_enable_set_reply */
+
+/**
+ * \defgroup of_bsn_flow_idle_enable_set_reply of_bsn_flow_idle_enable_set_reply
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_flow_idle_enable_set_reply_push_wire_values(of_bsn_flow_idle_enable_set_reply_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY));
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            37);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_flow_idle_enable_set_reply object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_reply
+ */
+
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_new_(of_version_t version)
+{
+    of_bsn_flow_idle_enable_set_reply_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_flow_idle_enable_set_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_reply_init(obj, version, bytes, 0);
+
+    if (of_bsn_flow_idle_enable_set_reply_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_flow_idle_enable_set_reply_t *obj;
+
+    obj = of_bsn_flow_idle_enable_set_reply_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_flow_idle_enable_set_reply.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_flow_idle_enable_set_reply_init(of_bsn_flow_idle_enable_set_reply_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_flow_idle_enable_set_reply object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_reply
+ */
+
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_new_from_message_(of_message_t msg)
+{
+    of_bsn_flow_idle_enable_set_reply_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_flow_idle_enable_set_reply_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_reply_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_set_reply_t *
+of_bsn_flow_idle_enable_set_reply_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_flow_idle_enable_set_reply_t *obj;
+
+    obj = of_bsn_flow_idle_enable_set_reply_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_flow_idle_enable_set_request */
+
+/**
+ * \defgroup of_bsn_flow_idle_enable_set_request of_bsn_flow_idle_enable_set_request
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_flow_idle_enable_set_request_push_wire_values(of_bsn_flow_idle_enable_set_request_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST));
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            36);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_flow_idle_enable_set_request object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_request
+ */
+
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_new_(of_version_t version)
+{
+    of_bsn_flow_idle_enable_set_request_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_flow_idle_enable_set_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_request_init(obj, version, bytes, 0);
+
+    if (of_bsn_flow_idle_enable_set_request_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_flow_idle_enable_set_request_t *obj;
+
+    obj = of_bsn_flow_idle_enable_set_request_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_flow_idle_enable_set_request.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_flow_idle_enable_set_request_init(of_bsn_flow_idle_enable_set_request_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST] + of_object_extra_len[version][OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_flow_idle_enable_set_request object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_request
+ */
+
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_new_from_message_(of_message_t msg)
+{
+    of_bsn_flow_idle_enable_set_request_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_flow_idle_enable_set_request_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_flow_idle_enable_set_request_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_flow_idle_enable_set_request_t *
+of_bsn_flow_idle_enable_set_request_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_flow_idle_enable_set_request_t *obj;
+
+    obj = of_bsn_flow_idle_enable_set_request_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -80184,6 +90379,1096 @@ of_bsn_hybrid_get_request_new_from_message_tracking(of_message_t msg,
     of_bsn_hybrid_get_request_t *obj;
 
     obj = of_bsn_hybrid_get_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_pdu_rx_reply */
+
+/**
+ * \defgroup of_bsn_pdu_rx_reply of_bsn_pdu_rx_reply
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_pdu_rx_reply_push_wire_values(of_bsn_pdu_rx_reply_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_PDU_RX_REPLY));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            34);
+    }
+
+    if (obj->version == OF_VERSION_1_1) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            34);
+    }
+
+    if (obj->version == OF_VERSION_1_2) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            34);
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            34);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_pdu_rx_reply object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_pdu_rx_reply
+ */
+
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_new_(of_version_t version)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_REPLY] + of_object_extra_len[version][OF_BSN_PDU_RX_REPLY];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_pdu_rx_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_init(obj, version, bytes, 0);
+
+    if (of_bsn_pdu_rx_reply_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+
+    obj = of_bsn_pdu_rx_reply_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_pdu_rx_reply.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_pdu_rx_reply_init(of_bsn_pdu_rx_reply_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_PDU_RX_REPLY] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_REPLY] + of_object_extra_len[version][OF_BSN_PDU_RX_REPLY];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_PDU_RX_REPLY;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_pdu_rx_reply object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_pdu_rx_reply
+ */
+
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_new_from_message_(of_message_t msg)
+{
+    of_bsn_pdu_rx_reply_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_pdu_rx_reply_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_reply_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_reply_t *
+of_bsn_pdu_rx_reply_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_pdu_rx_reply_t *obj;
+
+    obj = of_bsn_pdu_rx_reply_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_pdu_rx_request */
+
+/**
+ * \defgroup of_bsn_pdu_rx_request of_bsn_pdu_rx_request
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_pdu_rx_request_push_wire_values(of_bsn_pdu_rx_request_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_PDU_RX_REQUEST));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            33);
+    }
+
+    if (obj->version == OF_VERSION_1_1) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            33);
+    }
+
+    if (obj->version == OF_VERSION_1_2) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            33);
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            33);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_pdu_rx_request object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_pdu_rx_request
+ */
+
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_new_(of_version_t version)
+{
+    of_bsn_pdu_rx_request_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_REQUEST] + of_object_extra_len[version][OF_BSN_PDU_RX_REQUEST];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_pdu_rx_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_init(obj, version, bytes, 0);
+
+    if (of_bsn_pdu_rx_request_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_pdu_rx_request_t *obj;
+
+    obj = of_bsn_pdu_rx_request_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_pdu_rx_request.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_pdu_rx_request_init(of_bsn_pdu_rx_request_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_PDU_RX_REQUEST] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_REQUEST] + of_object_extra_len[version][OF_BSN_PDU_RX_REQUEST];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_PDU_RX_REQUEST;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_pdu_rx_request object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_pdu_rx_request
+ */
+
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_new_from_message_(of_message_t msg)
+{
+    of_bsn_pdu_rx_request_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_pdu_rx_request_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_request_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_request_t *
+of_bsn_pdu_rx_request_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_pdu_rx_request_t *obj;
+
+    obj = of_bsn_pdu_rx_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_pdu_rx_timeout */
+
+/**
+ * \defgroup of_bsn_pdu_rx_timeout of_bsn_pdu_rx_timeout
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_pdu_rx_timeout_push_wire_values(of_bsn_pdu_rx_timeout_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_PDU_RX_TIMEOUT));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            35);
+    }
+
+    if (obj->version == OF_VERSION_1_1) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            35);
+    }
+
+    if (obj->version == OF_VERSION_1_2) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            35);
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            35);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_pdu_rx_timeout object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_pdu_rx_timeout
+ */
+
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_new_(of_version_t version)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_TIMEOUT] + of_object_extra_len[version][OF_BSN_PDU_RX_TIMEOUT];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_pdu_rx_timeout_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_init(obj, version, bytes, 0);
+
+    if (of_bsn_pdu_rx_timeout_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+
+    obj = of_bsn_pdu_rx_timeout_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_pdu_rx_timeout.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_pdu_rx_timeout_init(of_bsn_pdu_rx_timeout_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_PDU_RX_TIMEOUT] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_PDU_RX_TIMEOUT] + of_object_extra_len[version][OF_BSN_PDU_RX_TIMEOUT];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_PDU_RX_TIMEOUT;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_pdu_rx_timeout object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_pdu_rx_timeout
+ */
+
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_new_from_message_(of_message_t msg)
+{
+    of_bsn_pdu_rx_timeout_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_pdu_rx_timeout_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_rx_timeout_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_rx_timeout_t *
+of_bsn_pdu_rx_timeout_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_pdu_rx_timeout_t *obj;
+
+    obj = of_bsn_pdu_rx_timeout_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_pdu_tx_reply */
+
+/**
+ * \defgroup of_bsn_pdu_tx_reply of_bsn_pdu_tx_reply
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_pdu_tx_reply_push_wire_values(of_bsn_pdu_tx_reply_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_PDU_TX_REPLY));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            32);
+    }
+
+    if (obj->version == OF_VERSION_1_1) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            32);
+    }
+
+    if (obj->version == OF_VERSION_1_2) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            32);
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            32);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_pdu_tx_reply object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_pdu_tx_reply
+ */
+
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_new_(of_version_t version)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_PDU_TX_REPLY] + of_object_extra_len[version][OF_BSN_PDU_TX_REPLY];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_pdu_tx_reply_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_init(obj, version, bytes, 0);
+
+    if (of_bsn_pdu_tx_reply_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+
+    obj = of_bsn_pdu_tx_reply_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_pdu_tx_reply.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_pdu_tx_reply_init(of_bsn_pdu_tx_reply_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_PDU_TX_REPLY] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_PDU_TX_REPLY] + of_object_extra_len[version][OF_BSN_PDU_TX_REPLY];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_PDU_TX_REPLY;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_pdu_tx_reply object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_pdu_tx_reply
+ */
+
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_new_from_message_(of_message_t msg)
+{
+    of_bsn_pdu_tx_reply_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_pdu_tx_reply_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_reply_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_tx_reply_t *
+of_bsn_pdu_tx_reply_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_pdu_tx_reply_t *obj;
+
+    obj = of_bsn_pdu_tx_reply_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_bsn_pdu_tx_request */
+
+/**
+ * \defgroup of_bsn_pdu_tx_request of_bsn_pdu_tx_request
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_bsn_pdu_tx_request_push_wire_values(of_bsn_pdu_tx_request_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_BSN_PDU_TX_REQUEST));
+    }
+
+    if (obj->version == OF_VERSION_1_0) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            31);
+    }
+
+    if (obj->version == OF_VERSION_1_1) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            31);
+    }
+
+    if (obj->version == OF_VERSION_1_2) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            31);
+    }
+
+    if (obj->version == OF_VERSION_1_3) {
+        of_message_experimenter_id_set(OF_OBJECT_TO_MESSAGE(obj),
+                                       OF_EXPERIMENTER_ID_BSN);
+        of_message_experimenter_subtype_set(OF_OBJECT_TO_MESSAGE(obj),
+                                            31);
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_bsn_pdu_tx_request object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_bsn_pdu_tx_request
+ */
+
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_new_(of_version_t version)
+{
+    of_bsn_pdu_tx_request_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_BSN_PDU_TX_REQUEST] + of_object_extra_len[version][OF_BSN_PDU_TX_REQUEST];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_bsn_pdu_tx_request_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_init(obj, version, bytes, 0);
+
+    if (of_bsn_pdu_tx_request_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_bsn_pdu_tx_request_t *obj;
+
+    obj = of_bsn_pdu_tx_request_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_bsn_pdu_tx_request.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_bsn_pdu_tx_request_init(of_bsn_pdu_tx_request_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_BSN_PDU_TX_REQUEST] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_BSN_PDU_TX_REQUEST] + of_object_extra_len[version][OF_BSN_PDU_TX_REQUEST];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_BSN_PDU_TX_REQUEST;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_bsn_pdu_tx_request object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_bsn_pdu_tx_request
+ */
+
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_new_from_message_(of_message_t msg)
+{
+    of_bsn_pdu_tx_request_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_bsn_pdu_tx_request_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_bsn_pdu_tx_request_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_bsn_pdu_tx_request_t *
+of_bsn_pdu_tx_request_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_bsn_pdu_tx_request_t *obj;
+
+    obj = of_bsn_pdu_tx_request_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -83665,26 +94950,6 @@ of_echo_request_new_from_message_tracking(of_message_t msg,
  */
 
 /**
- * Helper function to push values into the wire buffer
- */
-static inline int
-of_error_msg_push_wire_values(of_error_msg_t *obj)
-{
-
-    /* Message obj; push version, length and type to wire */
-    of_message_t msg;
-
-    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
-        of_message_version_set(msg, obj->version);
-        of_message_length_set(msg, obj->length);
-        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
-                 OF_ERROR_MSG));
-    }
-
-    return OF_ERROR_NONE;
-}
-
-/**
  * Create a new of_error_msg object
  *
  * @param version The wire version to use for the object
@@ -83713,11 +94978,6 @@ of_error_msg_new_(of_version_t version)
     }
 
     of_error_msg_init(obj, version, bytes, 0);
-
-    if (of_error_msg_push_wire_values(obj) < 0) {
-        FREE(obj);
-        return NULL;
-    }
 
     return obj;
 }
@@ -84032,6 +95292,196 @@ of_experimenter_new_from_message_tracking(of_message_t msg,
     of_experimenter_t *obj;
 
     obj = of_experimenter_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_experimenter_error_msg */
+
+/**
+ * \defgroup of_experimenter_error_msg of_experimenter_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_experimenter_error_msg_push_wire_values(of_experimenter_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_EXPERIMENTER_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_experimenter_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_experimenter_error_msg
+ */
+
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_new_(of_version_t version)
+{
+    of_experimenter_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_ERROR_MSG] + of_object_extra_len[version][OF_EXPERIMENTER_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_experimenter_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_experimenter_error_msg_init(obj, version, bytes, 0);
+
+    if (of_experimenter_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_experimenter_error_msg_t *obj;
+
+    obj = of_experimenter_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_experimenter_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_experimenter_error_msg_init(of_experimenter_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_EXPERIMENTER_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_ERROR_MSG] + of_object_extra_len[version][OF_EXPERIMENTER_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_EXPERIMENTER_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_experimenter_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_experimenter_error_msg
+ */
+
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_new_from_message_(of_message_t msg)
+{
+    of_experimenter_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_experimenter_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_experimenter_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_experimenter_error_msg_t *
+of_experimenter_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_experimenter_error_msg_t *obj;
+
+    obj = of_experimenter_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -85551,6 +97001,196 @@ of_flow_mod_new_from_message_tracking(of_message_t msg,
     of_flow_mod_t *obj;
 
     obj = of_flow_mod_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_flow_mod_failed_error_msg */
+
+/**
+ * \defgroup of_flow_mod_failed_error_msg of_flow_mod_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_flow_mod_failed_error_msg_push_wire_values(of_flow_mod_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_FLOW_MOD_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_flow_mod_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_flow_mod_failed_error_msg
+ */
+
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_new_(of_version_t version)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_FLOW_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_FLOW_MOD_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_flow_mod_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_flow_mod_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+
+    obj = of_flow_mod_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_flow_mod_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_flow_mod_failed_error_msg_init(of_flow_mod_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_FLOW_MOD_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_FLOW_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_FLOW_MOD_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_FLOW_MOD_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_flow_mod_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_flow_mod_failed_error_msg
+ */
+
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_flow_mod_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_flow_mod_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_flow_mod_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_flow_mod_failed_error_msg_t *
+of_flow_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_flow_mod_failed_error_msg_t *obj;
+
+    obj = of_flow_mod_failed_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -87861,6 +99501,196 @@ of_group_mod_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_group_mod_failed_error_msg */
+
+/**
+ * \defgroup of_group_mod_failed_error_msg of_group_mod_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_group_mod_failed_error_msg_push_wire_values(of_group_mod_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_GROUP_MOD_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_group_mod_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_group_mod_failed_error_msg
+ */
+
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_new_(of_version_t version)
+{
+    of_group_mod_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_GROUP_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_GROUP_MOD_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_group_mod_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_group_mod_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_group_mod_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_group_mod_failed_error_msg_t *obj;
+
+    obj = of_group_mod_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_group_mod_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_group_mod_failed_error_msg_init(of_group_mod_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_GROUP_MOD_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_GROUP_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_GROUP_MOD_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_GROUP_MOD_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_group_mod_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_group_mod_failed_error_msg
+ */
+
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_group_mod_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_group_mod_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_group_mod_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_group_mod_failed_error_msg_t *
+of_group_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_group_mod_failed_error_msg_t *obj;
+
+    obj = of_group_mod_failed_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_group_stats_reply */
 
 /**
@@ -88425,6 +100255,196 @@ of_hello_new_from_message_tracking(of_message_t msg,
     of_hello_t *obj;
 
     obj = of_hello_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_hello_failed_error_msg */
+
+/**
+ * \defgroup of_hello_failed_error_msg of_hello_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_hello_failed_error_msg_push_wire_values(of_hello_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_HELLO_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_hello_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_hello_failed_error_msg
+ */
+
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_new_(of_version_t version)
+{
+    of_hello_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_HELLO_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_HELLO_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_hello_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_hello_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_hello_failed_error_msg_t *obj;
+
+    obj = of_hello_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_hello_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_hello_failed_error_msg_init(of_hello_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_HELLO_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_HELLO_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_HELLO_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_HELLO_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_hello_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_hello_failed_error_msg
+ */
+
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_hello_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_hello_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_hello_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_hello_failed_error_msg_t *
+of_hello_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_hello_failed_error_msg_t *obj;
+
+    obj = of_hello_failed_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -89375,6 +101395,196 @@ of_meter_mod_new_from_message_tracking(of_message_t msg,
     of_meter_mod_t *obj;
 
     obj = of_meter_mod_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_meter_mod_failed_error_msg */
+
+/**
+ * \defgroup of_meter_mod_failed_error_msg of_meter_mod_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_meter_mod_failed_error_msg_push_wire_values(of_meter_mod_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_METER_MOD_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_meter_mod_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_meter_mod_failed_error_msg
+ */
+
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_new_(of_version_t version)
+{
+    of_meter_mod_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_METER_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_METER_MOD_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_meter_mod_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_meter_mod_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_meter_mod_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_meter_mod_failed_error_msg_t *obj;
+
+    obj = of_meter_mod_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_meter_mod_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_meter_mod_failed_error_msg_init(of_meter_mod_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_METER_MOD_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_METER_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_METER_MOD_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_METER_MOD_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_meter_mod_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_meter_mod_failed_error_msg
+ */
+
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_meter_mod_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_meter_mod_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_meter_mod_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_meter_mod_failed_error_msg_t *
+of_meter_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_meter_mod_failed_error_msg_t *obj;
+
+    obj = of_meter_mod_failed_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -91276,6 +103486,196 @@ of_port_mod_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_port_mod_failed_error_msg */
+
+/**
+ * \defgroup of_port_mod_failed_error_msg of_port_mod_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_port_mod_failed_error_msg_push_wire_values(of_port_mod_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_PORT_MOD_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_port_mod_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_port_mod_failed_error_msg
+ */
+
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_new_(of_version_t version)
+{
+    of_port_mod_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_PORT_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_PORT_MOD_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_port_mod_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_port_mod_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_port_mod_failed_error_msg_t *obj;
+
+    obj = of_port_mod_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_port_mod_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_port_mod_failed_error_msg_init(of_port_mod_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_PORT_MOD_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_PORT_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_PORT_MOD_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_PORT_MOD_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_port_mod_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_port_mod_failed_error_msg
+ */
+
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_port_mod_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_port_mod_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_port_mod_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_port_mod_failed_error_msg_t *
+of_port_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_port_mod_failed_error_msg_t *obj;
+
+    obj = of_port_mod_failed_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_port_stats_reply */
 
 /**
@@ -92226,6 +104626,196 @@ of_queue_get_config_request_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_queue_op_failed_error_msg */
+
+/**
+ * \defgroup of_queue_op_failed_error_msg of_queue_op_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_queue_op_failed_error_msg_push_wire_values(of_queue_op_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_QUEUE_OP_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_queue_op_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_queue_op_failed_error_msg
+ */
+
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_new_(of_version_t version)
+{
+    of_queue_op_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_QUEUE_OP_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_QUEUE_OP_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_queue_op_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_queue_op_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_queue_op_failed_error_msg_t *obj;
+
+    obj = of_queue_op_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_queue_op_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_queue_op_failed_error_msg_init(of_queue_op_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_QUEUE_OP_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_QUEUE_OP_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_QUEUE_OP_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_QUEUE_OP_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_queue_op_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_queue_op_failed_error_msg
+ */
+
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_queue_op_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_queue_op_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_queue_op_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_queue_op_failed_error_msg_t *
+of_queue_op_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_queue_op_failed_error_msg_t *obj;
+
+    obj = of_queue_op_failed_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_queue_stats_reply */
 
 /**
@@ -92986,6 +105576,196 @@ of_role_request_new_from_message_tracking(of_message_t msg,
 }
 #endif
 
+/* New operators for of_role_request_failed_error_msg */
+
+/**
+ * \defgroup of_role_request_failed_error_msg of_role_request_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_role_request_failed_error_msg_push_wire_values(of_role_request_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_ROLE_REQUEST_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_role_request_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_role_request_failed_error_msg
+ */
+
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_new_(of_version_t version)
+{
+    of_role_request_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_ROLE_REQUEST_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_ROLE_REQUEST_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_role_request_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_role_request_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_role_request_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_role_request_failed_error_msg_t *obj;
+
+    obj = of_role_request_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_role_request_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_role_request_failed_error_msg_init(of_role_request_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_ROLE_REQUEST_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_ROLE_REQUEST_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_ROLE_REQUEST_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_ROLE_REQUEST_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_role_request_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_role_request_failed_error_msg
+ */
+
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_role_request_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_role_request_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_role_request_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_role_request_failed_error_msg_t *
+of_role_request_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_role_request_failed_error_msg_t *obj;
+
+    obj = of_role_request_failed_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
 /* New operators for of_set_config */
 
 /**
@@ -93500,6 +106280,386 @@ of_stats_request_new_from_message_tracking(of_message_t msg,
     of_stats_request_t *obj;
 
     obj = of_stats_request_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_switch_config_failed_error_msg */
+
+/**
+ * \defgroup of_switch_config_failed_error_msg of_switch_config_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_switch_config_failed_error_msg_push_wire_values(of_switch_config_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_SWITCH_CONFIG_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_switch_config_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_switch_config_failed_error_msg
+ */
+
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_new_(of_version_t version)
+{
+    of_switch_config_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_SWITCH_CONFIG_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_SWITCH_CONFIG_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_switch_config_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_switch_config_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_switch_config_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_switch_config_failed_error_msg_t *obj;
+
+    obj = of_switch_config_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_switch_config_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_switch_config_failed_error_msg_init(of_switch_config_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_SWITCH_CONFIG_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_SWITCH_CONFIG_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_SWITCH_CONFIG_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_SWITCH_CONFIG_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_switch_config_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_switch_config_failed_error_msg
+ */
+
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_switch_config_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_switch_config_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_switch_config_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_switch_config_failed_error_msg_t *
+of_switch_config_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_switch_config_failed_error_msg_t *obj;
+
+    obj = of_switch_config_failed_error_msg_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_table_features_failed_error_msg */
+
+/**
+ * \defgroup of_table_features_failed_error_msg of_table_features_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_table_features_failed_error_msg_push_wire_values(of_table_features_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_TABLE_FEATURES_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_table_features_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_table_features_failed_error_msg
+ */
+
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_new_(of_version_t version)
+{
+    of_table_features_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_TABLE_FEATURES_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_table_features_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_table_features_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_table_features_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_table_features_failed_error_msg_t *obj;
+
+    obj = of_table_features_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_table_features_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_table_features_failed_error_msg_init(of_table_features_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_TABLE_FEATURES_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_TABLE_FEATURES_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_TABLE_FEATURES_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_TABLE_FEATURES_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_table_features_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_table_features_failed_error_msg
+ */
+
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_table_features_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_table_features_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_table_features_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_table_features_failed_error_msg_t *
+of_table_features_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_table_features_failed_error_msg_t *obj;
+
+    obj = of_table_features_failed_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -94070,6 +107230,196 @@ of_table_mod_new_from_message_tracking(of_message_t msg,
     of_table_mod_t *obj;
 
     obj = of_table_mod_new_from_message_(msg);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/* New operators for of_table_mod_failed_error_msg */
+
+/**
+ * \defgroup of_table_mod_failed_error_msg of_table_mod_failed_error_msg
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_table_mod_failed_error_msg_push_wire_values(of_table_mod_failed_error_msg_t *obj)
+{
+
+    /* Message obj; push version, length and type to wire */
+    of_message_t msg;
+
+    if ((msg = OF_OBJECT_TO_MESSAGE(obj)) != NULL) {
+        of_message_version_set(msg, obj->version);
+        of_message_length_set(msg, obj->length);
+        OF_TRY(of_wire_message_object_id_set(OF_OBJECT_TO_WBUF(obj),
+                 OF_TABLE_MOD_FAILED_ERROR_MSG));
+    }
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_table_mod_failed_error_msg object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_table_mod_failed_error_msg
+ */
+
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_new_(of_version_t version)
+{
+    of_table_mod_failed_error_msg_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_TABLE_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_TABLE_MOD_FAILED_ERROR_MSG];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_table_mod_failed_error_msg_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_table_mod_failed_error_msg_init(obj, version, bytes, 0);
+
+    if (of_table_mod_failed_error_msg_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_table_mod_failed_error_msg_t *obj;
+
+    obj = of_table_mod_failed_error_msg_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_table_mod_failed_error_msg.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_table_mod_failed_error_msg_init(of_table_mod_failed_error_msg_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_TABLE_MOD_FAILED_ERROR_MSG] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_TABLE_MOD_FAILED_ERROR_MSG] + of_object_extra_len[version][OF_TABLE_MOD_FAILED_ERROR_MSG];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_TABLE_MOD_FAILED_ERROR_MSG;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_object_message_wire_length_get;
+    obj->wire_length_set = of_object_message_wire_length_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/**
+ * Create a new of_table_mod_failed_error_msg object and bind it to an existing message
+ *
+ * @param msg The message to bind the new object to
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * \ingroup of_table_mod_failed_error_msg
+ */
+
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_new_from_message_(of_message_t msg)
+{
+    of_table_mod_failed_error_msg_t *obj = NULL;
+    of_version_t version;
+    int length;
+
+    if (msg == NULL) return NULL;
+
+    version = of_message_version_get(msg);
+    if (!OF_VERSION_OKAY(version)) return NULL;
+
+    length = of_message_length_get(msg);
+
+    if ((obj = (of_table_mod_failed_error_msg_t *)of_object_new(-1)) == NULL) {
+        return NULL;
+    }
+
+    of_table_mod_failed_error_msg_init(obj, version, 0, 0);
+
+    if ((of_object_buffer_bind((of_object_t *)obj, OF_MESSAGE_TO_BUFFER(msg),
+                               length, OF_MESSAGE_FREE_FUNCTION)) < 0) {
+       FREE(obj);
+       return NULL;
+    }
+    obj->length = length;
+    obj->version = version;
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_table_mod_failed_error_msg_t *
+of_table_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+    const char *file, int line)
+{
+    of_table_mod_failed_error_msg_t *obj;
+
+    obj = of_table_mod_failed_error_msg_new_from_message_(msg);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -103000,14 +116350,14 @@ of_bucket_counter_init(of_bucket_counter_t *obj,
 }
 
 
-/* New operators for of_experimenter_multipart_header */
+/* New operators for of_experimenter_stats_header */
 
 /**
- * \defgroup of_experimenter_multipart_header of_experimenter_multipart_header
+ * \defgroup of_experimenter_stats_header of_experimenter_stats_header
  */
 
 /**
- * Create a new of_experimenter_multipart_header object
+ * Create a new of_experimenter_stats_header object
  *
  * @param version The wire version to use for the object
  * @return Pointer to the newly create object or NULL on error
@@ -103018,23 +116368,23 @@ of_bucket_counter_init(of_bucket_counter_t *obj,
  * Use new_from_message to bind an existing message to a message object,
  * or a _get function for non-message objects.
  *
- * \ingroup of_experimenter_multipart_header
+ * \ingroup of_experimenter_stats_header
  */
 
-of_experimenter_multipart_header_t *
-of_experimenter_multipart_header_new_(of_version_t version)
+of_experimenter_stats_header_t *
+of_experimenter_stats_header_new_(of_version_t version)
 {
-    of_experimenter_multipart_header_t *obj;
+    of_experimenter_stats_header_t *obj;
     int bytes;
 
-    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
+    bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_HEADER];
 
     /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
-    if ((obj = (of_experimenter_multipart_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+    if ((obj = (of_experimenter_stats_header_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
         return NULL;
     }
 
-    of_experimenter_multipart_header_init(obj, version, bytes, 0);
+    of_experimenter_stats_header_init(obj, version, bytes, 0);
 
     return obj;
 }
@@ -103045,13 +116395,13 @@ of_experimenter_multipart_header_new_(of_version_t version)
  * Tracking objects.  Call the new function and then record location
  */
 
-of_experimenter_multipart_header_t *
-of_experimenter_multipart_header_new_tracking(of_version_t version,
+of_experimenter_stats_header_t *
+of_experimenter_stats_header_new_tracking(of_version_t version,
      const char *file, int line)
 {
-    of_experimenter_multipart_header_t *obj;
+    of_experimenter_stats_header_t *obj;
 
-    obj = of_experimenter_multipart_header_new_(version);
+    obj = of_experimenter_stats_header_new_(version);
     of_object_track((of_object_t *)obj, file, line);
 
     return obj;
@@ -103059,7 +116409,7 @@ of_experimenter_multipart_header_new_tracking(of_version_t version,
 #endif
 
 /**
- * Initialize an object of type of_experimenter_multipart_header.
+ * Initialize an object of type of_experimenter_stats_header.
  *
  * @param obj Pointer to the object to initialize
  * @param version The wire version to use for the object
@@ -103076,20 +116426,20 @@ of_experimenter_multipart_header_new_tracking(of_version_t version,
  */
 
 void
-of_experimenter_multipart_header_init(of_experimenter_multipart_header_t *obj,
+of_experimenter_stats_header_init(of_experimenter_stats_header_t *obj,
     of_version_t version, int bytes, int clean_wire)
 {
 
-    ASSERT(of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER] >= 0);
+    ASSERT(of_object_fixed_len[version][OF_EXPERIMENTER_STATS_HEADER] >= 0);
     if (clean_wire) {
         MEMSET(obj, 0, sizeof(*obj));
     }
     if (bytes < 0) {
-        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_MULTIPART_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_MULTIPART_HEADER];
+        bytes = of_object_fixed_len[version][OF_EXPERIMENTER_STATS_HEADER] + of_object_extra_len[version][OF_EXPERIMENTER_STATS_HEADER];
     }
     obj->version = version;
     obj->length = bytes;
-    obj->object_id = OF_EXPERIMENTER_MULTIPART_HEADER;
+    obj->object_id = OF_EXPERIMENTER_STATS_HEADER;
 
     /* Set up the object's function pointers */
 
@@ -107850,6 +121200,258 @@ of_oxm_arp_tpa_masked_init(of_oxm_arp_tpa_masked_t *obj,
     obj->version = version;
     obj->length = bytes;
     obj->object_id = OF_OXM_ARP_TPA_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_in_ports_128 */
+
+/**
+ * \defgroup of_oxm_bsn_in_ports_128 of_oxm_bsn_in_ports_128
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_in_ports_128_push_wire_values(of_oxm_bsn_in_ports_128_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_IN_PORTS_128);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_in_ports_128 object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_in_ports_128
+ */
+
+of_oxm_bsn_in_ports_128_t *
+of_oxm_bsn_in_ports_128_new_(of_version_t version)
+{
+    of_oxm_bsn_in_ports_128_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128] + of_object_extra_len[version][OF_OXM_BSN_IN_PORTS_128];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_in_ports_128_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_in_ports_128_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_in_ports_128_t *
+of_oxm_bsn_in_ports_128_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_in_ports_128_t *obj;
+
+    obj = of_oxm_bsn_in_ports_128_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_in_ports_128.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_in_ports_128_init(of_oxm_bsn_in_ports_128_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128] + of_object_extra_len[version][OF_OXM_BSN_IN_PORTS_128];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_IN_PORTS_128;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_in_ports_128_masked */
+
+/**
+ * \defgroup of_oxm_bsn_in_ports_128_masked of_oxm_bsn_in_ports_128_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_in_ports_128_masked_push_wire_values(of_oxm_bsn_in_ports_128_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_IN_PORTS_128_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_in_ports_128_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_in_ports_128_masked
+ */
+
+of_oxm_bsn_in_ports_128_masked_t *
+of_oxm_bsn_in_ports_128_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_in_ports_128_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128_MASKED] + of_object_extra_len[version][OF_OXM_BSN_IN_PORTS_128_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_in_ports_128_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_in_ports_128_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_in_ports_128_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_in_ports_128_masked_t *
+of_oxm_bsn_in_ports_128_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_in_ports_128_masked_t *obj;
+
+    obj = of_oxm_bsn_in_ports_128_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_in_ports_128_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_in_ports_128_masked_init(of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_IN_PORTS_128_MASKED] + of_object_extra_len[version][OF_OXM_BSN_IN_PORTS_128_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_IN_PORTS_128_MASKED;
 
     /* Set up the object's function pointers */
 
@@ -121984,324 +135586,351 @@ const of_object_init_f of_object_init_map[] = {
     (of_object_init_f)of_async_get_reply_init,                        /* 3 */
     (of_object_init_f)of_async_get_request_init,                      /* 4 */
     (of_object_init_f)of_async_set_init,                              /* 5 */
-    (of_object_init_f)of_barrier_reply_init,                          /* 6 */
-    (of_object_init_f)of_barrier_request_init,                        /* 7 */
-    (of_object_init_f)of_bsn_bw_clear_data_reply_init,                /* 8 */
-    (of_object_init_f)of_bsn_bw_clear_data_request_init,              /* 9 */
-    (of_object_init_f)of_bsn_bw_enable_get_reply_init,                /* 10 */
-    (of_object_init_f)of_bsn_bw_enable_get_request_init,              /* 11 */
-    (of_object_init_f)of_bsn_bw_enable_set_reply_init,                /* 12 */
-    (of_object_init_f)of_bsn_bw_enable_set_request_init,              /* 13 */
-    (of_object_init_f)of_bsn_get_interfaces_reply_init,               /* 14 */
-    (of_object_init_f)of_bsn_get_interfaces_request_init,             /* 15 */
-    (of_object_init_f)of_bsn_get_ip_mask_reply_init,                  /* 16 */
-    (of_object_init_f)of_bsn_get_ip_mask_request_init,                /* 17 */
-    (of_object_init_f)of_bsn_get_l2_table_reply_init,                 /* 18 */
-    (of_object_init_f)of_bsn_get_l2_table_request_init,               /* 19 */
-    (of_object_init_f)of_bsn_get_mirroring_reply_init,                /* 20 */
-    (of_object_init_f)of_bsn_get_mirroring_request_init,              /* 21 */
-    (of_object_init_f)of_bsn_header_init,                             /* 22 */
-    (of_object_init_f)of_bsn_hybrid_get_reply_init,                   /* 23 */
-    (of_object_init_f)of_bsn_hybrid_get_request_init,                 /* 24 */
-    (of_object_init_f)of_bsn_set_ip_mask_init,                        /* 25 */
-    (of_object_init_f)of_bsn_set_l2_table_reply_init,                 /* 26 */
-    (of_object_init_f)of_bsn_set_l2_table_request_init,               /* 27 */
-    (of_object_init_f)of_bsn_set_mirroring_init,                      /* 28 */
-    (of_object_init_f)of_bsn_set_pktin_suppression_reply_init,        /* 29 */
-    (of_object_init_f)of_bsn_set_pktin_suppression_request_init,      /* 30 */
-    (of_object_init_f)of_bsn_shell_command_init,                      /* 31 */
-    (of_object_init_f)of_bsn_shell_output_init,                       /* 32 */
-    (of_object_init_f)of_bsn_shell_status_init,                       /* 33 */
-    (of_object_init_f)of_bsn_virtual_port_create_reply_init,          /* 34 */
-    (of_object_init_f)of_bsn_virtual_port_create_request_init,        /* 35 */
-    (of_object_init_f)of_bsn_virtual_port_remove_reply_init,          /* 36 */
-    (of_object_init_f)of_bsn_virtual_port_remove_request_init,        /* 37 */
-    (of_object_init_f)of_desc_stats_reply_init,                       /* 38 */
-    (of_object_init_f)of_desc_stats_request_init,                     /* 39 */
-    (of_object_init_f)of_echo_reply_init,                             /* 40 */
-    (of_object_init_f)of_echo_request_init,                           /* 41 */
-    (of_object_init_f)of_error_msg_init,                              /* 42 */
-    (of_object_init_f)of_experimenter_init,                           /* 43 */
-    (of_object_init_f)of_experimenter_stats_reply_init,               /* 44 */
-    (of_object_init_f)of_experimenter_stats_request_init,             /* 45 */
-    (of_object_init_f)of_features_reply_init,                         /* 46 */
-    (of_object_init_f)of_features_request_init,                       /* 47 */
-    (of_object_init_f)of_flow_add_init,                               /* 48 */
-    (of_object_init_f)of_flow_delete_init,                            /* 49 */
-    (of_object_init_f)of_flow_delete_strict_init,                     /* 50 */
-    (of_object_init_f)of_flow_mod_init,                               /* 51 */
-    (of_object_init_f)of_flow_modify_init,                            /* 52 */
-    (of_object_init_f)of_flow_modify_strict_init,                     /* 53 */
-    (of_object_init_f)of_flow_removed_init,                           /* 54 */
-    (of_object_init_f)of_flow_stats_reply_init,                       /* 55 */
-    (of_object_init_f)of_flow_stats_request_init,                     /* 56 */
-    (of_object_init_f)of_get_config_reply_init,                       /* 57 */
-    (of_object_init_f)of_get_config_request_init,                     /* 58 */
-    (of_object_init_f)of_group_desc_stats_reply_init,                 /* 59 */
-    (of_object_init_f)of_group_desc_stats_request_init,               /* 60 */
-    (of_object_init_f)of_group_features_stats_reply_init,             /* 61 */
-    (of_object_init_f)of_group_features_stats_request_init,           /* 62 */
-    (of_object_init_f)of_group_mod_init,                              /* 63 */
-    (of_object_init_f)of_group_stats_reply_init,                      /* 64 */
-    (of_object_init_f)of_group_stats_request_init,                    /* 65 */
-    (of_object_init_f)of_hello_init,                                  /* 66 */
-    (of_object_init_f)of_meter_config_stats_reply_init,               /* 67 */
-    (of_object_init_f)of_meter_config_stats_request_init,             /* 68 */
-    (of_object_init_f)of_meter_features_stats_reply_init,             /* 69 */
-    (of_object_init_f)of_meter_features_stats_request_init,           /* 70 */
-    (of_object_init_f)of_meter_mod_init,                              /* 71 */
-    (of_object_init_f)of_meter_stats_reply_init,                      /* 72 */
-    (of_object_init_f)of_meter_stats_request_init,                    /* 73 */
-    (of_object_init_f)of_nicira_controller_role_reply_init,           /* 74 */
-    (of_object_init_f)of_nicira_controller_role_request_init,         /* 75 */
-    (of_object_init_f)of_nicira_header_init,                          /* 76 */
-    (of_object_init_f)of_packet_in_init,                              /* 77 */
-    (of_object_init_f)of_packet_out_init,                             /* 78 */
-    (of_object_init_f)of_port_desc_stats_reply_init,                  /* 79 */
-    (of_object_init_f)of_port_desc_stats_request_init,                /* 80 */
-    (of_object_init_f)of_port_mod_init,                               /* 81 */
-    (of_object_init_f)of_port_stats_reply_init,                       /* 82 */
-    (of_object_init_f)of_port_stats_request_init,                     /* 83 */
-    (of_object_init_f)of_port_status_init,                            /* 84 */
-    (of_object_init_f)of_queue_get_config_reply_init,                 /* 85 */
-    (of_object_init_f)of_queue_get_config_request_init,               /* 86 */
-    (of_object_init_f)of_queue_stats_reply_init,                      /* 87 */
-    (of_object_init_f)of_queue_stats_request_init,                    /* 88 */
-    (of_object_init_f)of_role_reply_init,                             /* 89 */
-    (of_object_init_f)of_role_request_init,                           /* 90 */
-    (of_object_init_f)of_set_config_init,                             /* 91 */
-    (of_object_init_f)of_stats_reply_init,                            /* 92 */
-    (of_object_init_f)of_stats_request_init,                          /* 93 */
-    (of_object_init_f)of_table_features_stats_reply_init,             /* 94 */
-    (of_object_init_f)of_table_features_stats_request_init,           /* 95 */
-    (of_object_init_f)of_table_mod_init,                              /* 96 */
-    (of_object_init_f)of_table_stats_reply_init,                      /* 97 */
-    (of_object_init_f)of_table_stats_request_init,                    /* 98 */
-    (of_object_init_f)of_action_header_init,                          /* 99 */
-    (of_object_init_f)of_action_bsn_init,                             /* 100 */
-    (of_object_init_f)of_action_bsn_mirror_init,                      /* 101 */
-    (of_object_init_f)of_action_bsn_set_tunnel_dst_init,              /* 102 */
-    (of_object_init_f)of_action_copy_ttl_in_init,                     /* 103 */
-    (of_object_init_f)of_action_copy_ttl_out_init,                    /* 104 */
-    (of_object_init_f)of_action_dec_mpls_ttl_init,                    /* 105 */
-    (of_object_init_f)of_action_dec_nw_ttl_init,                      /* 106 */
-    (of_object_init_f)of_action_enqueue_init,                         /* 107 */
-    (of_object_init_f)of_action_experimenter_init,                    /* 108 */
-    (of_object_init_f)of_action_group_init,                           /* 109 */
-    (of_object_init_f)of_action_header_init,                          /* 110 */
-    (of_object_init_f)of_action_id_header_init,                       /* 111 */
-    (of_object_init_f)of_action_id_bsn_init,                          /* 112 */
-    (of_object_init_f)of_action_id_bsn_mirror_init,                   /* 113 */
-    (of_object_init_f)of_action_id_bsn_set_tunnel_dst_init,           /* 114 */
-    (of_object_init_f)of_action_id_copy_ttl_in_init,                  /* 115 */
-    (of_object_init_f)of_action_id_copy_ttl_out_init,                 /* 116 */
-    (of_object_init_f)of_action_id_dec_mpls_ttl_init,                 /* 117 */
-    (of_object_init_f)of_action_id_dec_nw_ttl_init,                   /* 118 */
-    (of_object_init_f)of_action_id_experimenter_init,                 /* 119 */
-    (of_object_init_f)of_action_id_group_init,                        /* 120 */
-    (of_object_init_f)of_action_id_header_init,                       /* 121 */
-    (of_object_init_f)of_action_id_nicira_init,                       /* 122 */
-    (of_object_init_f)of_action_id_nicira_dec_ttl_init,               /* 123 */
-    (of_object_init_f)of_action_id_output_init,                       /* 124 */
-    (of_object_init_f)of_action_id_pop_mpls_init,                     /* 125 */
-    (of_object_init_f)of_action_id_pop_pbb_init,                      /* 126 */
-    (of_object_init_f)of_action_id_pop_vlan_init,                     /* 127 */
-    (of_object_init_f)of_action_id_push_mpls_init,                    /* 128 */
-    (of_object_init_f)of_action_id_push_pbb_init,                     /* 129 */
-    (of_object_init_f)of_action_id_push_vlan_init,                    /* 130 */
-    (of_object_init_f)of_action_id_set_field_init,                    /* 131 */
-    (of_object_init_f)of_action_id_set_mpls_ttl_init,                 /* 132 */
-    (of_object_init_f)of_action_id_set_nw_ttl_init,                   /* 133 */
-    (of_object_init_f)of_action_id_set_queue_init,                    /* 134 */
-    (of_object_init_f)of_action_nicira_init,                          /* 135 */
-    (of_object_init_f)of_action_nicira_dec_ttl_init,                  /* 136 */
-    (of_object_init_f)of_action_output_init,                          /* 137 */
-    (of_object_init_f)of_action_pop_mpls_init,                        /* 138 */
-    (of_object_init_f)of_action_pop_pbb_init,                         /* 139 */
-    (of_object_init_f)of_action_pop_vlan_init,                        /* 140 */
-    (of_object_init_f)of_action_push_mpls_init,                       /* 141 */
-    (of_object_init_f)of_action_push_pbb_init,                        /* 142 */
-    (of_object_init_f)of_action_push_vlan_init,                       /* 143 */
-    (of_object_init_f)of_action_set_dl_dst_init,                      /* 144 */
-    (of_object_init_f)of_action_set_dl_src_init,                      /* 145 */
-    (of_object_init_f)of_action_set_field_init,                       /* 146 */
-    (of_object_init_f)of_action_set_mpls_label_init,                  /* 147 */
-    (of_object_init_f)of_action_set_mpls_tc_init,                     /* 148 */
-    (of_object_init_f)of_action_set_mpls_ttl_init,                    /* 149 */
-    (of_object_init_f)of_action_set_nw_dst_init,                      /* 150 */
-    (of_object_init_f)of_action_set_nw_ecn_init,                      /* 151 */
-    (of_object_init_f)of_action_set_nw_src_init,                      /* 152 */
-    (of_object_init_f)of_action_set_nw_tos_init,                      /* 153 */
-    (of_object_init_f)of_action_set_nw_ttl_init,                      /* 154 */
-    (of_object_init_f)of_action_set_queue_init,                       /* 155 */
-    (of_object_init_f)of_action_set_tp_dst_init,                      /* 156 */
-    (of_object_init_f)of_action_set_tp_src_init,                      /* 157 */
-    (of_object_init_f)of_action_set_vlan_pcp_init,                    /* 158 */
-    (of_object_init_f)of_action_set_vlan_vid_init,                    /* 159 */
-    (of_object_init_f)of_action_strip_vlan_init,                      /* 160 */
-    (of_object_init_f)of_bsn_interface_init,                          /* 161 */
-    (of_object_init_f)of_bsn_vport_header_init,                       /* 162 */
-    (of_object_init_f)of_bsn_vport_header_init,                       /* 163 */
-    (of_object_init_f)of_bsn_vport_q_in_q_init,                       /* 164 */
-    (of_object_init_f)of_bucket_init,                                 /* 165 */
-    (of_object_init_f)of_bucket_counter_init,                         /* 166 */
-    (of_object_init_f)of_experimenter_multipart_header_init,          /* 167 */
-    (of_object_init_f)of_flow_stats_entry_init,                       /* 168 */
-    (of_object_init_f)of_group_desc_stats_entry_init,                 /* 169 */
-    (of_object_init_f)of_group_stats_entry_init,                      /* 170 */
-    (of_object_init_f)of_header_init,                                 /* 171 */
-    (of_object_init_f)of_hello_elem_header_init,                      /* 172 */
-    (of_object_init_f)of_hello_elem_header_init,                      /* 173 */
-    (of_object_init_f)of_hello_elem_versionbitmap_init,               /* 174 */
-    (of_object_init_f)of_instruction_header_init,                     /* 175 */
-    (of_object_init_f)of_instruction_apply_actions_init,              /* 176 */
-    (of_object_init_f)of_instruction_clear_actions_init,              /* 177 */
-    (of_object_init_f)of_instruction_experimenter_init,               /* 178 */
-    (of_object_init_f)of_instruction_goto_table_init,                 /* 179 */
-    (of_object_init_f)of_instruction_header_init,                     /* 180 */
-    (of_object_init_f)of_instruction_meter_init,                      /* 181 */
-    (of_object_init_f)of_instruction_write_actions_init,              /* 182 */
-    (of_object_init_f)of_instruction_write_metadata_init,             /* 183 */
-    (of_object_init_f)of_match_v1_init,                               /* 184 */
-    (of_object_init_f)of_match_v2_init,                               /* 185 */
-    (of_object_init_f)of_match_v3_init,                               /* 186 */
-    (of_object_init_f)of_meter_band_header_init,                      /* 187 */
-    (of_object_init_f)of_meter_band_drop_init,                        /* 188 */
-    (of_object_init_f)of_meter_band_dscp_remark_init,                 /* 189 */
-    (of_object_init_f)of_meter_band_experimenter_init,                /* 190 */
-    (of_object_init_f)of_meter_band_header_init,                      /* 191 */
-    (of_object_init_f)of_meter_band_stats_init,                       /* 192 */
-    (of_object_init_f)of_meter_config_init,                           /* 193 */
-    (of_object_init_f)of_meter_features_init,                         /* 194 */
-    (of_object_init_f)of_meter_stats_init,                            /* 195 */
-    (of_object_init_f)of_oxm_header_init,                             /* 196 */
-    (of_object_init_f)of_oxm_arp_op_init,                             /* 197 */
-    (of_object_init_f)of_oxm_arp_op_masked_init,                      /* 198 */
-    (of_object_init_f)of_oxm_arp_sha_init,                            /* 199 */
-    (of_object_init_f)of_oxm_arp_sha_masked_init,                     /* 200 */
-    (of_object_init_f)of_oxm_arp_spa_init,                            /* 201 */
-    (of_object_init_f)of_oxm_arp_spa_masked_init,                     /* 202 */
-    (of_object_init_f)of_oxm_arp_tha_init,                            /* 203 */
-    (of_object_init_f)of_oxm_arp_tha_masked_init,                     /* 204 */
-    (of_object_init_f)of_oxm_arp_tpa_init,                            /* 205 */
-    (of_object_init_f)of_oxm_arp_tpa_masked_init,                     /* 206 */
-    (of_object_init_f)of_oxm_eth_dst_init,                            /* 207 */
-    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 208 */
-    (of_object_init_f)of_oxm_eth_src_init,                            /* 209 */
-    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 210 */
-    (of_object_init_f)of_oxm_eth_type_init,                           /* 211 */
-    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 212 */
-    (of_object_init_f)of_oxm_header_init,                             /* 213 */
-    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 214 */
-    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 215 */
-    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 216 */
-    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 217 */
-    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 218 */
-    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 219 */
-    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 220 */
-    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 221 */
-    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 222 */
-    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 223 */
-    (of_object_init_f)of_oxm_in_port_init,                            /* 224 */
-    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 225 */
-    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 226 */
-    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 227 */
-    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 228 */
-    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 229 */
-    (of_object_init_f)of_oxm_ip_proto_init,                           /* 230 */
-    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 231 */
-    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 232 */
-    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 233 */
-    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 234 */
-    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 235 */
-    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 236 */
-    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 237 */
-    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 238 */
-    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 239 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 240 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 241 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 242 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 243 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 244 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 245 */
-    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 246 */
-    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 247 */
-    (of_object_init_f)of_oxm_metadata_init,                           /* 248 */
-    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 249 */
-    (of_object_init_f)of_oxm_mpls_label_init,                         /* 250 */
-    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 251 */
-    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 252 */
-    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 253 */
-    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 254 */
-    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 255 */
-    (of_object_init_f)of_oxm_sctp_src_init,                           /* 256 */
-    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 257 */
-    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 258 */
-    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 259 */
-    (of_object_init_f)of_oxm_tcp_src_init,                            /* 260 */
-    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 261 */
-    (of_object_init_f)of_oxm_udp_dst_init,                            /* 262 */
-    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 263 */
-    (of_object_init_f)of_oxm_udp_src_init,                            /* 264 */
-    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 265 */
-    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 266 */
-    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 267 */
-    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 268 */
-    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 269 */
-    (of_object_init_f)of_packet_queue_init,                           /* 270 */
-    (of_object_init_f)of_port_desc_init,                              /* 271 */
-    (of_object_init_f)of_port_stats_entry_init,                       /* 272 */
-    (of_object_init_f)of_queue_prop_header_init,                      /* 273 */
-    (of_object_init_f)of_queue_prop_experimenter_init,                /* 274 */
-    (of_object_init_f)of_queue_prop_header_init,                      /* 275 */
-    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 276 */
-    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 277 */
-    (of_object_init_f)of_queue_stats_entry_init,                      /* 278 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 279 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 280 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 281 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 282 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 283 */
-    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 284 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 285 */
-    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 286 */
-    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 287 */
-    (of_object_init_f)of_table_feature_prop_match_init,               /* 288 */
-    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 289 */
-    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 290 */
-    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 291 */
-    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 292 */
-    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 293 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 294 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 295 */
-    (of_object_init_f)of_table_features_init,                         /* 296 */
-    (of_object_init_f)of_table_stats_entry_init,                      /* 297 */
-    (of_object_init_f)of_uint32_init,                                 /* 298 */
-    (of_object_init_f)of_uint8_init,                                  /* 299 */
-    (of_object_init_f)of_list_action_init,                            /* 300 */
-    (of_object_init_f)of_list_action_id_init,                         /* 301 */
-    (of_object_init_f)of_list_bsn_interface_init,                     /* 302 */
-    (of_object_init_f)of_list_bucket_init,                            /* 303 */
-    (of_object_init_f)of_list_bucket_counter_init,                    /* 304 */
-    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 305 */
-    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 306 */
-    (of_object_init_f)of_list_group_stats_entry_init,                 /* 307 */
-    (of_object_init_f)of_list_hello_elem_init,                        /* 308 */
-    (of_object_init_f)of_list_instruction_init,                       /* 309 */
-    (of_object_init_f)of_list_meter_band_init,                        /* 310 */
-    (of_object_init_f)of_list_meter_band_stats_init,                  /* 311 */
-    (of_object_init_f)of_list_meter_stats_init,                       /* 312 */
-    (of_object_init_f)of_list_oxm_init,                               /* 313 */
-    (of_object_init_f)of_list_packet_queue_init,                      /* 314 */
-    (of_object_init_f)of_list_port_desc_init,                         /* 315 */
-    (of_object_init_f)of_list_port_stats_entry_init,                  /* 316 */
-    (of_object_init_f)of_list_queue_prop_init,                        /* 317 */
-    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 318 */
-    (of_object_init_f)of_list_table_feature_prop_init,                /* 319 */
-    (of_object_init_f)of_list_table_features_init,                    /* 320 */
-    (of_object_init_f)of_list_table_stats_entry_init,                 /* 321 */
-    (of_object_init_f)of_list_uint32_init,                            /* 322 */
-    (of_object_init_f)of_list_uint8_init                              /* 323 */
+    (of_object_init_f)of_bad_action_error_msg_init,                   /* 6 */
+    (of_object_init_f)of_bad_instruction_error_msg_init,              /* 7 */
+    (of_object_init_f)of_bad_match_error_msg_init,                    /* 8 */
+    (of_object_init_f)of_bad_request_error_msg_init,                  /* 9 */
+    (of_object_init_f)of_barrier_reply_init,                          /* 10 */
+    (of_object_init_f)of_barrier_request_init,                        /* 11 */
+    (of_object_init_f)of_bsn_bw_clear_data_reply_init,                /* 12 */
+    (of_object_init_f)of_bsn_bw_clear_data_request_init,              /* 13 */
+    (of_object_init_f)of_bsn_bw_enable_get_reply_init,                /* 14 */
+    (of_object_init_f)of_bsn_bw_enable_get_request_init,              /* 15 */
+    (of_object_init_f)of_bsn_bw_enable_set_reply_init,                /* 16 */
+    (of_object_init_f)of_bsn_bw_enable_set_request_init,              /* 17 */
+    (of_object_init_f)of_bsn_flow_idle_init,                          /* 18 */
+    (of_object_init_f)of_bsn_flow_idle_enable_get_reply_init,         /* 19 */
+    (of_object_init_f)of_bsn_flow_idle_enable_get_request_init,       /* 20 */
+    (of_object_init_f)of_bsn_flow_idle_enable_set_reply_init,         /* 21 */
+    (of_object_init_f)of_bsn_flow_idle_enable_set_request_init,       /* 22 */
+    (of_object_init_f)of_bsn_get_interfaces_reply_init,               /* 23 */
+    (of_object_init_f)of_bsn_get_interfaces_request_init,             /* 24 */
+    (of_object_init_f)of_bsn_get_ip_mask_reply_init,                  /* 25 */
+    (of_object_init_f)of_bsn_get_ip_mask_request_init,                /* 26 */
+    (of_object_init_f)of_bsn_get_l2_table_reply_init,                 /* 27 */
+    (of_object_init_f)of_bsn_get_l2_table_request_init,               /* 28 */
+    (of_object_init_f)of_bsn_get_mirroring_reply_init,                /* 29 */
+    (of_object_init_f)of_bsn_get_mirroring_request_init,              /* 30 */
+    (of_object_init_f)of_bsn_header_init,                             /* 31 */
+    (of_object_init_f)of_bsn_hybrid_get_reply_init,                   /* 32 */
+    (of_object_init_f)of_bsn_hybrid_get_request_init,                 /* 33 */
+    (of_object_init_f)of_bsn_pdu_rx_reply_init,                       /* 34 */
+    (of_object_init_f)of_bsn_pdu_rx_request_init,                     /* 35 */
+    (of_object_init_f)of_bsn_pdu_rx_timeout_init,                     /* 36 */
+    (of_object_init_f)of_bsn_pdu_tx_reply_init,                       /* 37 */
+    (of_object_init_f)of_bsn_pdu_tx_request_init,                     /* 38 */
+    (of_object_init_f)of_bsn_set_ip_mask_init,                        /* 39 */
+    (of_object_init_f)of_bsn_set_l2_table_reply_init,                 /* 40 */
+    (of_object_init_f)of_bsn_set_l2_table_request_init,               /* 41 */
+    (of_object_init_f)of_bsn_set_mirroring_init,                      /* 42 */
+    (of_object_init_f)of_bsn_set_pktin_suppression_reply_init,        /* 43 */
+    (of_object_init_f)of_bsn_set_pktin_suppression_request_init,      /* 44 */
+    (of_object_init_f)of_bsn_shell_command_init,                      /* 45 */
+    (of_object_init_f)of_bsn_shell_output_init,                       /* 46 */
+    (of_object_init_f)of_bsn_shell_status_init,                       /* 47 */
+    (of_object_init_f)of_bsn_virtual_port_create_reply_init,          /* 48 */
+    (of_object_init_f)of_bsn_virtual_port_create_request_init,        /* 49 */
+    (of_object_init_f)of_bsn_virtual_port_remove_reply_init,          /* 50 */
+    (of_object_init_f)of_bsn_virtual_port_remove_request_init,        /* 51 */
+    (of_object_init_f)of_desc_stats_reply_init,                       /* 52 */
+    (of_object_init_f)of_desc_stats_request_init,                     /* 53 */
+    (of_object_init_f)of_echo_reply_init,                             /* 54 */
+    (of_object_init_f)of_echo_request_init,                           /* 55 */
+    (of_object_init_f)of_error_msg_init,                              /* 56 */
+    (of_object_init_f)of_experimenter_init,                           /* 57 */
+    (of_object_init_f)of_experimenter_error_msg_init,                 /* 58 */
+    (of_object_init_f)of_experimenter_stats_reply_init,               /* 59 */
+    (of_object_init_f)of_experimenter_stats_request_init,             /* 60 */
+    (of_object_init_f)of_features_reply_init,                         /* 61 */
+    (of_object_init_f)of_features_request_init,                       /* 62 */
+    (of_object_init_f)of_flow_add_init,                               /* 63 */
+    (of_object_init_f)of_flow_delete_init,                            /* 64 */
+    (of_object_init_f)of_flow_delete_strict_init,                     /* 65 */
+    (of_object_init_f)of_flow_mod_init,                               /* 66 */
+    (of_object_init_f)of_flow_mod_failed_error_msg_init,              /* 67 */
+    (of_object_init_f)of_flow_modify_init,                            /* 68 */
+    (of_object_init_f)of_flow_modify_strict_init,                     /* 69 */
+    (of_object_init_f)of_flow_removed_init,                           /* 70 */
+    (of_object_init_f)of_flow_stats_reply_init,                       /* 71 */
+    (of_object_init_f)of_flow_stats_request_init,                     /* 72 */
+    (of_object_init_f)of_get_config_reply_init,                       /* 73 */
+    (of_object_init_f)of_get_config_request_init,                     /* 74 */
+    (of_object_init_f)of_group_desc_stats_reply_init,                 /* 75 */
+    (of_object_init_f)of_group_desc_stats_request_init,               /* 76 */
+    (of_object_init_f)of_group_features_stats_reply_init,             /* 77 */
+    (of_object_init_f)of_group_features_stats_request_init,           /* 78 */
+    (of_object_init_f)of_group_mod_init,                              /* 79 */
+    (of_object_init_f)of_group_mod_failed_error_msg_init,             /* 80 */
+    (of_object_init_f)of_group_stats_reply_init,                      /* 81 */
+    (of_object_init_f)of_group_stats_request_init,                    /* 82 */
+    (of_object_init_f)of_hello_init,                                  /* 83 */
+    (of_object_init_f)of_hello_failed_error_msg_init,                 /* 84 */
+    (of_object_init_f)of_meter_config_stats_reply_init,               /* 85 */
+    (of_object_init_f)of_meter_config_stats_request_init,             /* 86 */
+    (of_object_init_f)of_meter_features_stats_reply_init,             /* 87 */
+    (of_object_init_f)of_meter_features_stats_request_init,           /* 88 */
+    (of_object_init_f)of_meter_mod_init,                              /* 89 */
+    (of_object_init_f)of_meter_mod_failed_error_msg_init,             /* 90 */
+    (of_object_init_f)of_meter_stats_reply_init,                      /* 91 */
+    (of_object_init_f)of_meter_stats_request_init,                    /* 92 */
+    (of_object_init_f)of_nicira_controller_role_reply_init,           /* 93 */
+    (of_object_init_f)of_nicira_controller_role_request_init,         /* 94 */
+    (of_object_init_f)of_nicira_header_init,                          /* 95 */
+    (of_object_init_f)of_packet_in_init,                              /* 96 */
+    (of_object_init_f)of_packet_out_init,                             /* 97 */
+    (of_object_init_f)of_port_desc_stats_reply_init,                  /* 98 */
+    (of_object_init_f)of_port_desc_stats_request_init,                /* 99 */
+    (of_object_init_f)of_port_mod_init,                               /* 100 */
+    (of_object_init_f)of_port_mod_failed_error_msg_init,              /* 101 */
+    (of_object_init_f)of_port_stats_reply_init,                       /* 102 */
+    (of_object_init_f)of_port_stats_request_init,                     /* 103 */
+    (of_object_init_f)of_port_status_init,                            /* 104 */
+    (of_object_init_f)of_queue_get_config_reply_init,                 /* 105 */
+    (of_object_init_f)of_queue_get_config_request_init,               /* 106 */
+    (of_object_init_f)of_queue_op_failed_error_msg_init,              /* 107 */
+    (of_object_init_f)of_queue_stats_reply_init,                      /* 108 */
+    (of_object_init_f)of_queue_stats_request_init,                    /* 109 */
+    (of_object_init_f)of_role_reply_init,                             /* 110 */
+    (of_object_init_f)of_role_request_init,                           /* 111 */
+    (of_object_init_f)of_role_request_failed_error_msg_init,          /* 112 */
+    (of_object_init_f)of_set_config_init,                             /* 113 */
+    (of_object_init_f)of_stats_reply_init,                            /* 114 */
+    (of_object_init_f)of_stats_request_init,                          /* 115 */
+    (of_object_init_f)of_switch_config_failed_error_msg_init,         /* 116 */
+    (of_object_init_f)of_table_features_failed_error_msg_init,        /* 117 */
+    (of_object_init_f)of_table_features_stats_reply_init,             /* 118 */
+    (of_object_init_f)of_table_features_stats_request_init,           /* 119 */
+    (of_object_init_f)of_table_mod_init,                              /* 120 */
+    (of_object_init_f)of_table_mod_failed_error_msg_init,             /* 121 */
+    (of_object_init_f)of_table_stats_reply_init,                      /* 122 */
+    (of_object_init_f)of_table_stats_request_init,                    /* 123 */
+    (of_object_init_f)of_action_header_init,                          /* 124 */
+    (of_object_init_f)of_action_bsn_init,                             /* 125 */
+    (of_object_init_f)of_action_bsn_mirror_init,                      /* 126 */
+    (of_object_init_f)of_action_bsn_set_tunnel_dst_init,              /* 127 */
+    (of_object_init_f)of_action_copy_ttl_in_init,                     /* 128 */
+    (of_object_init_f)of_action_copy_ttl_out_init,                    /* 129 */
+    (of_object_init_f)of_action_dec_mpls_ttl_init,                    /* 130 */
+    (of_object_init_f)of_action_dec_nw_ttl_init,                      /* 131 */
+    (of_object_init_f)of_action_enqueue_init,                         /* 132 */
+    (of_object_init_f)of_action_experimenter_init,                    /* 133 */
+    (of_object_init_f)of_action_group_init,                           /* 134 */
+    (of_object_init_f)of_action_header_init,                          /* 135 */
+    (of_object_init_f)of_action_id_header_init,                       /* 136 */
+    (of_object_init_f)of_action_id_bsn_init,                          /* 137 */
+    (of_object_init_f)of_action_id_bsn_mirror_init,                   /* 138 */
+    (of_object_init_f)of_action_id_bsn_set_tunnel_dst_init,           /* 139 */
+    (of_object_init_f)of_action_id_copy_ttl_in_init,                  /* 140 */
+    (of_object_init_f)of_action_id_copy_ttl_out_init,                 /* 141 */
+    (of_object_init_f)of_action_id_dec_mpls_ttl_init,                 /* 142 */
+    (of_object_init_f)of_action_id_dec_nw_ttl_init,                   /* 143 */
+    (of_object_init_f)of_action_id_experimenter_init,                 /* 144 */
+    (of_object_init_f)of_action_id_group_init,                        /* 145 */
+    (of_object_init_f)of_action_id_header_init,                       /* 146 */
+    (of_object_init_f)of_action_id_nicira_init,                       /* 147 */
+    (of_object_init_f)of_action_id_nicira_dec_ttl_init,               /* 148 */
+    (of_object_init_f)of_action_id_output_init,                       /* 149 */
+    (of_object_init_f)of_action_id_pop_mpls_init,                     /* 150 */
+    (of_object_init_f)of_action_id_pop_pbb_init,                      /* 151 */
+    (of_object_init_f)of_action_id_pop_vlan_init,                     /* 152 */
+    (of_object_init_f)of_action_id_push_mpls_init,                    /* 153 */
+    (of_object_init_f)of_action_id_push_pbb_init,                     /* 154 */
+    (of_object_init_f)of_action_id_push_vlan_init,                    /* 155 */
+    (of_object_init_f)of_action_id_set_field_init,                    /* 156 */
+    (of_object_init_f)of_action_id_set_mpls_ttl_init,                 /* 157 */
+    (of_object_init_f)of_action_id_set_nw_ttl_init,                   /* 158 */
+    (of_object_init_f)of_action_id_set_queue_init,                    /* 159 */
+    (of_object_init_f)of_action_nicira_init,                          /* 160 */
+    (of_object_init_f)of_action_nicira_dec_ttl_init,                  /* 161 */
+    (of_object_init_f)of_action_output_init,                          /* 162 */
+    (of_object_init_f)of_action_pop_mpls_init,                        /* 163 */
+    (of_object_init_f)of_action_pop_pbb_init,                         /* 164 */
+    (of_object_init_f)of_action_pop_vlan_init,                        /* 165 */
+    (of_object_init_f)of_action_push_mpls_init,                       /* 166 */
+    (of_object_init_f)of_action_push_pbb_init,                        /* 167 */
+    (of_object_init_f)of_action_push_vlan_init,                       /* 168 */
+    (of_object_init_f)of_action_set_dl_dst_init,                      /* 169 */
+    (of_object_init_f)of_action_set_dl_src_init,                      /* 170 */
+    (of_object_init_f)of_action_set_field_init,                       /* 171 */
+    (of_object_init_f)of_action_set_mpls_label_init,                  /* 172 */
+    (of_object_init_f)of_action_set_mpls_tc_init,                     /* 173 */
+    (of_object_init_f)of_action_set_mpls_ttl_init,                    /* 174 */
+    (of_object_init_f)of_action_set_nw_dst_init,                      /* 175 */
+    (of_object_init_f)of_action_set_nw_ecn_init,                      /* 176 */
+    (of_object_init_f)of_action_set_nw_src_init,                      /* 177 */
+    (of_object_init_f)of_action_set_nw_tos_init,                      /* 178 */
+    (of_object_init_f)of_action_set_nw_ttl_init,                      /* 179 */
+    (of_object_init_f)of_action_set_queue_init,                       /* 180 */
+    (of_object_init_f)of_action_set_tp_dst_init,                      /* 181 */
+    (of_object_init_f)of_action_set_tp_src_init,                      /* 182 */
+    (of_object_init_f)of_action_set_vlan_pcp_init,                    /* 183 */
+    (of_object_init_f)of_action_set_vlan_vid_init,                    /* 184 */
+    (of_object_init_f)of_action_strip_vlan_init,                      /* 185 */
+    (of_object_init_f)of_bsn_interface_init,                          /* 186 */
+    (of_object_init_f)of_bsn_vport_header_init,                       /* 187 */
+    (of_object_init_f)of_bsn_vport_header_init,                       /* 188 */
+    (of_object_init_f)of_bsn_vport_q_in_q_init,                       /* 189 */
+    (of_object_init_f)of_bucket_init,                                 /* 190 */
+    (of_object_init_f)of_bucket_counter_init,                         /* 191 */
+    (of_object_init_f)of_experimenter_stats_header_init,              /* 192 */
+    (of_object_init_f)of_flow_stats_entry_init,                       /* 193 */
+    (of_object_init_f)of_group_desc_stats_entry_init,                 /* 194 */
+    (of_object_init_f)of_group_stats_entry_init,                      /* 195 */
+    (of_object_init_f)of_header_init,                                 /* 196 */
+    (of_object_init_f)of_hello_elem_header_init,                      /* 197 */
+    (of_object_init_f)of_hello_elem_header_init,                      /* 198 */
+    (of_object_init_f)of_hello_elem_versionbitmap_init,               /* 199 */
+    (of_object_init_f)of_instruction_header_init,                     /* 200 */
+    (of_object_init_f)of_instruction_apply_actions_init,              /* 201 */
+    (of_object_init_f)of_instruction_clear_actions_init,              /* 202 */
+    (of_object_init_f)of_instruction_experimenter_init,               /* 203 */
+    (of_object_init_f)of_instruction_goto_table_init,                 /* 204 */
+    (of_object_init_f)of_instruction_header_init,                     /* 205 */
+    (of_object_init_f)of_instruction_meter_init,                      /* 206 */
+    (of_object_init_f)of_instruction_write_actions_init,              /* 207 */
+    (of_object_init_f)of_instruction_write_metadata_init,             /* 208 */
+    (of_object_init_f)of_match_v1_init,                               /* 209 */
+    (of_object_init_f)of_match_v2_init,                               /* 210 */
+    (of_object_init_f)of_match_v3_init,                               /* 211 */
+    (of_object_init_f)of_meter_band_header_init,                      /* 212 */
+    (of_object_init_f)of_meter_band_drop_init,                        /* 213 */
+    (of_object_init_f)of_meter_band_dscp_remark_init,                 /* 214 */
+    (of_object_init_f)of_meter_band_experimenter_init,                /* 215 */
+    (of_object_init_f)of_meter_band_header_init,                      /* 216 */
+    (of_object_init_f)of_meter_band_stats_init,                       /* 217 */
+    (of_object_init_f)of_meter_config_init,                           /* 218 */
+    (of_object_init_f)of_meter_features_init,                         /* 219 */
+    (of_object_init_f)of_meter_stats_init,                            /* 220 */
+    (of_object_init_f)of_oxm_header_init,                             /* 221 */
+    (of_object_init_f)of_oxm_arp_op_init,                             /* 222 */
+    (of_object_init_f)of_oxm_arp_op_masked_init,                      /* 223 */
+    (of_object_init_f)of_oxm_arp_sha_init,                            /* 224 */
+    (of_object_init_f)of_oxm_arp_sha_masked_init,                     /* 225 */
+    (of_object_init_f)of_oxm_arp_spa_init,                            /* 226 */
+    (of_object_init_f)of_oxm_arp_spa_masked_init,                     /* 227 */
+    (of_object_init_f)of_oxm_arp_tha_init,                            /* 228 */
+    (of_object_init_f)of_oxm_arp_tha_masked_init,                     /* 229 */
+    (of_object_init_f)of_oxm_arp_tpa_init,                            /* 230 */
+    (of_object_init_f)of_oxm_arp_tpa_masked_init,                     /* 231 */
+    (of_object_init_f)of_oxm_bsn_in_ports_128_init,                   /* 232 */
+    (of_object_init_f)of_oxm_bsn_in_ports_128_masked_init,            /* 233 */
+    (of_object_init_f)of_oxm_eth_dst_init,                            /* 234 */
+    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 235 */
+    (of_object_init_f)of_oxm_eth_src_init,                            /* 236 */
+    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 237 */
+    (of_object_init_f)of_oxm_eth_type_init,                           /* 238 */
+    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 239 */
+    (of_object_init_f)of_oxm_header_init,                             /* 240 */
+    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 241 */
+    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 242 */
+    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 243 */
+    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 244 */
+    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 245 */
+    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 246 */
+    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 247 */
+    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 248 */
+    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 249 */
+    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 250 */
+    (of_object_init_f)of_oxm_in_port_init,                            /* 251 */
+    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 252 */
+    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 253 */
+    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 254 */
+    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 255 */
+    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 256 */
+    (of_object_init_f)of_oxm_ip_proto_init,                           /* 257 */
+    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 258 */
+    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 259 */
+    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 260 */
+    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 261 */
+    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 262 */
+    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 263 */
+    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 264 */
+    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 265 */
+    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 266 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 267 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 268 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 269 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 270 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 271 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 272 */
+    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 273 */
+    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 274 */
+    (of_object_init_f)of_oxm_metadata_init,                           /* 275 */
+    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 276 */
+    (of_object_init_f)of_oxm_mpls_label_init,                         /* 277 */
+    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 278 */
+    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 279 */
+    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 280 */
+    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 281 */
+    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 282 */
+    (of_object_init_f)of_oxm_sctp_src_init,                           /* 283 */
+    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 284 */
+    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 285 */
+    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 286 */
+    (of_object_init_f)of_oxm_tcp_src_init,                            /* 287 */
+    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 288 */
+    (of_object_init_f)of_oxm_udp_dst_init,                            /* 289 */
+    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 290 */
+    (of_object_init_f)of_oxm_udp_src_init,                            /* 291 */
+    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 292 */
+    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 293 */
+    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 294 */
+    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 295 */
+    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 296 */
+    (of_object_init_f)of_packet_queue_init,                           /* 297 */
+    (of_object_init_f)of_port_desc_init,                              /* 298 */
+    (of_object_init_f)of_port_stats_entry_init,                       /* 299 */
+    (of_object_init_f)of_queue_prop_header_init,                      /* 300 */
+    (of_object_init_f)of_queue_prop_experimenter_init,                /* 301 */
+    (of_object_init_f)of_queue_prop_header_init,                      /* 302 */
+    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 303 */
+    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 304 */
+    (of_object_init_f)of_queue_stats_entry_init,                      /* 305 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 306 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 307 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 308 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 309 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 310 */
+    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 311 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 312 */
+    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 313 */
+    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 314 */
+    (of_object_init_f)of_table_feature_prop_match_init,               /* 315 */
+    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 316 */
+    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 317 */
+    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 318 */
+    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 319 */
+    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 320 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 321 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 322 */
+    (of_object_init_f)of_table_features_init,                         /* 323 */
+    (of_object_init_f)of_table_stats_entry_init,                      /* 324 */
+    (of_object_init_f)of_uint32_init,                                 /* 325 */
+    (of_object_init_f)of_uint8_init,                                  /* 326 */
+    (of_object_init_f)of_list_action_init,                            /* 327 */
+    (of_object_init_f)of_list_action_id_init,                         /* 328 */
+    (of_object_init_f)of_list_bsn_interface_init,                     /* 329 */
+    (of_object_init_f)of_list_bucket_init,                            /* 330 */
+    (of_object_init_f)of_list_bucket_counter_init,                    /* 331 */
+    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 332 */
+    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 333 */
+    (of_object_init_f)of_list_group_stats_entry_init,                 /* 334 */
+    (of_object_init_f)of_list_hello_elem_init,                        /* 335 */
+    (of_object_init_f)of_list_instruction_init,                       /* 336 */
+    (of_object_init_f)of_list_meter_band_init,                        /* 337 */
+    (of_object_init_f)of_list_meter_band_stats_init,                  /* 338 */
+    (of_object_init_f)of_list_meter_stats_init,                       /* 339 */
+    (of_object_init_f)of_list_oxm_init,                               /* 340 */
+    (of_object_init_f)of_list_packet_queue_init,                      /* 341 */
+    (of_object_init_f)of_list_port_desc_init,                         /* 342 */
+    (of_object_init_f)of_list_port_stats_entry_init,                  /* 343 */
+    (of_object_init_f)of_list_queue_prop_init,                        /* 344 */
+    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 345 */
+    (of_object_init_f)of_list_table_feature_prop_init,                /* 346 */
+    (of_object_init_f)of_list_table_features_init,                    /* 347 */
+    (of_object_init_f)of_list_table_stats_entry_init,                 /* 348 */
+    (of_object_init_f)of_list_uint32_init,                            /* 349 */
+    (of_object_init_f)of_list_uint8_init                              /* 350 */
 };
 
 /* This code should be broken out to a different file */
