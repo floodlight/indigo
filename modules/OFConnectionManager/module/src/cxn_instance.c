@@ -451,18 +451,13 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
                   of_object_id_str[obj->object_id], obj->object_id);
         rv = INDIGO_ERROR_PROTOCOL;
     } else {
-        LOG_VERBOSE(cxn, "Received HELLO message from %s", cxn_ip_string(cxn));
+        LOG_VERBOSE(cxn, "Received HELLO message (version %d) from %s",
+                    obj->version, cxn_ip_string(cxn));
 
-        if (obj->version > cxn->config_params.version) {
-            LOG_ERROR(cxn, "Expected version <= %d but got %d in hello from %s",
-                      cxn->config_params.version, obj->version,
-                      cxn_ip_string(cxn));
-            rv = INDIGO_ERROR_PROTOCOL;
-        } else {
-            cxn->status.negotiated_version = obj->version;
-            LOG_VERBOSE(cxn, "Set version to %d for %s", obj->version,
-                        cxn_ip_string(cxn));
-        }
+        cxn->status.negotiated_version = aim_imin(cxn->config_params.version,  obj->version);
+
+        LOG_VERBOSE(cxn, "Set version to %d for %s", cxn->status.negotiated_version,
+                    cxn_ip_string(cxn));
     }
 
     of_object_delete(obj);
