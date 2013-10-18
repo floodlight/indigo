@@ -1,6 +1,6 @@
 [submodule "submodules/infra"]
 	path = submodules/infra
-	url = git@github.com:floodlight/infra
+	url = https://github.com/floodlight/infra.git
 [submodule "submodules/bigcode"]
 	path = submodules/bigcode
-	url = git@github.com:floodlight/bigcode
+	url = https://github.com/floodlight/bigcode.git
