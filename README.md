@@ -91,7 +91,7 @@ Please see LICENSE at the top level of the repository.
 Code Overview
 =============
 
-The code in this repository is organized into modules under the Modules
+The code in this repository is organized into modules under the modules
 subdirectory.  The module's code files are divided between published 
 include headers (usually in the subdirectory `module/inc/`) and the actual
 implementation (usually in the subdirectory `module/src/`).
@@ -105,11 +105,14 @@ target lists the set of modules on which it depends and then provides
 application code.  Currently, only unit test applications are made
 available in this distribution.
 
-The build infrastructure is implemented by a collection of make files
-and some scripts.  These live in the `Builder` subdirectory.  To support
-multiple build environments, the `Builder` subdirectory has per-build 
-environment subdirectories.  Currently only the unix build environment
-is supported in this distribution.
+Code from other repositories is consumed using git submodules. All submodules
+are located under the `submodules` directory.
+
+The build infrastructure is implemented by a collection of make files and some
+scripts.  These live in the `infra` submodule, in the `builder` directory.  To
+support multiple build environments, the `builder` directory has per-build
+environment subdirectories.  Currently only the unix build environment is
+supported in this distribution.
 
 Architectural Overview
 ======================
@@ -145,6 +148,9 @@ representing the OpenFlow state of the switch in a platform
 independent way.  This allows the decoupling of database-like queries
 on the OpenFlow flow table from the manipulation of the forwarding
 state that is platform specific.
+* Configuration:  This module provides platform and implementation
+specific access to the interfaces provided by the other modules that
+permit updating the running configuration of the application.
 
 The platform specific modules (not included in this distribution) are:
 
@@ -153,17 +159,3 @@ manipulation of the platform's forwarding engine as represented by
 OpenFlow protocol updates.
 * Port manager:  This module exposes interfaces the allow the
 interrogation and manipulation of the platforms data plane entries.
-* Configuration:  This module provides platform and implementation
-specific access to the interfaces provided by the other modules that
-permit updating the running configuration of the application.
-
-In addition to the Indigo architecture implementations, some modules
-providing basic infrastructure are also provided in this
-distribution.  These include:
-
-* AIM: A set generic infrastructure primitives providing I/O
-abstractions (pvs), conventional semantics such as error return code
-values, logging abstractions, and data type utilities.
-* murmur: An implementation of the murmur hash function.
-* BigList:  Under `BigData/BigList`, this module provides a
-dynamically managed generic linked list implementation.
