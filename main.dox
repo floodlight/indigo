@@ -1,0 +1,19 @@
+/**
+\mainpage
+
+Please see the "Modules" tab for links to the documentation for each module.
+
+See @ref indigo for public interfaces between the core modules.
+
+@defgroup indigo Indigo Architecture
+@{
+The Indigo architecture headers define the interfaces between the modules of an OpenFlow switch.
+
+@defgroup indigo-OFStateManager OFStateManager
+@defgroup indigo-OFConnectionManager OFConnectionManager
+@defgroup indigo-Forwarding Forwarding
+@defgroup indigo-PortManager PortManager
+@defgroup indigo-module Module Conventions
+@}
+
+*/
