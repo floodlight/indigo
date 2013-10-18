@@ -276,9 +276,9 @@ static int
 test_of10_flow_add(void) {
     uint8_t binary[] = {
         0x01, 0x0e, 0x00, 0x70, 0x12, 0x34, 0x56, 0x78, 
-        0x00, 0x10, 0x00, 0x02, 0x00, 0x03, 0x01, 0x23, 
+        0x00, 0x30, 0x00, 0xe2, 0x00, 0x03, 0x01, 0x23, 
         0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x01, 0x23, 
-        0x45, 0x67, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x45, 0x67, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 
         0x00, 0x00, 0x00, 0x00, 0xc0, 0xa8, 0x03, 0x7f, 
         0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -303,20 +303,22 @@ test_of10_flow_add(void) {
         match.fields.in_port = 3;
         match.fields.eth_src = (of_mac_addr_t) { { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab } };
         match.fields.eth_dst = (of_mac_addr_t) { { 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67 } };
+        match.fields.eth_type = 0x800;
         match.fields.ipv4_src = 0xc0a8037f;
         match.fields.ipv4_dst = 0xffffffff;
         OF_MATCH_MASK_IN_PORT_EXACT_SET(&match);
         OF_MATCH_MASK_ETH_SRC_EXACT_SET(&match);
         OF_MATCH_MASK_ETH_DST_EXACT_SET(&match);
+        OF_MATCH_MASK_ETH_TYPE_EXACT_SET(&match);
         //OF_MATCH_MASK_VLAN_VID_EXACT_SET(&match);
         //OF_MATCH_MASK_VLAN_PCP_EXACT_SET(&match);
         OF_MATCH_MASK_ETH_TYPE_EXACT_SET(&match);
-        OF_MATCH_MASK_IP_DSCP_EXACT_SET(&match);
-        OF_MATCH_MASK_IP_PROTO_EXACT_SET(&match);
+        //OF_MATCH_MASK_IP_DSCP_EXACT_SET(&match);
+        //OF_MATCH_MASK_IP_PROTO_EXACT_SET(&match);
         OF_MATCH_MASK_IPV4_SRC_EXACT_SET(&match);
         OF_MATCH_MASK_IPV4_DST_EXACT_SET(&match);
-        OF_MATCH_MASK_TCP_SRC_EXACT_SET(&match);
-        OF_MATCH_MASK_TCP_DST_EXACT_SET(&match);
+        //OF_MATCH_MASK_TCP_SRC_EXACT_SET(&match);
+        //OF_MATCH_MASK_TCP_DST_EXACT_SET(&match);
         of_flow_add_match_set(obj, &match);
     }
     {
@@ -357,11 +359,11 @@ test_of10_flow_add(void) {
 static int
 test_of10_flow_stats_entry(void) {
     uint8_t binary[] = {
-        0x00, 0x68, 0x03, 0x00, 0x00, 0x3f, 0xff, 0xff, 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x68, 0x03, 0x00, 0x00, 0x30, 0x00, 0xe2, 
+        0x00, 0x03, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 
+        0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x00, 0x00, 
+        0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0xc0, 0xa8, 0x03, 0x7f, 0xff, 0xff, 0xff, 0xff, 
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 
         0x00, 0x00, 0x00, 0x02, 0x00, 0x64, 0x00, 0x05, 
         0x00, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
@@ -402,6 +404,25 @@ test_of10_flow_stats_entry(void) {
     of_flow_stats_entry_idle_timeout_set(obj, 5);
     {
         of_match_t match = { OF_VERSION_1_0 };
+        match.fields.in_port = 3;
+        match.fields.eth_src = (of_mac_addr_t) { { 0x01, 0x23, 0x45, 0x67, 0x89, 0xab } };
+        match.fields.eth_dst = (of_mac_addr_t) { { 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67 } };
+        match.fields.eth_type = 0x800;
+        match.fields.ipv4_src = 0xc0a8037f;
+        match.fields.ipv4_dst = 0xffffffff;
+        OF_MATCH_MASK_IN_PORT_EXACT_SET(&match);
+        OF_MATCH_MASK_ETH_SRC_EXACT_SET(&match);
+        OF_MATCH_MASK_ETH_DST_EXACT_SET(&match);
+        OF_MATCH_MASK_ETH_TYPE_EXACT_SET(&match);
+        //OF_MATCH_MASK_VLAN_VID_EXACT_SET(&match);
+        //OF_MATCH_MASK_VLAN_PCP_EXACT_SET(&match);
+        OF_MATCH_MASK_ETH_TYPE_EXACT_SET(&match);
+        //OF_MATCH_MASK_IP_DSCP_EXACT_SET(&match);
+        //OF_MATCH_MASK_IP_PROTO_EXACT_SET(&match);
+        OF_MATCH_MASK_IPV4_SRC_EXACT_SET(&match);
+        OF_MATCH_MASK_IPV4_DST_EXACT_SET(&match);
+        //OF_MATCH_MASK_TCP_SRC_EXACT_SET(&match);
+        //OF_MATCH_MASK_TCP_DST_EXACT_SET(&match);
         of_flow_stats_entry_match_set(obj, &match);
     }
     of_flow_stats_entry_packet_count_set(obj, 10);
@@ -1025,6 +1046,143 @@ test_of10_table_stats_entry(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/bad_match_error_msg.data */
+static int
+test_of13_bad_match_error_msg(void) {
+    uint8_t binary[] = {
+        0x04, 0x01, 0x00, 0x0f, 0x12, 0x34, 0x56, 0x78, 
+        0x00, 0x04, 0x00, 0x08, 0x61, 0x62, 0x63, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_bad_match_error_msg_new(OF_VERSION_1_3);
+    of_bad_match_error_msg_xid_set(obj, 0x12345678);
+    of_bad_match_error_msg_code_set(obj, OF_MATCH_FAILED_BAD_MASK_BY_VERSION(OF_VERSION_1_3));
+    of_octets_t data = { .bytes=3, .data=(uint8_t *)"\x61\x62\x63" };
+    of_bad_match_error_msg_data_set(obj, &data);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
+/* Generated from of13/bad_request_error_msg.data */
+static int
+test_of13_bad_request_error_msg(void) {
+    uint8_t binary[] = {
+        0x04, 0x01, 0x00, 0x0f, 0x12, 0x34, 0x56, 0x78, 
+        0x00, 0x01, 0x00, 0x08, 0x61, 0x62, 0x63, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_bad_request_error_msg_new(OF_VERSION_1_3);
+    of_bad_request_error_msg_xid_set(obj, 0x12345678);
+    of_bad_request_error_msg_code_set(obj, OF_REQUEST_FAILED_BUFFER_UNKNOWN_BY_VERSION(OF_VERSION_1_3));
+    of_octets_t data = { .bytes=3, .data=(uint8_t *)"\x61\x62\x63" };
+    of_bad_request_error_msg_data_set(obj, &data);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
+/* Generated from of13/bsn_flow_idle.data */
+static int
+test_of13_bsn_flow_idle(void) {
+    uint8_t binary[] = {
+        0x04, 0x04, 0x00, 0x38, 0x12, 0x34, 0x56, 0x78, 
+        0x00, 0x5c, 0x16, 0xc7, 0x00, 0x00, 0x00, 0x28, 
+        0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 
+        0x42, 0x68, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x01, 0x00, 0x16, 0x80, 0x00, 0x01, 0x08, 
+        0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 
+        0x80, 0x00, 0x2a, 0x02, 0x00, 0x01, 0x00, 0x00, 
+        
+    };
+
+    of_object_t *obj;
+
+    obj = of_bsn_flow_idle_new(OF_VERSION_1_3);
+    of_bsn_flow_idle_xid_set(obj, 0x12345678);
+    of_bsn_flow_idle_cookie_set(obj, 0xFEDCBA9876543210);
+    of_bsn_flow_idle_priority_set(obj, 17000);
+    of_bsn_flow_idle_table_id_set(obj, 20);
+    {
+        of_match_t match = { OF_VERSION_1_3 };
+        match.fields.in_port = 4;
+        match.masks.in_port = 5;
+        match.fields.arp_op = 1;
+        OF_MATCH_MASK_ARP_OP_EXACT_SET(&match);
+        of_bsn_flow_idle_match_set(obj, &match);
+    }
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
+/* Generated from of13/oxm_bsn_in_ports_masked_128.data */
+static int
+test_of13_oxm_bsn_in_ports_masked_128(void) {
+    uint8_t binary[] = {
+        0x00, 0x03, 0x01, 0x20, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xfe, 
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
+        0xff, 0xfd, 0xff, 0xfe, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_oxm_bsn_in_ports_128_masked_new(OF_VERSION_1_3);
+    {
+        of_bitmap_128_t bmap = { 0, 0 };
+        of_oxm_bsn_in_ports_128_masked_value_set(obj, bmap);
+    }
+    {
+        of_bitmap_128_t bmap = { 0xfffffffeffffffff , 0xfffffffffffdfffe };
+        of_oxm_bsn_in_ports_128_masked_value_mask_set(obj, bmap);
+    }
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 
 int
 test_datafiles(void)
@@ -1044,5 +1202,9 @@ test_datafiles(void)
     RUN_TEST(of10_port_status);
     RUN_TEST(of10_queue_get_config_reply);
     RUN_TEST(of10_table_stats_entry);
+    RUN_TEST(of13_bad_match_error_msg);
+    RUN_TEST(of13_bad_request_error_msg);
+    RUN_TEST(of13_bsn_flow_idle);
+    RUN_TEST(of13_oxm_bsn_in_ports_masked_128);
     return TEST_PASS;
 }

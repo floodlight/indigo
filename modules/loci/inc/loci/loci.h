@@ -131,6 +131,10 @@ typedef of_object_t of_aggregate_stats_request_t;
 typedef of_object_t of_async_get_reply_t;
 typedef of_object_t of_async_get_request_t;
 typedef of_object_t of_async_set_t;
+typedef of_object_t of_bad_action_error_msg_t;
+typedef of_object_t of_bad_instruction_error_msg_t;
+typedef of_object_t of_bad_match_error_msg_t;
+typedef of_object_t of_bad_request_error_msg_t;
 typedef of_object_t of_barrier_reply_t;
 typedef of_object_t of_barrier_request_t;
 typedef of_object_t of_bsn_bw_clear_data_reply_t;
@@ -139,6 +143,11 @@ typedef of_object_t of_bsn_bw_enable_get_reply_t;
 typedef of_object_t of_bsn_bw_enable_get_request_t;
 typedef of_object_t of_bsn_bw_enable_set_reply_t;
 typedef of_object_t of_bsn_bw_enable_set_request_t;
+typedef of_object_t of_bsn_flow_idle_t;
+typedef of_object_t of_bsn_flow_idle_enable_get_reply_t;
+typedef of_object_t of_bsn_flow_idle_enable_get_request_t;
+typedef of_object_t of_bsn_flow_idle_enable_set_reply_t;
+typedef of_object_t of_bsn_flow_idle_enable_set_request_t;
 typedef of_object_t of_bsn_get_interfaces_reply_t;
 typedef of_object_t of_bsn_get_interfaces_request_t;
 typedef of_object_t of_bsn_get_ip_mask_reply_t;
@@ -150,6 +159,11 @@ typedef of_object_t of_bsn_get_mirroring_request_t;
 typedef of_object_t of_bsn_header_t;
 typedef of_object_t of_bsn_hybrid_get_reply_t;
 typedef of_object_t of_bsn_hybrid_get_request_t;
+typedef of_object_t of_bsn_pdu_rx_reply_t;
+typedef of_object_t of_bsn_pdu_rx_request_t;
+typedef of_object_t of_bsn_pdu_rx_timeout_t;
+typedef of_object_t of_bsn_pdu_tx_reply_t;
+typedef of_object_t of_bsn_pdu_tx_request_t;
 typedef of_object_t of_bsn_set_ip_mask_t;
 typedef of_object_t of_bsn_set_l2_table_reply_t;
 typedef of_object_t of_bsn_set_l2_table_request_t;
@@ -169,6 +183,7 @@ typedef of_object_t of_echo_reply_t;
 typedef of_object_t of_echo_request_t;
 typedef of_object_t of_error_msg_t;
 typedef of_object_t of_experimenter_t;
+typedef of_object_t of_experimenter_error_msg_t;
 typedef of_object_t of_experimenter_stats_reply_t;
 typedef of_object_t of_experimenter_stats_request_t;
 typedef of_object_t of_features_reply_t;
@@ -177,6 +192,7 @@ typedef of_object_t of_flow_add_t;
 typedef of_object_t of_flow_delete_t;
 typedef of_object_t of_flow_delete_strict_t;
 typedef of_object_t of_flow_mod_t;
+typedef of_object_t of_flow_mod_failed_error_msg_t;
 typedef of_object_t of_flow_modify_t;
 typedef of_object_t of_flow_modify_strict_t;
 typedef of_object_t of_flow_removed_t;
@@ -189,14 +205,17 @@ typedef of_object_t of_group_desc_stats_request_t;
 typedef of_object_t of_group_features_stats_reply_t;
 typedef of_object_t of_group_features_stats_request_t;
 typedef of_object_t of_group_mod_t;
+typedef of_object_t of_group_mod_failed_error_msg_t;
 typedef of_object_t of_group_stats_reply_t;
 typedef of_object_t of_group_stats_request_t;
 typedef of_object_t of_hello_t;
+typedef of_object_t of_hello_failed_error_msg_t;
 typedef of_object_t of_meter_config_stats_reply_t;
 typedef of_object_t of_meter_config_stats_request_t;
 typedef of_object_t of_meter_features_stats_reply_t;
 typedef of_object_t of_meter_features_stats_request_t;
 typedef of_object_t of_meter_mod_t;
+typedef of_object_t of_meter_mod_failed_error_msg_t;
 typedef of_object_t of_meter_stats_reply_t;
 typedef of_object_t of_meter_stats_request_t;
 typedef of_object_t of_nicira_controller_role_reply_t;
@@ -207,21 +226,27 @@ typedef of_object_t of_packet_out_t;
 typedef of_object_t of_port_desc_stats_reply_t;
 typedef of_object_t of_port_desc_stats_request_t;
 typedef of_object_t of_port_mod_t;
+typedef of_object_t of_port_mod_failed_error_msg_t;
 typedef of_object_t of_port_stats_reply_t;
 typedef of_object_t of_port_stats_request_t;
 typedef of_object_t of_port_status_t;
 typedef of_object_t of_queue_get_config_reply_t;
 typedef of_object_t of_queue_get_config_request_t;
+typedef of_object_t of_queue_op_failed_error_msg_t;
 typedef of_object_t of_queue_stats_reply_t;
 typedef of_object_t of_queue_stats_request_t;
 typedef of_object_t of_role_reply_t;
 typedef of_object_t of_role_request_t;
+typedef of_object_t of_role_request_failed_error_msg_t;
 typedef of_object_t of_set_config_t;
 typedef of_object_t of_stats_reply_t;
 typedef of_object_t of_stats_request_t;
+typedef of_object_t of_switch_config_failed_error_msg_t;
+typedef of_object_t of_table_features_failed_error_msg_t;
 typedef of_object_t of_table_features_stats_reply_t;
 typedef of_object_t of_table_features_stats_request_t;
 typedef of_object_t of_table_mod_t;
+typedef of_object_t of_table_mod_failed_error_msg_t;
 typedef of_object_t of_table_stats_reply_t;
 typedef of_object_t of_table_stats_request_t;
 typedef of_object_t of_action_bsn_t;
@@ -289,7 +314,7 @@ typedef of_object_t of_bsn_vport_header_t;
 typedef of_object_t of_bsn_vport_q_in_q_t;
 typedef of_object_t of_bucket_t;
 typedef of_object_t of_bucket_counter_t;
-typedef of_object_t of_experimenter_multipart_header_t;
+typedef of_object_t of_experimenter_stats_header_t;
 typedef of_object_t of_flow_stats_entry_t;
 typedef of_object_t of_group_desc_stats_entry_t;
 typedef of_object_t of_group_stats_entry_t;
@@ -325,6 +350,8 @@ typedef of_object_t of_oxm_arp_tha_t;
 typedef of_object_t of_oxm_arp_tha_masked_t;
 typedef of_object_t of_oxm_arp_tpa_t;
 typedef of_object_t of_oxm_arp_tpa_masked_t;
+typedef of_object_t of_oxm_bsn_in_ports_128_t;
+typedef of_object_t of_oxm_bsn_in_ports_128_masked_t;
 typedef of_object_t of_oxm_eth_dst_t;
 typedef of_object_t of_oxm_eth_dst_masked_t;
 typedef of_object_t of_oxm_eth_src_t;
@@ -564,6 +591,58 @@ extern of_async_set_t *
     of_async_set_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bad_action_error_msg_new(version) \
+    of_bad_action_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bad_action_error_msg_new_from_message(msg) \
+    of_bad_action_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bad_instruction_error_msg_new(version) \
+    of_bad_instruction_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bad_instruction_error_msg_new_from_message(msg) \
+    of_bad_instruction_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bad_match_error_msg_new(version) \
+    of_bad_match_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bad_match_error_msg_new_from_message(msg) \
+    of_bad_match_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bad_request_error_msg_new(version) \
+    of_bad_request_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bad_request_error_msg_new_from_message(msg) \
+    of_bad_request_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_barrier_reply_t *
     of_barrier_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -666,6 +745,71 @@ extern of_bsn_bw_enable_set_request_t *
         const char *file, int line);
 #define of_bsn_bw_enable_set_request_new_from_message(msg) \
     of_bsn_bw_enable_set_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_flow_idle_new(version) \
+    of_bsn_flow_idle_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_flow_idle_new_from_message(msg) \
+    of_bsn_flow_idle_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_get_reply_new(version) \
+    of_bsn_flow_idle_enable_get_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_get_reply_new_from_message(msg) \
+    of_bsn_flow_idle_enable_get_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_get_request_new(version) \
+    of_bsn_flow_idle_enable_get_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_get_request_new_from_message(msg) \
+    of_bsn_flow_idle_enable_get_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_set_reply_new(version) \
+    of_bsn_flow_idle_enable_set_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_set_reply_new_from_message(msg) \
+    of_bsn_flow_idle_enable_set_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_set_request_new(version) \
+    of_bsn_flow_idle_enable_set_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_flow_idle_enable_set_request_new_from_message(msg) \
+    of_bsn_flow_idle_enable_set_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_get_interfaces_reply_t *
@@ -809,6 +953,71 @@ extern of_bsn_hybrid_get_request_t *
         const char *file, int line);
 #define of_bsn_hybrid_get_request_new_from_message(msg) \
     of_bsn_hybrid_get_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_pdu_rx_reply_new(version) \
+    of_bsn_pdu_rx_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_pdu_rx_reply_new_from_message(msg) \
+    of_bsn_pdu_rx_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_pdu_rx_request_new(version) \
+    of_bsn_pdu_rx_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_pdu_rx_request_new_from_message(msg) \
+    of_bsn_pdu_rx_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_pdu_rx_timeout_new(version) \
+    of_bsn_pdu_rx_timeout_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_pdu_rx_timeout_new_from_message(msg) \
+    of_bsn_pdu_rx_timeout_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_pdu_tx_reply_new(version) \
+    of_bsn_pdu_tx_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_pdu_tx_reply_new_from_message(msg) \
+    of_bsn_pdu_tx_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_pdu_tx_request_new(version) \
+    of_bsn_pdu_tx_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_pdu_tx_request_new_from_message(msg) \
+    of_bsn_pdu_tx_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_set_ip_mask_t *
@@ -1058,6 +1267,19 @@ extern of_experimenter_t *
     of_experimenter_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_experimenter_error_msg_new(version) \
+    of_experimenter_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_experimenter_error_msg_new_from_message(msg) \
+    of_experimenter_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_experimenter_stats_reply_t *
     of_experimenter_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1160,6 +1382,19 @@ extern of_flow_mod_t *
         const char *file, int line);
 #define of_flow_mod_new_from_message(msg) \
     of_flow_mod_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_flow_mod_failed_error_msg_new(version) \
+    of_flow_mod_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_flow_mod_failed_error_msg_new_from_message(msg) \
+    of_flow_mod_failed_error_msg_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_flow_modify_t *
@@ -1318,6 +1553,19 @@ extern of_group_mod_t *
     of_group_mod_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_group_mod_failed_error_msg_new(version) \
+    of_group_mod_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_group_mod_failed_error_msg_new_from_message(msg) \
+    of_group_mod_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1355,6 +1603,19 @@ extern of_hello_t *
         const char *file, int line);
 #define of_hello_new_from_message(msg) \
     of_hello_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_hello_failed_error_msg_new(version) \
+    of_hello_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_hello_failed_error_msg_new_from_message(msg) \
+    of_hello_failed_error_msg_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_meter_config_stats_reply_t *
@@ -1420,6 +1681,19 @@ extern of_meter_mod_t *
         const char *file, int line);
 #define of_meter_mod_new_from_message(msg) \
     of_meter_mod_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_meter_mod_failed_error_msg_new(version) \
+    of_meter_mod_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_meter_mod_failed_error_msg_new_from_message(msg) \
+    of_meter_mod_failed_error_msg_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_meter_stats_reply_t *
@@ -1552,6 +1826,19 @@ extern of_port_mod_t *
     of_port_mod_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_port_mod_failed_error_msg_new(version) \
+    of_port_mod_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_port_mod_failed_error_msg_new_from_message(msg) \
+    of_port_mod_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_port_stats_reply_t *
     of_port_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1617,6 +1904,19 @@ extern of_queue_get_config_request_t *
     of_queue_get_config_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_queue_op_failed_error_msg_new(version) \
+    of_queue_op_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_queue_op_failed_error_msg_new_from_message(msg) \
+    of_queue_op_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1669,6 +1969,19 @@ extern of_role_request_t *
     of_role_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_role_request_failed_error_msg_new(version) \
+    of_role_request_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_role_request_failed_error_msg_new_from_message(msg) \
+    of_role_request_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_set_config_t *
     of_set_config_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1708,6 +2021,32 @@ extern of_stats_request_t *
     of_stats_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_switch_config_failed_error_msg_new(version) \
+    of_switch_config_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_switch_config_failed_error_msg_new_from_message(msg) \
+    of_switch_config_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_table_features_failed_error_msg_new(version) \
+    of_table_features_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_table_features_failed_error_msg_new_from_message(msg) \
+    of_table_features_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1745,6 +2084,19 @@ extern of_table_mod_t *
         const char *file, int line);
 #define of_table_mod_new_from_message(msg) \
     of_table_mod_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_table_mod_failed_error_msg_new(version) \
+    of_table_mod_failed_error_msg_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_table_mod_failed_error_msg_new_from_message(msg) \
+    of_table_mod_failed_error_msg_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_table_stats_reply_t *
@@ -2249,11 +2601,11 @@ extern of_bucket_counter_t *
     of_bucket_counter_new_tracking(version, \
         __FILE__, __LINE__)
 
-extern of_experimenter_multipart_header_t *
-    of_experimenter_multipart_header_new_tracking(of_version_t version,
+extern of_experimenter_stats_header_t *
+    of_experimenter_stats_header_new_tracking(of_version_t version,
         const char *file, int line);
-#define of_experimenter_multipart_header_new(version) \
-    of_experimenter_multipart_header_new_tracking(version, \
+#define of_experimenter_stats_header_new(version) \
+    of_experimenter_stats_header_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_flow_stats_entry_t *
@@ -2527,6 +2879,20 @@ extern of_oxm_arp_tpa_masked_t *
         const char *file, int line);
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_in_ports_128_new(version) \
+    of_oxm_bsn_in_ports_128_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_in_ports_128_masked_new(version) \
+    of_oxm_bsn_in_ports_128_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_oxm_eth_dst_t *
@@ -3375,6 +3741,26 @@ extern of_list_uint8_t *
 #define of_async_set_new_from_message(msg) \
     of_async_set_new_from_message_(msg)
 
+#define of_bad_action_error_msg_new(version) \
+    of_bad_action_error_msg_new_(version)
+#define of_bad_action_error_msg_new_from_message(msg) \
+    of_bad_action_error_msg_new_from_message_(msg)
+
+#define of_bad_instruction_error_msg_new(version) \
+    of_bad_instruction_error_msg_new_(version)
+#define of_bad_instruction_error_msg_new_from_message(msg) \
+    of_bad_instruction_error_msg_new_from_message_(msg)
+
+#define of_bad_match_error_msg_new(version) \
+    of_bad_match_error_msg_new_(version)
+#define of_bad_match_error_msg_new_from_message(msg) \
+    of_bad_match_error_msg_new_from_message_(msg)
+
+#define of_bad_request_error_msg_new(version) \
+    of_bad_request_error_msg_new_(version)
+#define of_bad_request_error_msg_new_from_message(msg) \
+    of_bad_request_error_msg_new_from_message_(msg)
+
 #define of_barrier_reply_new(version) \
     of_barrier_reply_new_(version)
 #define of_barrier_reply_new_from_message(msg) \
@@ -3414,6 +3800,31 @@ extern of_list_uint8_t *
     of_bsn_bw_enable_set_request_new_(version)
 #define of_bsn_bw_enable_set_request_new_from_message(msg) \
     of_bsn_bw_enable_set_request_new_from_message_(msg)
+
+#define of_bsn_flow_idle_new(version) \
+    of_bsn_flow_idle_new_(version)
+#define of_bsn_flow_idle_new_from_message(msg) \
+    of_bsn_flow_idle_new_from_message_(msg)
+
+#define of_bsn_flow_idle_enable_get_reply_new(version) \
+    of_bsn_flow_idle_enable_get_reply_new_(version)
+#define of_bsn_flow_idle_enable_get_reply_new_from_message(msg) \
+    of_bsn_flow_idle_enable_get_reply_new_from_message_(msg)
+
+#define of_bsn_flow_idle_enable_get_request_new(version) \
+    of_bsn_flow_idle_enable_get_request_new_(version)
+#define of_bsn_flow_idle_enable_get_request_new_from_message(msg) \
+    of_bsn_flow_idle_enable_get_request_new_from_message_(msg)
+
+#define of_bsn_flow_idle_enable_set_reply_new(version) \
+    of_bsn_flow_idle_enable_set_reply_new_(version)
+#define of_bsn_flow_idle_enable_set_reply_new_from_message(msg) \
+    of_bsn_flow_idle_enable_set_reply_new_from_message_(msg)
+
+#define of_bsn_flow_idle_enable_set_request_new(version) \
+    of_bsn_flow_idle_enable_set_request_new_(version)
+#define of_bsn_flow_idle_enable_set_request_new_from_message(msg) \
+    of_bsn_flow_idle_enable_set_request_new_from_message_(msg)
 
 #define of_bsn_get_interfaces_reply_new(version) \
     of_bsn_get_interfaces_reply_new_(version)
@@ -3469,6 +3880,31 @@ extern of_list_uint8_t *
     of_bsn_hybrid_get_request_new_(version)
 #define of_bsn_hybrid_get_request_new_from_message(msg) \
     of_bsn_hybrid_get_request_new_from_message_(msg)
+
+#define of_bsn_pdu_rx_reply_new(version) \
+    of_bsn_pdu_rx_reply_new_(version)
+#define of_bsn_pdu_rx_reply_new_from_message(msg) \
+    of_bsn_pdu_rx_reply_new_from_message_(msg)
+
+#define of_bsn_pdu_rx_request_new(version) \
+    of_bsn_pdu_rx_request_new_(version)
+#define of_bsn_pdu_rx_request_new_from_message(msg) \
+    of_bsn_pdu_rx_request_new_from_message_(msg)
+
+#define of_bsn_pdu_rx_timeout_new(version) \
+    of_bsn_pdu_rx_timeout_new_(version)
+#define of_bsn_pdu_rx_timeout_new_from_message(msg) \
+    of_bsn_pdu_rx_timeout_new_from_message_(msg)
+
+#define of_bsn_pdu_tx_reply_new(version) \
+    of_bsn_pdu_tx_reply_new_(version)
+#define of_bsn_pdu_tx_reply_new_from_message(msg) \
+    of_bsn_pdu_tx_reply_new_from_message_(msg)
+
+#define of_bsn_pdu_tx_request_new(version) \
+    of_bsn_pdu_tx_request_new_(version)
+#define of_bsn_pdu_tx_request_new_from_message(msg) \
+    of_bsn_pdu_tx_request_new_from_message_(msg)
 
 #define of_bsn_set_ip_mask_new(version) \
     of_bsn_set_ip_mask_new_(version)
@@ -3565,6 +4001,11 @@ extern of_list_uint8_t *
 #define of_experimenter_new_from_message(msg) \
     of_experimenter_new_from_message_(msg)
 
+#define of_experimenter_error_msg_new(version) \
+    of_experimenter_error_msg_new_(version)
+#define of_experimenter_error_msg_new_from_message(msg) \
+    of_experimenter_error_msg_new_from_message_(msg)
+
 #define of_experimenter_stats_reply_new(version) \
     of_experimenter_stats_reply_new_(version)
 #define of_experimenter_stats_reply_new_from_message(msg) \
@@ -3604,6 +4045,11 @@ extern of_list_uint8_t *
     of_flow_mod_new_(version)
 #define of_flow_mod_new_from_message(msg) \
     of_flow_mod_new_from_message_(msg)
+
+#define of_flow_mod_failed_error_msg_new(version) \
+    of_flow_mod_failed_error_msg_new_(version)
+#define of_flow_mod_failed_error_msg_new_from_message(msg) \
+    of_flow_mod_failed_error_msg_new_from_message_(msg)
 
 #define of_flow_modify_new(version) \
     of_flow_modify_new_(version)
@@ -3665,6 +4111,11 @@ extern of_list_uint8_t *
 #define of_group_mod_new_from_message(msg) \
     of_group_mod_new_from_message_(msg)
 
+#define of_group_mod_failed_error_msg_new(version) \
+    of_group_mod_failed_error_msg_new_(version)
+#define of_group_mod_failed_error_msg_new_from_message(msg) \
+    of_group_mod_failed_error_msg_new_from_message_(msg)
+
 #define of_group_stats_reply_new(version) \
     of_group_stats_reply_new_(version)
 #define of_group_stats_reply_new_from_message(msg) \
@@ -3679,6 +4130,11 @@ extern of_list_uint8_t *
     of_hello_new_(version)
 #define of_hello_new_from_message(msg) \
     of_hello_new_from_message_(msg)
+
+#define of_hello_failed_error_msg_new(version) \
+    of_hello_failed_error_msg_new_(version)
+#define of_hello_failed_error_msg_new_from_message(msg) \
+    of_hello_failed_error_msg_new_from_message_(msg)
 
 #define of_meter_config_stats_reply_new(version) \
     of_meter_config_stats_reply_new_(version)
@@ -3704,6 +4160,11 @@ extern of_list_uint8_t *
     of_meter_mod_new_(version)
 #define of_meter_mod_new_from_message(msg) \
     of_meter_mod_new_from_message_(msg)
+
+#define of_meter_mod_failed_error_msg_new(version) \
+    of_meter_mod_failed_error_msg_new_(version)
+#define of_meter_mod_failed_error_msg_new_from_message(msg) \
+    of_meter_mod_failed_error_msg_new_from_message_(msg)
 
 #define of_meter_stats_reply_new(version) \
     of_meter_stats_reply_new_(version)
@@ -3755,6 +4216,11 @@ extern of_list_uint8_t *
 #define of_port_mod_new_from_message(msg) \
     of_port_mod_new_from_message_(msg)
 
+#define of_port_mod_failed_error_msg_new(version) \
+    of_port_mod_failed_error_msg_new_(version)
+#define of_port_mod_failed_error_msg_new_from_message(msg) \
+    of_port_mod_failed_error_msg_new_from_message_(msg)
+
 #define of_port_stats_reply_new(version) \
     of_port_stats_reply_new_(version)
 #define of_port_stats_reply_new_from_message(msg) \
@@ -3780,6 +4246,11 @@ extern of_list_uint8_t *
 #define of_queue_get_config_request_new_from_message(msg) \
     of_queue_get_config_request_new_from_message_(msg)
 
+#define of_queue_op_failed_error_msg_new(version) \
+    of_queue_op_failed_error_msg_new_(version)
+#define of_queue_op_failed_error_msg_new_from_message(msg) \
+    of_queue_op_failed_error_msg_new_from_message_(msg)
+
 #define of_queue_stats_reply_new(version) \
     of_queue_stats_reply_new_(version)
 #define of_queue_stats_reply_new_from_message(msg) \
@@ -3800,6 +4271,11 @@ extern of_list_uint8_t *
 #define of_role_request_new_from_message(msg) \
     of_role_request_new_from_message_(msg)
 
+#define of_role_request_failed_error_msg_new(version) \
+    of_role_request_failed_error_msg_new_(version)
+#define of_role_request_failed_error_msg_new_from_message(msg) \
+    of_role_request_failed_error_msg_new_from_message_(msg)
+
 #define of_set_config_new(version) \
     of_set_config_new_(version)
 #define of_set_config_new_from_message(msg) \
@@ -3815,6 +4291,16 @@ extern of_list_uint8_t *
 #define of_stats_request_new_from_message(msg) \
     of_stats_request_new_from_message_(msg)
 
+#define of_switch_config_failed_error_msg_new(version) \
+    of_switch_config_failed_error_msg_new_(version)
+#define of_switch_config_failed_error_msg_new_from_message(msg) \
+    of_switch_config_failed_error_msg_new_from_message_(msg)
+
+#define of_table_features_failed_error_msg_new(version) \
+    of_table_features_failed_error_msg_new_(version)
+#define of_table_features_failed_error_msg_new_from_message(msg) \
+    of_table_features_failed_error_msg_new_from_message_(msg)
+
 #define of_table_features_stats_reply_new(version) \
     of_table_features_stats_reply_new_(version)
 #define of_table_features_stats_reply_new_from_message(msg) \
@@ -3829,6 +4315,11 @@ extern of_list_uint8_t *
     of_table_mod_new_(version)
 #define of_table_mod_new_from_message(msg) \
     of_table_mod_new_from_message_(msg)
+
+#define of_table_mod_failed_error_msg_new(version) \
+    of_table_mod_failed_error_msg_new_(version)
+#define of_table_mod_failed_error_msg_new_from_message(msg) \
+    of_table_mod_failed_error_msg_new_from_message_(msg)
 
 #define of_table_stats_reply_new(version) \
     of_table_stats_reply_new_(version)
@@ -4044,8 +4535,8 @@ extern of_list_uint8_t *
 #define of_bucket_counter_new(version) \
     of_bucket_counter_new_(version)
 
-#define of_experimenter_multipart_header_new(version) \
-    of_experimenter_multipart_header_new_(version)
+#define of_experimenter_stats_header_new(version) \
+    of_experimenter_stats_header_new_(version)
 
 #define of_flow_stats_entry_new(version) \
     of_flow_stats_entry_new_(version)
@@ -4163,6 +4654,12 @@ extern of_list_uint8_t *
 
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_(version)
+
+#define of_oxm_bsn_in_ports_128_new(version) \
+    of_oxm_bsn_in_ports_128_new_(version)
+
+#define of_oxm_bsn_in_ports_128_masked_new(version) \
+    of_oxm_bsn_in_ports_128_masked_new_(version)
 
 #define of_oxm_eth_dst_new(version) \
     of_oxm_eth_dst_new_(version)
@@ -4552,6 +5049,34 @@ extern of_async_set_t *
 extern void of_async_set_init(
     of_async_set_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_new_(of_version_t version);
+extern of_bad_action_error_msg_t *
+    of_bad_action_error_msg_new_from_message_(of_message_t msg);
+extern void of_bad_action_error_msg_init(
+    of_bad_action_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_new_(of_version_t version);
+extern of_bad_instruction_error_msg_t *
+    of_bad_instruction_error_msg_new_from_message_(of_message_t msg);
+extern void of_bad_instruction_error_msg_init(
+    of_bad_instruction_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_new_(of_version_t version);
+extern of_bad_match_error_msg_t *
+    of_bad_match_error_msg_new_from_message_(of_message_t msg);
+extern void of_bad_match_error_msg_init(
+    of_bad_match_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_new_(of_version_t version);
+extern of_bad_request_error_msg_t *
+    of_bad_request_error_msg_new_from_message_(of_message_t msg);
+extern void of_bad_request_error_msg_init(
+    of_bad_request_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_barrier_reply_t *
     of_barrier_reply_new_(of_version_t version);
 extern of_barrier_reply_t *
@@ -4607,6 +5132,41 @@ extern of_bsn_bw_enable_set_request_t *
     of_bsn_bw_enable_set_request_new_from_message_(of_message_t msg);
 extern void of_bsn_bw_enable_set_request_init(
     of_bsn_bw_enable_set_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_new_(of_version_t version);
+extern of_bsn_flow_idle_t *
+    of_bsn_flow_idle_new_from_message_(of_message_t msg);
+extern void of_bsn_flow_idle_init(
+    of_bsn_flow_idle_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_new_(of_version_t version);
+extern of_bsn_flow_idle_enable_get_reply_t *
+    of_bsn_flow_idle_enable_get_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_flow_idle_enable_get_reply_init(
+    of_bsn_flow_idle_enable_get_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_new_(of_version_t version);
+extern of_bsn_flow_idle_enable_get_request_t *
+    of_bsn_flow_idle_enable_get_request_new_from_message_(of_message_t msg);
+extern void of_bsn_flow_idle_enable_get_request_init(
+    of_bsn_flow_idle_enable_get_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_new_(of_version_t version);
+extern of_bsn_flow_idle_enable_set_reply_t *
+    of_bsn_flow_idle_enable_set_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_flow_idle_enable_set_reply_init(
+    of_bsn_flow_idle_enable_set_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_new_(of_version_t version);
+extern of_bsn_flow_idle_enable_set_request_t *
+    of_bsn_flow_idle_enable_set_request_new_from_message_(of_message_t msg);
+extern void of_bsn_flow_idle_enable_set_request_init(
+    of_bsn_flow_idle_enable_set_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_get_interfaces_reply_t *
     of_bsn_get_interfaces_reply_new_(of_version_t version);
@@ -4684,6 +5244,41 @@ extern of_bsn_hybrid_get_request_t *
     of_bsn_hybrid_get_request_new_from_message_(of_message_t msg);
 extern void of_bsn_hybrid_get_request_init(
     of_bsn_hybrid_get_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_new_(of_version_t version);
+extern of_bsn_pdu_rx_reply_t *
+    of_bsn_pdu_rx_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_pdu_rx_reply_init(
+    of_bsn_pdu_rx_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_new_(of_version_t version);
+extern of_bsn_pdu_rx_request_t *
+    of_bsn_pdu_rx_request_new_from_message_(of_message_t msg);
+extern void of_bsn_pdu_rx_request_init(
+    of_bsn_pdu_rx_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_new_(of_version_t version);
+extern of_bsn_pdu_rx_timeout_t *
+    of_bsn_pdu_rx_timeout_new_from_message_(of_message_t msg);
+extern void of_bsn_pdu_rx_timeout_init(
+    of_bsn_pdu_rx_timeout_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_new_(of_version_t version);
+extern of_bsn_pdu_tx_reply_t *
+    of_bsn_pdu_tx_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_pdu_tx_reply_init(
+    of_bsn_pdu_tx_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_new_(of_version_t version);
+extern of_bsn_pdu_tx_request_t *
+    of_bsn_pdu_tx_request_new_from_message_(of_message_t msg);
+extern void of_bsn_pdu_tx_request_init(
+    of_bsn_pdu_tx_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_new_(of_version_t version);
@@ -4818,6 +5413,13 @@ extern of_experimenter_t *
 extern void of_experimenter_init(
     of_experimenter_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_new_(of_version_t version);
+extern of_experimenter_error_msg_t *
+    of_experimenter_error_msg_new_from_message_(of_message_t msg);
+extern void of_experimenter_error_msg_init(
+    of_experimenter_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_experimenter_stats_reply_t *
     of_experimenter_stats_reply_new_(of_version_t version);
 extern of_experimenter_stats_reply_t *
@@ -4873,6 +5475,13 @@ extern of_flow_mod_t *
     of_flow_mod_new_from_message_(of_message_t msg);
 extern void of_flow_mod_init(
     of_flow_mod_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_new_(of_version_t version);
+extern of_flow_mod_failed_error_msg_t *
+    of_flow_mod_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_flow_mod_failed_error_msg_init(
+    of_flow_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_flow_modify_t *
     of_flow_modify_new_(of_version_t version);
@@ -4958,6 +5567,13 @@ extern of_group_mod_t *
 extern void of_group_mod_init(
     of_group_mod_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_new_(of_version_t version);
+extern of_group_mod_failed_error_msg_t *
+    of_group_mod_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_group_mod_failed_error_msg_init(
+    of_group_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_group_stats_reply_t *
     of_group_stats_reply_new_(of_version_t version);
 extern of_group_stats_reply_t *
@@ -4978,6 +5594,13 @@ extern of_hello_t *
     of_hello_new_from_message_(of_message_t msg);
 extern void of_hello_init(
     of_hello_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_new_(of_version_t version);
+extern of_hello_failed_error_msg_t *
+    of_hello_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_hello_failed_error_msg_init(
+    of_hello_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_meter_config_stats_reply_t *
     of_meter_config_stats_reply_new_(of_version_t version);
@@ -5013,6 +5636,13 @@ extern of_meter_mod_t *
     of_meter_mod_new_from_message_(of_message_t msg);
 extern void of_meter_mod_init(
     of_meter_mod_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_new_(of_version_t version);
+extern of_meter_mod_failed_error_msg_t *
+    of_meter_mod_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_meter_mod_failed_error_msg_init(
+    of_meter_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_meter_stats_reply_t *
     of_meter_stats_reply_new_(of_version_t version);
@@ -5084,6 +5714,13 @@ extern of_port_mod_t *
 extern void of_port_mod_init(
     of_port_mod_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_new_(of_version_t version);
+extern of_port_mod_failed_error_msg_t *
+    of_port_mod_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_port_mod_failed_error_msg_init(
+    of_port_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_port_stats_reply_t *
     of_port_stats_reply_new_(of_version_t version);
 extern of_port_stats_reply_t *
@@ -5119,6 +5756,13 @@ extern of_queue_get_config_request_t *
 extern void of_queue_get_config_request_init(
     of_queue_get_config_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_new_(of_version_t version);
+extern of_queue_op_failed_error_msg_t *
+    of_queue_op_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_queue_op_failed_error_msg_init(
+    of_queue_op_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_queue_stats_reply_t *
     of_queue_stats_reply_new_(of_version_t version);
 extern of_queue_stats_reply_t *
@@ -5147,6 +5791,13 @@ extern of_role_request_t *
 extern void of_role_request_init(
     of_role_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_new_(of_version_t version);
+extern of_role_request_failed_error_msg_t *
+    of_role_request_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_role_request_failed_error_msg_init(
+    of_role_request_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_set_config_t *
     of_set_config_new_(of_version_t version);
 extern of_set_config_t *
@@ -5168,6 +5819,20 @@ extern of_stats_request_t *
 extern void of_stats_request_init(
     of_stats_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_new_(of_version_t version);
+extern of_switch_config_failed_error_msg_t *
+    of_switch_config_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_switch_config_failed_error_msg_init(
+    of_switch_config_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_new_(of_version_t version);
+extern of_table_features_failed_error_msg_t *
+    of_table_features_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_table_features_failed_error_msg_init(
+    of_table_features_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_table_features_stats_reply_t *
     of_table_features_stats_reply_new_(of_version_t version);
 extern of_table_features_stats_reply_t *
@@ -5188,6 +5853,13 @@ extern of_table_mod_t *
     of_table_mod_new_from_message_(of_message_t msg);
 extern void of_table_mod_init(
     of_table_mod_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_new_(of_version_t version);
+extern of_table_mod_failed_error_msg_t *
+    of_table_mod_failed_error_msg_new_from_message_(of_message_t msg);
+extern void of_table_mod_failed_error_msg_init(
+    of_table_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_table_stats_reply_t *
     of_table_stats_reply_new_(of_version_t version);
@@ -5543,10 +6215,10 @@ extern of_bucket_counter_t *
 extern void of_bucket_counter_init(
     of_bucket_counter_t *obj, of_version_t version, int bytes, int clean_wire);
 
-extern of_experimenter_multipart_header_t *
-    of_experimenter_multipart_header_new_(of_version_t version);
-extern void of_experimenter_multipart_header_init(
-    of_experimenter_multipart_header_t *obj, of_version_t version, int bytes, int clean_wire);
+extern of_experimenter_stats_header_t *
+    of_experimenter_stats_header_new_(of_version_t version);
+extern void of_experimenter_stats_header_init(
+    of_experimenter_stats_header_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_flow_stats_entry_t *
     of_flow_stats_entry_new_(of_version_t version);
@@ -5742,6 +6414,16 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_(of_version_t version);
 extern void of_oxm_arp_tpa_masked_init(
     of_oxm_arp_tpa_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_in_ports_128_t *
+    of_oxm_bsn_in_ports_128_new_(of_version_t version);
+extern void of_oxm_bsn_in_ports_128_init(
+    of_oxm_bsn_in_ports_128_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_in_ports_128_masked_t *
+    of_oxm_bsn_in_ports_128_masked_new_(of_version_t version);
+extern void of_oxm_bsn_in_ports_128_masked_init(
+    of_oxm_bsn_in_ports_128_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_(of_version_t version);
@@ -6391,6 +7073,50 @@ of_async_set_delete(of_async_set_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bad_action_error_msg_t
+ * @param obj An instance of type of_bad_action_error_msg_t
+ *
+ * \ingroup of_bad_action_error_msg
+ */
+static inline void
+of_bad_action_error_msg_delete(of_bad_action_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bad_instruction_error_msg_t
+ * @param obj An instance of type of_bad_instruction_error_msg_t
+ *
+ * \ingroup of_bad_instruction_error_msg
+ */
+static inline void
+of_bad_instruction_error_msg_delete(of_bad_instruction_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bad_match_error_msg_t
+ * @param obj An instance of type of_bad_match_error_msg_t
+ *
+ * \ingroup of_bad_match_error_msg
+ */
+static inline void
+of_bad_match_error_msg_delete(of_bad_match_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bad_request_error_msg_t
+ * @param obj An instance of type of_bad_request_error_msg_t
+ *
+ * \ingroup of_bad_request_error_msg
+ */
+static inline void
+of_bad_request_error_msg_delete(of_bad_request_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_barrier_reply_t
  * @param obj An instance of type of_barrier_reply_t
  *
@@ -6475,6 +7201,61 @@ of_bsn_bw_enable_set_reply_delete(of_bsn_bw_enable_set_reply_t *obj) {
  */
 static inline void
 of_bsn_bw_enable_set_request_delete(of_bsn_bw_enable_set_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_flow_idle_t
+ * @param obj An instance of type of_bsn_flow_idle_t
+ *
+ * \ingroup of_bsn_flow_idle
+ */
+static inline void
+of_bsn_flow_idle_delete(of_bsn_flow_idle_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_flow_idle_enable_get_reply_t
+ * @param obj An instance of type of_bsn_flow_idle_enable_get_reply_t
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_reply
+ */
+static inline void
+of_bsn_flow_idle_enable_get_reply_delete(of_bsn_flow_idle_enable_get_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_flow_idle_enable_get_request_t
+ * @param obj An instance of type of_bsn_flow_idle_enable_get_request_t
+ *
+ * \ingroup of_bsn_flow_idle_enable_get_request
+ */
+static inline void
+of_bsn_flow_idle_enable_get_request_delete(of_bsn_flow_idle_enable_get_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_flow_idle_enable_set_reply_t
+ * @param obj An instance of type of_bsn_flow_idle_enable_set_reply_t
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_reply
+ */
+static inline void
+of_bsn_flow_idle_enable_set_reply_delete(of_bsn_flow_idle_enable_set_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_flow_idle_enable_set_request_t
+ * @param obj An instance of type of_bsn_flow_idle_enable_set_request_t
+ *
+ * \ingroup of_bsn_flow_idle_enable_set_request
+ */
+static inline void
+of_bsn_flow_idle_enable_set_request_delete(of_bsn_flow_idle_enable_set_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -6596,6 +7377,61 @@ of_bsn_hybrid_get_reply_delete(of_bsn_hybrid_get_reply_t *obj) {
  */
 static inline void
 of_bsn_hybrid_get_request_delete(of_bsn_hybrid_get_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_pdu_rx_reply_t
+ * @param obj An instance of type of_bsn_pdu_rx_reply_t
+ *
+ * \ingroup of_bsn_pdu_rx_reply
+ */
+static inline void
+of_bsn_pdu_rx_reply_delete(of_bsn_pdu_rx_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_pdu_rx_request_t
+ * @param obj An instance of type of_bsn_pdu_rx_request_t
+ *
+ * \ingroup of_bsn_pdu_rx_request
+ */
+static inline void
+of_bsn_pdu_rx_request_delete(of_bsn_pdu_rx_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_pdu_rx_timeout_t
+ * @param obj An instance of type of_bsn_pdu_rx_timeout_t
+ *
+ * \ingroup of_bsn_pdu_rx_timeout
+ */
+static inline void
+of_bsn_pdu_rx_timeout_delete(of_bsn_pdu_rx_timeout_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_pdu_tx_reply_t
+ * @param obj An instance of type of_bsn_pdu_tx_reply_t
+ *
+ * \ingroup of_bsn_pdu_tx_reply
+ */
+static inline void
+of_bsn_pdu_tx_reply_delete(of_bsn_pdu_tx_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_pdu_tx_request_t
+ * @param obj An instance of type of_bsn_pdu_tx_request_t
+ *
+ * \ingroup of_bsn_pdu_tx_request
+ */
+static inline void
+of_bsn_pdu_tx_request_delete(of_bsn_pdu_tx_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -6809,6 +7645,17 @@ of_experimenter_delete(of_experimenter_t *obj) {
 }
 
 /**
+ * Delete an object of type of_experimenter_error_msg_t
+ * @param obj An instance of type of_experimenter_error_msg_t
+ *
+ * \ingroup of_experimenter_error_msg
+ */
+static inline void
+of_experimenter_error_msg_delete(of_experimenter_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_experimenter_stats_reply_t
  * @param obj An instance of type of_experimenter_stats_reply_t
  *
@@ -6893,6 +7740,17 @@ of_flow_delete_strict_delete(of_flow_delete_strict_t *obj) {
  */
 static inline void
 of_flow_mod_delete(of_flow_mod_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_flow_mod_failed_error_msg_t
+ * @param obj An instance of type of_flow_mod_failed_error_msg_t
+ *
+ * \ingroup of_flow_mod_failed_error_msg
+ */
+static inline void
+of_flow_mod_failed_error_msg_delete(of_flow_mod_failed_error_msg_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -7029,6 +7887,17 @@ of_group_mod_delete(of_group_mod_t *obj) {
 }
 
 /**
+ * Delete an object of type of_group_mod_failed_error_msg_t
+ * @param obj An instance of type of_group_mod_failed_error_msg_t
+ *
+ * \ingroup of_group_mod_failed_error_msg
+ */
+static inline void
+of_group_mod_failed_error_msg_delete(of_group_mod_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_group_stats_reply_t
  * @param obj An instance of type of_group_stats_reply_t
  *
@@ -7058,6 +7927,17 @@ of_group_stats_request_delete(of_group_stats_request_t *obj) {
  */
 static inline void
 of_hello_delete(of_hello_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_hello_failed_error_msg_t
+ * @param obj An instance of type of_hello_failed_error_msg_t
+ *
+ * \ingroup of_hello_failed_error_msg
+ */
+static inline void
+of_hello_failed_error_msg_delete(of_hello_failed_error_msg_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -7113,6 +7993,17 @@ of_meter_features_stats_request_delete(of_meter_features_stats_request_t *obj) {
  */
 static inline void
 of_meter_mod_delete(of_meter_mod_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_meter_mod_failed_error_msg_t
+ * @param obj An instance of type of_meter_mod_failed_error_msg_t
+ *
+ * \ingroup of_meter_mod_failed_error_msg
+ */
+static inline void
+of_meter_mod_failed_error_msg_delete(of_meter_mod_failed_error_msg_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -7227,6 +8118,17 @@ of_port_mod_delete(of_port_mod_t *obj) {
 }
 
 /**
+ * Delete an object of type of_port_mod_failed_error_msg_t
+ * @param obj An instance of type of_port_mod_failed_error_msg_t
+ *
+ * \ingroup of_port_mod_failed_error_msg
+ */
+static inline void
+of_port_mod_failed_error_msg_delete(of_port_mod_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_port_stats_reply_t
  * @param obj An instance of type of_port_stats_reply_t
  *
@@ -7282,6 +8184,17 @@ of_queue_get_config_request_delete(of_queue_get_config_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_queue_op_failed_error_msg_t
+ * @param obj An instance of type of_queue_op_failed_error_msg_t
+ *
+ * \ingroup of_queue_op_failed_error_msg
+ */
+static inline void
+of_queue_op_failed_error_msg_delete(of_queue_op_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_queue_stats_reply_t
  * @param obj An instance of type of_queue_stats_reply_t
  *
@@ -7326,6 +8239,17 @@ of_role_request_delete(of_role_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_role_request_failed_error_msg_t
+ * @param obj An instance of type of_role_request_failed_error_msg_t
+ *
+ * \ingroup of_role_request_failed_error_msg
+ */
+static inline void
+of_role_request_failed_error_msg_delete(of_role_request_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_set_config_t
  * @param obj An instance of type of_set_config_t
  *
@@ -7359,6 +8283,28 @@ of_stats_request_delete(of_stats_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_switch_config_failed_error_msg_t
+ * @param obj An instance of type of_switch_config_failed_error_msg_t
+ *
+ * \ingroup of_switch_config_failed_error_msg
+ */
+static inline void
+of_switch_config_failed_error_msg_delete(of_switch_config_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_table_features_failed_error_msg_t
+ * @param obj An instance of type of_table_features_failed_error_msg_t
+ *
+ * \ingroup of_table_features_failed_error_msg
+ */
+static inline void
+of_table_features_failed_error_msg_delete(of_table_features_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_table_features_stats_reply_t
  * @param obj An instance of type of_table_features_stats_reply_t
  *
@@ -7388,6 +8334,17 @@ of_table_features_stats_request_delete(of_table_features_stats_request_t *obj) {
  */
 static inline void
 of_table_mod_delete(of_table_mod_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_table_mod_failed_error_msg_t
+ * @param obj An instance of type of_table_mod_failed_error_msg_t
+ *
+ * \ingroup of_table_mod_failed_error_msg
+ */
+static inline void
+of_table_mod_failed_error_msg_delete(of_table_mod_failed_error_msg_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -8162,13 +9119,13 @@ of_bucket_counter_delete(of_bucket_counter_t *obj) {
 }
 
 /**
- * Delete an object of type of_experimenter_multipart_header_t
- * @param obj An instance of type of_experimenter_multipart_header_t
+ * Delete an object of type of_experimenter_stats_header_t
+ * @param obj An instance of type of_experimenter_stats_header_t
  *
- * \ingroup of_experimenter_multipart_header
+ * \ingroup of_experimenter_stats_header
  */
 static inline void
-of_experimenter_multipart_header_delete(of_experimenter_multipart_header_t *obj) {
+of_experimenter_stats_header_delete(of_experimenter_stats_header_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -8598,6 +9555,28 @@ of_oxm_arp_tpa_delete(of_oxm_arp_tpa_t *obj) {
  */
 static inline void
 of_oxm_arp_tpa_masked_delete(of_oxm_arp_tpa_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_in_ports_128_t
+ * @param obj An instance of type of_oxm_bsn_in_ports_128_t
+ *
+ * \ingroup of_oxm_bsn_in_ports_128
+ */
+static inline void
+of_oxm_bsn_in_ports_128_delete(of_oxm_bsn_in_ports_128_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_in_ports_128_masked_t
+ * @param obj An instance of type of_oxm_bsn_in_ports_128_masked_t
+ *
+ * \ingroup of_oxm_bsn_in_ports_128_masked
+ */
+static inline void
+of_oxm_bsn_in_ports_128_masked_delete(of_oxm_bsn_in_ports_128_masked_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10153,6 +11132,98 @@ extern void of_async_set_flow_removed_mask_slave_get(
     of_async_set_t *obj,
     uint32_t *flow_removed_mask_slave);
 
+/* Unified accessor functions for of_bad_action_error_msg */
+
+extern void of_bad_action_error_msg_xid_set(
+    of_bad_action_error_msg_t *obj,
+    uint32_t xid);
+extern void of_bad_action_error_msg_xid_get(
+    of_bad_action_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_bad_action_error_msg_code_set(
+    of_bad_action_error_msg_t *obj,
+    uint16_t code);
+extern void of_bad_action_error_msg_code_get(
+    of_bad_action_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_bad_action_error_msg_data_set(
+    of_bad_action_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_bad_action_error_msg_data_get(
+    of_bad_action_error_msg_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_bad_instruction_error_msg */
+
+extern void of_bad_instruction_error_msg_xid_set(
+    of_bad_instruction_error_msg_t *obj,
+    uint32_t xid);
+extern void of_bad_instruction_error_msg_xid_get(
+    of_bad_instruction_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_bad_instruction_error_msg_code_set(
+    of_bad_instruction_error_msg_t *obj,
+    uint16_t code);
+extern void of_bad_instruction_error_msg_code_get(
+    of_bad_instruction_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_bad_instruction_error_msg_data_set(
+    of_bad_instruction_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_bad_instruction_error_msg_data_get(
+    of_bad_instruction_error_msg_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_bad_match_error_msg */
+
+extern void of_bad_match_error_msg_xid_set(
+    of_bad_match_error_msg_t *obj,
+    uint32_t xid);
+extern void of_bad_match_error_msg_xid_get(
+    of_bad_match_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_bad_match_error_msg_code_set(
+    of_bad_match_error_msg_t *obj,
+    uint16_t code);
+extern void of_bad_match_error_msg_code_get(
+    of_bad_match_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_bad_match_error_msg_data_set(
+    of_bad_match_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_bad_match_error_msg_data_get(
+    of_bad_match_error_msg_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_bad_request_error_msg */
+
+extern void of_bad_request_error_msg_xid_set(
+    of_bad_request_error_msg_t *obj,
+    uint32_t xid);
+extern void of_bad_request_error_msg_xid_get(
+    of_bad_request_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_bad_request_error_msg_code_set(
+    of_bad_request_error_msg_t *obj,
+    uint16_t code);
+extern void of_bad_request_error_msg_code_get(
+    of_bad_request_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_bad_request_error_msg_data_set(
+    of_bad_request_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_bad_request_error_msg_data_get(
+    of_bad_request_error_msg_t *obj,
+    of_octets_t *data);
+
 /* Unified accessor functions for of_barrier_reply */
 
 extern void of_barrier_reply_xid_set(
@@ -10342,6 +11413,177 @@ extern void of_bsn_bw_enable_set_request_enable_set(
     uint32_t enable);
 extern void of_bsn_bw_enable_set_request_enable_get(
     of_bsn_bw_enable_set_request_t *obj,
+    uint32_t *enable);
+
+/* Unified accessor functions for of_bsn_flow_idle */
+
+extern void of_bsn_flow_idle_xid_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t xid);
+extern void of_bsn_flow_idle_xid_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_flow_idle_experimenter_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_flow_idle_experimenter_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_flow_idle_subtype_set(
+    of_bsn_flow_idle_t *obj,
+    uint32_t subtype);
+extern void of_bsn_flow_idle_subtype_get(
+    of_bsn_flow_idle_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_flow_idle_cookie_set(
+    of_bsn_flow_idle_t *obj,
+    uint64_t cookie);
+extern void of_bsn_flow_idle_cookie_get(
+    of_bsn_flow_idle_t *obj,
+    uint64_t *cookie);
+
+extern void of_bsn_flow_idle_priority_set(
+    of_bsn_flow_idle_t *obj,
+    uint16_t priority);
+extern void of_bsn_flow_idle_priority_get(
+    of_bsn_flow_idle_t *obj,
+    uint16_t *priority);
+
+extern void of_bsn_flow_idle_table_id_set(
+    of_bsn_flow_idle_t *obj,
+    uint8_t table_id);
+extern void of_bsn_flow_idle_table_id_get(
+    of_bsn_flow_idle_t *obj,
+    uint8_t *table_id);
+
+extern int WARN_UNUSED_RESULT of_bsn_flow_idle_match_set(
+    of_bsn_flow_idle_t *obj,
+    of_match_t *match);
+extern int WARN_UNUSED_RESULT of_bsn_flow_idle_match_get(
+    of_bsn_flow_idle_t *obj,
+    of_match_t *match);
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_get_reply */
+
+extern void of_bsn_flow_idle_enable_get_reply_xid_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_flow_idle_enable_get_reply_xid_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_flow_idle_enable_get_reply_experimenter_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_flow_idle_enable_get_reply_experimenter_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_flow_idle_enable_get_reply_subtype_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_flow_idle_enable_get_reply_subtype_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_flow_idle_enable_get_reply_enabled_set(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t enabled);
+extern void of_bsn_flow_idle_enable_get_reply_enabled_get(
+    of_bsn_flow_idle_enable_get_reply_t *obj,
+    uint32_t *enabled);
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_get_request */
+
+extern void of_bsn_flow_idle_enable_get_request_xid_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_flow_idle_enable_get_request_xid_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_flow_idle_enable_get_request_experimenter_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_flow_idle_enable_get_request_experimenter_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_flow_idle_enable_get_request_subtype_set(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_flow_idle_enable_get_request_subtype_get(
+    of_bsn_flow_idle_enable_get_request_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_set_reply */
+
+extern void of_bsn_flow_idle_enable_set_reply_xid_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_flow_idle_enable_set_reply_xid_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_flow_idle_enable_set_reply_experimenter_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_flow_idle_enable_set_reply_experimenter_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_flow_idle_enable_set_reply_subtype_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_flow_idle_enable_set_reply_subtype_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_flow_idle_enable_set_reply_enable_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t enable);
+extern void of_bsn_flow_idle_enable_set_reply_enable_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *enable);
+
+extern void of_bsn_flow_idle_enable_set_reply_status_set(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_flow_idle_enable_set_reply_status_get(
+    of_bsn_flow_idle_enable_set_reply_t *obj,
+    uint32_t *status);
+
+/* Unified accessor functions for of_bsn_flow_idle_enable_set_request */
+
+extern void of_bsn_flow_idle_enable_set_request_xid_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_flow_idle_enable_set_request_xid_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_flow_idle_enable_set_request_experimenter_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_flow_idle_enable_set_request_experimenter_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_flow_idle_enable_set_request_subtype_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_flow_idle_enable_set_request_subtype_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_flow_idle_enable_set_request_enable_set(
+    of_bsn_flow_idle_enable_set_request_t *obj,
+    uint32_t enable);
+extern void of_bsn_flow_idle_enable_set_request_enable_get(
+    of_bsn_flow_idle_enable_set_request_t *obj,
     uint32_t *enable);
 
 /* Unified accessor functions for of_bsn_get_interfaces_reply */
@@ -10668,6 +11910,205 @@ extern void of_bsn_hybrid_get_request_subtype_set(
 extern void of_bsn_hybrid_get_request_subtype_get(
     of_bsn_hybrid_get_request_t *obj,
     uint32_t *subtype);
+
+/* Unified accessor functions for of_bsn_pdu_rx_reply */
+
+extern void of_bsn_pdu_rx_reply_xid_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_pdu_rx_reply_xid_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_pdu_rx_reply_experimenter_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_pdu_rx_reply_experimenter_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_pdu_rx_reply_subtype_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_pdu_rx_reply_subtype_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_pdu_rx_reply_status_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_pdu_rx_reply_status_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint32_t *status);
+
+/* Unified accessor functions for of_bsn_pdu_rx_request */
+
+extern void of_bsn_pdu_rx_request_xid_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_pdu_rx_request_xid_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_pdu_rx_request_experimenter_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_pdu_rx_request_experimenter_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_pdu_rx_request_subtype_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_pdu_rx_request_subtype_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_pdu_rx_request_timeout_ms_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t timeout_ms);
+extern void of_bsn_pdu_rx_request_timeout_ms_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint32_t *timeout_ms);
+
+extern void of_bsn_pdu_rx_request_port_no_set(
+    of_bsn_pdu_rx_request_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_pdu_rx_request_port_no_get(
+    of_bsn_pdu_rx_request_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_pdu_rx_request_slot_num_set(
+    of_bsn_pdu_rx_request_t *obj,
+    uint8_t slot_num);
+extern void of_bsn_pdu_rx_request_slot_num_get(
+    of_bsn_pdu_rx_request_t *obj,
+    uint8_t *slot_num);
+
+extern int WARN_UNUSED_RESULT of_bsn_pdu_rx_request_data_set(
+    of_bsn_pdu_rx_request_t *obj,
+    of_octets_t *data);
+extern void of_bsn_pdu_rx_request_data_get(
+    of_bsn_pdu_rx_request_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_bsn_pdu_rx_timeout */
+
+extern void of_bsn_pdu_rx_timeout_xid_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t xid);
+extern void of_bsn_pdu_rx_timeout_xid_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_pdu_rx_timeout_experimenter_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_pdu_rx_timeout_experimenter_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_pdu_rx_timeout_subtype_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t subtype);
+extern void of_bsn_pdu_rx_timeout_subtype_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_pdu_rx_timeout_port_no_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_pdu_rx_timeout_port_no_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_pdu_rx_timeout_slot_num_set(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint8_t slot_num);
+extern void of_bsn_pdu_rx_timeout_slot_num_get(
+    of_bsn_pdu_rx_timeout_t *obj,
+    uint8_t *slot_num);
+
+/* Unified accessor functions for of_bsn_pdu_tx_reply */
+
+extern void of_bsn_pdu_tx_reply_xid_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_pdu_tx_reply_xid_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_pdu_tx_reply_experimenter_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_pdu_tx_reply_experimenter_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_pdu_tx_reply_subtype_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_pdu_tx_reply_subtype_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_pdu_tx_reply_status_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_pdu_tx_reply_status_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint32_t *status);
+
+/* Unified accessor functions for of_bsn_pdu_tx_request */
+
+extern void of_bsn_pdu_tx_request_xid_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_pdu_tx_request_xid_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_pdu_tx_request_experimenter_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_pdu_tx_request_experimenter_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_pdu_tx_request_subtype_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_pdu_tx_request_subtype_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_pdu_tx_request_tx_interval_ms_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t tx_interval_ms);
+extern void of_bsn_pdu_tx_request_tx_interval_ms_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint32_t *tx_interval_ms);
+
+extern void of_bsn_pdu_tx_request_port_no_set(
+    of_bsn_pdu_tx_request_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_pdu_tx_request_port_no_get(
+    of_bsn_pdu_tx_request_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_pdu_tx_request_slot_num_set(
+    of_bsn_pdu_tx_request_t *obj,
+    uint8_t slot_num);
+extern void of_bsn_pdu_tx_request_slot_num_get(
+    of_bsn_pdu_tx_request_t *obj,
+    uint8_t *slot_num);
+
+extern int WARN_UNUSED_RESULT of_bsn_pdu_tx_request_data_set(
+    of_bsn_pdu_tx_request_t *obj,
+    of_octets_t *data);
+extern void of_bsn_pdu_tx_request_data_get(
+    of_bsn_pdu_tx_request_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_bsn_set_ip_mask */
 
@@ -11239,27 +12680,6 @@ extern void of_error_msg_xid_get(
     of_error_msg_t *obj,
     uint32_t *xid);
 
-extern void of_error_msg_err_type_set(
-    of_error_msg_t *obj,
-    uint16_t err_type);
-extern void of_error_msg_err_type_get(
-    of_error_msg_t *obj,
-    uint16_t *err_type);
-
-extern void of_error_msg_code_set(
-    of_error_msg_t *obj,
-    uint16_t code);
-extern void of_error_msg_code_get(
-    of_error_msg_t *obj,
-    uint16_t *code);
-
-extern int WARN_UNUSED_RESULT of_error_msg_data_set(
-    of_error_msg_t *obj,
-    of_octets_t *data);
-extern void of_error_msg_data_get(
-    of_error_msg_t *obj,
-    of_octets_t *data);
-
 /* Unified accessor functions for of_experimenter */
 
 extern void of_experimenter_xid_set(
@@ -11288,6 +12708,36 @@ extern int WARN_UNUSED_RESULT of_experimenter_data_set(
     of_octets_t *data);
 extern void of_experimenter_data_get(
     of_experimenter_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_experimenter_error_msg */
+
+extern void of_experimenter_error_msg_xid_set(
+    of_experimenter_error_msg_t *obj,
+    uint32_t xid);
+extern void of_experimenter_error_msg_xid_get(
+    of_experimenter_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_experimenter_error_msg_subtype_set(
+    of_experimenter_error_msg_t *obj,
+    uint16_t subtype);
+extern void of_experimenter_error_msg_subtype_get(
+    of_experimenter_error_msg_t *obj,
+    uint16_t *subtype);
+
+extern void of_experimenter_error_msg_experimenter_set(
+    of_experimenter_error_msg_t *obj,
+    uint32_t experimenter);
+extern void of_experimenter_error_msg_experimenter_get(
+    of_experimenter_error_msg_t *obj,
+    uint32_t *experimenter);
+
+extern int WARN_UNUSED_RESULT of_experimenter_error_msg_data_set(
+    of_experimenter_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_experimenter_error_msg_data_get(
+    of_experimenter_error_msg_t *obj,
     of_octets_t *data);
 
 /* Unified accessor functions for of_experimenter_stats_reply */
@@ -11855,6 +13305,29 @@ extern void of_flow_mod_actions_bind(
     of_list_action_t *actions);
 extern of_list_action_t *of_flow_mod_actions_get(
     of_flow_mod_t *obj);
+
+/* Unified accessor functions for of_flow_mod_failed_error_msg */
+
+extern void of_flow_mod_failed_error_msg_xid_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_flow_mod_failed_error_msg_xid_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_flow_mod_failed_error_msg_code_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_flow_mod_failed_error_msg_code_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_flow_mod_failed_error_msg_data_set(
+    of_flow_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_flow_mod_failed_error_msg_data_get(
+    of_flow_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_flow_modify */
 
@@ -12447,6 +13920,29 @@ extern void of_group_mod_buckets_bind(
 extern of_list_bucket_t *of_group_mod_buckets_get(
     of_group_mod_t *obj);
 
+/* Unified accessor functions for of_group_mod_failed_error_msg */
+
+extern void of_group_mod_failed_error_msg_xid_set(
+    of_group_mod_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_group_mod_failed_error_msg_xid_get(
+    of_group_mod_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_group_mod_failed_error_msg_code_set(
+    of_group_mod_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_group_mod_failed_error_msg_code_get(
+    of_group_mod_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_group_mod_failed_error_msg_data_set(
+    of_group_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_group_mod_failed_error_msg_data_get(
+    of_group_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+
 /* Unified accessor functions for of_group_stats_reply */
 
 extern void of_group_stats_reply_xid_set(
@@ -12512,6 +14008,29 @@ extern void of_hello_elements_bind(
     of_list_hello_elem_t *elements);
 extern of_list_hello_elem_t *of_hello_elements_get(
     of_hello_t *obj);
+
+/* Unified accessor functions for of_hello_failed_error_msg */
+
+extern void of_hello_failed_error_msg_xid_set(
+    of_hello_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_hello_failed_error_msg_xid_get(
+    of_hello_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_hello_failed_error_msg_code_set(
+    of_hello_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_hello_failed_error_msg_code_get(
+    of_hello_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_hello_failed_error_msg_data_set(
+    of_hello_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_hello_failed_error_msg_data_get(
+    of_hello_failed_error_msg_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_meter_config_stats_reply */
 
@@ -12640,6 +14159,29 @@ extern void of_meter_mod_meters_bind(
     of_list_meter_band_t *meters);
 extern of_list_meter_band_t *of_meter_mod_meters_get(
     of_meter_mod_t *obj);
+
+/* Unified accessor functions for of_meter_mod_failed_error_msg */
+
+extern void of_meter_mod_failed_error_msg_xid_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_meter_mod_failed_error_msg_xid_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_meter_mod_failed_error_msg_code_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_meter_mod_failed_error_msg_code_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_meter_mod_failed_error_msg_data_set(
+    of_meter_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_meter_mod_failed_error_msg_data_get(
+    of_meter_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_meter_stats_reply */
 
@@ -12968,6 +14510,29 @@ extern void of_port_mod_advertise_get(
     of_port_mod_t *obj,
     uint32_t *advertise);
 
+/* Unified accessor functions for of_port_mod_failed_error_msg */
+
+extern void of_port_mod_failed_error_msg_xid_set(
+    of_port_mod_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_port_mod_failed_error_msg_xid_get(
+    of_port_mod_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_port_mod_failed_error_msg_code_set(
+    of_port_mod_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_port_mod_failed_error_msg_code_get(
+    of_port_mod_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_port_mod_failed_error_msg_data_set(
+    of_port_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_port_mod_failed_error_msg_data_get(
+    of_port_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+
 /* Unified accessor functions for of_port_stats_reply */
 
 extern void of_port_stats_reply_xid_set(
@@ -13082,6 +14647,29 @@ extern void of_queue_get_config_request_port_get(
     of_queue_get_config_request_t *obj,
     of_port_no_t *port);
 
+/* Unified accessor functions for of_queue_op_failed_error_msg */
+
+extern void of_queue_op_failed_error_msg_xid_set(
+    of_queue_op_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_queue_op_failed_error_msg_xid_get(
+    of_queue_op_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_queue_op_failed_error_msg_code_set(
+    of_queue_op_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_queue_op_failed_error_msg_code_get(
+    of_queue_op_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_queue_op_failed_error_msg_data_set(
+    of_queue_op_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_queue_op_failed_error_msg_data_get(
+    of_queue_op_failed_error_msg_t *obj,
+    of_octets_t *data);
+
 /* Unified accessor functions for of_queue_stats_reply */
 
 extern void of_queue_stats_reply_xid_set(
@@ -13176,6 +14764,29 @@ extern void of_role_request_generation_id_get(
     of_role_request_t *obj,
     uint64_t *generation_id);
 
+/* Unified accessor functions for of_role_request_failed_error_msg */
+
+extern void of_role_request_failed_error_msg_xid_set(
+    of_role_request_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_role_request_failed_error_msg_xid_get(
+    of_role_request_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_role_request_failed_error_msg_code_set(
+    of_role_request_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_role_request_failed_error_msg_code_get(
+    of_role_request_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_role_request_failed_error_msg_data_set(
+    of_role_request_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_role_request_failed_error_msg_data_get(
+    of_role_request_failed_error_msg_t *obj,
+    of_octets_t *data);
+
 /* Unified accessor functions for of_set_config */
 
 extern void of_set_config_xid_set(
@@ -13230,6 +14841,52 @@ extern void of_stats_request_flags_set(
 extern void of_stats_request_flags_get(
     of_stats_request_t *obj,
     uint16_t *flags);
+
+/* Unified accessor functions for of_switch_config_failed_error_msg */
+
+extern void of_switch_config_failed_error_msg_xid_set(
+    of_switch_config_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_switch_config_failed_error_msg_xid_get(
+    of_switch_config_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_switch_config_failed_error_msg_code_set(
+    of_switch_config_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_switch_config_failed_error_msg_code_get(
+    of_switch_config_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_switch_config_failed_error_msg_data_set(
+    of_switch_config_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_switch_config_failed_error_msg_data_get(
+    of_switch_config_failed_error_msg_t *obj,
+    of_octets_t *data);
+
+/* Unified accessor functions for of_table_features_failed_error_msg */
+
+extern void of_table_features_failed_error_msg_xid_set(
+    of_table_features_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_table_features_failed_error_msg_xid_get(
+    of_table_features_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_table_features_failed_error_msg_code_set(
+    of_table_features_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_table_features_failed_error_msg_code_get(
+    of_table_features_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_table_features_failed_error_msg_data_set(
+    of_table_features_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_table_features_failed_error_msg_data_get(
+    of_table_features_failed_error_msg_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_table_features_stats_reply */
 
@@ -13303,6 +14960,29 @@ extern void of_table_mod_config_set(
 extern void of_table_mod_config_get(
     of_table_mod_t *obj,
     uint32_t *config);
+
+/* Unified accessor functions for of_table_mod_failed_error_msg */
+
+extern void of_table_mod_failed_error_msg_xid_set(
+    of_table_mod_failed_error_msg_t *obj,
+    uint32_t xid);
+extern void of_table_mod_failed_error_msg_xid_get(
+    of_table_mod_failed_error_msg_t *obj,
+    uint32_t *xid);
+
+extern void of_table_mod_failed_error_msg_code_set(
+    of_table_mod_failed_error_msg_t *obj,
+    uint16_t code);
+extern void of_table_mod_failed_error_msg_code_get(
+    of_table_mod_failed_error_msg_t *obj,
+    uint16_t *code);
+
+extern int WARN_UNUSED_RESULT of_table_mod_failed_error_msg_data_set(
+    of_table_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
+extern void of_table_mod_failed_error_msg_data_get(
+    of_table_mod_failed_error_msg_t *obj,
+    of_octets_t *data);
 
 /* Unified accessor functions for of_table_stats_reply */
 
@@ -13918,20 +15598,20 @@ extern void of_bucket_counter_byte_count_get(
     of_bucket_counter_t *obj,
     uint64_t *byte_count);
 
-/* Unified accessor functions for of_experimenter_multipart_header */
+/* Unified accessor functions for of_experimenter_stats_header */
 
-extern void of_experimenter_multipart_header_experimenter_set(
-    of_experimenter_multipart_header_t *obj,
+extern void of_experimenter_stats_header_experimenter_set(
+    of_experimenter_stats_header_t *obj,
     uint32_t experimenter);
-extern void of_experimenter_multipart_header_experimenter_get(
-    of_experimenter_multipart_header_t *obj,
+extern void of_experimenter_stats_header_experimenter_get(
+    of_experimenter_stats_header_t *obj,
     uint32_t *experimenter);
 
-extern void of_experimenter_multipart_header_subtype_set(
-    of_experimenter_multipart_header_t *obj,
+extern void of_experimenter_stats_header_subtype_set(
+    of_experimenter_stats_header_t *obj,
     uint32_t subtype);
-extern void of_experimenter_multipart_header_subtype_get(
-    of_experimenter_multipart_header_t *obj,
+extern void of_experimenter_stats_header_subtype_get(
+    of_experimenter_stats_header_t *obj,
     uint32_t *subtype);
 
 /* Unified accessor functions for of_flow_stats_entry */
@@ -14032,6 +15712,13 @@ extern of_list_action_t *of_flow_stats_entry_actions_get(
     of_flow_stats_entry_t *obj);
 
 /* Unified accessor functions for of_group_desc_stats_entry */
+
+extern void of_group_desc_stats_entry_group_type_set(
+    of_group_desc_stats_entry_t *obj,
+    uint8_t group_type);
+extern void of_group_desc_stats_entry_group_type_get(
+    of_group_desc_stats_entry_t *obj,
+    uint8_t *group_type);
 
 extern void of_group_desc_stats_entry_group_id_set(
     of_group_desc_stats_entry_t *obj,
@@ -14772,6 +16459,31 @@ extern void of_oxm_arp_tpa_masked_value_mask_set(
 extern void of_oxm_arp_tpa_masked_value_mask_get(
     of_oxm_arp_tpa_masked_t *obj,
     uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_in_ports_128 */
+
+extern void of_oxm_bsn_in_ports_128_value_set(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t value);
+extern void of_oxm_bsn_in_ports_128_value_get(
+    of_oxm_bsn_in_ports_128_t *obj,
+    of_bitmap_128_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_in_ports_128_masked */
+
+extern void of_oxm_bsn_in_ports_128_masked_value_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value);
+extern void of_oxm_bsn_in_ports_128_masked_value_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value);
+
+extern void of_oxm_bsn_in_ports_128_masked_value_mask_set(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t value_mask);
+extern void of_oxm_bsn_in_ports_128_masked_value_mask_get(
+    of_oxm_bsn_in_ports_128_masked_t *obj,
+    of_bitmap_128_t *value_mask);
 
 /* Unified accessor functions for of_oxm_eth_dst */
 
@@ -16896,6 +18608,10 @@ union of_generic_u {
     of_async_get_reply_t of_async_get_reply;
     of_async_get_request_t of_async_get_request;
     of_async_set_t of_async_set;
+    of_bad_action_error_msg_t of_bad_action_error_msg;
+    of_bad_instruction_error_msg_t of_bad_instruction_error_msg;
+    of_bad_match_error_msg_t of_bad_match_error_msg;
+    of_bad_request_error_msg_t of_bad_request_error_msg;
     of_barrier_reply_t of_barrier_reply;
     of_barrier_request_t of_barrier_request;
     of_bsn_bw_clear_data_reply_t of_bsn_bw_clear_data_reply;
@@ -16904,6 +18620,11 @@ union of_generic_u {
     of_bsn_bw_enable_get_request_t of_bsn_bw_enable_get_request;
     of_bsn_bw_enable_set_reply_t of_bsn_bw_enable_set_reply;
     of_bsn_bw_enable_set_request_t of_bsn_bw_enable_set_request;
+    of_bsn_flow_idle_t of_bsn_flow_idle;
+    of_bsn_flow_idle_enable_get_reply_t of_bsn_flow_idle_enable_get_reply;
+    of_bsn_flow_idle_enable_get_request_t of_bsn_flow_idle_enable_get_request;
+    of_bsn_flow_idle_enable_set_reply_t of_bsn_flow_idle_enable_set_reply;
+    of_bsn_flow_idle_enable_set_request_t of_bsn_flow_idle_enable_set_request;
     of_bsn_get_interfaces_reply_t of_bsn_get_interfaces_reply;
     of_bsn_get_interfaces_request_t of_bsn_get_interfaces_request;
     of_bsn_get_ip_mask_reply_t of_bsn_get_ip_mask_reply;
@@ -16915,6 +18636,11 @@ union of_generic_u {
     of_bsn_header_t of_bsn_header;
     of_bsn_hybrid_get_reply_t of_bsn_hybrid_get_reply;
     of_bsn_hybrid_get_request_t of_bsn_hybrid_get_request;
+    of_bsn_pdu_rx_reply_t of_bsn_pdu_rx_reply;
+    of_bsn_pdu_rx_request_t of_bsn_pdu_rx_request;
+    of_bsn_pdu_rx_timeout_t of_bsn_pdu_rx_timeout;
+    of_bsn_pdu_tx_reply_t of_bsn_pdu_tx_reply;
+    of_bsn_pdu_tx_request_t of_bsn_pdu_tx_request;
     of_bsn_set_ip_mask_t of_bsn_set_ip_mask;
     of_bsn_set_l2_table_reply_t of_bsn_set_l2_table_reply;
     of_bsn_set_l2_table_request_t of_bsn_set_l2_table_request;
@@ -16934,6 +18660,7 @@ union of_generic_u {
     of_echo_request_t of_echo_request;
     of_error_msg_t of_error_msg;
     of_experimenter_t of_experimenter;
+    of_experimenter_error_msg_t of_experimenter_error_msg;
     of_experimenter_stats_reply_t of_experimenter_stats_reply;
     of_experimenter_stats_request_t of_experimenter_stats_request;
     of_features_reply_t of_features_reply;
@@ -16942,6 +18669,7 @@ union of_generic_u {
     of_flow_delete_t of_flow_delete;
     of_flow_delete_strict_t of_flow_delete_strict;
     of_flow_mod_t of_flow_mod;
+    of_flow_mod_failed_error_msg_t of_flow_mod_failed_error_msg;
     of_flow_modify_t of_flow_modify;
     of_flow_modify_strict_t of_flow_modify_strict;
     of_flow_removed_t of_flow_removed;
@@ -16954,14 +18682,17 @@ union of_generic_u {
     of_group_features_stats_reply_t of_group_features_stats_reply;
     of_group_features_stats_request_t of_group_features_stats_request;
     of_group_mod_t of_group_mod;
+    of_group_mod_failed_error_msg_t of_group_mod_failed_error_msg;
     of_group_stats_reply_t of_group_stats_reply;
     of_group_stats_request_t of_group_stats_request;
     of_hello_t of_hello;
+    of_hello_failed_error_msg_t of_hello_failed_error_msg;
     of_meter_config_stats_reply_t of_meter_config_stats_reply;
     of_meter_config_stats_request_t of_meter_config_stats_request;
     of_meter_features_stats_reply_t of_meter_features_stats_reply;
     of_meter_features_stats_request_t of_meter_features_stats_request;
     of_meter_mod_t of_meter_mod;
+    of_meter_mod_failed_error_msg_t of_meter_mod_failed_error_msg;
     of_meter_stats_reply_t of_meter_stats_reply;
     of_meter_stats_request_t of_meter_stats_request;
     of_nicira_controller_role_reply_t of_nicira_controller_role_reply;
@@ -16972,21 +18703,27 @@ union of_generic_u {
     of_port_desc_stats_reply_t of_port_desc_stats_reply;
     of_port_desc_stats_request_t of_port_desc_stats_request;
     of_port_mod_t of_port_mod;
+    of_port_mod_failed_error_msg_t of_port_mod_failed_error_msg;
     of_port_stats_reply_t of_port_stats_reply;
     of_port_stats_request_t of_port_stats_request;
     of_port_status_t of_port_status;
     of_queue_get_config_reply_t of_queue_get_config_reply;
     of_queue_get_config_request_t of_queue_get_config_request;
+    of_queue_op_failed_error_msg_t of_queue_op_failed_error_msg;
     of_queue_stats_reply_t of_queue_stats_reply;
     of_queue_stats_request_t of_queue_stats_request;
     of_role_reply_t of_role_reply;
     of_role_request_t of_role_request;
+    of_role_request_failed_error_msg_t of_role_request_failed_error_msg;
     of_set_config_t of_set_config;
     of_stats_reply_t of_stats_reply;
     of_stats_request_t of_stats_request;
+    of_switch_config_failed_error_msg_t of_switch_config_failed_error_msg;
+    of_table_features_failed_error_msg_t of_table_features_failed_error_msg;
     of_table_features_stats_reply_t of_table_features_stats_reply;
     of_table_features_stats_request_t of_table_features_stats_request;
     of_table_mod_t of_table_mod;
+    of_table_mod_failed_error_msg_t of_table_mod_failed_error_msg;
     of_table_stats_reply_t of_table_stats_reply;
     of_table_stats_request_t of_table_stats_request;
 
@@ -17056,7 +18793,7 @@ union of_generic_u {
     of_bsn_vport_q_in_q_t of_bsn_vport_q_in_q;
     of_bucket_t of_bucket;
     of_bucket_counter_t of_bucket_counter;
-    of_experimenter_multipart_header_t of_experimenter_multipart_header;
+    of_experimenter_stats_header_t of_experimenter_stats_header;
     of_flow_stats_entry_t of_flow_stats_entry;
     of_group_desc_stats_entry_t of_group_desc_stats_entry;
     of_group_stats_entry_t of_group_stats_entry;
@@ -17092,6 +18829,8 @@ union of_generic_u {
     of_oxm_arp_tha_masked_t of_oxm_arp_tha_masked;
     of_oxm_arp_tpa_t of_oxm_arp_tpa;
     of_oxm_arp_tpa_masked_t of_oxm_arp_tpa_masked;
+    of_oxm_bsn_in_ports_128_t of_oxm_bsn_in_ports_128;
+    of_oxm_bsn_in_ports_128_masked_t of_oxm_bsn_in_ports_128_masked;
     of_oxm_eth_dst_t of_oxm_eth_dst;
     of_oxm_eth_dst_masked_t of_oxm_eth_dst_masked;
     of_oxm_eth_src_t of_oxm_eth_src;
@@ -17415,6 +19154,8 @@ union of_oxm_u {
     of_oxm_arp_tha_masked_t arp_tha_masked;
     of_oxm_arp_tpa_t arp_tpa;
     of_oxm_arp_tpa_masked_t arp_tpa_masked;
+    of_oxm_bsn_in_ports_128_t bsn_in_ports_128;
+    of_oxm_bsn_in_ports_128_masked_t bsn_in_ports_128_masked;
     of_oxm_eth_dst_t eth_dst;
     of_oxm_eth_dst_masked_t eth_dst_masked;
     of_oxm_eth_src_t eth_src;
@@ -17837,6 +19578,40 @@ of_stats_request_to_object_id(int stats_request, of_version_t version)
 }
 
 /**
+ * error_msg wire type to object ID array.
+ * Treat as private; use function accessor below
+ */
+
+extern const of_object_id_t *const of_error_msg_type_to_id[OF_VERSION_ARRAY_MAX];
+
+#define OF_ERROR_MSG_ITEM_COUNT 14
+
+
+/**
+ * Map an error_msg wire value to an OF object
+ * @param error_msg The error_msg type wire value
+ * @param version The version associated with the check
+ * @return The error_msg OF object type
+ * @return OF_OBJECT_INVALID if type does not map to an object
+ *
+ */
+static inline of_object_id_t
+of_error_msg_to_object_id(uint16_t error_msg, of_version_t version)
+{
+    if (!OF_VERSION_OKAY(version)) {
+        return OF_OBJECT_INVALID;
+    }
+    if (error_msg == OF_EXPERIMENTER_TYPE) {
+        return OF_EXPERIMENTER_ERROR_MSG;
+    }
+    if (error_msg < 0 || error_msg >= OF_ERROR_MSG_ITEM_COUNT) {
+        return OF_OBJECT_INVALID;
+    }
+
+    return of_error_msg_type_to_id[version][error_msg];
+}
+
+/**
  * flow_mod wire type to object ID array.
  * Treat as private; use function accessor below
  */
@@ -17888,16 +19663,30 @@ extern const of_object_id_t *const of_oxm_type_to_id[OF_VERSION_ARRAY_MAX];
  *
  */
 static inline of_object_id_t
-of_oxm_to_object_id(int oxm, of_version_t version)
+of_oxm_to_object_id(uint32_t type_len, of_version_t version)
 {
     if (!OF_VERSION_OKAY(version)) {
         return OF_OBJECT_INVALID;
     }
-    if (oxm < 0 || oxm >= OF_OXM_ITEM_COUNT) {
+
+    uint16_t class = (type_len >> 16) & 0xffff;
+    uint8_t masked_type = (type_len >> 8) & 0xff;
+
+    if (class == 0x8000) {
+        if (masked_type < 0 || masked_type >= OF_OXM_ITEM_COUNT) {
+            return OF_OBJECT_INVALID;
+        }
+
+        return of_oxm_type_to_id[version][masked_type];
+    } else if (class == 0x0003) {
+        switch (masked_type) {
+        case 0x00: return OF_OXM_BSN_IN_PORTS_128;
+        case 0x01: return OF_OXM_BSN_IN_PORTS_128_MASKED;
+        default: return OF_OBJECT_INVALID;
+        }
+    } else {
         return OF_OBJECT_INVALID;
     }
-
-    return of_oxm_type_to_id[version][oxm];
 }
 
 /**
@@ -17948,6 +19737,10 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_GET_IP_MASK_REQUEST;
         }
 
+        if (subtype == 34) {
+            return OF_BSN_PDU_RX_REPLY;
+        }
+
         if (subtype == 22) {
             return OF_BSN_BW_CLEAR_DATA_REPLY;
         }
@@ -17988,6 +19781,10 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_GET_L2_TABLE_REQUEST;
         }
 
+        if (subtype == 32) {
+            return OF_BSN_PDU_TX_REPLY;
+        }
+
         if (subtype == 20) {
             return OF_BSN_BW_ENABLE_GET_REPLY;
         }
@@ -18012,8 +19809,8 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_L2_TABLE_REPLY;
         }
 
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 2) {
+            return OF_BSN_GET_IP_MASK_REPLY;
         }
 
         if (subtype == 21) {
@@ -18024,12 +19821,24 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_IP_MASK;
         }
 
+        if (subtype == 35) {
+            return OF_BSN_PDU_RX_TIMEOUT;
+        }
+
+        if (subtype == 33) {
+            return OF_BSN_PDU_RX_REQUEST;
+        }
+
         if (subtype == 15) {
             return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
         }
 
-        if (subtype == 2) {
-            return OF_BSN_GET_IP_MASK_REPLY;
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 31) {
+            return OF_BSN_PDU_TX_REQUEST;
         }
 
         if (subtype == 16) {
@@ -18061,20 +19870,12 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_1)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 21) {
-            return OF_BSN_BW_CLEAR_DATA_REQUEST;
-        }
-
-        if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
+        if (subtype == 34) {
+            return OF_BSN_PDU_RX_REPLY;
         }
 
         if (subtype == 22) {
@@ -18085,44 +19886,72 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
-        if (subtype == 20) {
-            return OF_BSN_BW_ENABLE_GET_REPLY;
-        }
-
         if (subtype == 16) {
             return OF_BSN_VIRTUAL_PORT_CREATE_REPLY;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        }
+
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
+        }
+
+        if (subtype == 32) {
+            return OF_BSN_PDU_TX_REPLY;
+        }
+
+        if (subtype == 20) {
+            return OF_BSN_BW_ENABLE_GET_REPLY;
         }
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
         }
 
-        if (subtype == 18) {
-            return OF_BSN_BW_ENABLE_SET_REQUEST;
-        }
-
-        if (subtype == 15) {
-            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        if (subtype == 17) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
         }
 
-        if (subtype == 19) {
-            return OF_BSN_BW_ENABLE_GET_REQUEST;
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 21) {
+            return OF_BSN_BW_CLEAR_DATA_REQUEST;
+        }
+
+        if (subtype == 35) {
+            return OF_BSN_PDU_RX_TIMEOUT;
+        }
+
+        if (subtype == 33) {
+            return OF_BSN_PDU_RX_REQUEST;
+        }
+
+        if (subtype == 15) {
+            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        }
+
+        if (subtype == 31) {
+            return OF_BSN_PDU_TX_REQUEST;
         }
 
         if (subtype == 26) {
             return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
         }
 
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 18) {
+            return OF_BSN_BW_ENABLE_SET_REQUEST;
         }
 
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        if (subtype == 19) {
+            return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
         if (subtype == 4) {
@@ -18134,20 +19963,12 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_2)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 21) {
-            return OF_BSN_BW_CLEAR_DATA_REQUEST;
-        }
-
-        if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
+        if (subtype == 34) {
+            return OF_BSN_PDU_RX_REPLY;
         }
 
         if (subtype == 22) {
@@ -18158,44 +19979,72 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
-        if (subtype == 20) {
-            return OF_BSN_BW_ENABLE_GET_REPLY;
-        }
-
         if (subtype == 16) {
             return OF_BSN_VIRTUAL_PORT_CREATE_REPLY;
+        }
+
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        }
+
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
+        }
+
+        if (subtype == 32) {
+            return OF_BSN_PDU_TX_REPLY;
+        }
+
+        if (subtype == 20) {
+            return OF_BSN_BW_ENABLE_GET_REPLY;
         }
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
         }
 
-        if (subtype == 18) {
-            return OF_BSN_BW_ENABLE_SET_REQUEST;
-        }
-
-        if (subtype == 15) {
-            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        if (subtype == 17) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
         }
 
-        if (subtype == 19) {
-            return OF_BSN_BW_ENABLE_GET_REQUEST;
+        if (subtype == 3) {
+            return OF_BSN_SET_MIRRORING;
+        }
+
+        if (subtype == 21) {
+            return OF_BSN_BW_CLEAR_DATA_REQUEST;
+        }
+
+        if (subtype == 35) {
+            return OF_BSN_PDU_RX_TIMEOUT;
+        }
+
+        if (subtype == 33) {
+            return OF_BSN_PDU_RX_REQUEST;
+        }
+
+        if (subtype == 15) {
+            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        }
+
+        if (subtype == 31) {
+            return OF_BSN_PDU_TX_REQUEST;
         }
 
         if (subtype == 26) {
             return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
         }
 
-        if (subtype == 3) {
-            return OF_BSN_SET_MIRRORING;
+        if (subtype == 18) {
+            return OF_BSN_BW_ENABLE_SET_REQUEST;
         }
 
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        if (subtype == 19) {
+            return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
         if (subtype == 4) {
@@ -18207,20 +20056,12 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_3)) {
 
-        if (subtype == 5) {
-            return OF_BSN_GET_MIRRORING_REPLY;
-        }
-
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
         }
 
-        if (subtype == 21) {
-            return OF_BSN_BW_CLEAR_DATA_REQUEST;
-        }
-
-        if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
+        if (subtype == 34) {
+            return OF_BSN_PDU_RX_REPLY;
         }
 
         if (subtype == 22) {
@@ -18231,44 +20072,92 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
-        if (subtype == 20) {
-            return OF_BSN_BW_ENABLE_GET_REPLY;
+        if (subtype == 26) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
         }
 
-        if (subtype == 16) {
-            return OF_BSN_VIRTUAL_PORT_CREATE_REPLY;
+        if (subtype == 11) {
+            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        }
+
+        if (subtype == 5) {
+            return OF_BSN_GET_MIRRORING_REPLY;
+        }
+
+        if (subtype == 36) {
+            return OF_BSN_FLOW_IDLE_ENABLE_SET_REQUEST;
+        }
+
+        if (subtype == 32) {
+            return OF_BSN_PDU_TX_REPLY;
+        }
+
+        if (subtype == 38) {
+            return OF_BSN_FLOW_IDLE_ENABLE_GET_REQUEST;
+        }
+
+        if (subtype == 20) {
+            return OF_BSN_BW_ENABLE_GET_REPLY;
         }
 
         if (subtype == 23) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
         }
 
-        if (subtype == 18) {
-            return OF_BSN_BW_ENABLE_SET_REQUEST;
-        }
-
-        if (subtype == 15) {
-            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        if (subtype == 17) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 10) {
             return OF_BSN_GET_INTERFACES_REPLY;
         }
 
-        if (subtype == 19) {
-            return OF_BSN_BW_ENABLE_GET_REQUEST;
-        }
-
-        if (subtype == 26) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
-        }
-
         if (subtype == 3) {
             return OF_BSN_SET_MIRRORING;
         }
 
-        if (subtype == 11) {
-            return OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST;
+        if (subtype == 21) {
+            return OF_BSN_BW_CLEAR_DATA_REQUEST;
+        }
+
+        if (subtype == 35) {
+            return OF_BSN_PDU_RX_TIMEOUT;
+        }
+
+        if (subtype == 33) {
+            return OF_BSN_PDU_RX_REQUEST;
+        }
+
+        if (subtype == 15) {
+            return OF_BSN_VIRTUAL_PORT_CREATE_REQUEST;
+        }
+
+        if (subtype == 39) {
+            return OF_BSN_FLOW_IDLE_ENABLE_GET_REPLY;
+        }
+
+        if (subtype == 31) {
+            return OF_BSN_PDU_TX_REQUEST;
+        }
+
+        if (subtype == 16) {
+            return OF_BSN_VIRTUAL_PORT_CREATE_REPLY;
+        }
+
+        if (subtype == 18) {
+            return OF_BSN_BW_ENABLE_SET_REQUEST;
+        }
+
+        if (subtype == 37) {
+            return OF_BSN_FLOW_IDLE_ENABLE_SET_REPLY;
+        }
+
+        if (subtype == 40) {
+            return OF_BSN_FLOW_IDLE;
+        }
+
+        if (subtype == 19) {
+            return OF_BSN_BW_ENABLE_GET_REQUEST;
         }
 
         if (subtype == 4) {
@@ -18303,6 +20192,7 @@ of_message_to_object_id(of_message_t msg, int length) {
     of_version_t ver;
     of_object_id_t obj_id;
     uint16_t stats_type;
+    uint16_t err_type;
     uint8_t flow_mod_cmd;
 
     if (length < OF_MESSAGE_MIN_LENGTH) {
@@ -18347,6 +20237,14 @@ of_message_to_object_id(of_message_t msg, int length) {
         } else {
             obj_id = of_stats_reply_to_object_id(stats_type, ver);
         }
+    }
+
+    if (obj_id == OF_ERROR_MSG) {
+        if (length < OF_MESSAGE_MIN_ERROR_LENGTH) {
+            return OF_OBJECT_INVALID;
+        }
+        err_type = of_message_error_type_get(msg);
+        obj_id = of_error_msg_to_object_id(err_type, ver);
     }
 
     return obj_id;
@@ -18524,6 +20422,90 @@ of_object_to_stats_type(of_object_id_t id, of_version_t version)
 }
 
 /**
+ * Map an object ID to an error type
+ * @param id An object ID
+ * @return The wire value for the error type
+ * @return -1 if not supported for this version
+ * @return -1 if id is not a specific error type ID
+ *
+ * Note that the value is returned as a signed integer.  So -1 is
+ * an error code, while 0xffff is the usual "experimenter" code.
+ */
+
+static inline int
+of_object_to_error_type(of_object_id_t id, of_version_t version)
+{
+    if (!OF_VERSION_OKAY(version)) {
+        return -1;
+    }
+    switch (id) {
+    case OF_HELLO_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_HELLO_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_HELLO_FAILED_BY_VERSION(version);
+        break;
+    case OF_BAD_MATCH_ERROR_MSG:
+        if (OF_ERROR_TYPE_BAD_MATCH_SUPPORTED(version))
+            return OF_ERROR_TYPE_BAD_MATCH_BY_VERSION(version);
+        break;
+    case OF_BAD_ACTION_ERROR_MSG:
+        if (OF_ERROR_TYPE_BAD_ACTION_SUPPORTED(version))
+            return OF_ERROR_TYPE_BAD_ACTION_BY_VERSION(version);
+        break;
+    case OF_GROUP_MOD_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_GROUP_MOD_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_GROUP_MOD_FAILED_BY_VERSION(version);
+        break;
+    case OF_PORT_MOD_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_PORT_MOD_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_PORT_MOD_FAILED_BY_VERSION(version);
+        break;
+    case OF_FLOW_MOD_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_FLOW_MOD_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(version);
+        break;
+    case OF_SWITCH_CONFIG_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_SWITCH_CONFIG_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_SWITCH_CONFIG_FAILED_BY_VERSION(version);
+        break;
+    case OF_QUEUE_OP_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_QUEUE_OP_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_QUEUE_OP_FAILED_BY_VERSION(version);
+        break;
+    case OF_TABLE_FEATURES_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_TABLE_FEATURES_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_TABLE_FEATURES_FAILED_BY_VERSION(version);
+        break;
+    case OF_BAD_REQUEST_ERROR_MSG:
+        if (OF_ERROR_TYPE_BAD_REQUEST_SUPPORTED(version))
+            return OF_ERROR_TYPE_BAD_REQUEST_BY_VERSION(version);
+        break;
+    case OF_TABLE_MOD_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_TABLE_MOD_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_TABLE_MOD_FAILED_BY_VERSION(version);
+        break;
+    case OF_EXPERIMENTER_ERROR_MSG:
+        if (OF_ERROR_TYPE_EXPERIMENTER_SUPPORTED(version))
+            return OF_ERROR_TYPE_EXPERIMENTER_BY_VERSION(version);
+        break;
+    case OF_METER_MOD_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_METER_MOD_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_METER_MOD_FAILED_BY_VERSION(version);
+        break;
+    case OF_BAD_INSTRUCTION_ERROR_MSG:
+        if (OF_ERROR_TYPE_BAD_INSTRUCTION_SUPPORTED(version))
+            return OF_ERROR_TYPE_BAD_INSTRUCTION_BY_VERSION(version);
+        break;
+    case OF_ROLE_REQUEST_FAILED_ERROR_MSG:
+        if (OF_ERROR_TYPE_ROLE_REQUEST_FAILED_SUPPORTED(version))
+            return OF_ERROR_TYPE_ROLE_REQUEST_FAILED_BY_VERSION(version);
+        break;
+    default:
+        break;
+    }
+    return -1; /* Not recognized as error type object for this version */
+}
+
+/**
  * Map an object ID to a flow-mod command value
  * @param id An object ID
  * @return The wire value for the flow-mod command
@@ -18652,6 +20634,10 @@ of_wire_message_object_id_set(of_wire_buffer_t *wbuf, of_object_id_t id)
     if ((type = of_object_to_stats_type(id, ver)) >= 0) {
         /* It's a stats obj */
         of_message_stats_type_set(msg, type);
+    }
+    if ((type = of_object_to_error_type(id, ver)) >= 0) {
+        /* It's an error obj */
+        of_message_error_type_set(msg, type);
     }
     if ((type = of_object_to_flow_mod_command(id, ver)) >= 0) {
         /* It's a flow mod obj */
@@ -18911,11 +20897,6 @@ extern void of_meter_band_wire_object_id_get(of_object_t *obj,
     of_object_id_t *id);
 extern void of_hello_elem_wire_object_id_get(of_object_t *obj,
     of_object_id_t *id);
-
-/* XXX Hardcoded to the OpenFlow Basic OXM class */
-#define OF_OXM_MASKED_TYPE_GET(hdr) (((hdr) >> 8) & 0xff)
-#define OF_OXM_MASKED_TYPE_SET(hdr, val)                    \
-    (hdr) = ((hdr) & 0x000000ff) + 0x80000000 + (((val) & 0xff) << 8)
 
 #define OF_OXM_LENGTH_GET(hdr) (((hdr) & 0xff) + 4)
 #define OF_OXM_LENGTH_SET(hdr, val)                         \

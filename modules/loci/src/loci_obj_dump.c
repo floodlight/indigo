@@ -102,6 +102,62 @@ of_aggregate_stats_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cooki
 }
 
 int
+of_bad_action_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bad_action_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_action_error_msg\n");
+
+    of_bad_action_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_request_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bad_request_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_request_error_msg\n");
+
+    of_bad_request_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_barrier_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_barrier_reply_t *obj)
 {
     int out = 0;
@@ -658,6 +714,204 @@ of_bsn_hybrid_get_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie
     of_bsn_hybrid_get_request_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_reply\n");
+
+    of_bsn_pdu_rx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_request\n");
+
+    of_bsn_pdu_rx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_timeout_ms_get(obj, &val32);
+    out += writer(cookie, "  timeout_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_timeout_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_timeout_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_timeout\n");
+
+    of_bsn_pdu_rx_timeout_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_reply\n");
+
+    of_bsn_pdu_tx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_request\n");
+
+    of_bsn_pdu_tx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(obj, &val32);
+    out += writer(cookie, "  tx_interval_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -1247,29 +1501,12 @@ of_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_error_ms
 {
     int out = 0;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     out += writer(cookie, "Object of type of_error_msg\n");
 
     of_error_msg_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
-    out += writer(cookie, "\n");
-
-    of_error_msg_err_type_get(obj, &val16);
-    out += writer(cookie, "  err_type (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_code_get(obj, &val16);
-    out += writer(cookie, "  code (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_data_get(obj, &octets);
-    out += writer(cookie, "  data (of_octets_t):  ");
-    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -1723,6 +1960,34 @@ of_flow_mod_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_mod_
 }
 
 int
+of_flow_mod_failed_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_flow_mod_failed_error_msg\n");
+
+    of_flow_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_flow_modify_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj)
 {
     int out = 0;
@@ -2059,6 +2324,34 @@ of_hello_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_hello_t *obj
 }
 
 int
+of_hello_failed_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_hello_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_hello_failed_error_msg\n");
+
+    of_hello_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_nicira_controller_role_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_nicira_controller_role_reply_t *obj)
 {
     int out = 0;
@@ -2278,6 +2571,34 @@ of_port_mod_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_port_mod_
 }
 
 int
+of_port_mod_failed_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_port_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_port_mod_failed_error_msg\n");
+
+    of_port_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_port_stats_reply_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_port_stats_reply_t *obj)
 {
     int out = 0;
@@ -2413,6 +2734,34 @@ of_queue_get_config_request_OF_VERSION_1_0_dump(loci_writer_f writer, void* cook
     of_queue_get_config_request_port_get(obj, &port_no);
     out += writer(cookie, "  port (of_port_no_t):  ");
     out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_queue_op_failed_error_msg_OF_VERSION_1_0_dump(loci_writer_f writer, void* cookie, of_queue_op_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_queue_op_failed_error_msg\n");
+
+    of_queue_op_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -3712,6 +4061,118 @@ of_aggregate_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cooki
 }
 
 int
+of_bad_action_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bad_action_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_action_error_msg\n");
+
+    of_bad_action_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_instruction_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bad_instruction_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_instruction_error_msg\n");
+
+    of_bad_instruction_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_match_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bad_match_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_match_error_msg\n");
+
+    of_bad_match_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_request_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bad_request_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_request_error_msg\n");
+
+    of_bad_request_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_barrier_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_barrier_reply_t *obj)
 {
     int out = 0;
@@ -4071,6 +4532,204 @@ of_bsn_header_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_hea
     of_bsn_header_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_reply\n");
+
+    of_bsn_pdu_rx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_request\n");
+
+    of_bsn_pdu_rx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_timeout_ms_get(obj, &val32);
+    out += writer(cookie, "  timeout_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_timeout_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_timeout_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_timeout\n");
+
+    of_bsn_pdu_rx_timeout_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_reply\n");
+
+    of_bsn_pdu_tx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_request\n");
+
+    of_bsn_pdu_tx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(obj, &val32);
+    out += writer(cookie, "  tx_interval_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -4442,29 +5101,12 @@ of_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_error_ms
 {
     int out = 0;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     out += writer(cookie, "Object of type of_error_msg\n");
 
     of_error_msg_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
-    out += writer(cookie, "\n");
-
-    of_error_msg_err_type_get(obj, &val16);
-    out += writer(cookie, "  err_type (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_code_get(obj, &val16);
-    out += writer(cookie, "  code (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_data_get(obj, &octets);
-    out += writer(cookie, "  data (of_octets_t):  ");
-    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -4982,6 +5624,34 @@ of_flow_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_mod_
 }
 
 int
+of_flow_mod_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_flow_mod_failed_error_msg\n");
+
+    of_flow_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_flow_modify_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_flow_modify_t *obj)
 {
     int out = 0;
@@ -5452,6 +6122,34 @@ of_group_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_mo
 }
 
 int
+of_group_mod_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_group_mod_failed_error_msg\n");
+
+    of_group_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_group_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_stats_reply_t *obj)
 {
     int out = 0;
@@ -5521,6 +6219,34 @@ of_hello_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_hello_t *obj
     of_hello_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_hello_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_hello_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_hello_failed_error_msg\n");
+
+    of_hello_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -5694,6 +6420,34 @@ of_port_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_port_mod_
 }
 
 int
+of_port_mod_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_port_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_port_mod_failed_error_msg\n");
+
+    of_port_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_port_stats_reply_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_port_stats_reply_t *obj)
 {
     int out = 0;
@@ -5829,6 +6583,34 @@ of_queue_get_config_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cook
     of_queue_get_config_request_port_get(obj, &port_no);
     out += writer(cookie, "  port (of_port_no_t):  ");
     out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_queue_op_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_queue_op_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_queue_op_failed_error_msg\n");
+
+    of_queue_op_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -5971,6 +6753,34 @@ of_stats_request_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_stat
 }
 
 int
+of_switch_config_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_switch_config_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_switch_config_failed_error_msg\n");
+
+    of_switch_config_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_table_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj)
 {
     int out = 0;
@@ -5992,6 +6802,34 @@ of_table_mod_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_mo
     of_table_mod_config_get(obj, &val32);
     out += writer(cookie, "  config (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_table_mod_failed_error_msg_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_table_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_table_mod_failed_error_msg\n");
+
+    of_table_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -6811,6 +7649,7 @@ int
 of_group_desc_stats_entry_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie, of_group_desc_stats_entry_t *obj)
 {
     int out = 0;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t list;
@@ -6818,6 +7657,11 @@ of_group_desc_stats_entry_OF_VERSION_1_1_dump(loci_writer_f writer, void* cookie
     int rv;
 
     out += writer(cookie, "Object of type of_group_desc_stats_entry\n");
+
+    of_group_desc_stats_entry_group_type_get(obj, &val8);
+    out += writer(cookie, "  group_type (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
 
     of_group_desc_stats_entry_group_id_get(obj, &val32);
     out += writer(cookie, "  group_id (uint32_t):  ");
@@ -7680,6 +8524,118 @@ of_aggregate_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cooki
 }
 
 int
+of_bad_action_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bad_action_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_action_error_msg\n");
+
+    of_bad_action_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_instruction_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bad_instruction_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_instruction_error_msg\n");
+
+    of_bad_instruction_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_match_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bad_match_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_match_error_msg\n");
+
+    of_bad_match_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_request_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bad_request_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_request_error_msg\n");
+
+    of_bad_request_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_barrier_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_barrier_reply_t *obj)
 {
     int out = 0;
@@ -8039,6 +8995,204 @@ of_bsn_header_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_hea
     of_bsn_header_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_reply\n");
+
+    of_bsn_pdu_rx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_request\n");
+
+    of_bsn_pdu_rx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_timeout_ms_get(obj, &val32);
+    out += writer(cookie, "  timeout_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_timeout_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_timeout_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_timeout\n");
+
+    of_bsn_pdu_rx_timeout_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_reply\n");
+
+    of_bsn_pdu_tx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_request\n");
+
+    of_bsn_pdu_tx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(obj, &val32);
+    out += writer(cookie, "  tx_interval_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -8410,29 +9564,12 @@ of_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_error_ms
 {
     int out = 0;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     out += writer(cookie, "Object of type of_error_msg\n");
 
     of_error_msg_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
-    out += writer(cookie, "\n");
-
-    of_error_msg_err_type_get(obj, &val16);
-    out += writer(cookie, "  err_type (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_code_get(obj, &val16);
-    out += writer(cookie, "  code (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_data_get(obj, &octets);
-    out += writer(cookie, "  data (of_octets_t):  ");
-    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -8463,6 +9600,39 @@ of_experimenter_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_exper
     out += writer(cookie, "\n");
 
     of_experimenter_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_experimenter_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_experimenter_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_experimenter_error_msg\n");
+
+    of_experimenter_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_subtype_get(obj, &val16);
+    out += writer(cookie, "  subtype (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_data_get(obj, &octets);
     out += writer(cookie, "  data (of_octets_t):  ");
     out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
@@ -8955,6 +10125,34 @@ of_flow_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_mod_
     OF_LIST_INSTRUCTION_ITER(&list, &elt, rv) {
         of_object_dump(writer, cookie, (of_object_t *)&elt);
     }
+
+    return out;
+}
+
+int
+of_flow_mod_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_flow_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_flow_mod_failed_error_msg\n");
+
+    of_flow_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
 
     return out;
 }
@@ -9529,6 +10727,34 @@ of_group_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_mo
 }
 
 int
+of_group_mod_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_group_mod_failed_error_msg\n");
+
+    of_group_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_group_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_stats_reply_t *obj)
 {
     int out = 0;
@@ -9598,6 +10824,34 @@ of_hello_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_hello_t *obj
     of_hello_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_hello_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_hello_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_hello_failed_error_msg\n");
+
+    of_hello_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -9766,6 +11020,34 @@ of_port_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_port_mod_
 }
 
 int
+of_port_mod_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_port_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_port_mod_failed_error_msg\n");
+
+    of_port_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_port_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_port_stats_reply_t *obj)
 {
     int out = 0;
@@ -9907,6 +11189,34 @@ of_queue_get_config_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cook
 }
 
 int
+of_queue_op_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_queue_op_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_queue_op_failed_error_msg\n");
+
+    of_queue_op_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_queue_stats_reply_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_queue_stats_reply_t *obj)
 {
     int out = 0;
@@ -10021,6 +11331,34 @@ of_role_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_role_
 }
 
 int
+of_role_request_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_role_request_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_role_request_failed_error_msg\n");
+
+    of_role_request_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_role_request_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_role_request_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_set_config_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj)
 {
     int out = 0;
@@ -10092,6 +11430,34 @@ of_stats_request_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_stat
 }
 
 int
+of_switch_config_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_switch_config_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_switch_config_failed_error_msg\n");
+
+    of_switch_config_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_table_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_mod_t *obj)
 {
     int out = 0;
@@ -10113,6 +11479,34 @@ of_table_mod_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_mo
     of_table_mod_config_get(obj, &val32);
     out += writer(cookie, "  config (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_table_mod_failed_error_msg_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_table_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_table_mod_failed_error_msg\n");
+
+    of_table_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -10756,6 +12150,7 @@ int
 of_group_desc_stats_entry_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_group_desc_stats_entry_t *obj)
 {
     int out = 0;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t list;
@@ -10763,6 +12158,11 @@ of_group_desc_stats_entry_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie
     int rv;
 
     out += writer(cookie, "Object of type of_group_desc_stats_entry\n");
+
+    of_group_desc_stats_entry_group_type_get(obj, &val8);
+    out += writer(cookie, "  group_type (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
 
     of_group_desc_stats_entry_group_id_get(obj, &val32);
     out += writer(cookie, "  group_id (uint32_t):  ");
@@ -11155,6 +12555,43 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of
     of_oxm_arp_tpa_masked_value_mask_get(obj, &val32);
     out += writer(cookie, "  value_mask (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    out += writer(cookie, "Object of type of_oxm_bsn_in_ports_128\n");
+
+    of_oxm_bsn_in_ports_128_value_get(obj, &bitmap_128);
+    out += writer(cookie, "  value (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    out += writer(cookie, "Object of type of_oxm_bsn_in_ports_128_masked\n");
+
+    of_oxm_bsn_in_ports_128_masked_value_get(obj, &bitmap_128);
+    out += writer(cookie, "  value (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
+    out += writer(cookie, "\n");
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(obj, &bitmap_128);
+    out += writer(cookie, "  value_mask (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
     out += writer(cookie, "\n");
 
     return out;
@@ -13076,6 +14513,118 @@ of_async_set_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_async_se
 }
 
 int
+of_bad_action_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bad_action_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_action_error_msg\n");
+
+    of_bad_action_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_action_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_instruction_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bad_instruction_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_instruction_error_msg\n");
+
+    of_bad_instruction_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_instruction_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_match_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bad_match_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_match_error_msg\n");
+
+    of_bad_match_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_match_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bad_request_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bad_request_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bad_request_error_msg\n");
+
+    of_bad_request_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bad_request_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_barrier_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_barrier_reply_t *obj)
 {
     int out = 0;
@@ -13289,6 +14838,180 @@ of_bsn_bw_enable_set_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* coo
 }
 
 int
+of_bsn_flow_idle_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_flow_idle_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint64_t val64;
+    uint16_t val16;
+    uint8_t val8;
+    of_match_t match;
+
+    out += writer(cookie, "Object of type of_bsn_flow_idle\n");
+
+    of_bsn_flow_idle_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_cookie_get(obj, &val64);
+    out += writer(cookie, "  cookie (uint64_t):  ");
+    out += LOCI_DUMP_u64(writer, cookie, val64);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_priority_get(obj, &val16);
+    out += writer(cookie, "  priority (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_table_id_get(obj, &val8);
+    out += writer(cookie, "  table_id (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_match_get(obj, &match);
+    out += writer(cookie, "  match (of_match_t):  ");
+    out += LOCI_DUMP_match(writer, cookie, match);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_flow_idle_enable_get_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_flow_idle_enable_get_reply\n");
+
+    of_bsn_flow_idle_enable_get_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_get_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_get_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_get_reply_enabled_get(obj, &val32);
+    out += writer(cookie, "  enabled (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_flow_idle_enable_get_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_flow_idle_enable_get_request\n");
+
+    of_bsn_flow_idle_enable_get_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_get_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_get_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_flow_idle_enable_set_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_flow_idle_enable_set_reply\n");
+
+    of_bsn_flow_idle_enable_set_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_reply_enable_get(obj, &val32);
+    out += writer(cookie, "  enable (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_flow_idle_enable_set_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_flow_idle_enable_set_request\n");
+
+    of_bsn_flow_idle_enable_set_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_flow_idle_enable_set_request_enable_get(obj, &val32);
+    out += writer(cookie, "  enable (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_bsn_get_interfaces_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_get_interfaces_reply_t *obj)
 {
     int out = 0;
@@ -13435,6 +15158,204 @@ of_bsn_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_hea
     of_bsn_header_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_reply\n");
+
+    of_bsn_pdu_rx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_request\n");
+
+    of_bsn_pdu_rx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_timeout_ms_get(obj, &val32);
+    out += writer(cookie, "  timeout_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_rx_timeout_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_rx_timeout_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_rx_timeout\n");
+
+    of_bsn_pdu_rx_timeout_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_rx_timeout_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_reply_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_reply\n");
+
+    of_bsn_pdu_tx_reply_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_reply_status_get(obj, &val32);
+    out += writer(cookie, "  status (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_bsn_pdu_tx_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_bsn_pdu_tx_request_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    of_port_no_t port_no;
+    uint8_t val8;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_bsn_pdu_tx_request\n");
+
+    of_bsn_pdu_tx_request_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_subtype_get(obj, &val32);
+    out += writer(cookie, "  subtype (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_tx_interval_ms_get(obj, &val32);
+    out += writer(cookie, "  tx_interval_ms (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_port_no_get(obj, &port_no);
+    out += writer(cookie, "  port_no (of_port_no_t):  ");
+    out += LOCI_DUMP_port_no(writer, cookie, port_no);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_slot_num_get(obj, &val8);
+    out += writer(cookie, "  slot_num (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
+
+    of_bsn_pdu_tx_request_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -13806,29 +15727,12 @@ of_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_error_ms
 {
     int out = 0;
     uint32_t val32;
-    uint16_t val16;
-    of_octets_t octets;
 
     out += writer(cookie, "Object of type of_error_msg\n");
 
     of_error_msg_xid_get(obj, &val32);
     out += writer(cookie, "  xid (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
-    out += writer(cookie, "\n");
-
-    of_error_msg_err_type_get(obj, &val16);
-    out += writer(cookie, "  err_type (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_code_get(obj, &val16);
-    out += writer(cookie, "  code (uint16_t):  ");
-    out += LOCI_DUMP_u16(writer, cookie, val16);
-    out += writer(cookie, "\n");
-
-    of_error_msg_data_get(obj, &octets);
-    out += writer(cookie, "  data (of_octets_t):  ");
-    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -13859,6 +15763,39 @@ of_experimenter_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_exper
     out += writer(cookie, "\n");
 
     of_experimenter_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_experimenter_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_experimenter_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_experimenter_error_msg\n");
+
+    of_experimenter_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_subtype_get(obj, &val16);
+    out += writer(cookie, "  subtype (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_experimenter_get(obj, &val32);
+    out += writer(cookie, "  experimenter (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_experimenter_error_msg_data_get(obj, &octets);
     out += writer(cookie, "  data (of_octets_t):  ");
     out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
@@ -14270,6 +16207,34 @@ of_flow_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_mod_
     OF_LIST_INSTRUCTION_ITER(&list, &elt, rv) {
         of_object_dump(writer, cookie, (of_object_t *)&elt);
     }
+
+    return out;
+}
+
+int
+of_flow_mod_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_flow_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_flow_mod_failed_error_msg\n");
+
+    of_flow_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_flow_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
 
     return out;
 }
@@ -14844,6 +16809,34 @@ of_group_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_group_mo
 }
 
 int
+of_group_mod_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_group_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_group_mod_failed_error_msg\n");
+
+    of_group_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_group_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_group_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_group_stats_reply_t *obj)
 {
     int out = 0;
@@ -14924,6 +16917,34 @@ of_hello_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_hello_t *obj
     OF_LIST_HELLO_ELEM_ITER(&list, &elt, rv) {
         of_object_dump(writer, cookie, (of_object_t *)&elt);
     }
+
+    return out;
+}
+
+int
+of_hello_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_hello_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_hello_failed_error_msg\n");
+
+    of_hello_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_hello_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
 
     return out;
 }
@@ -15074,6 +17095,34 @@ of_meter_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_meter_mo
     OF_LIST_METER_BAND_ITER(&list, &elt, rv) {
         of_object_dump(writer, cookie, (of_object_t *)&elt);
     }
+
+    return out;
+}
+
+int
+of_meter_mod_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_meter_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_meter_mod_failed_error_msg\n");
+
+    of_meter_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_meter_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_meter_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
 
     return out;
 }
@@ -15360,6 +17409,34 @@ of_port_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_port_mod_
 }
 
 int
+of_port_mod_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_port_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_port_mod_failed_error_msg\n");
+
+    of_port_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_port_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_port_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_port_stats_reply_t *obj)
 {
     int out = 0;
@@ -15501,6 +17578,34 @@ of_queue_get_config_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cook
 }
 
 int
+of_queue_op_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_queue_op_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_queue_op_failed_error_msg\n");
+
+    of_queue_op_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_queue_op_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_queue_stats_reply_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_queue_stats_reply_t *obj)
 {
     int out = 0;
@@ -15615,6 +17720,34 @@ of_role_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_role_
 }
 
 int
+of_role_request_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_role_request_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_role_request_failed_error_msg\n");
+
+    of_role_request_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_role_request_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_role_request_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
 of_set_config_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_set_config_t *obj)
 {
     int out = 0;
@@ -15680,6 +17813,62 @@ of_stats_request_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_stat
     of_stats_request_flags_get(obj, &val16);
     out += writer(cookie, "  flags (uint16_t):  ");
     out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_switch_config_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_switch_config_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_switch_config_failed_error_msg\n");
+
+    of_switch_config_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_switch_config_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_table_features_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_features_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_table_features_failed_error_msg\n");
+
+    of_table_features_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_table_features_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_table_features_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -15771,6 +17960,34 @@ of_table_mod_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_mo
     of_table_mod_config_get(obj, &val32);
     out += writer(cookie, "  config (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_table_mod_failed_error_msg_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_table_mod_failed_error_msg_t *obj)
+{
+    int out = 0;
+    uint32_t val32;
+    uint16_t val16;
+    of_octets_t octets;
+
+    out += writer(cookie, "Object of type of_table_mod_failed_error_msg\n");
+
+    of_table_mod_failed_error_msg_xid_get(obj, &val32);
+    out += writer(cookie, "  xid (uint32_t):  ");
+    out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_code_get(obj, &val16);
+    out += writer(cookie, "  code (uint16_t):  ");
+    out += LOCI_DUMP_u16(writer, cookie, val16);
+    out += writer(cookie, "\n");
+
+    of_table_mod_failed_error_msg_data_get(obj, &octets);
+    out += writer(cookie, "  data (of_octets_t):  ");
+    out += LOCI_DUMP_octets(writer, cookie, octets);
     out += writer(cookie, "\n");
 
     return out;
@@ -16626,19 +18843,19 @@ of_bucket_counter_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_buc
 }
 
 int
-of_experimenter_multipart_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_experimenter_multipart_header_t *obj)
+of_experimenter_stats_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_experimenter_stats_header_t *obj)
 {
     int out = 0;
     uint32_t val32;
 
-    out += writer(cookie, "Object of type of_experimenter_multipart_header\n");
+    out += writer(cookie, "Object of type of_experimenter_stats_header\n");
 
-    of_experimenter_multipart_header_experimenter_get(obj, &val32);
+    of_experimenter_stats_header_experimenter_get(obj, &val32);
     out += writer(cookie, "  experimenter (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
 
-    of_experimenter_multipart_header_subtype_get(obj, &val32);
+    of_experimenter_stats_header_subtype_get(obj, &val32);
     out += writer(cookie, "  subtype (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
     out += writer(cookie, "\n");
@@ -16730,6 +18947,7 @@ int
 of_group_desc_stats_entry_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_group_desc_stats_entry_t *obj)
 {
     int out = 0;
+    uint8_t val8;
     uint32_t val32;
 
     of_list_bucket_t list;
@@ -16737,6 +18955,11 @@ of_group_desc_stats_entry_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie
     int rv;
 
     out += writer(cookie, "Object of type of_group_desc_stats_entry\n");
+
+    of_group_desc_stats_entry_group_type_get(obj, &val8);
+    out += writer(cookie, "  group_type (uint8_t):  ");
+    out += LOCI_DUMP_u8(writer, cookie, val8);
+    out += writer(cookie, "\n");
 
     of_group_desc_stats_entry_group_id_get(obj, &val32);
     out += writer(cookie, "  group_id (uint32_t):  ");
@@ -17411,6 +19634,43 @@ of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of
     of_oxm_arp_tpa_masked_value_mask_get(obj, &val32);
     out += writer(cookie, "  value_mask (uint32_t):  ");
     out += LOCI_DUMP_u32(writer, cookie, val32);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    out += writer(cookie, "Object of type of_oxm_bsn_in_ports_128\n");
+
+    of_oxm_bsn_in_ports_128_value_get(obj, &bitmap_128);
+    out += writer(cookie, "  value (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
+    out += writer(cookie, "\n");
+
+    return out;
+}
+
+int
+of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_oxm_bsn_in_ports_128_masked_t *obj)
+{
+    int out = 0;
+    of_bitmap_128_t bitmap_128;
+
+    out += writer(cookie, "Object of type of_oxm_bsn_in_ports_128_masked\n");
+
+    of_oxm_bsn_in_ports_128_masked_value_get(obj, &bitmap_128);
+    out += writer(cookie, "  value (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
+    out += writer(cookie, "\n");
+
+    of_oxm_bsn_in_ports_128_masked_value_mask_get(obj, &bitmap_128);
+    out += writer(cookie, "  value_mask (of_bitmap_128_t):  ");
+    out += LOCI_DUMP_bitmap_128(writer, cookie, bitmap_128);
     out += writer(cookie, "\n");
 
     return out;
@@ -19608,6 +21868,14 @@ loci_dump_match(loci_writer_f writer, void* cookie, of_match_t *match)
         out += writer(cookie, "\n");
     }
 
+    if (OF_MATCH_MASK_BSN_IN_PORTS_128_ACTIVE_TEST(match)) {
+        out += writer(cookie, "  bsn_in_ports_128 (of_bitmap_128_t) active: Value ");
+        out += LOCI_DUMP_bitmap_128(writer, cookie, match->fields.bsn_in_ports_128);
+        out += writer(cookie, "\n    Mask ");
+        out += LOCI_DUMP_bitmap_128(writer, cookie, match->masks.bsn_in_ports_128);
+        out += writer(cookie, "\n");
+    }
+
     if (OF_MATCH_MASK_ARP_SHA_ACTIVE_TEST(match)) {
         out += writer(cookie, "  arp_sha (of_mac_addr_t) active: Value ");
         out += LOCI_DUMP_mac(writer, cookie, match->fields.arp_sha);
@@ -19858,6 +22126,10 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    of_bad_action_error_msg_OF_VERSION_1_0_dump,
+    unknown_dump,
+    unknown_dump,
+    of_bad_request_error_msg_OF_VERSION_1_0_dump,
     of_barrier_reply_OF_VERSION_1_0_dump,
     of_barrier_request_OF_VERSION_1_0_dump,
     of_bsn_bw_clear_data_reply_OF_VERSION_1_0_dump,
@@ -19866,6 +22138,11 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_bsn_bw_enable_get_request_OF_VERSION_1_0_dump,
     of_bsn_bw_enable_set_reply_OF_VERSION_1_0_dump,
     of_bsn_bw_enable_set_request_OF_VERSION_1_0_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_bsn_get_interfaces_reply_OF_VERSION_1_0_dump,
     of_bsn_get_interfaces_request_OF_VERSION_1_0_dump,
     of_bsn_get_ip_mask_reply_OF_VERSION_1_0_dump,
@@ -19877,6 +22154,11 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_bsn_header_OF_VERSION_1_0_dump,
     of_bsn_hybrid_get_reply_OF_VERSION_1_0_dump,
     of_bsn_hybrid_get_request_OF_VERSION_1_0_dump,
+    of_bsn_pdu_rx_reply_OF_VERSION_1_0_dump,
+    of_bsn_pdu_rx_request_OF_VERSION_1_0_dump,
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_0_dump,
+    of_bsn_pdu_tx_reply_OF_VERSION_1_0_dump,
+    of_bsn_pdu_tx_request_OF_VERSION_1_0_dump,
     of_bsn_set_ip_mask_OF_VERSION_1_0_dump,
     of_bsn_set_l2_table_reply_OF_VERSION_1_0_dump,
     of_bsn_set_l2_table_request_OF_VERSION_1_0_dump,
@@ -19896,6 +22178,7 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_echo_request_OF_VERSION_1_0_dump,
     of_error_msg_OF_VERSION_1_0_dump,
     of_experimenter_OF_VERSION_1_0_dump,
+    unknown_dump,
     of_experimenter_stats_reply_OF_VERSION_1_0_dump,
     of_experimenter_stats_request_OF_VERSION_1_0_dump,
     of_features_reply_OF_VERSION_1_0_dump,
@@ -19904,6 +22187,7 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_flow_delete_OF_VERSION_1_0_dump,
     of_flow_delete_strict_OF_VERSION_1_0_dump,
     of_flow_mod_OF_VERSION_1_0_dump,
+    of_flow_mod_failed_error_msg_OF_VERSION_1_0_dump,
     of_flow_modify_OF_VERSION_1_0_dump,
     of_flow_modify_strict_OF_VERSION_1_0_dump,
     of_flow_removed_OF_VERSION_1_0_dump,
@@ -19918,7 +22202,10 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
     of_hello_OF_VERSION_1_0_dump,
+    of_hello_failed_error_msg_OF_VERSION_1_0_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -19934,13 +22221,16 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_port_mod_OF_VERSION_1_0_dump,
+    of_port_mod_failed_error_msg_OF_VERSION_1_0_dump,
     of_port_stats_reply_OF_VERSION_1_0_dump,
     of_port_stats_request_OF_VERSION_1_0_dump,
     of_port_status_OF_VERSION_1_0_dump,
     of_queue_get_config_reply_OF_VERSION_1_0_dump,
     of_queue_get_config_request_OF_VERSION_1_0_dump,
+    of_queue_op_failed_error_msg_OF_VERSION_1_0_dump,
     of_queue_stats_reply_OF_VERSION_1_0_dump,
     of_queue_stats_request_OF_VERSION_1_0_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     of_set_config_OF_VERSION_1_0_dump,
@@ -19948,7 +22238,10 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     of_stats_request_OF_VERSION_1_0_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_table_mod_OF_VERSION_1_0_dump,
+    unknown_dump,
     of_table_stats_reply_OF_VERSION_1_0_dump,
     of_table_stats_request_OF_VERSION_1_0_dump,
     unknown_dump,
@@ -20122,6 +22415,8 @@ static const loci_obj_dump_f dump_funs_v1[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_packet_queue_OF_VERSION_1_0_dump,
     of_port_desc_OF_VERSION_1_0_dump,
     of_port_stats_entry_OF_VERSION_1_0_dump,
@@ -20186,6 +22481,10 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    of_bad_action_error_msg_OF_VERSION_1_1_dump,
+    of_bad_instruction_error_msg_OF_VERSION_1_1_dump,
+    of_bad_match_error_msg_OF_VERSION_1_1_dump,
+    of_bad_request_error_msg_OF_VERSION_1_1_dump,
     of_barrier_reply_OF_VERSION_1_1_dump,
     of_barrier_request_OF_VERSION_1_1_dump,
     of_bsn_bw_clear_data_reply_OF_VERSION_1_1_dump,
@@ -20194,6 +22493,11 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     of_bsn_bw_enable_get_request_OF_VERSION_1_1_dump,
     of_bsn_bw_enable_set_reply_OF_VERSION_1_1_dump,
     of_bsn_bw_enable_set_request_OF_VERSION_1_1_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_bsn_get_interfaces_reply_OF_VERSION_1_1_dump,
     of_bsn_get_interfaces_request_OF_VERSION_1_1_dump,
     unknown_dump,
@@ -20205,6 +22509,11 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     of_bsn_header_OF_VERSION_1_1_dump,
     unknown_dump,
     unknown_dump,
+    of_bsn_pdu_rx_reply_OF_VERSION_1_1_dump,
+    of_bsn_pdu_rx_request_OF_VERSION_1_1_dump,
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_1_dump,
+    of_bsn_pdu_tx_reply_OF_VERSION_1_1_dump,
+    of_bsn_pdu_tx_request_OF_VERSION_1_1_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -20224,6 +22533,7 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     of_echo_request_OF_VERSION_1_1_dump,
     of_error_msg_OF_VERSION_1_1_dump,
     of_experimenter_OF_VERSION_1_1_dump,
+    unknown_dump,
     of_experimenter_stats_reply_OF_VERSION_1_1_dump,
     of_experimenter_stats_request_OF_VERSION_1_1_dump,
     of_features_reply_OF_VERSION_1_1_dump,
@@ -20232,6 +22542,7 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     of_flow_delete_OF_VERSION_1_1_dump,
     of_flow_delete_strict_OF_VERSION_1_1_dump,
     of_flow_mod_OF_VERSION_1_1_dump,
+    of_flow_mod_failed_error_msg_OF_VERSION_1_1_dump,
     of_flow_modify_OF_VERSION_1_1_dump,
     of_flow_modify_strict_OF_VERSION_1_1_dump,
     of_flow_removed_OF_VERSION_1_1_dump,
@@ -20244,9 +22555,12 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_group_mod_OF_VERSION_1_1_dump,
+    of_group_mod_failed_error_msg_OF_VERSION_1_1_dump,
     of_group_stats_reply_OF_VERSION_1_1_dump,
     of_group_stats_request_OF_VERSION_1_1_dump,
     of_hello_OF_VERSION_1_1_dump,
+    of_hello_failed_error_msg_OF_VERSION_1_1_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -20262,21 +22576,27 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_port_mod_OF_VERSION_1_1_dump,
+    of_port_mod_failed_error_msg_OF_VERSION_1_1_dump,
     of_port_stats_reply_OF_VERSION_1_1_dump,
     of_port_stats_request_OF_VERSION_1_1_dump,
     of_port_status_OF_VERSION_1_1_dump,
     of_queue_get_config_reply_OF_VERSION_1_1_dump,
     of_queue_get_config_request_OF_VERSION_1_1_dump,
+    of_queue_op_failed_error_msg_OF_VERSION_1_1_dump,
     of_queue_stats_reply_OF_VERSION_1_1_dump,
     of_queue_stats_request_OF_VERSION_1_1_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     of_set_config_OF_VERSION_1_1_dump,
     of_stats_reply_OF_VERSION_1_1_dump,
     of_stats_request_OF_VERSION_1_1_dump,
+    of_switch_config_failed_error_msg_OF_VERSION_1_1_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     of_table_mod_OF_VERSION_1_1_dump,
+    of_table_mod_failed_error_msg_OF_VERSION_1_1_dump,
     of_table_stats_reply_OF_VERSION_1_1_dump,
     of_table_stats_request_OF_VERSION_1_1_dump,
     unknown_dump,
@@ -20450,6 +22770,8 @@ static const loci_obj_dump_f dump_funs_v2[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_packet_queue_OF_VERSION_1_1_dump,
     of_port_desc_OF_VERSION_1_1_dump,
     of_port_stats_entry_OF_VERSION_1_1_dump,
@@ -20514,6 +22836,10 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     unknown_dump,
+    of_bad_action_error_msg_OF_VERSION_1_2_dump,
+    of_bad_instruction_error_msg_OF_VERSION_1_2_dump,
+    of_bad_match_error_msg_OF_VERSION_1_2_dump,
+    of_bad_request_error_msg_OF_VERSION_1_2_dump,
     of_barrier_reply_OF_VERSION_1_2_dump,
     of_barrier_request_OF_VERSION_1_2_dump,
     of_bsn_bw_clear_data_reply_OF_VERSION_1_2_dump,
@@ -20522,6 +22848,11 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_bsn_bw_enable_get_request_OF_VERSION_1_2_dump,
     of_bsn_bw_enable_set_reply_OF_VERSION_1_2_dump,
     of_bsn_bw_enable_set_request_OF_VERSION_1_2_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
+    unknown_dump,
     of_bsn_get_interfaces_reply_OF_VERSION_1_2_dump,
     of_bsn_get_interfaces_request_OF_VERSION_1_2_dump,
     unknown_dump,
@@ -20533,6 +22864,11 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_bsn_header_OF_VERSION_1_2_dump,
     unknown_dump,
     unknown_dump,
+    of_bsn_pdu_rx_reply_OF_VERSION_1_2_dump,
+    of_bsn_pdu_rx_request_OF_VERSION_1_2_dump,
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_2_dump,
+    of_bsn_pdu_tx_reply_OF_VERSION_1_2_dump,
+    of_bsn_pdu_tx_request_OF_VERSION_1_2_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -20552,6 +22888,7 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_echo_request_OF_VERSION_1_2_dump,
     of_error_msg_OF_VERSION_1_2_dump,
     of_experimenter_OF_VERSION_1_2_dump,
+    of_experimenter_error_msg_OF_VERSION_1_2_dump,
     of_experimenter_stats_reply_OF_VERSION_1_2_dump,
     of_experimenter_stats_request_OF_VERSION_1_2_dump,
     of_features_reply_OF_VERSION_1_2_dump,
@@ -20560,6 +22897,7 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_flow_delete_OF_VERSION_1_2_dump,
     of_flow_delete_strict_OF_VERSION_1_2_dump,
     of_flow_mod_OF_VERSION_1_2_dump,
+    of_flow_mod_failed_error_msg_OF_VERSION_1_2_dump,
     of_flow_modify_OF_VERSION_1_2_dump,
     of_flow_modify_strict_OF_VERSION_1_2_dump,
     of_flow_removed_OF_VERSION_1_2_dump,
@@ -20572,9 +22910,12 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_group_features_stats_reply_OF_VERSION_1_2_dump,
     of_group_features_stats_request_OF_VERSION_1_2_dump,
     of_group_mod_OF_VERSION_1_2_dump,
+    of_group_mod_failed_error_msg_OF_VERSION_1_2_dump,
     of_group_stats_reply_OF_VERSION_1_2_dump,
     of_group_stats_request_OF_VERSION_1_2_dump,
     of_hello_OF_VERSION_1_2_dump,
+    of_hello_failed_error_msg_OF_VERSION_1_2_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -20590,21 +22931,27 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     unknown_dump,
     unknown_dump,
     of_port_mod_OF_VERSION_1_2_dump,
+    of_port_mod_failed_error_msg_OF_VERSION_1_2_dump,
     of_port_stats_reply_OF_VERSION_1_2_dump,
     of_port_stats_request_OF_VERSION_1_2_dump,
     of_port_status_OF_VERSION_1_2_dump,
     of_queue_get_config_reply_OF_VERSION_1_2_dump,
     of_queue_get_config_request_OF_VERSION_1_2_dump,
+    of_queue_op_failed_error_msg_OF_VERSION_1_2_dump,
     of_queue_stats_reply_OF_VERSION_1_2_dump,
     of_queue_stats_request_OF_VERSION_1_2_dump,
     of_role_reply_OF_VERSION_1_2_dump,
     of_role_request_OF_VERSION_1_2_dump,
+    of_role_request_failed_error_msg_OF_VERSION_1_2_dump,
     of_set_config_OF_VERSION_1_2_dump,
     of_stats_reply_OF_VERSION_1_2_dump,
     of_stats_request_OF_VERSION_1_2_dump,
+    of_switch_config_failed_error_msg_OF_VERSION_1_2_dump,
+    unknown_dump,
     unknown_dump,
     unknown_dump,
     of_table_mod_OF_VERSION_1_2_dump,
+    of_table_mod_failed_error_msg_OF_VERSION_1_2_dump,
     of_table_stats_reply_OF_VERSION_1_2_dump,
     of_table_stats_request_OF_VERSION_1_2_dump,
     unknown_dump,
@@ -20715,6 +23062,8 @@ static const loci_obj_dump_f dump_funs_v3[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_OF_VERSION_1_2_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dump,
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dump,
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_OF_VERSION_1_2_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_2_dump,
     of_oxm_eth_src_OF_VERSION_1_2_dump,
@@ -20842,6 +23191,10 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_async_get_reply_OF_VERSION_1_3_dump,
     of_async_get_request_OF_VERSION_1_3_dump,
     of_async_set_OF_VERSION_1_3_dump,
+    of_bad_action_error_msg_OF_VERSION_1_3_dump,
+    of_bad_instruction_error_msg_OF_VERSION_1_3_dump,
+    of_bad_match_error_msg_OF_VERSION_1_3_dump,
+    of_bad_request_error_msg_OF_VERSION_1_3_dump,
     of_barrier_reply_OF_VERSION_1_3_dump,
     of_barrier_request_OF_VERSION_1_3_dump,
     of_bsn_bw_clear_data_reply_OF_VERSION_1_3_dump,
@@ -20850,6 +23203,11 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_bsn_bw_enable_get_request_OF_VERSION_1_3_dump,
     of_bsn_bw_enable_set_reply_OF_VERSION_1_3_dump,
     of_bsn_bw_enable_set_request_OF_VERSION_1_3_dump,
+    of_bsn_flow_idle_OF_VERSION_1_3_dump,
+    of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_dump,
+    of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_dump,
+    of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_dump,
+    of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_dump,
     of_bsn_get_interfaces_reply_OF_VERSION_1_3_dump,
     of_bsn_get_interfaces_request_OF_VERSION_1_3_dump,
     unknown_dump,
@@ -20861,6 +23219,11 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_bsn_header_OF_VERSION_1_3_dump,
     unknown_dump,
     unknown_dump,
+    of_bsn_pdu_rx_reply_OF_VERSION_1_3_dump,
+    of_bsn_pdu_rx_request_OF_VERSION_1_3_dump,
+    of_bsn_pdu_rx_timeout_OF_VERSION_1_3_dump,
+    of_bsn_pdu_tx_reply_OF_VERSION_1_3_dump,
+    of_bsn_pdu_tx_request_OF_VERSION_1_3_dump,
     unknown_dump,
     unknown_dump,
     unknown_dump,
@@ -20880,6 +23243,7 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_echo_request_OF_VERSION_1_3_dump,
     of_error_msg_OF_VERSION_1_3_dump,
     of_experimenter_OF_VERSION_1_3_dump,
+    of_experimenter_error_msg_OF_VERSION_1_3_dump,
     unknown_dump,
     unknown_dump,
     of_features_reply_OF_VERSION_1_3_dump,
@@ -20888,6 +23252,7 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_flow_delete_OF_VERSION_1_3_dump,
     of_flow_delete_strict_OF_VERSION_1_3_dump,
     of_flow_mod_OF_VERSION_1_3_dump,
+    of_flow_mod_failed_error_msg_OF_VERSION_1_3_dump,
     of_flow_modify_OF_VERSION_1_3_dump,
     of_flow_modify_strict_OF_VERSION_1_3_dump,
     of_flow_removed_OF_VERSION_1_3_dump,
@@ -20900,14 +23265,17 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_group_features_stats_reply_OF_VERSION_1_3_dump,
     of_group_features_stats_request_OF_VERSION_1_3_dump,
     of_group_mod_OF_VERSION_1_3_dump,
+    of_group_mod_failed_error_msg_OF_VERSION_1_3_dump,
     of_group_stats_reply_OF_VERSION_1_3_dump,
     of_group_stats_request_OF_VERSION_1_3_dump,
     of_hello_OF_VERSION_1_3_dump,
+    of_hello_failed_error_msg_OF_VERSION_1_3_dump,
     of_meter_config_stats_reply_OF_VERSION_1_3_dump,
     of_meter_config_stats_request_OF_VERSION_1_3_dump,
     of_meter_features_stats_reply_OF_VERSION_1_3_dump,
     of_meter_features_stats_request_OF_VERSION_1_3_dump,
     of_meter_mod_OF_VERSION_1_3_dump,
+    of_meter_mod_failed_error_msg_OF_VERSION_1_3_dump,
     of_meter_stats_reply_OF_VERSION_1_3_dump,
     of_meter_stats_request_OF_VERSION_1_3_dump,
     unknown_dump,
@@ -20918,21 +23286,27 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_port_desc_stats_reply_OF_VERSION_1_3_dump,
     of_port_desc_stats_request_OF_VERSION_1_3_dump,
     of_port_mod_OF_VERSION_1_3_dump,
+    of_port_mod_failed_error_msg_OF_VERSION_1_3_dump,
     of_port_stats_reply_OF_VERSION_1_3_dump,
     of_port_stats_request_OF_VERSION_1_3_dump,
     of_port_status_OF_VERSION_1_3_dump,
     of_queue_get_config_reply_OF_VERSION_1_3_dump,
     of_queue_get_config_request_OF_VERSION_1_3_dump,
+    of_queue_op_failed_error_msg_OF_VERSION_1_3_dump,
     of_queue_stats_reply_OF_VERSION_1_3_dump,
     of_queue_stats_request_OF_VERSION_1_3_dump,
     of_role_reply_OF_VERSION_1_3_dump,
     of_role_request_OF_VERSION_1_3_dump,
+    of_role_request_failed_error_msg_OF_VERSION_1_3_dump,
     of_set_config_OF_VERSION_1_3_dump,
     of_stats_reply_OF_VERSION_1_3_dump,
     of_stats_request_OF_VERSION_1_3_dump,
+    of_switch_config_failed_error_msg_OF_VERSION_1_3_dump,
+    of_table_features_failed_error_msg_OF_VERSION_1_3_dump,
     of_table_features_stats_reply_OF_VERSION_1_3_dump,
     of_table_features_stats_request_OF_VERSION_1_3_dump,
     of_table_mod_OF_VERSION_1_3_dump,
+    of_table_mod_failed_error_msg_OF_VERSION_1_3_dump,
     of_table_stats_reply_OF_VERSION_1_3_dump,
     of_table_stats_request_OF_VERSION_1_3_dump,
     unknown_dump,
@@ -21003,7 +23377,7 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_bsn_vport_q_in_q_OF_VERSION_1_3_dump,
     of_bucket_OF_VERSION_1_3_dump,
     of_bucket_counter_OF_VERSION_1_3_dump,
-    of_experimenter_multipart_header_OF_VERSION_1_3_dump,
+    of_experimenter_stats_header_OF_VERSION_1_3_dump,
     of_flow_stats_entry_OF_VERSION_1_3_dump,
     of_group_desc_stats_entry_OF_VERSION_1_3_dump,
     of_group_stats_entry_OF_VERSION_1_3_dump,
@@ -21043,6 +23417,8 @@ static const loci_obj_dump_f dump_funs_v4[OF_OBJECT_COUNT] = {
     of_oxm_arp_tha_masked_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_OF_VERSION_1_3_dump,
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dump,
+    of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dump,
+    of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_OF_VERSION_1_3_dump,
     of_oxm_eth_dst_masked_OF_VERSION_1_3_dump,
     of_oxm_eth_src_OF_VERSION_1_3_dump,

@@ -87,6 +87,24 @@ extern int of_aggregate_stats_request_OF_VERSION_1_0_populate_scalars(
 extern int of_aggregate_stats_request_OF_VERSION_1_0_check_scalars(
     of_aggregate_stats_request_t *obj, int value);
 
+extern int of_bad_action_error_msg_OF_VERSION_1_0_populate(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_0_check(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_0_check_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+
+extern int of_bad_request_error_msg_OF_VERSION_1_0_populate(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_0_check(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_0_check_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+
 extern int of_barrier_reply_OF_VERSION_1_0_populate(
     of_barrier_reply_t *obj, int value);
 extern int of_barrier_reply_OF_VERSION_1_0_check(
@@ -257,6 +275,51 @@ extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_populate_scalars(
     of_bsn_hybrid_get_request_t *obj, int value);
 extern int of_bsn_hybrid_get_request_OF_VERSION_1_0_check_scalars(
     of_bsn_hybrid_get_request_t *obj, int value);
+
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_0_populate(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_0_check(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_0_populate_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_0_check_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_0_populate(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_0_check(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_0_populate_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_0_check_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_0_populate(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_0_check(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_0_populate_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_0_check_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_0_populate(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_0_check(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_0_populate_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_0_check_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_0_populate(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_0_check(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_0_populate_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_0_check_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
 
 extern int of_bsn_set_ip_mask_OF_VERSION_1_0_populate(
     of_bsn_set_ip_mask_t *obj, int value);
@@ -501,6 +564,15 @@ extern int of_flow_mod_OF_VERSION_1_0_populate_scalars(
 extern int of_flow_mod_OF_VERSION_1_0_check_scalars(
     of_flow_mod_t *obj, int value);
 
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_0_populate(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_0_check(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_0_check_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+
 extern int of_flow_modify_OF_VERSION_1_0_populate(
     of_flow_modify_t *obj, int value);
 extern int of_flow_modify_OF_VERSION_1_0_check(
@@ -573,6 +645,15 @@ extern int of_hello_OF_VERSION_1_0_populate_scalars(
 extern int of_hello_OF_VERSION_1_0_check_scalars(
     of_hello_t *obj, int value);
 
+extern int of_hello_failed_error_msg_OF_VERSION_1_0_populate(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_0_check(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_0_check_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
+
 extern int of_nicira_controller_role_reply_OF_VERSION_1_0_populate(
     of_nicira_controller_role_reply_t *obj, int value);
 extern int of_nicira_controller_role_reply_OF_VERSION_1_0_check(
@@ -627,6 +708,15 @@ extern int of_port_mod_OF_VERSION_1_0_populate_scalars(
 extern int of_port_mod_OF_VERSION_1_0_check_scalars(
     of_port_mod_t *obj, int value);
 
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_0_populate(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_0_check(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_0_check_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+
 extern int of_port_stats_reply_OF_VERSION_1_0_populate(
     of_port_stats_reply_t *obj, int value);
 extern int of_port_stats_reply_OF_VERSION_1_0_check(
@@ -671,6 +761,15 @@ extern int of_queue_get_config_request_OF_VERSION_1_0_populate_scalars(
     of_queue_get_config_request_t *obj, int value);
 extern int of_queue_get_config_request_OF_VERSION_1_0_check_scalars(
     of_queue_get_config_request_t *obj, int value);
+
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_0_populate(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_0_check(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_0_populate_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_0_check_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
 
 extern int of_queue_stats_reply_OF_VERSION_1_0_populate(
     of_queue_stats_reply_t *obj, int value);
@@ -1131,6 +1230,42 @@ extern int of_aggregate_stats_request_OF_VERSION_1_1_populate_scalars(
 extern int of_aggregate_stats_request_OF_VERSION_1_1_check_scalars(
     of_aggregate_stats_request_t *obj, int value);
 
+extern int of_bad_action_error_msg_OF_VERSION_1_1_populate(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_1_check(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_1_check_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+
+extern int of_bad_instruction_error_msg_OF_VERSION_1_1_populate(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_1_check(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_1_check_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+
+extern int of_bad_match_error_msg_OF_VERSION_1_1_populate(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_1_check(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_1_check_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+
+extern int of_bad_request_error_msg_OF_VERSION_1_1_populate(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_1_check(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_1_check_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+
 extern int of_barrier_reply_OF_VERSION_1_1_populate(
     of_barrier_reply_t *obj, int value);
 extern int of_barrier_reply_OF_VERSION_1_1_check(
@@ -1247,6 +1382,51 @@ extern int of_bsn_header_OF_VERSION_1_1_populate_scalars(
     of_bsn_header_t *obj, int value);
 extern int of_bsn_header_OF_VERSION_1_1_check_scalars(
     of_bsn_header_t *obj, int value);
+
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_1_populate(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_1_check(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_1_populate_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_1_check_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_1_populate(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_1_check(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_1_populate_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_1_check_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_1_populate(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_1_check(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_1_populate_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_1_check_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_1_populate(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_1_check(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_1_populate_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_1_check_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_1_populate(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_1_check(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_1_populate_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_1_check_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
 
 extern int of_bsn_set_mirroring_OF_VERSION_1_1_populate(
     of_bsn_set_mirroring_t *obj, int value);
@@ -1437,6 +1617,15 @@ extern int of_flow_mod_OF_VERSION_1_1_populate_scalars(
 extern int of_flow_mod_OF_VERSION_1_1_check_scalars(
     of_flow_mod_t *obj, int value);
 
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_1_populate(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_1_check(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+
 extern int of_flow_modify_OF_VERSION_1_1_populate(
     of_flow_modify_t *obj, int value);
 extern int of_flow_modify_OF_VERSION_1_1_check(
@@ -1527,6 +1716,15 @@ extern int of_group_mod_OF_VERSION_1_1_populate_scalars(
 extern int of_group_mod_OF_VERSION_1_1_check_scalars(
     of_group_mod_t *obj, int value);
 
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_1_populate(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_1_check(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+
 extern int of_group_stats_reply_OF_VERSION_1_1_populate(
     of_group_stats_reply_t *obj, int value);
 extern int of_group_stats_reply_OF_VERSION_1_1_check(
@@ -1553,6 +1751,15 @@ extern int of_hello_OF_VERSION_1_1_populate_scalars(
     of_hello_t *obj, int value);
 extern int of_hello_OF_VERSION_1_1_check_scalars(
     of_hello_t *obj, int value);
+
+extern int of_hello_failed_error_msg_OF_VERSION_1_1_populate(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_1_check(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
 
 extern int of_nicira_header_OF_VERSION_1_1_populate(
     of_nicira_header_t *obj, int value);
@@ -1589,6 +1796,15 @@ extern int of_port_mod_OF_VERSION_1_1_populate_scalars(
     of_port_mod_t *obj, int value);
 extern int of_port_mod_OF_VERSION_1_1_check_scalars(
     of_port_mod_t *obj, int value);
+
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_1_populate(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_1_check(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
 
 extern int of_port_stats_reply_OF_VERSION_1_1_populate(
     of_port_stats_reply_t *obj, int value);
@@ -1635,6 +1851,15 @@ extern int of_queue_get_config_request_OF_VERSION_1_1_populate_scalars(
 extern int of_queue_get_config_request_OF_VERSION_1_1_check_scalars(
     of_queue_get_config_request_t *obj, int value);
 
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_1_populate(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_1_check(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+
 extern int of_queue_stats_reply_OF_VERSION_1_1_populate(
     of_queue_stats_reply_t *obj, int value);
 extern int of_queue_stats_reply_OF_VERSION_1_1_check(
@@ -1680,6 +1905,15 @@ extern int of_stats_request_OF_VERSION_1_1_populate_scalars(
 extern int of_stats_request_OF_VERSION_1_1_check_scalars(
     of_stats_request_t *obj, int value);
 
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_1_populate(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_1_check(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+
 extern int of_table_mod_OF_VERSION_1_1_populate(
     of_table_mod_t *obj, int value);
 extern int of_table_mod_OF_VERSION_1_1_check(
@@ -1688,6 +1922,15 @@ extern int of_table_mod_OF_VERSION_1_1_populate_scalars(
     of_table_mod_t *obj, int value);
 extern int of_table_mod_OF_VERSION_1_1_check_scalars(
     of_table_mod_t *obj, int value);
+
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_1_populate(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_1_check(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_1_populate_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_1_check_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
 
 extern int of_table_stats_reply_OF_VERSION_1_1_populate(
     of_table_stats_reply_t *obj, int value);
@@ -2355,6 +2598,42 @@ extern int of_aggregate_stats_request_OF_VERSION_1_2_populate_scalars(
 extern int of_aggregate_stats_request_OF_VERSION_1_2_check_scalars(
     of_aggregate_stats_request_t *obj, int value);
 
+extern int of_bad_action_error_msg_OF_VERSION_1_2_populate(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_2_check(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_2_check_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+
+extern int of_bad_instruction_error_msg_OF_VERSION_1_2_populate(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_2_check(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_2_check_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+
+extern int of_bad_match_error_msg_OF_VERSION_1_2_populate(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_2_check(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_2_check_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+
+extern int of_bad_request_error_msg_OF_VERSION_1_2_populate(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_2_check(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_2_check_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+
 extern int of_barrier_reply_OF_VERSION_1_2_populate(
     of_barrier_reply_t *obj, int value);
 extern int of_barrier_reply_OF_VERSION_1_2_check(
@@ -2471,6 +2750,51 @@ extern int of_bsn_header_OF_VERSION_1_2_populate_scalars(
     of_bsn_header_t *obj, int value);
 extern int of_bsn_header_OF_VERSION_1_2_check_scalars(
     of_bsn_header_t *obj, int value);
+
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_2_populate(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_2_check(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_2_populate_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_2_check_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_2_populate(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_2_check(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_2_populate_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_2_check_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_2_populate(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_2_check(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_2_populate_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_2_check_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_2_populate(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_2_check(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_2_populate_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_2_check_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_2_populate(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_2_check(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_2_populate_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_2_check_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
 
 extern int of_bsn_set_mirroring_OF_VERSION_1_2_populate(
     of_bsn_set_mirroring_t *obj, int value);
@@ -2589,6 +2913,15 @@ extern int of_experimenter_OF_VERSION_1_2_populate_scalars(
 extern int of_experimenter_OF_VERSION_1_2_check_scalars(
     of_experimenter_t *obj, int value);
 
+extern int of_experimenter_error_msg_OF_VERSION_1_2_populate(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_2_check(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_2_check_scalars(
+    of_experimenter_error_msg_t *obj, int value);
+
 extern int of_experimenter_stats_reply_OF_VERSION_1_2_populate(
     of_experimenter_stats_reply_t *obj, int value);
 extern int of_experimenter_stats_reply_OF_VERSION_1_2_check(
@@ -2660,6 +2993,15 @@ extern int of_flow_mod_OF_VERSION_1_2_populate_scalars(
     of_flow_mod_t *obj, int value);
 extern int of_flow_mod_OF_VERSION_1_2_check_scalars(
     of_flow_mod_t *obj, int value);
+
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_2_populate(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_2_check(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
 
 extern int of_flow_modify_OF_VERSION_1_2_populate(
     of_flow_modify_t *obj, int value);
@@ -2769,6 +3111,15 @@ extern int of_group_mod_OF_VERSION_1_2_populate_scalars(
 extern int of_group_mod_OF_VERSION_1_2_check_scalars(
     of_group_mod_t *obj, int value);
 
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_2_populate(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_2_check(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+
 extern int of_group_stats_reply_OF_VERSION_1_2_populate(
     of_group_stats_reply_t *obj, int value);
 extern int of_group_stats_reply_OF_VERSION_1_2_check(
@@ -2795,6 +3146,15 @@ extern int of_hello_OF_VERSION_1_2_populate_scalars(
     of_hello_t *obj, int value);
 extern int of_hello_OF_VERSION_1_2_check_scalars(
     of_hello_t *obj, int value);
+
+extern int of_hello_failed_error_msg_OF_VERSION_1_2_populate(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_2_check(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
 
 extern int of_nicira_header_OF_VERSION_1_2_populate(
     of_nicira_header_t *obj, int value);
@@ -2831,6 +3191,15 @@ extern int of_port_mod_OF_VERSION_1_2_populate_scalars(
     of_port_mod_t *obj, int value);
 extern int of_port_mod_OF_VERSION_1_2_check_scalars(
     of_port_mod_t *obj, int value);
+
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_2_populate(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_2_check(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
 
 extern int of_port_stats_reply_OF_VERSION_1_2_populate(
     of_port_stats_reply_t *obj, int value);
@@ -2877,6 +3246,15 @@ extern int of_queue_get_config_request_OF_VERSION_1_2_populate_scalars(
 extern int of_queue_get_config_request_OF_VERSION_1_2_check_scalars(
     of_queue_get_config_request_t *obj, int value);
 
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_2_populate(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_2_check(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+
 extern int of_queue_stats_reply_OF_VERSION_1_2_populate(
     of_queue_stats_reply_t *obj, int value);
 extern int of_queue_stats_reply_OF_VERSION_1_2_check(
@@ -2913,6 +3291,15 @@ extern int of_role_request_OF_VERSION_1_2_populate_scalars(
 extern int of_role_request_OF_VERSION_1_2_check_scalars(
     of_role_request_t *obj, int value);
 
+extern int of_role_request_failed_error_msg_OF_VERSION_1_2_populate(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_2_check(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_role_request_failed_error_msg_t *obj, int value);
+
 extern int of_set_config_OF_VERSION_1_2_populate(
     of_set_config_t *obj, int value);
 extern int of_set_config_OF_VERSION_1_2_check(
@@ -2940,6 +3327,15 @@ extern int of_stats_request_OF_VERSION_1_2_populate_scalars(
 extern int of_stats_request_OF_VERSION_1_2_check_scalars(
     of_stats_request_t *obj, int value);
 
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_2_populate(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_2_check(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+
 extern int of_table_mod_OF_VERSION_1_2_populate(
     of_table_mod_t *obj, int value);
 extern int of_table_mod_OF_VERSION_1_2_check(
@@ -2948,6 +3344,15 @@ extern int of_table_mod_OF_VERSION_1_2_populate_scalars(
     of_table_mod_t *obj, int value);
 extern int of_table_mod_OF_VERSION_1_2_check_scalars(
     of_table_mod_t *obj, int value);
+
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_2_populate(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_2_check(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_2_populate_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_2_check_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
 
 extern int of_table_stats_reply_OF_VERSION_1_2_populate(
     of_table_stats_reply_t *obj, int value);
@@ -3398,6 +3803,24 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_populate_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
+
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_populate(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_check(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
 
 extern int of_oxm_eth_dst_OF_VERSION_1_2_populate(
     of_oxm_eth_dst_t *obj, int value);
@@ -4227,6 +4650,42 @@ extern int of_async_set_OF_VERSION_1_3_populate_scalars(
 extern int of_async_set_OF_VERSION_1_3_check_scalars(
     of_async_set_t *obj, int value);
 
+extern int of_bad_action_error_msg_OF_VERSION_1_3_populate(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_3_check(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+extern int of_bad_action_error_msg_OF_VERSION_1_3_check_scalars(
+    of_bad_action_error_msg_t *obj, int value);
+
+extern int of_bad_instruction_error_msg_OF_VERSION_1_3_populate(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_3_check(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+extern int of_bad_instruction_error_msg_OF_VERSION_1_3_check_scalars(
+    of_bad_instruction_error_msg_t *obj, int value);
+
+extern int of_bad_match_error_msg_OF_VERSION_1_3_populate(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_3_check(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+extern int of_bad_match_error_msg_OF_VERSION_1_3_check_scalars(
+    of_bad_match_error_msg_t *obj, int value);
+
+extern int of_bad_request_error_msg_OF_VERSION_1_3_populate(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_3_check(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+extern int of_bad_request_error_msg_OF_VERSION_1_3_check_scalars(
+    of_bad_request_error_msg_t *obj, int value);
+
 extern int of_barrier_reply_OF_VERSION_1_3_populate(
     of_barrier_reply_t *obj, int value);
 extern int of_barrier_reply_OF_VERSION_1_3_check(
@@ -4299,6 +4758,51 @@ extern int of_bsn_bw_enable_set_request_OF_VERSION_1_3_populate_scalars(
 extern int of_bsn_bw_enable_set_request_OF_VERSION_1_3_check_scalars(
     of_bsn_bw_enable_set_request_t *obj, int value);
 
+extern int of_bsn_flow_idle_OF_VERSION_1_3_populate(
+    of_bsn_flow_idle_t *obj, int value);
+extern int of_bsn_flow_idle_OF_VERSION_1_3_check(
+    of_bsn_flow_idle_t *obj, int value);
+extern int of_bsn_flow_idle_OF_VERSION_1_3_populate_scalars(
+    of_bsn_flow_idle_t *obj, int value);
+extern int of_bsn_flow_idle_OF_VERSION_1_3_check_scalars(
+    of_bsn_flow_idle_t *obj, int value);
+
+extern int of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_populate(
+    of_bsn_flow_idle_enable_get_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_check(
+    of_bsn_flow_idle_enable_get_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_flow_idle_enable_get_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_flow_idle_enable_get_reply_t *obj, int value);
+
+extern int of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_populate(
+    of_bsn_flow_idle_enable_get_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_check(
+    of_bsn_flow_idle_enable_get_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_flow_idle_enable_get_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_get_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_flow_idle_enable_get_request_t *obj, int value);
+
+extern int of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_populate(
+    of_bsn_flow_idle_enable_set_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_check(
+    of_bsn_flow_idle_enable_set_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_flow_idle_enable_set_reply_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_flow_idle_enable_set_reply_t *obj, int value);
+
+extern int of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_populate(
+    of_bsn_flow_idle_enable_set_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_check(
+    of_bsn_flow_idle_enable_set_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_flow_idle_enable_set_request_t *obj, int value);
+extern int of_bsn_flow_idle_enable_set_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_flow_idle_enable_set_request_t *obj, int value);
+
 extern int of_bsn_get_interfaces_reply_OF_VERSION_1_3_populate(
     of_bsn_get_interfaces_reply_t *obj, int value);
 extern int of_bsn_get_interfaces_reply_OF_VERSION_1_3_check(
@@ -4343,6 +4847,51 @@ extern int of_bsn_header_OF_VERSION_1_3_populate_scalars(
     of_bsn_header_t *obj, int value);
 extern int of_bsn_header_OF_VERSION_1_3_check_scalars(
     of_bsn_header_t *obj, int value);
+
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_populate(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_check(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_pdu_rx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_3_populate(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_3_check(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+extern int of_bsn_pdu_rx_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_pdu_rx_request_t *obj, int value);
+
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_3_populate(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_3_check(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_3_populate_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+extern int of_bsn_pdu_rx_timeout_OF_VERSION_1_3_check_scalars(
+    of_bsn_pdu_rx_timeout_t *obj, int value);
+
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_3_populate(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_3_check(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+extern int of_bsn_pdu_tx_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_pdu_tx_reply_t *obj, int value);
+
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_populate(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_check(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
+extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_pdu_tx_request_t *obj, int value);
 
 extern int of_bsn_set_mirroring_OF_VERSION_1_3_populate(
     of_bsn_set_mirroring_t *obj, int value);
@@ -4461,6 +5010,15 @@ extern int of_experimenter_OF_VERSION_1_3_populate_scalars(
 extern int of_experimenter_OF_VERSION_1_3_check_scalars(
     of_experimenter_t *obj, int value);
 
+extern int of_experimenter_error_msg_OF_VERSION_1_3_populate(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_3_check(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_experimenter_error_msg_t *obj, int value);
+extern int of_experimenter_error_msg_OF_VERSION_1_3_check_scalars(
+    of_experimenter_error_msg_t *obj, int value);
+
 extern int of_features_reply_OF_VERSION_1_3_populate(
     of_features_reply_t *obj, int value);
 extern int of_features_reply_OF_VERSION_1_3_check(
@@ -4514,6 +5072,15 @@ extern int of_flow_mod_OF_VERSION_1_3_populate_scalars(
     of_flow_mod_t *obj, int value);
 extern int of_flow_mod_OF_VERSION_1_3_check_scalars(
     of_flow_mod_t *obj, int value);
+
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_3_populate(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_3_check(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
+extern int of_flow_mod_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_flow_mod_failed_error_msg_t *obj, int value);
 
 extern int of_flow_modify_OF_VERSION_1_3_populate(
     of_flow_modify_t *obj, int value);
@@ -4623,6 +5190,15 @@ extern int of_group_mod_OF_VERSION_1_3_populate_scalars(
 extern int of_group_mod_OF_VERSION_1_3_check_scalars(
     of_group_mod_t *obj, int value);
 
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_3_populate(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_3_check(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+extern int of_group_mod_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_group_mod_failed_error_msg_t *obj, int value);
+
 extern int of_group_stats_reply_OF_VERSION_1_3_populate(
     of_group_stats_reply_t *obj, int value);
 extern int of_group_stats_reply_OF_VERSION_1_3_check(
@@ -4649,6 +5225,15 @@ extern int of_hello_OF_VERSION_1_3_populate_scalars(
     of_hello_t *obj, int value);
 extern int of_hello_OF_VERSION_1_3_check_scalars(
     of_hello_t *obj, int value);
+
+extern int of_hello_failed_error_msg_OF_VERSION_1_3_populate(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_3_check(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
+extern int of_hello_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_hello_failed_error_msg_t *obj, int value);
 
 extern int of_meter_config_stats_reply_OF_VERSION_1_3_populate(
     of_meter_config_stats_reply_t *obj, int value);
@@ -4694,6 +5279,15 @@ extern int of_meter_mod_OF_VERSION_1_3_populate_scalars(
     of_meter_mod_t *obj, int value);
 extern int of_meter_mod_OF_VERSION_1_3_check_scalars(
     of_meter_mod_t *obj, int value);
+
+extern int of_meter_mod_failed_error_msg_OF_VERSION_1_3_populate(
+    of_meter_mod_failed_error_msg_t *obj, int value);
+extern int of_meter_mod_failed_error_msg_OF_VERSION_1_3_check(
+    of_meter_mod_failed_error_msg_t *obj, int value);
+extern int of_meter_mod_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_meter_mod_failed_error_msg_t *obj, int value);
+extern int of_meter_mod_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_meter_mod_failed_error_msg_t *obj, int value);
 
 extern int of_meter_stats_reply_OF_VERSION_1_3_populate(
     of_meter_stats_reply_t *obj, int value);
@@ -4767,6 +5361,15 @@ extern int of_port_mod_OF_VERSION_1_3_populate_scalars(
 extern int of_port_mod_OF_VERSION_1_3_check_scalars(
     of_port_mod_t *obj, int value);
 
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_3_populate(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_3_check(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+extern int of_port_mod_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_port_mod_failed_error_msg_t *obj, int value);
+
 extern int of_port_stats_reply_OF_VERSION_1_3_populate(
     of_port_stats_reply_t *obj, int value);
 extern int of_port_stats_reply_OF_VERSION_1_3_check(
@@ -4812,6 +5415,15 @@ extern int of_queue_get_config_request_OF_VERSION_1_3_populate_scalars(
 extern int of_queue_get_config_request_OF_VERSION_1_3_check_scalars(
     of_queue_get_config_request_t *obj, int value);
 
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_3_populate(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_3_check(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+extern int of_queue_op_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_queue_op_failed_error_msg_t *obj, int value);
+
 extern int of_queue_stats_reply_OF_VERSION_1_3_populate(
     of_queue_stats_reply_t *obj, int value);
 extern int of_queue_stats_reply_OF_VERSION_1_3_check(
@@ -4848,6 +5460,15 @@ extern int of_role_request_OF_VERSION_1_3_populate_scalars(
 extern int of_role_request_OF_VERSION_1_3_check_scalars(
     of_role_request_t *obj, int value);
 
+extern int of_role_request_failed_error_msg_OF_VERSION_1_3_populate(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_3_check(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_role_request_failed_error_msg_t *obj, int value);
+extern int of_role_request_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_role_request_failed_error_msg_t *obj, int value);
+
 extern int of_set_config_OF_VERSION_1_3_populate(
     of_set_config_t *obj, int value);
 extern int of_set_config_OF_VERSION_1_3_check(
@@ -4875,6 +5496,24 @@ extern int of_stats_request_OF_VERSION_1_3_populate_scalars(
 extern int of_stats_request_OF_VERSION_1_3_check_scalars(
     of_stats_request_t *obj, int value);
 
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_3_populate(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_3_check(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+extern int of_switch_config_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_switch_config_failed_error_msg_t *obj, int value);
+
+extern int of_table_features_failed_error_msg_OF_VERSION_1_3_populate(
+    of_table_features_failed_error_msg_t *obj, int value);
+extern int of_table_features_failed_error_msg_OF_VERSION_1_3_check(
+    of_table_features_failed_error_msg_t *obj, int value);
+extern int of_table_features_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_table_features_failed_error_msg_t *obj, int value);
+extern int of_table_features_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_table_features_failed_error_msg_t *obj, int value);
+
 extern int of_table_features_stats_reply_OF_VERSION_1_3_populate(
     of_table_features_stats_reply_t *obj, int value);
 extern int of_table_features_stats_reply_OF_VERSION_1_3_check(
@@ -4901,6 +5540,15 @@ extern int of_table_mod_OF_VERSION_1_3_populate_scalars(
     of_table_mod_t *obj, int value);
 extern int of_table_mod_OF_VERSION_1_3_check_scalars(
     of_table_mod_t *obj, int value);
+
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_3_populate(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_3_check(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_3_populate_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
+extern int of_table_mod_failed_error_msg_OF_VERSION_1_3_check_scalars(
+    of_table_mod_failed_error_msg_t *obj, int value);
 
 extern int of_table_stats_reply_OF_VERSION_1_3_populate(
     of_table_stats_reply_t *obj, int value);
@@ -5379,14 +6027,14 @@ extern int of_bucket_counter_OF_VERSION_1_3_populate_scalars(
 extern int of_bucket_counter_OF_VERSION_1_3_check_scalars(
     of_bucket_counter_t *obj, int value);
 
-extern int of_experimenter_multipart_header_OF_VERSION_1_3_populate(
-    of_experimenter_multipart_header_t *obj, int value);
-extern int of_experimenter_multipart_header_OF_VERSION_1_3_check(
-    of_experimenter_multipart_header_t *obj, int value);
-extern int of_experimenter_multipart_header_OF_VERSION_1_3_populate_scalars(
-    of_experimenter_multipart_header_t *obj, int value);
-extern int of_experimenter_multipart_header_OF_VERSION_1_3_check_scalars(
-    of_experimenter_multipart_header_t *obj, int value);
+extern int of_experimenter_stats_header_OF_VERSION_1_3_populate(
+    of_experimenter_stats_header_t *obj, int value);
+extern int of_experimenter_stats_header_OF_VERSION_1_3_check(
+    of_experimenter_stats_header_t *obj, int value);
+extern int of_experimenter_stats_header_OF_VERSION_1_3_populate_scalars(
+    of_experimenter_stats_header_t *obj, int value);
+extern int of_experimenter_stats_header_OF_VERSION_1_3_check_scalars(
+    of_experimenter_stats_header_t *obj, int value);
 
 extern int of_flow_stats_entry_OF_VERSION_1_3_populate(
     of_flow_stats_entry_t *obj, int value);
@@ -5684,6 +6332,24 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_populate_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
+
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_populate(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_check(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_in_ports_128_t *obj, int value);
+
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_in_ports_128_masked_t *obj, int value);
 
 extern int of_oxm_eth_dst_OF_VERSION_1_3_populate(
     of_oxm_eth_dst_t *obj, int value);

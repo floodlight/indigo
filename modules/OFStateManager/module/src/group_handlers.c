@@ -262,9 +262,7 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
 
     LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
         ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
-        /* XXX not supported by loci
         of_group_desc_stats_entry_group_type_set(entry, group->type);
-        */
         of_group_desc_stats_entry_group_id_set(entry, group->id);
         if (of_group_desc_stats_entry_buckets_set(entry, group->buckets) < 0) {
             AIM_DIE("unexpected failure setting group desc stats entry buckets");

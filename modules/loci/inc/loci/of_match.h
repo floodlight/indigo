@@ -25,6 +25,7 @@
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_DST)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_TPA)\
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV6_TYPE)\
+    | ((uint64_t)1 << OF_OXM_INDEX_BSN_IN_PORTS_128)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_SHA)\
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_SRC)\
     | ((uint64_t)1 << OF_OXM_INDEX_SCTP_SRC)\
@@ -51,6 +52,7 @@
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_DST)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_TPA)\
     | ((uint64_t)1 << OF_OXM_INDEX_ICMPV6_TYPE)\
+    | ((uint64_t)1 << OF_OXM_INDEX_BSN_IN_PORTS_128)\
     | ((uint64_t)1 << OF_OXM_INDEX_ARP_SHA)\
     | ((uint64_t)1 << OF_OXM_INDEX_IPV6_SRC)\
     | ((uint64_t)1 << OF_OXM_INDEX_SCTP_SRC)\
@@ -82,19 +84,11 @@ typedef struct of_match_fields_s {
     uint16_t             eth_type;
     uint16_t             vlan_vid;
     uint8_t              vlan_pcp;
-    uint16_t             arp_op;
-    uint32_t             arp_spa;
-    uint32_t             arp_tpa;
-    of_mac_addr_t        arp_sha;
-    of_mac_addr_t        arp_tha;
-    of_ipv4_t            ipv4_src;
-    of_ipv4_t            ipv4_dst;
     uint8_t              ip_dscp;
     uint8_t              ip_ecn;
     uint8_t              ip_proto;
-    of_ipv6_t            ipv6_src;
-    of_ipv6_t            ipv6_dst;
-    uint32_t             ipv6_flabel;
+    of_ipv4_t            ipv4_src;
+    of_ipv4_t            ipv4_dst;
     uint16_t             tcp_dst;
     uint16_t             tcp_src;
     uint16_t             udp_dst;
@@ -103,6 +97,14 @@ typedef struct of_match_fields_s {
     uint16_t             sctp_src;
     uint8_t              icmpv4_type;
     uint8_t              icmpv4_code;
+    uint16_t             arp_op;
+    uint32_t             arp_spa;
+    uint32_t             arp_tpa;
+    of_mac_addr_t        arp_sha;
+    of_mac_addr_t        arp_tha;
+    of_ipv6_t            ipv6_src;
+    of_ipv6_t            ipv6_dst;
+    uint32_t             ipv6_flabel;
     uint8_t              icmpv6_type;
     uint8_t              icmpv6_code;
     of_ipv6_t            ipv6_nd_target;
@@ -110,6 +112,7 @@ typedef struct of_match_fields_s {
     of_mac_addr_t        ipv6_nd_tll;
     uint32_t             mpls_label;
     uint8_t              mpls_tc;
+    of_bitmap_128_t      bsn_in_ports_128;
 
 } of_match_fields_t;
 
@@ -320,6 +323,15 @@ of_overlap_mac_addr(of_mac_addr_t *v1, of_mac_addr_t *v2,
 #define OF_OVERLAP_MAC_ADDR(v1, v2, m1, m2) \
     of_overlap_mac_addr((v1), (v2), (m1), (m2))
 
+#define OF_MORE_SPECIFIC_BITMAP_128(v1, v2) \
+    (OF_MORE_SPECIFIC_INT((v1)->lo, (v2)->lo) && OF_MORE_SPECIFIC_INT((v1)->hi, (v2)->hi))
+
+#define OF_RESTRICTED_MATCH_BITMAP_128(v1, v2, mask) \
+    (OF_RESTRICTED_MATCH_INT((v1)->lo, (v2)->lo, (mask)->lo) && OF_RESTRICTED_MATCH_INT((v1)->hi, (v2)->hi, (mask)->hi))
+
+#define OF_OVERLAP_BITMAP_128(v1, v2, m1, m2) \
+    (OF_OVERLAP_INT((v1)->lo, (v2)->lo, (m1)->lo, (m2)->lo) && OF_OVERLAP_INT((v1)->hi, (v2)->hi, (m1)->hi, (m2)->hi))
+
 /**
  * More-specific-than macro for integer types; see above
  * @return true if v1 is equal to or more specific than v2
@@ -428,6 +440,15 @@ of_match_more_specific(of_match_t *entry, of_match_t *query)
     }
     if (!OF_RESTRICTED_MATCH_INT(e_f->icmpv6_type, q_f->icmpv6_type,
             q_m->icmpv6_type)) {
+        return 0;
+    }
+
+    /* Mask and values for bsn_in_ports_128 */
+    if (!OF_MORE_SPECIFIC_BITMAP_128(&e_m->bsn_in_ports_128, &q_m->bsn_in_ports_128)) {
+        return 0;
+    }
+    if (!OF_RESTRICTED_MATCH_BITMAP_128(&e_f->bsn_in_ports_128, &q_f->bsn_in_ports_128,
+            &q_m->bsn_in_ports_128)) {
         return 0;
     }
 
@@ -757,6 +778,12 @@ of_match_overlap(of_match_t *match1, of_match_t *match2)
     /* Check overlap for icmpv6_type */
     if (!OF_OVERLAP_INT(f1->icmpv6_type, f2->icmpv6_type,
         m2->icmpv6_type, m1->icmpv6_type)) {
+        return 0; /* This field differentiates; all done */
+    }
+
+    /* Check overlap for bsn_in_ports_128 */
+    if (!OF_OVERLAP_BITMAP_128(&f1->bsn_in_ports_128, &f2->bsn_in_ports_128,
+        &m2->bsn_in_ports_128, &m1->bsn_in_ports_128)) {
         return 0; /* This field differentiates; all done */
     }
 

@@ -1051,23 +1051,6 @@ ind_cxn_finish(void)
     return INDIGO_ERROR_NONE;
 }
 
-/* Helper function for below */
-static int
-set_up_send_error_msg(of_error_msg_t *msg, indigo_cxn_id_t cxn_id,
-                      uint16_t type, uint16_t code,
-                      uint32_t xid, of_octets_t *octets)
-
-{
-    of_error_msg_xid_set(msg, xid);
-    of_error_msg_err_type_set(msg, type);
-    of_error_msg_code_set(msg, code);
-    if (octets != NULL) {
-        _TRY(of_error_msg_data_set(msg, octets));
-    }
-
-    return indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
-}
-
 /**
  * Send an error message to a controller connection
  * @param version The version to use for the msg
@@ -1078,6 +1061,12 @@ set_up_send_error_msg(of_error_msg_t *msg, indigo_cxn_id_t cxn_id,
  * @param octets If not NULL use this for the data
  *
  * If version is invalid, uses the connection's negotiated version
+ *
+ * LOCI has one class per error message type. This is necessary to support
+ * experimenter error messages, but is inconvenient when we just want to
+ * set the normal type/code. This function works around it by creating
+ * a hello failed error message (error type 0) and setting the error type
+ * directly in the wire buffer.
  */
 
 indigo_error_t
@@ -1086,7 +1075,6 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
                           of_octets_t *octets)
 {
     of_error_msg_t *msg;
-    int rv;
     connection_t *cxn;
 
     if (!CXN_ID_VALID(cxn_id) || !CXN_ID_TCP_CONNECTED(cxn_id)) {
@@ -1105,16 +1093,23 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
 
     LOG_TRACE("Sending error msg to %p. type %d. code %d.",
               cxn_id_ip_string(cxn_id), type, code);
-    if ((msg = of_error_msg_new(version)) == NULL) {
+    if ((msg = of_hello_failed_error_msg_new(version)) == NULL) {
         LOG_ERROR("Could not create error message");
         return INDIGO_ERROR_RESOURCE;
     }
-    rv = set_up_send_error_msg(msg, cxn_id, type, code, xid, octets);
-    if (rv < 0) {
-        of_error_msg_delete(msg);
+
+    of_hello_failed_error_msg_xid_set(msg, xid);
+    of_hello_failed_error_msg_code_set(msg, code);
+    if (octets != NULL) {
+        if (of_hello_failed_error_msg_data_set(msg, octets) < 0) {
+            LOG_WARN("Failed to append data to error message");
+        }
     }
 
-    return rv;
+    /* HACK manually set the type field */
+    of_wire_buffer_u16_set(OF_OBJECT_TO_WBUF(msg), 8, type);
+
+    return indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
 }
 
 /****************************************************************

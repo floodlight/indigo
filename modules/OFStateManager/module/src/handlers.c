@@ -1795,7 +1795,7 @@ ind_core_experimenter_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         (port_rv == INDIGO_ERROR_NOT_SUPPORTED)) {
         indigo_cxn_send_error_msg(version, cxn_id, xid,
                                   OF_ERROR_TYPE_BAD_REQUEST,
-                                  OF_REQUEST_FAILED_BAD_VENDOR, NULL);
+                                  OF_REQUEST_FAILED_BAD_EXPERIMENTER, NULL);
     } else if ((fwd_rv != INDIGO_ERROR_NONE) &&
                (port_rv != INDIGO_ERROR_NONE)) {
         /* Not handled and some error */
