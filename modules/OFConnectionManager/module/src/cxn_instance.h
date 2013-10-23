@@ -47,7 +47,7 @@
  * this should really be determined by the platform specific code and
  * made visible via the config.
  */
-#define WRITE_BUFFER_SIZE (512 * 1024)
+#define WRITE_BUFFER_SIZE (16 * 1024 * 1024)
 
 /**
  * Connection flag, connection is to be removed pending op completion
