@@ -347,10 +347,10 @@ extern void indigo_core_connection_count_notify(
  */
 
 extern void
-indigo_core_stats_get(uint32_t *total_flows,
-                      uint32_t *flow_mods,
-                      uint32_t *packet_ins,
-                      uint32_t *packet_outs);
+ind_core_stats_get(uint32_t *total_flows,
+                   uint32_t *flow_mods,
+                   uint32_t *packet_ins,
+                   uint32_t *packet_outs);
 
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */

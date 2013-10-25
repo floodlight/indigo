@@ -64,9 +64,9 @@ int ind_core_module_enabled = 0;
 /**
  * @brief Statistics for debugging
  */
-uint32_t core_flow_mods = 0;
-uint32_t core_packet_ins = 0;
-uint32_t core_packet_outs = 0;
+static uint32_t core_flow_mods = 0;
+static uint32_t core_packet_ins = 0;
+static uint32_t core_packet_outs = 0;
 
 
 /**
@@ -1273,10 +1273,10 @@ ind_core_ft_stats(aim_pvs_t *pvs)
  */
 
 void
-indigo_core_stats_get(uint32_t *total_flows,
-                      uint32_t *flow_mods,
-                      uint32_t *packet_ins,
-                      uint32_t *packet_outs)
+ind_core_stats_get(uint32_t *total_flows,
+                   uint32_t *flow_mods,
+                   uint32_t *packet_ins,
+                   uint32_t *packet_outs)
 {
     *total_flows = ind_core_ft->status.current_count;
     *flow_mods = core_flow_mods;
