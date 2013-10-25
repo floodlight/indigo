@@ -62,6 +62,14 @@ int ind_core_init_done = 0;
 int ind_core_module_enabled = 0;
 
 /**
+ * @brief Statistics for debugging
+ */
+static uint32_t ind_core_flow_mods = 0;
+static uint32_t ind_core_packet_ins = 0;
+static uint32_t ind_core_packet_outs = 0;
+
+
+/**
  * Maintain the current connection count.
  *
  * In case the disconnect mode configuration changes, we may need to change the
@@ -97,6 +105,7 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     }
 
     LOG_TRACE("Packet in rcvd");
+    ind_core_packet_ins++;
 
     rv = indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED,
                                             packet_in);
@@ -216,26 +225,32 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         break;
 
     case OF_PACKET_OUT:
+        ind_core_packet_outs++;
         rv = ind_core_packet_out_handler(obj, cxn);
         break;
 
     case OF_FLOW_ADD:
+        ind_core_flow_mods++;
         rv = ind_core_flow_add_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY:
+        ind_core_flow_mods++;
         rv = ind_core_flow_modify_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY_STRICT:
+        ind_core_flow_mods++;
         rv = ind_core_flow_modify_strict_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE:
+        ind_core_flow_mods++;
         rv = ind_core_flow_delete_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE_STRICT:
+        ind_core_flow_mods++;
         rv = ind_core_flow_delete_strict_handler(obj, cxn);
         break;
 
@@ -1248,4 +1263,27 @@ ind_core_ft_stats(aim_pvs_t *pvs)
                (int)ft->status.table_full_errors);
     aim_printf(pvs, "  Fwd Add Errors: %d\n",
                (int)ft->status.forwarding_add_errors);
+}
+
+
+/**
+ * Returns the number of current flows, flow mods, packet ins, and packet outs.
+ * The last three quantities are cumulative as of the last time this function
+ * was called.
+ */
+
+void
+indigo_core_stats_get(uint32_t *total_flows,
+                      uint32_t *flow_mods,
+                      uint32_t *packet_ins,
+                      uint32_t *packet_outs)
+{
+    *total_flows = ind_core_ft->status.current_count;
+    *flow_mods = ind_core_flow_mods;
+    *packet_ins = ind_core_packet_ins;
+    *packet_outs = ind_core_packet_outs;
+
+    ind_core_flow_mods = 0;
+    ind_core_packet_ins = 0;
+    ind_core_packet_outs = 0;
 }
