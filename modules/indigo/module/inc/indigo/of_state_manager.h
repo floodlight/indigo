@@ -333,5 +333,24 @@ indigo_core_disconnected_mode_get(indigo_core_disconnected_mode_t *mode);
 extern void indigo_core_connection_count_notify(
     int new_count);
 
+
+/**
+ * @brief Returns state manager statistics.
+ * @param total_flows Current number of flows.
+ * @param flow_mods Number of flow mod messages.
+ * @param packet_ins Number of packet in messages.
+ * @param packet_outs Number of packet out messages.
+ *
+ * Returns the number of current flows, flow mods, packet ins, and packet outs.
+ * The last three quantities are cumulative as of the last time this function
+ * was called.
+ */
+
+extern void
+indigo_core_stats_get(uint32_t *total_flows,
+                      uint32_t *flow_mods,
+                      uint32_t *packet_ins,
+                      uint32_t *packet_outs);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
