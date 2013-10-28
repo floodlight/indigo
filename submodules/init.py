@@ -59,7 +59,7 @@ try:
         data = entry.split()
         if len(data) >= 2:
             submodule_status[data[1].replace("submodules/", "")] = data[0]
-except Exception as e:
+except Exception, e:
     print repr(e)
     raise
 
