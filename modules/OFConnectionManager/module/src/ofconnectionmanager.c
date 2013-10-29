@@ -1375,25 +1375,25 @@ indigo_cxn_of_version_get(of_version_t* of_version)
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
 
-    /* See of there is any connection with role as MASTER */ 
+    /* See if there is any connection with role as MASTER */ 
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_MASTER) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See of there is any connection with role as EQUAL */ 
+    /* See if there is any connection with role as EQUAL */ 
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_EQUAL) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See of there is any connection with role as SLAVE */ 
+    /* See if there is any connection with role as SLAVE */ 
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_SLAVE) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See of there is any connection with role as iUNKNOWN, oftest */ 
+    /* See if there is any connection with role as UNKNOWN, e.g. oftest */ 
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_UNKNOWN) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
