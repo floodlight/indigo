@@ -142,12 +142,13 @@ static int preferred_cxn_id = -1;
          ++cxn_id, cxn = &connection[cxn_id])                           \
         if (CXN_ACTIVE(cxn) && !((cxn)->config_params.local))
 
-/* All connections which completed hand-shake and with requested role */
+/* All remote connections which completed hand-shake and with requested role */
 #define FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, cxn_role)        \
     for (cxn_id = 0, cxn = &connection[0];                              \
          cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
          ++cxn_id, cxn = &connection[cxn_id])                           \
-        if (CXN_ACTIVE(cxn) && (cxn->status.role == cxn_role) &&        \
+        if (CXN_ACTIVE(cxn) && !(cxn->config_params.local) &&           \
+            (cxn->status.role == cxn_role) &&                           \
             (cxn->status.state == INDIGO_CXN_S_HANDSHAKE_COMPLETE))
 
 /**
@@ -1369,8 +1370,11 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
     }
 }
 
+/**
+ * Get OpenFlow version for async messages.
+ */
 indigo_error_t
-indigo_cxn_of_version_get(of_version_t* of_version)
+indigo_cxn_get_async_version(of_version_t* of_version)
 {
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
