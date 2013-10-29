@@ -94,13 +94,14 @@ indigo_error_t create_error = INDIGO_ERROR_NONE;
    if (create_error == INDIGO_ERROR_NONE) \
        TEST_ASSERT((status)->current_count == (count))
 
-void
+indigo_error_t
 indigo_fwd_flow_create(indigo_cookie_t flow_id,
                        of_flow_add_t *flow_add,
-                       indigo_cookie_t cookie)
+                       uint8_t *table_id)
 {
     AIM_LOG_VERBOSE("flow create called\n");
-    indigo_core_flow_create_callback(create_error, flow_id, 0, cookie);
+    *table_id = 0;
+    return INDIGO_ERROR_NONE;
 }
 
 

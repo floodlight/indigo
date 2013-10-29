@@ -120,20 +120,6 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
  ****************************************************************/
 
 /**
- * @brief Callback for flow create
- * @param error Return code from operation
- * @param flow_id Identifier for new flow
- * @param table_id Identifier of the table in which the flow resides
- * @param callback_cookie Passed to async response callback
- */
-
-extern void indigo_core_flow_create_callback(
-    indigo_error_t result,
-    indigo_cookie_t flow_id,
-    uint8_t table_id,
-    indigo_cookie_t callback_cookie);
-
-/**
  * @brief Callback for flow modify
  * @param error Return code from operation
  * @param flow_stats (optional) Stats from the flow if supported

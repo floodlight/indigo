@@ -39,6 +39,10 @@
 #include "handlers.h"
 #include "ft.h"
 
+static void
+flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
+                      indigo_cxn_id_t cxn_id, of_flow_modify_t *flow_mod);
+
 /****************************************************************
  *
  * Utility functions
@@ -573,26 +577,26 @@ flow_id_next(void)
 indigo_error_t
 ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    indigo_error_t result = INDIGO_ERROR_NONE;
+    indigo_error_t rv = INDIGO_ERROR_NONE;
     of_flow_modify_t *obj; /* Coerce to modify object */
-    indigo_cookie_t cookie;
     of_meta_match_t query;
     uint16_t flags;
     of_version_t ver;
     uint32_t xid = 0;
-    ptr_cxn_wrapper_t *ptr_cxn = 0;
     ft_entry_t        *entry = 0;
-    unsigned char     overlapf = 0;
     indigo_flow_id_t  flow_id;
     uint16_t idle_timeout, hard_timeout;
+    uint8_t table_id;
 
     obj = (of_flow_modify_t *)_obj;
     ver = obj->version;
     LOG_TRACE("Handling of_flow_add message: %p, ver %d.", obj, ver);
 
     of_flow_modify_flags_get(obj, &flags);
+    of_flow_modify_xid_get(obj, &xid);
+    of_flow_modify_idle_timeout_get(obj, &idle_timeout);
+    of_flow_modify_hard_timeout_get(obj, &hard_timeout);
 
-    (void)of_flow_modify_xid_get(obj, &xid);
     if (flags & OF_FLOW_MOD_FLAG_CHECK_OVERLAP_BY_VERSION(ver)) {
         if (overlap_found(obj)) {
             LOG_TRACE("Overlap found when adding flow");
@@ -602,13 +606,10 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                     obj, NULL) < 0) {
                 LOG_ERROR("Error sending overlap error message");
             }
-            overlapf = 1;
             goto done;
         }
     }
 
-    (void)of_flow_modify_idle_timeout_get(obj, &idle_timeout);
-    (void)of_flow_modify_hard_timeout_get(obj, &hard_timeout);
     if ((flags & OF_FLOW_MOD_FLAG_EMERG_BY_VERSION(ver)) &&
         (idle_timeout != 0 || hard_timeout != 0)) {
         LOG_TRACE("Attempted to set timeout on an emergency flow");
@@ -618,13 +619,13 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                 obj, NULL) < 0) {
             LOG_ERROR("Error sending bad emergency timeout error message");
         }
-        result = INDIGO_ERROR_PARAM;
+        rv = INDIGO_ERROR_PARAM;
         goto done;
     }
 
     /* Search table; if match found, replace entry */
-    result = flow_mod_setup_query(obj, &query, OF_MATCH_STRICT, 1);
-    if (result != INDIGO_ERROR_NONE) {
+    rv = flow_mod_setup_query(obj, &query, OF_MATCH_STRICT, 1);
+    if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("flow_mod_setup_query() failed");
         goto done;
     }
@@ -640,26 +641,34 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     flow_id = flow_id_next();
 
-    result = ft_add(ind_core_ft, flow_id, obj, &entry);
-    if (result != INDIGO_ERROR_NONE) {
+    rv = ft_add(ind_core_ft, flow_id, obj, &entry);
+    if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("ft_add() failed");
         goto done;
     }
 
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, entry)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for flow create req");
-        result = INDIGO_ERROR_RESOURCE;
-        goto done;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
-    indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, cookie);
+    rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
+    if (rv == INDIGO_ERROR_NONE) {
+        LOG_TRACE("Flow table now has %d entries",
+                  FT_STATUS(ind_core_ft)->current_count);
+        entry->table_id = table_id;
+        queued_req_service(entry);
+    } else { /* Error during insertion at forwarding layer */
+       uint32_t xid;
 
- done:
-    if (result != INDIGO_ERROR_NONE || overlapf) {
-        if (ptr_cxn)  INDIGO_MEM_FREE(ptr_cxn);
-        if (entry)    ft_delete(ind_core_ft, entry);
-        of_object_delete(_obj);
+       LOG_VERBOSE("Error from forwarding while inserting flow: %d", rv);
+       ind_core_ft->status.forwarding_add_errors += 1;
+
+       of_flow_add_xid_get(obj, &xid);
+       flow_mod_err_msg_send(rv, obj->version, cxn_id,
+                             (of_flow_modify_t *)obj);
+
+       /* Free entry in local flow table */
+       ft_delete(ind_core_ft, entry);
     }
+
+done:
+    of_object_delete(_obj);
 
     return INDIGO_ERROR_NONE;
 }
@@ -715,54 +724,6 @@ flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
             LOG_ERROR("Error sending flow mod error message");
         }
     }
-}
-
-void
-indigo_core_flow_create_callback(indigo_error_t result,
-                                 indigo_cookie_t flow_id,
-                                 uint8_t table_id,
-                                 indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    indigo_cxn_id_t cxn_id;
-    of_flow_add_t *flow_add;
-    ft_entry_t    *entry;
-
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    LOG_TRACE("Flow create callback: rv %d. Id "
-              INDIGO_COOKIE_PRINTF_FORMAT, result, flow_id);
-
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    flow_add = (of_flow_add_t *)ptr_cxn->req;
-    cxn_id = ptr_cxn->cxn_id;
-    entry  = ptr_cxn->entry;
-
-    if (result == INDIGO_ERROR_NONE) {
-        LOG_TRACE("Flow table now has %d entries",
-                  FT_STATUS(ind_core_ft)->current_count);
-        entry->table_id = table_id;
-        queued_req_service(entry);
-    } else { /* Error during insertion at forwarding layer */
-       uint32_t xid;
-
-       LOG_VERBOSE("Error from forwarding while inserting flow");
-       ind_core_ft->status.forwarding_add_errors += 1;
-
-       of_flow_add_xid_get(flow_add, &xid);
-       flow_mod_err_msg_send(result, flow_add->version, cxn_id,
-                             (of_flow_modify_t *)flow_add);
-
-       /* Free entry in local flow table */
-       ft_delete(ind_core_ft, entry);
-    }
-
-    INDIGO_MEM_FREE(ptr_cxn);
-
-    /* Delete the original request */
-    of_flow_add_delete(flow_add);
 }
 
 /****************************************************************/

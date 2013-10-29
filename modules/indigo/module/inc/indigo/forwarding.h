@@ -63,19 +63,20 @@ extern indigo_error_t indigo_fwd_forwarding_features_get(
 /**
  * @brief Flow create
  * @param of_flow_add The original LOCI request
- * @param callback_cookie Passed to async response callback
+ * @param [out] table_id Table inserted into
  *
  * Create a flow for the forwarding engine.
  *
+ * This is a synchronous call.
+ *
  * Ownership of the flow_add LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_flow_create(
+extern indigo_error_t indigo_fwd_flow_create(
     indigo_cookie_t flow_id,
     of_flow_add_t *flow_add,
-    indigo_cookie_t callback_cookie);
+    uint8_t *table_id);
 
 /**
  * @brief Modify an existing flow.
