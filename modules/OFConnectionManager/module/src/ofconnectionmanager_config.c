@@ -208,7 +208,7 @@ parse_controller(struct controller *controller, cJSON *root)
     controller->config.listen = listen;
     controller->config.cxn_priority = prio;
     controller->config.local = 0;
-    controller->config.version = OF_VERSION_1_0;
+    controller->config.version = OF_VERSION_1_3;
 
     return INDIGO_ERROR_NONE;
 }
