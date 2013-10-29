@@ -142,6 +142,15 @@ static int preferred_cxn_id = -1;
          ++cxn_id, cxn = &connection[cxn_id])                           \
         if (CXN_ACTIVE(cxn) && !((cxn)->config_params.local))
 
+/* All remote connections which completed hand-shake and with requested role */
+#define FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, cxn_role)        \
+    for (cxn_id = 0, cxn = &connection[0];                              \
+         cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
+         ++cxn_id, cxn = &connection[cxn_id])                           \
+        if (CXN_ACTIVE(cxn) && !(cxn->config_params.local) &&           \
+            (cxn->status.role == cxn_role) &&                           \
+            (cxn->status.state == INDIGO_CXN_S_HANDSHAKE_COMPLETE))
+
 /**
  * Convert connection ID to pointer to cxn block
  */
@@ -840,7 +849,8 @@ ind_cxn_send_async_controller_message(of_object_t *obj)
     indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
 
     FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-        if (ind_cxn_accepts_async_message(cxn, obj)) {
+        if (ind_cxn_accepts_async_message(cxn, obj) &&
+            (cxn->status.negotiated_version == obj->version)) {
             if (first_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
                 first_cxn_id = cxn->cxn_id;
             } else {
@@ -1360,3 +1370,40 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "No active connections\n");
     }
 }
+
+/**
+ * Get OpenFlow version for async messages.
+ */
+indigo_error_t
+indigo_cxn_get_async_version(of_version_t* of_version)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+
+    /* See if there is any connection with role as MASTER */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_MASTER) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See if there is any connection with role as EQUAL */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_EQUAL) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See if there is any connection with role as SLAVE */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_SLAVE) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See if there is any connection with role as UNKNOWN, e.g. oftest */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_UNKNOWN) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    return INDIGO_ERROR_NOT_FOUND;
+}
+
