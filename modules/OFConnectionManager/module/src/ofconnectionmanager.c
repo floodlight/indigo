@@ -142,6 +142,14 @@ static int preferred_cxn_id = -1;
          ++cxn_id, cxn = &connection[cxn_id])                           \
         if (CXN_ACTIVE(cxn) && !((cxn)->config_params.local))
 
+/* All connections which completed hand-shake and with requested role */
+#define FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, cxn_role)        \
+    for (cxn_id = 0, cxn = &connection[0];                              \
+         cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
+         ++cxn_id, cxn = &connection[cxn_id])                           \
+        if (CXN_ACTIVE(cxn) && (cxn->status.role == cxn_role) &&        \
+            (cxn->status.state == INDIGO_CXN_S_HANDSHAKE_COMPLETE))
+
 /**
  * Convert connection ID to pointer to cxn block
  */
@@ -1360,3 +1368,37 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "No active connections\n");
     }
 }
+
+indigo_error_t
+indigo_cxn_of_version_get(of_version_t* of_version)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+
+    /* See of there is any connection with role as MASTER */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_MASTER) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See of there is any connection with role as EQUAL */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_EQUAL) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See of there is any connection with role as SLAVE */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_SLAVE) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    /* See of there is any connection with role as iUNKNOWN, oftest */ 
+    FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_UNKNOWN) {
+        *of_version = cxn->status.negotiated_version;
+        return INDIGO_ERROR_NONE;
+    }
+
+    return INDIGO_ERROR_NOT_FOUND;
+}
+

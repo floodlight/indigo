@@ -387,5 +387,12 @@ extern indigo_error_t indigo_cxn_list(indigo_cxn_info_t** list);
  */
 void indigo_cxn_list_destroy(indigo_cxn_info_t* list);
 
+/**
+ * @brief Get OpenFlow version of the connection with best role
+ * @param [out] of_version OpenFlow version 
+ */
+extern indigo_error_t
+indigo_cxn_of_version_get(of_version_t* of_version);
+
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */
