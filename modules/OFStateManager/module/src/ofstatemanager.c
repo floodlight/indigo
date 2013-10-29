@@ -492,54 +492,6 @@ ind_core_init(ind_core_config_t *config)
 }
 
 /**
- * @brief Callback for response to flow stats request
- *
- * The ind_core_flow_stats_state struct was allocated by the caller of
- * indigo_fwd_flow_stats_get and is shared by multiple concurrent
- * calls.
- *
- * The callback function pointer in the state struct is called for
- * each result. Callers are intended to allocate any extra space
- * necessary after the end of the state struct.
- *
- * The callback will be called with flow_stats == NULL after the
- * last result. This is when any private data should be cleaned up.
- *
- * The caller must call this function with a NULL flow_stats argument
- * after finishing making indigo_fwd_flow_stats_get calls. This
- * serves two purposes:
- * 1. Giving this function and the callback a chance to clean up if
- *    the caller didn't actually make any flow stats requests.
- * 2. Cleaning up if the Forwarding module made all the callbacks
- *    synchronously.
- */
-
-void
-indigo_core_flow_stats_get_callback(indigo_error_t result,
-                                    indigo_fi_flow_stats_t *flow_stats,
-                                    indigo_cookie_t cookie)
-{
-    ind_core_flow_stats_state_t *state = INDIGO_COOKIE_TO_POINTER(cookie);
-
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    if (flow_stats != NULL) {
-        state->received_count++;
-        state->callback(state, flow_stats);
-    } else {
-        state->finished_calls = 1;
-    }
-
-    if ((state->received_count == state->expected_count) &&
-            state->finished_calls) {
-        state->callback(state, NULL);
-        INDIGO_MEM_FREE(state);
-    }
-}
-
-/**
  * @brief Do the necessary processing to delete a flow entry
  *
  * Assumes the entry still exists in forwarding.  If not, use the
@@ -1055,59 +1007,6 @@ ind_core_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
     return indigo_cxn_send_error_msg(version, cxn_id, xid, type, code, octets);
 }
 
-
-/**
- * Expiration processing stats callback op
- *
- * This routine is called after the expiration process calls stats get.
- * The resulting stats are used to check if the entry
- * indigo_core_flow_stats_get_callback handler for flow expiration.
- *
- * If module is disabled, we still process the call.  If the module
- * is not initialized, ignore the call.
- */
-static void
-flow_expiration_timer_cb(struct ind_core_flow_stats_state *state,
-                         indigo_fi_flow_stats_t *flow_stats)
-{
-    uint32_t delta;
-    indigo_time_t current_time;
-    ft_entry_t *entry;
-
-    if ((flow_stats == NULL) || !ind_core_init_done) {
-        return;
-    }
-
-    /* @fixme Too bad we have to lookup here */
-    entry = ft_lookup(ind_core_ft, flow_stats->flow_id);
-    if (entry == NULL) {
-        LOG_ERROR("failed to lookup flow during flow expiration callback");
-        return;
-    }
-
-    current_time = INDIGO_CURRENT_TIME;
-
-    if (entry->packets != flow_stats->packets) {
-        entry->packets = flow_stats->packets;
-        entry->last_counter_change = current_time;
-    }
-    if (entry->bytes != flow_stats->bytes) {
-        entry->bytes = flow_stats->bytes;
-        entry->last_counter_change = current_time;
-    }
-
-    /* Mark entry if expired */
-
-    delta = INDIGO_TIME_DIFF_ms(entry->last_counter_change,
-                                current_time) / 1000;
-    if ((entry->idle_timeout > 0) && (delta >= entry->idle_timeout)) {
-        LOG_TRACE("Marking idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
-                                   NULL, INDIGO_CXN_ID_UNSPECIFIED);
-    }
-}
-
 /**
  * Timer operation to expire flows.
  *
@@ -1119,59 +1018,69 @@ flow_expiration_timer_cb(struct ind_core_flow_stats_state *state,
 static void
 flow_expiration_timer(void *cookie)
 {
-    struct ind_core_flow_stats_state *state;
-    uint32_t delta;
-    indigo_time_t current_time;
     ft_entry_t *entry;
     list_links_t *cur, *next;
-    int deleted = 0;
+    indigo_time_t current_time = INDIGO_CURRENT_TIME;
 
     if (!ind_core_module_enabled) {
         return;
     }
 
-    state = INDIGO_MEM_ALLOC(sizeof(*state));
-    if (state == NULL) {
-       LOG_ERROR("Failed to allocate flow stats state object.");
-       return;
-    }
-
-    state->finished_calls = 0;
-    state->expected_count = 0;
-    state->received_count = 0;
-    state->callback = flow_expiration_timer_cb;
-
     FT_ITER(ind_core_ft, entry, cur, next) {
-        if (!FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            if (entry->hard_timeout > 0) {
-                current_time = INDIGO_CURRENT_TIME;
-                delta = INDIGO_TIME_DIFF_ms(entry->insert_time,
-                                            current_time) / 1000;
-                if (delta >= entry->hard_timeout) {
-                    LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                              entry->hard_timeout,
-                              INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                    ind_core_flow_entry_delete(entry,
-                                              INDIGO_FLOW_REMOVED_HARD_TIMEOUT,
-                                              NULL, INDIGO_CXN_ID_UNSPECIFIED);
-                    deleted = 1;
-                }
+        indigo_error_t rv;
+        indigo_fi_flow_stats_t flow_stats;
+
+        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
+            continue;
+        }
+
+        if (entry->hard_timeout > 0) {
+            uint32_t delta;
+            delta = INDIGO_TIME_DIFF_ms(entry->insert_time,
+                                        current_time) / 1000;
+            if (delta >= entry->hard_timeout) {
+                LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                          entry->hard_timeout,
+                          INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_HARD_TIMEOUT,
+                                           NULL, INDIGO_CXN_ID_UNSPECIFIED);
+                continue;
+            }
+        }
+
+        /* Update local copy of counters */
+        /* Only used currently for idle timeouts */
+        if (entry->idle_timeout > 0) {
+            rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+            if (rv != INDIGO_ERROR_NONE) {
+                LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
+                          entry->id, rv);
+                continue;
             }
 
-            /* @fixme Add support for getting stats locally */
-            /* May have been marked deleted by above, so check again */
-            if (!deleted && !FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                    entry->idle_timeout > 0) {
-                /* Get stats; check for timeout in callback */
-                state->expected_count++;
-                indigo_fwd_flow_stats_get(entry->id,
-                                          INDIGO_POINTER_TO_COOKIE(state));
+            if (entry->packets != flow_stats.packets) {
+                entry->packets = flow_stats.packets;
+                entry->last_counter_change = current_time;
+            }
+            if (entry->bytes != flow_stats.bytes) {
+                entry->bytes = flow_stats.bytes;
+                entry->last_counter_change = current_time;
+            }
+        }
+
+        if (entry->idle_timeout > 0) {
+            uint32_t delta;
+            delta = INDIGO_TIME_DIFF_ms(entry->last_counter_change,
+                                        current_time) / 1000;
+            if (delta >= entry->idle_timeout) {
+                LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                          entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
+                                           NULL, INDIGO_CXN_ID_UNSPECIFIED);
+                continue;
             }
         }
     }
-
-    indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL,
-                                        INDIGO_POINTER_TO_COOKIE(state));
 }
 
 void

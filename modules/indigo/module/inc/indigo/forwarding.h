@@ -112,14 +112,17 @@ extern void indigo_fwd_flow_delete(
 /**
  * @brief Flow stats
  * @param flow_id The ID of the flow whose stats are to be retrieved
- * @param callback_cookie Passed to async response callback
+ * @param [out] flow_stats Statistics for flow
  *
- * Get the stats structure from an existing flow
+ * This is a synchronous operation.
+ *
+ * Get the stats structure from an existing flow. The flow_stats object MUST
+ * contain the flow ID.
  */
 
-extern void indigo_fwd_flow_stats_get(
+extern indigo_error_t indigo_fwd_flow_stats_get(
     indigo_cookie_t flow_id,
-    indigo_cookie_t callback_cookie);
+    indigo_fi_flow_stats_t *flow_stats);
 
 /**
  * @brief Modify table properties

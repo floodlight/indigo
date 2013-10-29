@@ -1153,7 +1153,7 @@ ind_core_get_config_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
 /****************************************************************/
 
-struct ind_core_flow_stats_priv {
+struct ind_core_flow_stats_state {
     indigo_cxn_id_t cxn_id;
     of_flow_stats_request_t *req;
     indigo_time_t current_time;
@@ -1161,44 +1161,47 @@ struct ind_core_flow_stats_priv {
 };
 
 static void
-ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
-                               indigo_fi_flow_stats_t *flow_stats)
+ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 {
-    struct ind_core_flow_stats_priv *priv = (struct ind_core_flow_stats_priv *)(state + 1);
-    ft_entry_t *entry;
+    struct ind_core_flow_stats_state *state = cookie;
     uint32_t secs, nsecs;
+    indigo_fi_flow_stats_t flow_stats;
+    indigo_error_t rv;
 
     /* Allocate a reply if we don't already have one. */
-    if (priv->reply == NULL) {
+    if (state->reply == NULL) {
         uint32_t xid;
 
-        priv->reply = of_flow_stats_reply_new(priv->req->version);
-        if (priv->reply == NULL) {
+        state->reply = of_flow_stats_reply_new(state->req->version);
+        if (state->reply == NULL) {
             LOG_ERROR("Failed to allocate of_flow_stats_reply.");
-            if (flow_stats == NULL) {
-                of_flow_stats_request_delete(priv->req);
+            if (entry == NULL) {
+                of_flow_stats_request_delete(state->req);
+                INDIGO_MEM_FREE(state);
             }
             return;
         }
 
-        of_flow_stats_request_xid_get(priv->req, &xid);
-        of_flow_stats_reply_xid_set(priv->reply, xid);
-        of_flow_stats_reply_flags_set(priv->reply, 1);
+        of_flow_stats_request_xid_get(state->req, &xid);
+        of_flow_stats_reply_xid_set(state->reply, xid);
+        of_flow_stats_reply_flags_set(state->reply, 1);
     }
 
-    if (flow_stats == NULL) {
+    if (entry == NULL) {
         /* Send last reply */
-        of_flow_stats_reply_flags_set(priv->reply, 0);
-        IND_CORE_MSG_SEND(priv->cxn_id, priv->reply);
+        of_flow_stats_reply_flags_set(state->reply, 0);
+        IND_CORE_MSG_SEND(state->cxn_id, state->reply);
 
         /* Clean up state */
-        of_flow_stats_request_delete(priv->req);
+        of_flow_stats_request_delete(state->req);
+        INDIGO_MEM_FREE(state);
         return;
     }
 
-    entry = ft_lookup(ind_core_ft, flow_stats->flow_id);
-    if (entry == NULL) {
-        LOG_ERROR("failed to lookup flow during flow_stats callback");
+    rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
+                  entry->id, rv);
         return;
     }
 
@@ -1211,14 +1214,14 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
     }
 
     /* TODO use time from flow_stats? */
-    calc_duration(priv->current_time, entry->insert_time, &secs, &nsecs);
+    calc_duration(state->current_time, entry->insert_time, &secs, &nsecs);
 
     /* Set up the structures to append an entry to the list */
     {
         of_list_flow_stats_entry_t list;
         of_flow_stats_entry_t stats_entry;
-        of_flow_stats_reply_entries_bind(priv->reply, &list);
-        of_flow_stats_entry_init(&stats_entry, priv->reply->version, -1, 1);
+        of_flow_stats_reply_entries_bind(state->reply, &list);
+        of_flow_stats_entry_init(&stats_entry, state->reply->version, -1, 1);
         if (of_list_flow_stats_entry_append_bind(&list, &stats_entry)) {
             LOG_ERROR("failed to append to flow stats list during flow_stats callback");
             return;
@@ -1257,32 +1260,13 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         of_flow_stats_entry_table_id_set(&stats_entry, entry->table_id);
         of_flow_stats_entry_duration_sec_set(&stats_entry, secs);
         of_flow_stats_entry_duration_nsec_set(&stats_entry, nsecs);
-        of_flow_stats_entry_packet_count_set(&stats_entry, flow_stats->packets);
-        of_flow_stats_entry_byte_count_set(&stats_entry, flow_stats->bytes);
+        of_flow_stats_entry_packet_count_set(&stats_entry, flow_stats.packets);
+        of_flow_stats_entry_byte_count_set(&stats_entry, flow_stats.bytes);
     }
 
-    if (priv->reply->length > (1 << 15)) { /* Last object would get too big */
-        IND_CORE_MSG_SEND(priv->cxn_id, priv->reply);
-        priv->reply = NULL;
-    }
-}
-
-/*
- * Flowtable iterator for ind_core_flow_stats_request_handler
- * and ind_core_aggregate_stats_request_handler.
- */
-static void
-stats_iter_cb(void *cookie, ft_entry_t *entry)
-{
-    struct ind_core_flow_stats_state *state = cookie;
-    if (entry != NULL) {
-        state->expected_count++;
-        indigo_fwd_flow_stats_get(entry->id, 
-                                  INDIGO_POINTER_TO_COOKIE(state));
-    } else {
-        LOG_TRACE("Finished flow stats task");
-        indigo_core_flow_stats_get_callback(INDIGO_ERROR_NONE, NULL, 
-                                            INDIGO_POINTER_TO_COOKIE(state));
+    if (state->reply->length > (1 << 15)) { /* Last object would get too big */
+        IND_CORE_MSG_SEND(state->cxn_id, state->reply);
+        state->reply = NULL;
     }
 }
 
@@ -1299,7 +1283,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_flow_stats_request_t *obj;
     of_meta_match_t query;
     struct ind_core_flow_stats_state *state;
-    struct ind_core_flow_stats_priv *priv;
     indigo_error_t rv;
 
     obj = (of_flow_stats_request_t *)_obj;
@@ -1322,25 +1305,19 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
-    state = INDIGO_MEM_ALLOC(sizeof(*state) + sizeof(*priv));
+    state = INDIGO_MEM_ALLOC(sizeof(*state));
     if (state == NULL) {
        LOG_ERROR("Failed to allocate flow stats state object.");
        of_object_delete(_obj);
        return INDIGO_ERROR_RESOURCE;
     }
 
-    state->finished_calls = 0;
-    state->expected_count = 0;
-    state->received_count = 0;
-    state->callback = ind_core_flow_stats_request_cb;
+    state->req = obj; /* ownership transferred */
+    state->cxn_id = cxn_id;
+    state->current_time = INDIGO_CURRENT_TIME;
+    state->reply = NULL;
 
-    priv = (struct ind_core_flow_stats_priv *)(state + 1);
-    priv->req = obj; /* ownership transferred */
-    priv->cxn_id = cxn_id;
-    priv->current_time = INDIGO_CURRENT_TIME;
-    priv->reply = NULL;
-
-    rv = ft_spawn_iter_task(ind_core_ft, &query, stats_iter_cb, 
+    rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter, 
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start flow stats iter.");
@@ -1377,7 +1354,7 @@ ind_core_echo_reply_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
 /****************************************************************/
 
-struct ind_core_aggregate_stats_priv {
+struct ind_core_aggregate_stats_state {
     uint64_t packets;
     uint64_t bytes;
     uint32_t flows;
@@ -1386,30 +1363,39 @@ struct ind_core_aggregate_stats_priv {
 };
 
 static void
-ind_core_aggregate_stats_request_cb(struct ind_core_flow_stats_state *state,
-                                    indigo_fi_flow_stats_t *flow_stats)
+ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
 {
-    struct ind_core_aggregate_stats_priv *priv = (struct ind_core_aggregate_stats_priv *)(state + 1);
+    struct ind_core_aggregate_stats_state *state = cookie;
+    indigo_error_t rv;
 
-    if (flow_stats != NULL) {
-        priv->bytes += flow_stats->bytes;
-        priv->packets += flow_stats->packets;
-        priv->flows += 1;
+    if (entry != NULL) {
+        indigo_fi_flow_stats_t flow_stats;
+        rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+        if (rv != INDIGO_ERROR_NONE) {
+            LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
+                      entry->id, rv);
+            return;
+        }
+
+        state->bytes += flow_stats.bytes;
+        state->packets += flow_stats.packets;
+        state->flows += 1;
     } else {
         uint32_t xid;
         of_aggregate_stats_reply_t* reply;
-        of_aggregate_stats_request_xid_get(priv->req, &xid);
-        reply = of_aggregate_stats_reply_new(priv->req->version);
+        of_aggregate_stats_request_xid_get(state->req, &xid);
+        reply = of_aggregate_stats_reply_new(state->req->version);
         if (reply != NULL) {
             of_aggregate_stats_reply_xid_set(reply, xid);
-            of_aggregate_stats_reply_byte_count_set(reply, priv->bytes);
-            of_aggregate_stats_reply_packet_count_set(reply, priv->packets);
-            of_aggregate_stats_reply_flow_count_set(reply, priv->flows);
-            IND_CORE_MSG_SEND(priv->cxn_id, reply);
+            of_aggregate_stats_reply_byte_count_set(reply, state->bytes);
+            of_aggregate_stats_reply_packet_count_set(reply, state->packets);
+            of_aggregate_stats_reply_flow_count_set(reply, state->flows);
+            IND_CORE_MSG_SEND(state->cxn_id, reply);
         } else {
             LOG_ERROR("Failed to allocate aggregate stats reply.");
         }
-        of_aggregate_stats_request_delete(priv->req);
+        of_aggregate_stats_request_delete(state->req);
+        INDIGO_MEM_FREE(state);
     }
 }
 
@@ -1426,8 +1412,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
 {
     of_aggregate_stats_request_t *obj;
     of_meta_match_t query;
-    struct ind_core_flow_stats_state *state;
-    struct ind_core_aggregate_stats_priv *priv;
+    struct ind_core_aggregate_stats_state *state;
     indigo_error_t rv;
 
     obj = (of_aggregate_stats_request_t *)_obj;
@@ -1450,26 +1435,20 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
-    state = INDIGO_MEM_ALLOC(sizeof(*state) + sizeof(*priv));
+    state = INDIGO_MEM_ALLOC(sizeof(*state));
     if (state == NULL) {
        LOG_ERROR("Failed to allocate flow stats state object.");
        of_object_delete(_obj);
        return INDIGO_ERROR_RESOURCE;
     }
 
-    state->finished_calls = 0;
-    state->expected_count = 0;
-    state->received_count = 0;
-    state->callback = ind_core_aggregate_stats_request_cb;
+    state->cxn_id = cxn_id;
+    state->req = obj; /* ownership transferred */
+    state->packets = 0;
+    state->bytes = 0;
+    state->flows = 0;
 
-    priv = (struct ind_core_aggregate_stats_priv *)(state + 1);
-    priv->cxn_id = cxn_id;
-    priv->req = obj; /* ownership transferred */
-    priv->packets = 0;
-    priv->bytes = 0;
-    priv->flows = 0;
-
-    rv = ft_spawn_iter_task(ind_core_ft, &query, stats_iter_cb,
+    rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start aggregate stats iter.");

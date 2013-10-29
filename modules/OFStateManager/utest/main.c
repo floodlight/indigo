@@ -126,12 +126,13 @@ indigo_fwd_flow_delete(indigo_cookie_t flow_id,
     AIM_LOG_VERBOSE("flow delete called\n");
 }
 
-void
-indigo_fwd_flow_stats_get(indigo_cookie_t flow_id,
-                          indigo_cookie_t cookie)
+indigo_error_t indigo_fwd_flow_stats_get(
+    indigo_cookie_t flow_id,
+    indigo_fi_flow_stats_t *flow_stats)
 {
     AIM_LOG_VERBOSE("flow stats get called\n");
-    /* @fixme make callback */
+    memset(flow_stats, 0, sizeof(*flow_stats));
+    return INDIGO_ERROR_NONE;
 }
 
 indigo_error_t

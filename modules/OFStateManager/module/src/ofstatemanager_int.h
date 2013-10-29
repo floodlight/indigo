@@ -79,15 +79,6 @@
 #define IND_CORE_MSG_SEND(cxn_id, obj) \
     indigo_cxn_send_controller_message(cxn_id, (of_object_t *)obj)
 
-
-typedef struct ind_core_flow_stats_state {
-    int finished_calls; /**< Boolean, have all the flow_stats_get calls been made. */
-    int expected_count; /**< Number of callbacks expected */
-    int received_count; /**< Number of callbacks received so far */
-    void (*callback)(struct ind_core_flow_stats_state *state,
-                     indigo_fi_flow_stats_t *flow_stats);
-} ind_core_flow_stats_state_t;
-
 /**
  * Local state manager configuration data
  * @li init_done Have values been initialized
