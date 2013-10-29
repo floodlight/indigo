@@ -849,7 +849,8 @@ ind_cxn_send_async_controller_message(of_object_t *obj)
     indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
 
     FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-        if (ind_cxn_accepts_async_message(cxn, obj)) {
+        if (ind_cxn_accepts_async_message(cxn, obj) &&
+            (cxn->status.negotiated_version == obj->version)) {
             if (first_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
                 first_cxn_id = cxn->cxn_id;
             } else {
