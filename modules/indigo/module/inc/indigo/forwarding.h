@@ -136,16 +136,18 @@ extern void indigo_fwd_table_mod(
 /**
  * @brief Table stats
  * @param table_stats_request The LOXI request
- * @param callback_cookie Passed to async response callback
+ * @param [out] table_stats_reply The LOXI reply
+ * @return Return code from operation
+ *
+ * This is a synchronous operation.
  *
  * Ownership of the table_stats_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_table_stats_get(
+extern indigo_error_t indigo_fwd_table_stats_get(
     of_table_stats_request_t *table_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_table_stats_reply_t **table_stats_reply);
 
 /**
  * @brief Packet out operation

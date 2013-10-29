@@ -193,21 +193,6 @@ extern void indigo_core_table_mod_callback(
     indigo_error_t result,
     indigo_cookie_t callback_cookie);
 
-/**
- * @brief Call for table stats
- * @param error Return code from operation
- * @param table_stats_reply LOCI response message populated by forwarding
- * @param callback_cookie Passed to async response callback
- *
- * The LOXI table_stats_reply object is created and populated by forwarding.
- * After the call, the state manager is the owner of the object.
- */
-
-extern void indigo_core_table_stats_get_callback(
-    indigo_error_t result,
-    of_table_stats_reply_t *table_stats_reply,
-    indigo_cookie_t callback_cookie);
-
 /****************************************************************
  * Asynchronous port callback functions
  ****************************************************************/

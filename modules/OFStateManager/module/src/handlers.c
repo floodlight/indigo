@@ -1543,57 +1543,31 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 indigo_error_t
 ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    of_table_stats_request_t *obj;
-    indigo_cookie_t cookie;
-    ptr_cxn_wrapper_t *ptr_cxn;
+    of_table_stats_request_t *obj = _obj;
+    of_table_stats_request_t *reply = NULL;
+    indigo_error_t rv;
 
-    LOG_TRACE("Handling of_table_stats_request message: %p.", _obj);
+    LOG_TRACE("Handling of_table_stats_request message.");
 
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, 0)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for port stats req");
-        of_object_delete(_obj);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
-    obj = (of_table_stats_request_t *)_obj;
-
-    indigo_fwd_table_stats_get(obj, cookie);
-
-    return INDIGO_ERROR_NONE;
-}
-
-void
-indigo_core_table_stats_get_callback(indigo_error_t result,
-                                     of_table_stats_reply_t *reply,
-                                     indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    indigo_cxn_id_t cxn_id;
-    int rv = OF_ERROR_UNKNOWN;
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    cxn_id = ptr_cxn->cxn_id;
-
-    LOG_TRACE("Table stats callback");
-
-    if (result != INDIGO_ERROR_NONE) {
-       LOG_ERROR("Table stats returned error");
-       goto done;
+    rv = indigo_fwd_table_stats_get(obj, &reply);
+    if (rv < 0) {
+        reply = NULL;
+        LOG_ERROR("Table stats returned error %d", rv);
+        goto done;
     }
 
     rv = IND_CORE_MSG_SEND(cxn_id, reply);
+    reply = NULL;
     if (rv < 0) {
-        LOG_ERROR("Error %d sending table_stats reply to %d", rv, cxn_id);
+        LOG_ERROR("Error %d sending table_stats reply to cxn %d", rv, cxn_id);
+        goto done;
     }
 
- done:
-    if (rv < 0)  of_table_stats_reply_delete(reply);
+done:
+    of_table_stats_reply_delete(reply);
+    of_table_stats_request_delete(obj);
 
-    of_table_stats_request_delete(ptr_cxn->req);
-    INDIGO_MEM_FREE(ptr_cxn);
+    return rv;
 }
 
 /****************************************************************/

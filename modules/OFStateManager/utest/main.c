@@ -104,16 +104,13 @@ indigo_fwd_flow_create(indigo_cookie_t flow_id,
 }
 
 
-void
+indigo_error_t
 indigo_fwd_table_stats_get(of_table_stats_request_t *request,
-                           indigo_cookie_t cookie)
+                           of_table_stats_reply_t **reply)
 {
-    of_table_stats_reply_t *reply;
-
     AIM_LOG_VERBOSE("table stats get called\n");
-    reply = of_table_stats_reply_new(request->version);
-    indigo_core_table_stats_get_callback(INDIGO_ERROR_NONE, reply, cookie);
-    of_table_stats_request_delete(request);
+    *reply = of_table_stats_reply_new(request->version);
+    return INDIGO_ERROR_NONE;
 }
 
 indigo_error_t delete_error = INDIGO_ERROR_NONE;
