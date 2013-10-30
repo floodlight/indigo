@@ -40,21 +40,20 @@
  * @param hard_timeout The hard_timeout, from the original add
  * @param cookie The cookie, from the original or as updated
  * @param effects The actions or instructions from the add or as updated.
- * See below.  May not be maintained by all implementations.
- * @param output_ports The list of output ports for the action for searching
+ * See below.
  * @param insert_time The timestamp when the entry was inserted
  * @param packets Number of packets matched by the entry
  * @param bytes Number of bytes matched by the entry
- * @param last_counter_update When counters were last checked
  * @param last_counter_change Last update when counters changed
  * @param table_links For iterating across the flow table
  * @param prio_links Search by priority
  * @param match_links Search by strict match
  * @param flow_id_links Search by flow id
  *
- * The version of the entry is determined by the value in the match
- * structure.  This is used in determining whether actions or instructions
- * are active.
+ * The effects (actions or instructions) are tied to a specific OpenFlow
+ * version. For example, a flow may be added using OpenFlow 1.0 but
+ * modified using OpenFlow 1.3. Either union member may be used to check
+ * the version and LOCI object type.
  *
  * The match, priority, timeouts and flags are invariant once the entry
  * has been added to the table.  The cookie and effects may be updated by
@@ -103,9 +102,6 @@ typedef struct ft_entry_s {
 
 #define FT_ENTRY_CONTAINER(links_ptr, type)             \
     container_of((links_ptr), type ## _links, ft_entry_t)
-
-/* Simple deferencing macro for OF 1.0 actions */
-#define FT_FLOW_ACTIONS(entry) ((entry)->effects.actions)
 
 /***** MATCHING *****/
 
