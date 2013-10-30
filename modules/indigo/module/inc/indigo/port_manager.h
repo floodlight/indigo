@@ -168,16 +168,18 @@ extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
 /**
  * @brief Process an OF port status request
  * @param port_stats_request The LOXI request message
- * @param callback_cookie Instance data returned to callback
+ * @param [out] port_stats_reply The LOXI reply message
+ * @return Return code from operation
+ *
+ * This is a synchronous call.
  *
  * Ownership of the port_stats_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete the this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_stats_get(
+extern indigo_error_t indigo_port_stats_get(
     of_port_stats_request_t *port_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_port_stats_reply_t **port_stats_reply);
 
 /**
  * @brief Process an OF queue config request

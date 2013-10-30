@@ -204,48 +204,15 @@ ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 indigo_error_t
 ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    of_port_stats_request_t *obj;
-    indigo_cookie_t cookie;
-    ptr_cxn_wrapper_t *ptr_cxn;
-
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, 0)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for port stats req");
-        of_object_delete(_obj);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
-
-    obj = (of_port_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_port_stats_request message: %p.", obj);
-
-    indigo_port_stats_get(obj, cookie);
-
-    return INDIGO_ERROR_NONE;
-}
-
-
-void
-indigo_core_port_stats_get_callback(indigo_error_t result,
-                                    of_port_stats_reply_t *reply,
-                                    indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    indigo_cxn_id_t cxn_id;
-    int rv;
-    of_port_stats_request_t *obj;
+    of_port_stats_request_t *obj = _obj;
+    of_port_stats_reply_t *reply;
+    indigo_error_t rv;
     uint32_t xid = 0;
 
-    if (!ind_core_init_done) {
-        return;
-    }
+    LOG_TRACE("Handling of_port_stats_request message.");
 
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    obj = (of_port_stats_request_t *)ptr_cxn->req;
-    cxn_id = ptr_cxn->cxn_id;
-
-    LOG_TRACE("Port stats callback for cxn %d", cxn_id);
-
-    if (result == INDIGO_ERROR_NONE) {
+    rv = indigo_port_stats_get(obj, &reply);
+    if (rv == INDIGO_ERROR_NONE) {
         /* Set the XID to match the request */
         of_port_stats_request_xid_get(obj, &xid);
         of_port_stats_reply_xid_set(reply, xid);
@@ -254,7 +221,7 @@ indigo_core_port_stats_get_callback(indigo_error_t result,
             LOG_ERROR("Error %d sending port_stats_get reply to %d", rv, cxn_id);
         }
     } else {
-        LOG_ERROR("Received error %d from port stats get callback", result);
+        LOG_ERROR("Received error %d from port stats get callback", rv);
         /* @todo sending type 0, code 0 error message */
         if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
@@ -264,7 +231,8 @@ indigo_core_port_stats_get_callback(indigo_error_t result,
     }
 
     of_port_stats_request_delete(obj);
-    INDIGO_MEM_FREE(ptr_cxn);
+
+    return rv;
 }
 
 /****************************************************************/
