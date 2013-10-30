@@ -186,12 +186,11 @@ ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
     return INDIGO_ERROR_NONE;
 }
 
-void
-indigo_port_modify(of_port_mod_t *port_mod,
-                   indigo_cookie_t cookie)
+indigo_error_t
+indigo_port_modify(of_port_mod_t *port_mod)
 {
     AIM_LOG_VERBOSE("port mod called\n");
-    indigo_core_port_modify_callback(INDIGO_ERROR_NONE, cookie);
+    return INDIGO_ERROR_NONE;
 }
 
 void

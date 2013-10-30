@@ -167,56 +167,29 @@ ind_core_packet_out_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 indigo_error_t
 ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    ptr_cxn_wrapper_t *ptr_cxn;
-    of_port_mod_t *obj;
-    indigo_cookie_t cookie;
+    of_port_mod_t *obj = _obj;
+    indigo_error_t rv;
 
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, 0)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for port mod");
-        of_object_delete(_obj);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
+    LOG_TRACE("Handling of_port_mod message.");
 
-    obj = (of_port_mod_t *)_obj;
-    LOG_TRACE("Handling of_port_mod message: %p.", obj);
+    rv = indigo_port_modify(obj);
 
-    indigo_port_modify(obj, cookie);
-
-    return INDIGO_ERROR_NONE;
-}
-
-
-void
-indigo_core_port_modify_callback(indigo_error_t result,
-                                 indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    of_port_mod_t *obj;
-
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    LOG_TRACE("Port modify callback with result %d", result);
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    obj = (of_port_mod_t *)ptr_cxn->req;
-
-    if (result != INDIGO_ERROR_NONE) {
+    if (rv != INDIGO_ERROR_NONE) {
         of_version_t ver = obj->version;
         uint32_t xid = 0;
 
-        LOG_ERROR("Received error %d from port modify callback", result);
+        LOG_ERROR("Port modify failed: %d", rv);
         of_port_mod_xid_get(obj, &xid);
-        if (ind_core_send_error_msg(ver, ptr_cxn->cxn_id, xid,
+        if (ind_core_send_error_msg(ver, cxn_id, xid,
                 OF_ERROR_TYPE_PORT_MOD_FAILED_BY_VERSION(ver),
                 OF_PORT_MOD_FAILED_BAD_PORT, obj, NULL) < 0) {
             LOG_ERROR("Error sending port mod error message");
         }
     }
 
-    of_port_mod_delete((of_port_mod_t *) ptr_cxn->req);
-    INDIGO_MEM_FREE(ptr_cxn);
+    of_port_mod_delete(obj);
+
+    return rv;
 }
 
 /****************************************************************/

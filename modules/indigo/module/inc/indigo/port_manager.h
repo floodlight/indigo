@@ -155,16 +155,15 @@ void indigo_port_interface_list_destroy(indigo_port_info_t* list);
 /**
  * @brief Process an OF port modification request
  * @param port_mod The LOXI modification message
- * @param callback_cookie Instance data returned to callback
+ * @return Return code from operation
+ *
+ * This is a synchronous call.
  *
  * Ownership of the port_mod LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_modify(
-    of_port_mod_t *port_mod,
-    indigo_cookie_t callback_cookie);
+extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
 
 /**
  * @brief Process an OF port status request
