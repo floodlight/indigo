@@ -26,9 +26,6 @@
  * module. This includes configuration as well as fi (forwarding interface)
  * functions.
  *
- * Unless otherwise noted, calls in this file are asynchronous.  This is
- * indicated by a void return type.
- *
  * @{
  */
 
@@ -51,8 +48,6 @@ extern "C" {
  *
  * Fill out a features reply message for the forwarding information.
  *
- * This is a synchronous call.
- *
  * Ownership of the features_reply LOXI object is maintained by the
  * caller (OF state manager).
  */
@@ -66,8 +61,6 @@ extern indigo_error_t indigo_fwd_forwarding_features_get(
  * @param [out] table_id Table inserted into
  *
  * Create a flow for the forwarding engine.
- *
- * This is a synchronous call.
  *
  * Ownership of the flow_add LOXI object is maintained by the
  * caller (OF state manager).
@@ -101,8 +94,6 @@ extern indigo_error_t indigo_fwd_flow_modify(
  * @param [out] flow_stats Statistics for flow
  *
  * Delete a flow from the forwarding engine.
- *
- * This is a synchronous operation.
  */
 
 extern indigo_error_t indigo_fwd_flow_delete(
@@ -113,8 +104,6 @@ extern indigo_error_t indigo_fwd_flow_delete(
  * @brief Flow stats
  * @param flow_id The ID of the flow whose stats are to be retrieved
  * @param [out] flow_stats Statistics for flow
- *
- * This is a synchronous operation.
  *
  * Get the stats structure from an existing flow. The flow_stats object MUST
  * contain the flow ID.
@@ -130,8 +119,6 @@ extern indigo_error_t indigo_fwd_flow_stats_get(
  * @param [out] table_stats_reply The LOXI reply
  * @return Return code from operation
  *
- * This is a synchronous operation.
- *
  * Ownership of the table_stats_request LOXI object is maintained by the
  * caller (OF state manager).
  */
@@ -144,8 +131,6 @@ extern indigo_error_t indigo_fwd_table_stats_get(
  * @brief Packet out operation
  * @param packet_out The LOXI packet out message
  *
- * This is a synchronous operation.
- *
  * Ownership of the packet_out LOXI object is maintained by the
  * caller (OF state manager).
  */
@@ -157,8 +142,6 @@ extern indigo_error_t indigo_fwd_packet_out(
  * @brief Experimenter (vendor) extension
  * @param experimenter The message from the controller
  * @param cxn_id Connection ID on which the message arrived
- *
- * This is a synchronous function.
  *
  * Ownership of the experimenter LOXI object is maintained by the
  * caller (OF state manager).

@@ -56,8 +56,6 @@ typedef struct indigo_port_config_s {
  * @brief Handle a features get request
  * @param features The features reply message to be filled out
  *
- * This is a synchronous call.
- *
  * Ownership of the features object is maintained by the caller
  */
 extern indigo_error_t indigo_port_features_get(
@@ -68,8 +66,6 @@ extern indigo_error_t indigo_port_features_get(
  * @brief Handle a port_desc_stats get request
  * @param port_desc_stats_reply The port_desc_stats_reply reply message 
  * to be filled out
- *
- * This is a synchronous call.
  *
  * Ownership of the port_desc_stats_reply object is maintained by the caller
  */
@@ -157,8 +153,6 @@ void indigo_port_interface_list_destroy(indigo_port_info_t* list);
  * @param port_mod The LOXI modification message
  * @return Return code from operation
  *
- * This is a synchronous call.
- *
  * Ownership of the port_mod LOXI object is maintained by the
  * caller (OF state manager).
  */
@@ -170,8 +164,6 @@ extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
  * @param port_stats_request The LOXI request message
  * @param [out] port_stats_reply The LOXI reply message
  * @return Return code from operation
- *
- * This is a synchronous call.
  *
  * Ownership of the port_stats_request LOXI object is maintained by the
  * caller (OF state manager).
@@ -186,8 +178,6 @@ extern indigo_error_t indigo_port_stats_get(
  * @param queue_config_request The LOXI request message
  * @param [out] queue_config_reply The LOXI reply message
  * @return Return code from operation
- *
- * This is a synchronous call.
  *
  * Ownership of the queue_config_request LOXI object is maintained by the
  * caller (OF state manager).
@@ -217,8 +207,6 @@ extern indigo_error_t indigo_port_queue_stats_get(
  * @brief Experimenter (vendor) extension
  * @param experimenter The message from the controller
  * @param cxn_id Connection ID on which the message arrived
- *
- * This is a synchronous function.
  *
  * Ownership of the experimenter LOXI object is maintained by the
  * caller (OF state manager).
