@@ -44,7 +44,8 @@ static void flow_expiration_timer(void *cookie);
 
 static void
 process_flow_removal(ft_entry_t *entry,
-                     indigo_fi_flow_stats_t *final_stats);
+                     indigo_fi_flow_stats_t *final_stats,
+                     indigo_fi_flow_removed_t reason);
 
 /**
  * @brief Core configuration for the module
@@ -132,16 +133,17 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
  */
 
 static void
-send_flow_removed_message(ft_entry_t *entry)
+send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 {
     of_flow_removed_t *msg;
     int rv = 0;
     uint32_t secs;
     uint32_t nsecs;
     indigo_time_t current;
-    indigo_fi_flow_removed_t reason;
 
     current = INDIGO_CURRENT_TIME;
+
+    /* TODO get version from OFConnectionManager */
     if ((msg = of_flow_removed_new(entry->match.version)) == NULL) {
         return;
     }
@@ -168,7 +170,6 @@ send_flow_removed_message(ft_entry_t *entry)
         return;
     }
 
-    reason = entry->removed_reason;
     if (reason > INDIGO_FLOW_REMOVED_DELETE) {
         /* Normalize entry */
         reason = INDIGO_FLOW_REMOVED_DELETE;
@@ -513,9 +514,6 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats;
 
-    /* Set flow removed reason */
-    ft_entry_mark_deleted(ind_core_ft, entry, reason);
-
     /* If the flow was stable, notify forwarding; final cleanup occurs in
      * flow deleted callback. */
     LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
@@ -528,7 +526,7 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
         /* Ignoring failure */
     }
 
-    process_flow_removal(entry, &flow_stats);
+    process_flow_removal(entry, &flow_stats, reason);
 }
 
 /**
@@ -537,13 +535,14 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
 
 static void
 process_flow_removal(ft_entry_t *entry,
-                     indigo_fi_flow_stats_t *final_stats)
+                     indigo_fi_flow_stats_t *final_stats,
+                     indigo_fi_flow_removed_t reason)
 {
     indigo_error_t rv;
 
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */
-        if (entry->removed_reason != INDIGO_FLOW_REMOVED_OVERWRITE) {
+        if (reason != INDIGO_FLOW_REMOVED_OVERWRITE) {
             if (final_stats != NULL) {
                 INDIGO_ASSERT(final_stats->flow_id == entry->id);
                 entry->packets = final_stats->packets;
@@ -553,7 +552,7 @@ process_flow_removal(ft_entry_t *entry,
                 entry->bytes = (uint64_t)-1;
             }
 
-            send_flow_removed_message(entry);
+            send_flow_removed_message(entry, reason);
         }
     }
 
@@ -597,8 +596,7 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
         return;
     }
 
-    entry->removed_reason = reason;
-    process_flow_removal(entry, stats);
+    process_flow_removal(entry, stats, reason);
 }
 
 #define CORE_EXPIRES_FLOWS(_cfg) \

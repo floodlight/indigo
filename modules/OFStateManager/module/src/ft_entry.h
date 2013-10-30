@@ -34,7 +34,6 @@
  * The data in a flow table entry
  *
  * @param id The externally determined flow ID; primary key
- * @param delete_reason Why deleted; see below
  * @param match The match structure recorded from the original add
  * @param priority The priority, from the original add
  * @param idle_timeout The idle_timeout, from the original add
@@ -65,9 +64,6 @@
 typedef struct ft_entry_s {
     /* Key */
     indigo_flow_id_t     id;
-
-    /* Reason why flow was deleted */
-    indigo_fi_flow_removed_t removed_reason;
 
     /* Invariant */
     of_match_t match;

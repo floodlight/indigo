@@ -206,8 +206,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
 indigo_error_t
 ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
-    LOG_TRACE("Delete rsn %d flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
-              entry->removed_reason, entry->id);
+    LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
 
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
@@ -339,13 +338,6 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
     }
 
     return rv;
-}
-
-void
-ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
-                      indigo_fi_flow_removed_t reason)
-{
-    entry->removed_reason = reason;
 }
 
 indigo_error_t
