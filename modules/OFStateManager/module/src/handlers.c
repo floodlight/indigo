@@ -1314,7 +1314,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
     of_flow_stats_request_table_id_get(obj, &(query.table_id));
-
     if (obj->version >= OF_VERSION_1_1) {
         of_flow_stats_request_cookie_get(obj, &query.cookie);
         of_flow_stats_request_cookie_mask_get(obj, &query.cookie_mask);
