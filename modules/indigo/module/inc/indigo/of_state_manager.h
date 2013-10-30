@@ -120,21 +120,6 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
  ****************************************************************/
 
 /**
- * @brief Callback for queue config get
- * @param error Return code from operation
- * @param queue_config_reply OF message reply
- * @param callback_cookie Passed to async response callback
- *
- * The LOXI queue_config_reply object is created and populated by port_manager.
- * After the call, the state manager is the owner of the object.
- */
-
-extern void indigo_core_queue_config_get_callback(
-    indigo_error_t result,
-    of_queue_get_config_reply_t *queue_config_reply,
-    indigo_cookie_t callback_cookie);
-
-/**
  * @brief Callback for queue stats get
  * @param error Return code from operation
  * @param queue_stats_reply OF message reply

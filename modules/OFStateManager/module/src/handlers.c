@@ -248,69 +248,40 @@ indigo_error_t
 ind_core_queue_get_config_request_handler(of_object_t *_obj,
                                           indigo_cxn_id_t cxn_id)
 {
-    of_queue_get_config_request_t *obj = (of_queue_get_config_request_t *)_obj;
-    indigo_cookie_t cookie;
-    ptr_cxn_wrapper_t *ptr_cxn;
-
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, 0)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for queue config req");
-        of_object_delete(_obj);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
-
-    LOG_TRACE("Handling of_queue_get_config_request message: %p.", obj);
-    indigo_port_queue_config_get(obj, cookie);
-
-    return INDIGO_ERROR_NONE;
-}
-
-
-void
-indigo_core_queue_config_get_callback(indigo_error_t result,
-                                      of_queue_get_config_reply_t *reply,
-                                      indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    indigo_cxn_id_t cxn_id;
-    int rv;
-    of_queue_get_config_request_t *request;
+    of_queue_get_config_request_t *obj = _obj;
+    of_queue_get_config_reply_t *reply;
+    indigo_error_t rv;
     uint32_t xid;
 
-    if (!ind_core_init_done) {
-        return;
-    }
+    of_queue_get_config_request_xid_get(obj, &xid);
 
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    request = (of_queue_get_config_request_t *)ptr_cxn->req;
-    cxn_id = ptr_cxn->cxn_id;
-    of_queue_get_config_request_xid_get(request, &xid);
+    LOG_TRACE("Handling of_queue_get_config_request message.");
 
-    LOG_TRACE("Queue config callback");
-
-    if (result == INDIGO_ERROR_NONE) {
+    rv = indigo_port_queue_config_get(obj, &reply);
+    if (rv == INDIGO_ERROR_NONE) {
         of_port_no_t port;
 
         of_queue_get_config_reply_xid_set(reply, xid);
 
-        of_queue_get_config_request_port_get(request, &port);
+        of_queue_get_config_request_port_get(obj, &port);
         of_queue_get_config_reply_port_set(reply, port);
 
         if ((rv = IND_CORE_MSG_SEND(cxn_id, reply)) < 0) {
             LOG_ERROR("Error %d sending port_stats_get reply to %d", rv, cxn_id);
         }
     } else {
-        LOG_ERROR("Received error %d from queue config get callback", result);
+        LOG_ERROR("Received error %d from queue config get callback", rv);
         /* @todo sending type 0, code 0 error message */
-        if (indigo_cxn_send_error_msg(request->version, cxn_id, xid,
+        if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
             LOG_ERROR("Error sending error message for queue config get msg, "
                       "cxn id %d", cxn_id);
         }
     }
 
-    of_queue_get_config_request_delete(request);
-    INDIGO_MEM_FREE(ptr_cxn);
+    of_queue_get_config_request_delete(obj);
+
+    return rv;
 }
 
 /****************************************************************/

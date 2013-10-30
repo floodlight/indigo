@@ -184,16 +184,18 @@ extern indigo_error_t indigo_port_stats_get(
 /**
  * @brief Process an OF queue config request
  * @param queue_config_request The LOXI request message
- * @param callback_cookie Instance data returned to callback
+ * @param [out] queue_config_reply The LOXI reply message
+ * @return Return code from operation
+ *
+ * This is a synchronous call.
  *
  * Ownership of the queue_config_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete the this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_queue_config_get(
+extern indigo_error_t indigo_port_queue_config_get(
     of_queue_get_config_request_t *queue_config_request,
-    indigo_cookie_t callback_cookie);
+    of_queue_get_config_reply_t **queue_config_reply);
 
 
 /**
