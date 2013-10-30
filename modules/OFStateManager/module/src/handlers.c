@@ -1202,6 +1202,14 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         return;
     }
 
+    /* Skip entry if stats request version is not equal to entry version */
+    if (priv->req->version != entry->effects.actions->version) {
+        LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
+                  "Entry is skipped.",
+                  priv->req->version, entry->effects.actions->version);
+        return;
+    }
+
     /* TODO use time from flow_stats? */
     calc_duration(priv->current_time, entry->insert_time, &secs, &nsecs);
 
@@ -1306,6 +1314,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
     of_flow_stats_request_table_id_get(obj, &(query.table_id));
+
     if (obj->version >= OF_VERSION_1_1) {
         of_flow_stats_request_cookie_get(obj, &query.cookie);
         of_flow_stats_request_cookie_mask_get(obj, &query.cookie_mask);
