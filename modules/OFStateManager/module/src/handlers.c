@@ -1202,6 +1202,14 @@ ind_core_flow_stats_request_cb(struct ind_core_flow_stats_state *state,
         return;
     }
 
+    /* Skip entry if stats request version is not equal to entry version */
+    if (priv->req->version != entry->effects.actions->version) {
+        LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
+                  "Entry is skipped.",
+                  priv->req->version, entry->effects.actions->version);
+        return;
+    }
+
     /* TODO use time from flow_stats? */
     calc_duration(priv->current_time, entry->insert_time, &secs, &nsecs);
 
