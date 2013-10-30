@@ -82,20 +82,18 @@ extern indigo_error_t indigo_fwd_flow_create(
  * @brief Modify an existing flow.
  * @param flow_id Flow identifier
  * @param flow_modify The original LOCI message indicating the modification
- * @param callback_cookie Passed to async response callback
+ * @return Return code from operation
  *
  * @fixme Consider adding parameters to indicate modification that
  * should be done:  modify_effects, modify_cookie or clear_counters.
  *
  * Ownership of the flow_modify LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_flow_modify(
+extern indigo_error_t indigo_fwd_flow_modify(
     indigo_cookie_t flow_id,
-    of_flow_modify_t *flow_modify,
-    indigo_cookie_t callback_cookie);
+    of_flow_modify_t *flow_modify);
 
 /**
  * @brief Flow delete

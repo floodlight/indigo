@@ -510,7 +510,6 @@ void
 ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
                            of_object_t *obj, indigo_cxn_id_t cxn_id)
 {
-    enum ft_flow_state prev_state = entry->state;
     of_object_t *dup = NULL;
     ptr_cxn_wrapper_t *ptr_cxn;
 
@@ -535,30 +534,17 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
         return;
     }
 
+    INDIGO_ASSERT(FT_FLOW_STATE_IS_STABLE(entry->state));
+
     /* Sets flow state to DELETE_MARKED */
     ft_entry_mark_deleted(ind_core_ft, entry, reason);
 
     /* If the flow was stable, notify forwarding; final cleanup occurs in
      * flow deleted callback. */
-    if (FT_FLOW_STATE_IS_STABLE(prev_state)) {
-        LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-        entry->state = FT_FLOW_STATE_DELETING;
-        indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(ptr_cxn));
-    } else {
-        /* Clear existing queued modify requests */
-        biglist_t *ble;
-        BIGLIST_FOREACH(ble, entry->queued_reqs) {
-            ptr_cxn_wrapper_t *ptr_cxn = BIGLIST_CAST(ptr_cxn_wrapper_t *, ble);
-            of_object_delete(ptr_cxn->req);
-            INDIGO_MEM_FREE(ptr_cxn);
-        }
-        biglist_free(entry->queued_reqs);
-        entry->queued_reqs = NULL;
-
-        /* indigo_fwd_flow_delete will be called by queued_req_service */
-        entry->queued_reqs = biglist_append(entry->queued_reqs, ptr_cxn);
-    }
+    LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
+              INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+    entry->state = FT_FLOW_STATE_DELETING;
+    indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(ptr_cxn));
 }
 
 /**
@@ -570,7 +556,6 @@ process_flow_removal(ft_entry_t *entry,
                      indigo_fi_flow_stats_t *final_stats)
 {
     indigo_error_t rv;
-    biglist_t      *ble;
 
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */
@@ -588,11 +573,6 @@ process_flow_removal(ft_entry_t *entry,
         }
     }
 
-    /* Delete the entry from the local table */
-    BIGLIST_FOREACH(ble, entry->queued_reqs) {
-       INDIGO_MEM_FREE(BIGLIST_CAST(void *, ble));
-    }
-    entry->queued_reqs = NULL;
     rv = ft_delete(ind_core_ft, entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow from state mgr. id: "

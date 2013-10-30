@@ -120,22 +120,6 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
  ****************************************************************/
 
 /**
- * @brief Callback for flow modify
- * @param error Return code from operation
- * @param flow_stats (optional) Stats from the flow if supported
- * @param callback_cookie Passed to async response callback
- *
- * The implementation of this function MUST check that flow_stats is
- * not NULL before dereferencing the pointer.  Not all implementations
- * will support sending flow stats back after a modify.
- */
-
-extern void indigo_core_flow_modify_callback(
-    indigo_error_t result,
-    indigo_fi_flow_stats_t *flow_stats,
-    indigo_cookie_t callback_cookie);
-
-/**
  * @brief Callback for flow delete
  * @param error Return code from operation
  * @param flow_stats Pointer to final statistics for flow;

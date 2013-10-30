@@ -31,22 +31,11 @@
  *
  * Indicates the state in the flow table of a flow entry.
  *
- * Due to the async nature of flow table modifications, we maintain
- * these states for each flow.  Note that if a flow is deleted while
- * an operation is outstanding for that flow, we must queue the operation
- * until it has completed.  If a delete operation occurs on a flow, we
- * ignore further operations on that flow, wait for any pending operation
- * to complete and then remove any other queued operations.
- *
  * Once a flow enters the DELETE_MARKED or DELETING states it will be ignored
  * by queries. The original intention was for flow stats queries, flow-adds,
  * etc following a flow-delete to behave as if the flow were already deleted.
  * However, this is not guaranteed by OpenFlow and is broken by the long
  * running task implementation of flow deletion.
- *
- * There are still some corner cases; for example, if a queued operation
- * would have failed, but a later delete operation occurs, no error
- * message will be generated for the op that would have failed.
  *
  * States:
  *
@@ -61,13 +50,12 @@
  *
  * NEW -> CREATED (indigo_core_flow_create_callback)
  * CREATED -> MODIFYING (ind_core_flow_modify_handler,
- *                       ind_core_flow_modify_strict_handler,
- *                       queued_req_service)
+ *                       ind_core_flow_modify_strict_handler)                       )
  * MODIFYING -> CREATED (indigo_core_flow_modify_callback)
  * NEW -> DELETE_MARKED (ind_core_flow_entry_delete)
  * CREATED -> DELETE_MARKED (ind_core_flow_entry_delete)
  * MODIFYING -> DELETE_MARKED (ind_core_flow_entry_delete)
- * DELETE_MARKED -> DELETING (ind_core_flow_entry_delete, queued_req_service)
+ * DELETE_MARKED -> DELETING (ind_core_flow_entry_delete)
  */
 
 enum ft_flow_state {
@@ -126,21 +114,6 @@ typedef struct ft_entry_s {
 
     /* Reason why flow was deleted */
     indigo_fi_flow_removed_t removed_reason;
-
-    /* Queue of pending requests from controller for flow.
-       In practice, this queue will only hold either:
-       (1) a sequence of modify requests, or
-       (2) a single delete request.
-       Rationale:
-       - Create requests can't be queued (they create *new* flows)
-       - Modify requests must be queued, since the state of a flow must be
-         that of the last successful modify request
-       - Delete requests can short-circuit any pending modifies; there's no
-         point in doing a modify on a flow that you know is going to go away
-         (Minor point: if any short-circuited modify would have generated an
-         error message, that error message will not be generated)
-     */
-    biglist_t *queued_reqs;
 
     /* Invariant */
     of_match_t match;

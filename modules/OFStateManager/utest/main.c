@@ -76,16 +76,12 @@
 /****************************************************************
  * Stubs
  ****************************************************************/
-void
+indigo_error_t
 indigo_fwd_flow_modify(indigo_cookie_t flow_id,
-                       of_flow_modify_t *flow_modify,
-                       indigo_cookie_t cookie)
+                       of_flow_modify_t *flow_modify)
 {
-    indigo_fi_flow_stats_t flow_stats;
-
-    flow_stats.flow_id = flow_id;
     AIM_LOG_VERBOSE("flow modify called\n");
-    indigo_core_flow_modify_callback(INDIGO_ERROR_NONE, &flow_stats, cookie);
+    return INDIGO_ERROR_NONE;
 }
 
 indigo_error_t create_error = INDIGO_ERROR_NONE;

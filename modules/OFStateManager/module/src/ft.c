@@ -641,7 +641,6 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     entry->id = id;
 
     entry->state = FT_FLOW_STATE_NEW;
-    entry->queued_reqs = NULL;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
         INDIGO_MEM_FREE(entry);
         return INDIGO_ERROR_UNKNOWN;
@@ -683,8 +682,6 @@ ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = NULL;
     }
-
-    biglist_free(entry->queued_reqs);
 
     /* If entry was being deleted, pending deletes gets decremented */
     if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
