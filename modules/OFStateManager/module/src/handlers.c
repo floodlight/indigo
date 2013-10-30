@@ -296,49 +296,17 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
 indigo_error_t
 ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    of_queue_stats_request_t *obj;
-    indigo_cookie_t cookie;
-    ptr_cxn_wrapper_t *ptr_cxn;
-
-    obj = (of_queue_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_queue_stats_request message: %p.", obj);
-
-    if ((ptr_cxn = setup_ptr_cxn(_obj, NULL, cxn_id, 0)) == NULL) {
-        LOG_ERROR("Could not alloc transfer data for queue stats req");
-        of_object_delete(_obj);
-        return INDIGO_ERROR_RESOURCE;
-    }
-    cookie = INDIGO_POINTER_TO_COOKIE(ptr_cxn);
-
-    /* Handle object of type of_queue_stats_request_t */
-    indigo_port_queue_stats_get(obj, cookie);
-
-    return INDIGO_ERROR_NONE;
-}
-
-void
-indigo_core_queue_stats_get_callback(indigo_error_t result,
-                                     of_queue_stats_reply_t *reply,
-                                     indigo_cookie_t cookie)
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    indigo_cxn_id_t cxn_id;
-    int rv;
-    of_queue_stats_request_t* obj;
+    of_queue_stats_request_t *obj = _obj;
+    of_queue_stats_reply_t *reply;
     uint32_t xid;
+    indigo_error_t rv;
 
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    obj = ptr_cxn->req;
-    cxn_id = ptr_cxn->cxn_id;
     of_queue_stats_request_xid_get(obj, &xid);
 
-    LOG_TRACE("Queue stats callback");
+    LOG_TRACE("Handling of_queue_stats_request message");
 
-    if (result == INDIGO_ERROR_NONE) {
+    rv = indigo_port_queue_stats_get(obj, &reply);
+    if (rv == INDIGO_ERROR_NONE) {
         /* Set the XID to match the request */
         of_queue_stats_reply_xid_set(reply, xid);
 
@@ -347,7 +315,7 @@ indigo_core_queue_stats_get_callback(indigo_error_t result,
             of_queue_stats_reply_delete(reply);
         }
     } else {
-        LOG_ERROR("Received error %d from queue stats get callback", result);
+        LOG_ERROR("Received error %d from queue stats get callback", rv);
         /* @todo sending type 0, code 0 error message */
         if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
@@ -356,8 +324,9 @@ indigo_core_queue_stats_get_callback(indigo_error_t result,
         }
     }
 
-    of_queue_stats_request_delete(ptr_cxn->req);
-    INDIGO_MEM_FREE(ptr_cxn);
+    of_queue_stats_request_delete(obj);
+
+    return rv;
 }
 
 /****************************************************************/

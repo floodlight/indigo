@@ -211,15 +211,14 @@ indigo_port_queue_config_get(of_queue_get_config_request_t *request,
 }
 
 
-void
+indigo_error_t
 indigo_port_queue_stats_get(of_queue_stats_request_t *request,
-                            indigo_cookie_t cookie)
+                            of_queue_stats_reply_t **reply_ptr)
 {
-    of_queue_stats_reply_t *reply;
 
     AIM_LOG_VERBOSE("queue stats get called\n");
-    reply = of_queue_stats_reply_new(request->version);
-    indigo_core_queue_stats_get_callback(INDIGO_ERROR_NONE, reply, cookie);
+    *reply_ptr = of_queue_stats_reply_new(request->version);
+    return INDIGO_ERROR_NONE;
 }
 
 

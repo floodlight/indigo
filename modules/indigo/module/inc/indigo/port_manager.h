@@ -208,9 +208,9 @@ extern indigo_error_t indigo_port_queue_config_get(
  * object until the callback is made.
  */
 
-extern void indigo_port_queue_stats_get(
+extern indigo_error_t indigo_port_queue_stats_get(
     of_queue_stats_request_t *queue_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_queue_stats_reply_t **queue_stats_reply);
 
 
 /**
