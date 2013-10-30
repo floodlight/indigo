@@ -98,15 +98,16 @@ extern indigo_error_t indigo_fwd_flow_modify(
 /**
  * @brief Flow delete
  * @param flow_id Flow identifier
- * @param callback_cookie Passed to async response callback
+ * @param [out] flow_stats Statistics for flow
  *
- * Delete a flow from the forwarding engine.  Final stats are returned to
- * the state manager via the response callback.
+ * Delete a flow from the forwarding engine.
+ *
+ * This is a synchronous operation.
  */
 
-extern void indigo_fwd_flow_delete(
+extern indigo_error_t indigo_fwd_flow_delete(
     indigo_cookie_t flow_id,
-    indigo_cookie_t callback_cookie);
+    indigo_fi_flow_stats_t *flow_stats);
 
 /**
  * @brief Flow stats

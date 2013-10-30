@@ -120,22 +120,6 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
  ****************************************************************/
 
 /**
- * @brief Callback for flow delete
- * @param error Return code from operation
- * @param flow_stats Pointer to final statistics for flow;
- * @param callback_cookie Passed to async response callback
- *
- * The flow_stats object is owned by forwarding after the call
- *
- * The flow_stats object MUST contain the flow ID of the modified flow
- */
-
-extern void indigo_core_flow_delete_callback(
-    indigo_error_t result,
-    indigo_fi_flow_stats_t *flow_stats,
-    indigo_cookie_t callback_cookie);
-
-/**
  * @brief Callback for modify table properties
  * @param error Return code from operation
  * @param callback_cookie Passed to async response callback

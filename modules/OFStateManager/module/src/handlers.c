@@ -583,8 +583,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Delete existing flow if any */
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE,
-                                   _obj, cxn_id);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
     }
 
     /* No match found, add as normal */
@@ -832,7 +831,7 @@ delete_iter_cb(void *cookie, ft_entry_t *entry)
 
     if (entry != NULL) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE,
-                                   state->request, state->cxn_id);
+                                   state->cxn_id);
     } else {
         LOG_TRACE("Finished flow delete task");
         of_object_delete(state->request);
@@ -914,8 +913,7 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE,
-                                   _obj, cxn_id);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, cxn_id);
     }
 
     /* ind_core_flow_entry_delete copied _obj for barrier tracking */

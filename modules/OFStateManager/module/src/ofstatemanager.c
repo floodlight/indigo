@@ -42,6 +42,10 @@
 
 static void flow_expiration_timer(void *cookie);
 
+static void
+process_flow_removal(ft_entry_t *entry,
+                     indigo_fi_flow_stats_t *final_stats);
+
 /**
  * @brief Core configuration for the module
  */
@@ -500,39 +504,14 @@ ind_core_init(ind_core_config_t *config)
  * Mark the entry deleted in the flow table.  If the entry is
  * stable (no op pending) then actually process the deletion here by
  * calling into forwarding.
- *
- * Should we need to decouple this from the delete call to forwarding,
- * we would just do the marking here and then a separate thread would be
- * signalled (or called periodically) to do the fwd_flow_delete.
  */
 
 void
 ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
-                           of_object_t *obj, indigo_cxn_id_t cxn_id)
+                           indigo_cxn_id_t cxn_id)
 {
-    of_object_t *dup = NULL;
-    ptr_cxn_wrapper_t *ptr_cxn;
-
-    if (obj != NULL) {
-        if ((dup = of_object_dup(obj)) == NULL) {
-            LOG_ERROR("Could not allocate duplicate flow mod obj");
-            return;
-        }
-
-        /* Indicate the dup object is outstanding for the cxn instance */
-        if (ind_cxn_message_track_setup(cxn_id, dup) < 0) {
-            LOG_ERROR("Could not set up flow-mod msg tracking for id %d", cxn_id);
-            of_object_delete(dup);
-            return;
-        }
-    }
-
-    if ((ptr_cxn = setup_ptr_cxn(dup, NULL, cxn_id, entry)) == 0) {
-        LOG_ERROR("setup_ptr_cxn() failed");
-        of_object_delete(dup);
-        INDIGO_MEM_FREE(ptr_cxn);
-        return;
-    }
+    indigo_error_t rv;
+    indigo_fi_flow_stats_t flow_stats;
 
     INDIGO_ASSERT(FT_FLOW_STATE_IS_STABLE(entry->state));
 
@@ -544,7 +523,15 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
     LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
     entry->state = FT_FLOW_STATE_DELETING;
-    indigo_fwd_flow_delete(entry->id, INDIGO_POINTER_TO_COOKIE(ptr_cxn));
+
+    rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Error deleting flow, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+        /* Ignoring failure */
+    }
+
+    process_flow_removal(entry, &flow_stats);
 }
 
 /**
@@ -615,38 +602,6 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
 
     entry->removed_reason = reason;
     process_flow_removal(entry, stats);
-}
-
-/**
- * @brief Callback for response to flow delete request
- *
- * The cookie is a pointer to the local flow table entry
- */
-
-void
-indigo_core_flow_delete_callback(indigo_error_t result,
-                                 indigo_fi_flow_stats_t *flow_stats,
-                                 indigo_cookie_t cookie)
-{
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    ptr_cxn_wrapper_t *ptr_cxn = INDIGO_COOKIE_TO_POINTER(cookie);
-    ft_entry_t *entry = ptr_cxn->entry;
-
-    LOG_TRACE("Flow delete callback, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
-              INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-    if (result != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Error deleting flow, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-        /* Ignoring failure */
-    }
-
-    process_flow_removal(entry, flow_stats);
-
-    of_object_delete(ptr_cxn->req);
-    INDIGO_MEM_FREE(ptr_cxn);
 }
 
 #define CORE_EXPIRES_FLOWS(_cfg) \
@@ -1023,7 +978,7 @@ flow_expiration_timer(void *cookie)
                           entry->hard_timeout,
                           INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                 ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_HARD_TIMEOUT,
-                                           NULL, INDIGO_CXN_ID_UNSPECIFIED);
+                                           INDIGO_CXN_ID_UNSPECIFIED);
                 continue;
             }
         }
@@ -1056,7 +1011,7 @@ flow_expiration_timer(void *cookie)
                 LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                           entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                 ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
-                                           NULL, INDIGO_CXN_ID_UNSPECIFIED);
+                                           INDIGO_CXN_ID_UNSPECIFIED);
                 continue;
             }
         }
