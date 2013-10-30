@@ -26,49 +26,6 @@
 
 #include "ofstatemanager_int.h"
 
-/**
- * Flow state enumeration
- *
- * Indicates the state in the flow table of a flow entry.
- *
- * Once a flow enters the DELETE_MARKED or DELETING states it will be ignored
- * by queries. The original intention was for flow stats queries, flow-adds,
- * etc following a flow-delete to behave as if the flow were already deleted.
- * However, this is not guaranteed by OpenFlow and is broken by the long
- * running task implementation of flow deletion.
- *
- * States:
- *
- * NEW => Allocated but not committed; call is being made to forwarding
- * CREATED => Flow is stable, successfully added to forwarding, nothing pending
- * MODIFYING => Modify request is pending with forwarding, but entry
- * should be counted as active.
- * DELETE_MARKED => Flow is marked for deletion; other add/modify calls pending
- * DELETING => Request to delete the entry has been made to forwarding
- *
- * Possible state transitions:
- *
- * NEW -> CREATED (indigo_core_flow_create_callback)
- * CREATED -> MODIFYING (ind_core_flow_modify_handler,
- *                       ind_core_flow_modify_strict_handler)                       )
- * MODIFYING -> CREATED (indigo_core_flow_modify_callback)
- * NEW -> DELETE_MARKED (ind_core_flow_entry_delete)
- * CREATED -> DELETE_MARKED (ind_core_flow_entry_delete)
- * MODIFYING -> DELETE_MARKED (ind_core_flow_entry_delete)
- * DELETE_MARKED -> DELETING (ind_core_flow_entry_delete)
- */
-
-enum ft_flow_state {
-    FT_FLOW_STATE_NEW,
-    FT_FLOW_STATE_CREATED,
-    FT_FLOW_STATE_MODIFYING,
-    FT_FLOW_STATE_DELETE_MARKED,
-    FT_FLOW_STATE_DELETING
-};
-
-#define FT_FLOW_STATE_IS_STABLE(x)  ((x) == FT_FLOW_STATE_CREATED)
-#define FT_FLOW_STATE_IS_DELETED(x) ((x) >= FT_FLOW_STATE_DELETE_MARKED)
-
 /****************************************************************
  * The flow entry structure
  ****************************************************************/
@@ -108,9 +65,6 @@ enum ft_flow_state {
 typedef struct ft_entry_s {
     /* Key */
     indigo_flow_id_t     id;
-
-    /* Flow state -- see above */
-    enum ft_flow_state state;
 
     /* Reason why flow was deleted */
     indigo_fi_flow_removed_t removed_reason;

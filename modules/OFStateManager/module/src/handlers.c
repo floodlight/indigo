@@ -602,7 +602,6 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         LOG_TRACE("Flow table now has %d entries",
                   FT_STATUS(ind_core_ft)->current_count);
         entry->table_id = table_id;
-        entry->state = FT_FLOW_STATE_CREATED;
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
@@ -694,7 +693,6 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         indigo_error_t rv;
         state->num_matched++;
-        INDIGO_ASSERT(FT_FLOW_STATE_IS_STABLE(entry->state));
         rv = indigo_fwd_flow_modify(entry->id, state->request);
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
@@ -798,14 +796,6 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
         return ind_core_flow_add_handler(_obj, cxn_id);
     }
-
-    if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-       LOG_TRACE("Flow being deleted -- skipping modify");
-       rv = INDIGO_ERROR_NONE;
-       goto done;
-    }
-
-    INDIGO_ASSERT(FT_FLOW_STATE_IS_STABLE(entry->state));
 
     rv = indigo_fwd_flow_modify(entry->id, obj);
     if (rv == INDIGO_ERROR_NONE) {

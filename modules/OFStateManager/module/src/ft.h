@@ -109,7 +109,6 @@ typedef struct ft_config_s {
 
 typedef struct ft_status_s {
     int current_count;
-    int pending_deletes;
     uint64_t adds;
     uint64_t deletes;
     uint64_t hard_expires;

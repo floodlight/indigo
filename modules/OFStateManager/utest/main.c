@@ -296,19 +296,15 @@ static int
 check_table_entry_states(ft_instance_t ft)
 {
     int counted = 0;
-    int pending_del = 0;
     ft_entry_t *entry;
     list_links_t *cur, *next;
 
     FT_ITER(ft, entry, cur, next) {
+        (void) entry;
         counted += 1;
-        if (entry->state >= FT_FLOW_STATE_DELETE_MARKED) {
-            pending_del += 1;
-        }
     }
 
     TEST_ASSERT(counted == ft->status.current_count);
-    TEST_ASSERT(pending_del == ft->status.pending_deletes);
 
     return 0;
 }

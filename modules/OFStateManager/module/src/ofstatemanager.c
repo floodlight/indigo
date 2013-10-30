@@ -513,16 +513,13 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats;
 
-    INDIGO_ASSERT(FT_FLOW_STATE_IS_STABLE(entry->state));
-
-    /* Sets flow state to DELETE_MARKED */
+    /* Set flow removed reason */
     ft_entry_mark_deleted(ind_core_ft, entry, reason);
 
     /* If the flow was stable, notify forwarding; final cleanup occurs in
      * flow deleted callback. */
     LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-    entry->state = FT_FLOW_STATE_DELETING;
 
     rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
     if (rv != INDIGO_ERROR_NONE) {
@@ -965,10 +962,6 @@ flow_expiration_timer(void *cookie)
         indigo_error_t rv;
         indigo_fi_flow_stats_t flow_stats;
 
-        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            continue;
-        }
-
         if (entry->hard_timeout > 0) {
             uint32_t delta;
             delta = INDIGO_TIME_DIFF_ms(entry->insert_time,
@@ -1097,7 +1090,6 @@ ind_core_ft_stats(aim_pvs_t *pvs)
     ft = ind_core_ft;
     aim_printf(pvs, "Flow table stats:\n");
     aim_printf(pvs, "  Current count:  %d\n", ft->status.current_count);
-    aim_printf(pvs, "  Pending del:    %d\n", ft->status.pending_deletes);
     aim_printf(pvs, "  Adds:           %d\n", (int)ft->status.adds);
     aim_printf(pvs, "  Deletes:        %d\n", (int)ft->status.deletes);
     aim_printf(pvs, "  Hard Exp:       %d\n", (int)ft->status.hard_expires);
