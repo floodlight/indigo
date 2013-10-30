@@ -125,18 +125,6 @@ extern indigo_error_t indigo_fwd_flow_stats_get(
     indigo_fi_flow_stats_t *flow_stats);
 
 /**
- * @brief Modify table properties
- * @param of_table_mod The LOXI request
- * @param callback_cookie Passed to async response callback
- *
- * Modify properties of given table.
- */
-
-extern void indigo_fwd_table_mod(
-      of_table_mod_t *of_table_mod,
-      indigo_cookie_t callback_cookie);
-
-/**
  * @brief Table stats
  * @param table_stats_request The LOXI request
  * @param [out] table_stats_reply The LOXI reply

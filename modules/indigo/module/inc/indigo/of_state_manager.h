@@ -116,22 +116,6 @@ extern indigo_error_t indigo_core_dpid_set(of_dpid_t dpid);
 extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
 
 /****************************************************************
- * Asynchronous forwarding interface response functions
- ****************************************************************/
-
-/**
- * @brief Callback for modify table properties
- * @param error Return code from operation
- * @param callback_cookie Passed to async response callback
- *
- * Indicate result for modify table properties operation.
- */
-
-extern void indigo_core_table_mod_callback(
-    indigo_error_t result,
-    indigo_cookie_t callback_cookie);
-
-/****************************************************************
  * Asynchronous port callback functions
  ****************************************************************/
 
