@@ -91,7 +91,7 @@ setup_cxn(void)
 
 static int got_cxn_msg;
 
-static indigo_error_t
+static void
 cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     indigo_error_t rv = INDIGO_ERROR_NONE;
@@ -131,19 +131,17 @@ cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
  done:
     of_object_delete(obj);
     got_cxn_msg = 1;
-
-    return rv;
 }
 
 /*
  * Implement Forwarding function
  */
 
-indigo_error_t
+void
 indigo_core_receive_controller_message(indigo_cxn_id_t cxn_id,
                                        of_object_t *obj)
 {
-    return cxn_msg_rx(cxn_id, obj);
+    cxn_msg_rx(cxn_id, obj);
 }
 
 int main(int argc, char* argv[])

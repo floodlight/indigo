@@ -816,22 +816,26 @@ cxn_send_permission_error(connection_t *cxn, of_object_t *obj)
  *
  * Handle echo request, echo reply and barrier request locally
  */
-static indigo_error_t
+static void
 of_msg_process(connection_t *cxn, of_object_t *obj)
 {
     /* Note that the messages handled in cxn_instance are not tracked */
     switch (obj->object_id) {
     case OF_ECHO_REQUEST:
-        return (echo_request_handle(cxn, obj));
+        echo_request_handle(cxn, obj);
+        return;
 
     case OF_ECHO_REPLY:
-        return (echo_reply_handle(cxn, obj));
+        echo_reply_handle(cxn, obj);
+        return;
 
     case OF_BARRIER_REQUEST:
-        return (barrier_request_handle(cxn, obj));
+        barrier_request_handle(cxn, obj);
+        return;
 
     case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
-        return nicira_controller_role_request_handle(cxn, obj);
+        nicira_controller_role_request_handle(cxn, obj);
+        return;
 
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
@@ -850,7 +854,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
                         of_object_id_str[obj->object_id]);
             cxn_send_permission_error(cxn, obj);
             of_object_delete(obj);
-            return INDIGO_ERROR_NONE;
+            return;
         }
 
     default:
@@ -860,7 +864,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     /* Passing the message to the state manager; register and set callback */
     cxn_message_track_setup(cxn, obj);
 
-    return (OF_MSG_CALLBACK(cxn, obj));
+    OF_MSG_CALLBACK(cxn, obj);
 }
 
 /**
@@ -1113,9 +1117,7 @@ process_message(connection_t *cxn)
         }
     } else {
         /* Process received message (object); handler owns obj */
-        if ((rv = of_msg_process(cxn, obj)) < 0) {
-            LOG_ERROR(cxn, "OF message callback returned %d", rv);
-        }
+        of_msg_process(cxn, obj);
     }
 }
 

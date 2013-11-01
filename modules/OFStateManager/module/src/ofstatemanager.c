@@ -204,12 +204,13 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
  * In any case, ownership of obj is NOT returned to the caller.
  */
 
-indigo_error_t
+void
 indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 {
-    int rv = INDIGO_ERROR_NONE;
-
-    ENABLED_CHECK;
+    if (!ind_core_module_enabled) {
+        LOG_ERROR("Not enabled");
+        return;
+    }
 
     LOG_TRACE("Received msg type %s (%d)",
              of_object_id_str[obj->object_id], obj->object_id);
@@ -226,93 +227,93 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     switch (obj->object_id) {
 
     case OF_HELLO:
-        rv = ind_core_hello_handler(obj, cxn);
+        ind_core_hello_handler(obj, cxn);
         break;
 
     case OF_PACKET_OUT:
         ind_core_packet_outs++;
-        rv = ind_core_packet_out_handler(obj, cxn);
+        ind_core_packet_out_handler(obj, cxn);
         break;
 
     case OF_FLOW_ADD:
         ind_core_flow_mods++;
-        rv = ind_core_flow_add_handler(obj, cxn);
+        ind_core_flow_add_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY:
         ind_core_flow_mods++;
-        rv = ind_core_flow_modify_handler(obj, cxn);
+        ind_core_flow_modify_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY_STRICT:
         ind_core_flow_mods++;
-        rv = ind_core_flow_modify_strict_handler(obj, cxn);
+        ind_core_flow_modify_strict_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE:
         ind_core_flow_mods++;
-        rv = ind_core_flow_delete_handler(obj, cxn);
+        ind_core_flow_delete_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE_STRICT:
         ind_core_flow_mods++;
-        rv = ind_core_flow_delete_strict_handler(obj, cxn);
+        ind_core_flow_delete_strict_handler(obj, cxn);
         break;
 
     case OF_PORT_STATS_REQUEST:
-        rv = ind_core_port_stats_request_handler(obj, cxn);
+        ind_core_port_stats_request_handler(obj, cxn);
         break;
 
     case OF_GET_CONFIG_REQUEST:
-        rv = ind_core_get_config_request_handler(obj, cxn);
+        ind_core_get_config_request_handler(obj, cxn);
         break;
 
     case OF_SET_CONFIG:
-        rv = ind_core_set_config_handler(obj, cxn);
+        ind_core_set_config_handler(obj, cxn);
         break;
 
     case OF_FLOW_STATS_REQUEST:
-        rv = ind_core_flow_stats_request_handler(obj, cxn);
+        ind_core_flow_stats_request_handler(obj, cxn);
         break;
 
     case OF_AGGREGATE_STATS_REQUEST:
-        rv = ind_core_aggregate_stats_request_handler(obj, cxn);
+        ind_core_aggregate_stats_request_handler(obj, cxn);
         break;
 
     case OF_TABLE_STATS_REQUEST:
-        rv = ind_core_table_stats_request_handler(obj, cxn);
+        ind_core_table_stats_request_handler(obj, cxn);
         break;
 
     case OF_DESC_STATS_REQUEST:
-        rv = ind_core_desc_stats_request_handler(obj, cxn);
+        ind_core_desc_stats_request_handler(obj, cxn);
         break;
 
     case OF_PORT_DESC_STATS_REQUEST:
-        rv = ind_core_port_desc_stats_request_handler(obj, cxn);
+        ind_core_port_desc_stats_request_handler(obj, cxn);
         break;
 
     case OF_FEATURES_REQUEST:
-        rv = ind_core_features_request_handler(obj, cxn);
+        ind_core_features_request_handler(obj, cxn);
         break;
 
     case OF_ECHO_REPLY: /* Handled by cxn_instance for now */
-        rv = ind_core_echo_reply_handler(obj, cxn);
+        ind_core_echo_reply_handler(obj, cxn);
         break;
 
     case OF_EXPERIMENTER:
-        rv = ind_core_experimenter_handler(obj, cxn);
+        ind_core_experimenter_handler(obj, cxn);
         break;
 
     case OF_PORT_MOD:
-        rv = ind_core_port_mod_handler(obj, cxn);
+        ind_core_port_mod_handler(obj, cxn);
         break;
 
     case OF_QUEUE_GET_CONFIG_REQUEST:
-        rv = ind_core_queue_get_config_request_handler(obj, cxn);
+        ind_core_queue_get_config_request_handler(obj, cxn);
         break;
 
     case OF_QUEUE_STATS_REQUEST:
-        rv = ind_core_queue_stats_request_handler(obj, cxn);
+        ind_core_queue_stats_request_handler(obj, cxn);
         break;
 
     /****************************************************************
@@ -320,19 +321,19 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
      ****************************************************************/
 
     case OF_GROUP_MOD:
-        rv = ind_core_group_mod_handler(obj, cxn);
+        ind_core_group_mod_handler(obj, cxn);
         break;
 
     case OF_GROUP_STATS_REQUEST:
-        rv = ind_core_group_stats_request_handler(obj, cxn);
+        ind_core_group_stats_request_handler(obj, cxn);
         break;
 
     case OF_GROUP_DESC_STATS_REQUEST:
-        rv = ind_core_group_desc_stats_request_handler(obj, cxn);
+        ind_core_group_desc_stats_request_handler(obj, cxn);
         break;
 
     case OF_GROUP_FEATURES_STATS_REQUEST:
-        rv = ind_core_group_features_stats_request_handler(obj, cxn);
+        ind_core_group_features_stats_request_handler(obj, cxn);
         break;
 
     /****************************************************************
@@ -340,15 +341,15 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
      ****************************************************************/
 
     case OF_BSN_SET_IP_MASK:
-        rv = ind_core_bsn_set_ip_mask_handler(obj, cxn);
+        ind_core_bsn_set_ip_mask_handler(obj, cxn);
         break;
 
     case OF_BSN_GET_IP_MASK_REQUEST:
-        rv = ind_core_bsn_get_ip_mask_request_handler(obj, cxn);
+        ind_core_bsn_get_ip_mask_request_handler(obj, cxn);
         break;
 
     case OF_BSN_HYBRID_GET_REQUEST:
-        rv = ind_core_bsn_hybrid_get_request_handler(obj, cxn);
+        ind_core_bsn_hybrid_get_request_handler(obj, cxn);
         break;
 
     /* These all use the experimenter handler */
@@ -364,7 +365,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_BSN_BW_CLEAR_DATA_REQUEST:
     case OF_BSN_BW_ENABLE_GET_REQUEST:
     case OF_BSN_BW_ENABLE_SET_REQUEST:
-        rv = ind_core_experimenter_handler(obj, cxn);
+        ind_core_experimenter_handler(obj, cxn);
         break;
 
     /****************************************************************
@@ -374,11 +375,11 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 #if NOT_YET
 
     case OF_TABLE_MOD:
-        rv = ind_core_table_mod_handler(obj, cxn);
+        ind_core_table_mod_handler(obj, cxn);
         break;
 
     case OF_EXPERIMENTER_STATS_REQUEST:
-        rv = ind_core_experimenter_stats_request_handler(obj, cxn);
+        ind_core_experimenter_stats_request_handler(obj, cxn);
         break;
 #endif
 
@@ -404,18 +405,14 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_QUEUE_STATS_REPLY:
     case OF_ROLE_REPLY:
     case OF_TABLE_STATS_REPLY:
-        rv = ind_core_unhandled_message(obj, cxn);
+        ind_core_unhandled_message(obj, cxn);
         break;
 
     default:
         LOG_ERROR("Unhandled message type %d\n", obj->object_id);
-        rv = ind_core_unhandled_message(obj, cxn);
+        ind_core_unhandled_message(obj, cxn);
         break;
     }
-
-    LOG_TRACE("Handled msg %p with rv %d", obj, rv);
-
-    return rv;
 }
 
 static of_dpid_t ind_core_dpid = OFSTATEMANAGER_CONFIG_DPID_DEFAULT;
