@@ -26,61 +26,6 @@
 
 #include "ofstatemanager_int.h"
 
-/**
- * Flow state enumeration
- *
- * Indicates the state in the flow table of a flow entry.
- *
- * Due to the async nature of flow table modifications, we maintain
- * these states for each flow.  Note that if a flow is deleted while
- * an operation is outstanding for that flow, we must queue the operation
- * until it has completed.  If a delete operation occurs on a flow, we
- * ignore further operations on that flow, wait for any pending operation
- * to complete and then remove any other queued operations.
- *
- * Once a flow enters the DELETE_MARKED or DELETING states it will be ignored
- * by queries. The original intention was for flow stats queries, flow-adds,
- * etc following a flow-delete to behave as if the flow were already deleted.
- * However, this is not guaranteed by OpenFlow and is broken by the long
- * running task implementation of flow deletion.
- *
- * There are still some corner cases; for example, if a queued operation
- * would have failed, but a later delete operation occurs, no error
- * message will be generated for the op that would have failed.
- *
- * States:
- *
- * NEW => Allocated but not committed; call is being made to forwarding
- * CREATED => Flow is stable, successfully added to forwarding, nothing pending
- * MODIFYING => Modify request is pending with forwarding, but entry
- * should be counted as active.
- * DELETE_MARKED => Flow is marked for deletion; other add/modify calls pending
- * DELETING => Request to delete the entry has been made to forwarding
- *
- * Possible state transitions:
- *
- * NEW -> CREATED (indigo_core_flow_create_callback)
- * CREATED -> MODIFYING (ind_core_flow_modify_handler,
- *                       ind_core_flow_modify_strict_handler,
- *                       queued_req_service)
- * MODIFYING -> CREATED (indigo_core_flow_modify_callback)
- * NEW -> DELETE_MARKED (ind_core_flow_entry_delete)
- * CREATED -> DELETE_MARKED (ind_core_flow_entry_delete)
- * MODIFYING -> DELETE_MARKED (ind_core_flow_entry_delete)
- * DELETE_MARKED -> DELETING (ind_core_flow_entry_delete, queued_req_service)
- */
-
-enum ft_flow_state {
-    FT_FLOW_STATE_NEW,
-    FT_FLOW_STATE_CREATED,
-    FT_FLOW_STATE_MODIFYING,
-    FT_FLOW_STATE_DELETE_MARKED,
-    FT_FLOW_STATE_DELETING
-};
-
-#define FT_FLOW_STATE_IS_STABLE(x)  ((x) == FT_FLOW_STATE_CREATED)
-#define FT_FLOW_STATE_IS_DELETED(x) ((x) >= FT_FLOW_STATE_DELETE_MARKED)
-
 /****************************************************************
  * The flow entry structure
  ****************************************************************/
@@ -89,28 +34,26 @@ enum ft_flow_state {
  * The data in a flow table entry
  *
  * @param id The externally determined flow ID; primary key
- * @param delete_reason Why deleted; see below
  * @param match The match structure recorded from the original add
  * @param priority The priority, from the original add
  * @param idle_timeout The idle_timeout, from the original add
  * @param hard_timeout The hard_timeout, from the original add
  * @param cookie The cookie, from the original or as updated
  * @param effects The actions or instructions from the add or as updated.
- * See below.  May not be maintained by all implementations.
- * @param output_ports The list of output ports for the action for searching
+ * See below.
  * @param insert_time The timestamp when the entry was inserted
  * @param packets Number of packets matched by the entry
  * @param bytes Number of bytes matched by the entry
- * @param last_counter_update When counters were last checked
  * @param last_counter_change Last update when counters changed
  * @param table_links For iterating across the flow table
  * @param prio_links Search by priority
  * @param match_links Search by strict match
  * @param flow_id_links Search by flow id
  *
- * The version of the entry is determined by the value in the match
- * structure.  This is used in determining whether actions or instructions
- * are active.
+ * The effects (actions or instructions) are tied to a specific OpenFlow
+ * version. For example, a flow may be added using OpenFlow 1.0 but
+ * modified using OpenFlow 1.3. Either union member may be used to check
+ * the version and LOCI object type.
  *
  * The match, priority, timeouts and flags are invariant once the entry
  * has been added to the table.  The cookie and effects may be updated by
@@ -120,27 +63,6 @@ enum ft_flow_state {
 typedef struct ft_entry_s {
     /* Key */
     indigo_flow_id_t     id;
-
-    /* Flow state -- see above */
-    enum ft_flow_state state;
-
-    /* Reason why flow was deleted */
-    indigo_fi_flow_removed_t removed_reason;
-
-    /* Queue of pending requests from controller for flow.
-       In practice, this queue will only hold either:
-       (1) a sequence of modify requests, or
-       (2) a single delete request.
-       Rationale:
-       - Create requests can't be queued (they create *new* flows)
-       - Modify requests must be queued, since the state of a flow must be
-         that of the last successful modify request
-       - Delete requests can short-circuit any pending modifies; there's no
-         point in doing a modify on a flow that you know is going to go away
-         (Minor point: if any short-circuited modify would have generated an
-         error message, that error message will not be generated)
-     */
-    biglist_t *queued_reqs;
 
     /* Invariant */
     of_match_t match;
@@ -180,9 +102,6 @@ typedef struct ft_entry_s {
 
 #define FT_ENTRY_CONTAINER(links_ptr, type)             \
     container_of((links_ptr), type ## _links, ft_entry_t)
-
-/* Simple deferencing macro for OF 1.0 actions */
-#define FT_FLOW_ACTIONS(entry) ((entry)->effects.actions)
 
 /***** MATCHING *****/
 

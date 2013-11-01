@@ -206,8 +206,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
 indigo_error_t
 ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
-    LOG_TRACE("Delete rsn %d flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
-              entry->removed_reason, entry->id);
+    LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
 
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
@@ -248,8 +247,7 @@ ft_strict_match(ft_instance_t instance,
 
     LIST_FOREACH(bucket, cur) {
         ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, strict_match);
-        if (!FT_FLOW_STATE_IS_DELETED(entry->state) &&
-                ft_entry_meta_match(query, entry)) {
+        if (ft_entry_meta_match(query, entry)) {
             *entry_ptr = entry;
             return INDIGO_ERROR_NONE;
         }
@@ -267,7 +265,7 @@ ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 
     LIST_FOREACH(bucket, cur) {
         ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, flow_id);
-        if (!FT_FLOW_STATE_IS_DELETED(entry->state) && entry->id == id) {
+        if (entry->id == id) {
             return entry;
         }
     }
@@ -280,8 +278,6 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
 {
     uint64_t mask;
     int rv = 0; /* Default is no match */
-
-    if (FT_FLOW_STATE_IS_DELETED(entry->state)) return (rv);
 
     if ((mask = query->cookie_mask)) {
         if ((query->cookie & mask) != (entry->cookie & mask)) {
@@ -342,20 +338,6 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
     }
 
     return rv;
-}
-
-void
-ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
-                      indigo_fi_flow_removed_t reason)
-{
-    if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-        return;
-    }
-
-    entry->state = FT_FLOW_STATE_DELETE_MARKED;
-    entry->removed_reason = reason;
-
-    ft->status.pending_deletes += 1;
 }
 
 indigo_error_t
@@ -517,10 +499,6 @@ ft_iterator_next(ft_iterator_t *iter)
             iter->next_entry = ft_iterator_links_to_entry(iter, next_links);
         }
 
-        if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-            continue;
-        }
-
         if (iter->use_query && !ft_entry_meta_match(&iter->query, entry)) {
             continue;
         }
@@ -640,8 +618,6 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
 
     entry->id = id;
 
-    entry->state = FT_FLOW_STATE_NEW;
-    entry->queued_reqs = NULL;
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
         INDIGO_MEM_FREE(entry);
         return INDIGO_ERROR_UNKNOWN;
@@ -672,9 +648,6 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
  * @param entry Pointer to entry being initialized
  *
  * The list links are not modified by this call.
- *
- * The entry ID and state are updated and pending deletes count is
- * decremented.
  */
 static void
 ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
@@ -682,13 +655,6 @@ ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
     if (entry->effects.actions != NULL) {
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = NULL;
-    }
-
-    biglist_free(entry->queued_reqs);
-
-    /* If entry was being deleted, pending deletes gets decremented */
-    if (FT_FLOW_STATE_IS_DELETED(entry->state)) {
-        ft->status.pending_deletes -= 1;
     }
 
     INDIGO_MEM_FREE(entry);

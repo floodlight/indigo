@@ -79,15 +79,6 @@
 #define IND_CORE_MSG_SEND(cxn_id, obj) \
     indigo_cxn_send_controller_message(cxn_id, (of_object_t *)obj)
 
-
-typedef struct ind_core_flow_stats_state {
-    int finished_calls; /**< Boolean, have all the flow_stats_get calls been made. */
-    int expected_count; /**< Number of callbacks expected */
-    int received_count; /**< Number of callbacks received so far */
-    void (*callback)(struct ind_core_flow_stats_state *state,
-                     indigo_fi_flow_stats_t *flow_stats);
-} ind_core_flow_stats_state_t;
-
 /**
  * Local state manager configuration data
  * @li init_done Have values been initialized
@@ -129,27 +120,6 @@ calc_duration(indigo_time_t current_time, indigo_time_t entry_time,
 }
 
 extern const struct ind_cfg_ops ind_core_cfg_ops;
-
-/**
- * Wrapper for a callback pair of a generic pointer and a connection id
- * For some operations, multiple callbacks occur.  Bookkeeping variables
- * are included for these, but are not used by all operations.
- */
-
-typedef struct ptr_cxn_wrapper_s {
-    void *req; /**< Generic request pointer, usually a LOXI object */
-    void *reply; /**< Generic reply pointer, usually a LOXI object */
-    indigo_cxn_id_t cxn_id; /**< The connection ID for the operation */
-    void *entry; /**< Generic private data pointer */
-    int expected_count; /**< Number of callbacks expected */
-    int received_count; /**< Number of callbacks received so far */
-} ptr_cxn_wrapper_t;
-
-/**
- * Init function for cookie wrapper
- */
-
-ptr_cxn_wrapper_t *setup_ptr_cxn(void *req, void *reply, indigo_cxn_id_t cxn_id, void *entry);
 
 #include <OFStateManager/ofstatemanager.h>
 
