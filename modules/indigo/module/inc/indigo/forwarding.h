@@ -26,9 +26,6 @@
  * module. This includes configuration as well as fi (forwarding interface)
  * functions.
  *
- * Unless otherwise noted, calls in this file are asynchronous.  This is
- * indicated by a void return type.
- *
  * @{
  */
 
@@ -51,8 +48,6 @@ extern "C" {
  *
  * Fill out a features reply message for the forwarding information.
  *
- * This is a synchronous call.
- *
  * Ownership of the features_reply LOXI object is maintained by the
  * caller (OF state manager).
  */
@@ -63,95 +58,78 @@ extern indigo_error_t indigo_fwd_forwarding_features_get(
 /**
  * @brief Flow create
  * @param of_flow_add The original LOCI request
- * @param callback_cookie Passed to async response callback
+ * @param [out] table_id Table inserted into
  *
  * Create a flow for the forwarding engine.
  *
  * Ownership of the flow_add LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_flow_create(
+extern indigo_error_t indigo_fwd_flow_create(
     indigo_cookie_t flow_id,
     of_flow_add_t *flow_add,
-    indigo_cookie_t callback_cookie);
+    uint8_t *table_id);
 
 /**
  * @brief Modify an existing flow.
  * @param flow_id Flow identifier
  * @param flow_modify The original LOCI message indicating the modification
- * @param callback_cookie Passed to async response callback
+ * @return Return code from operation
  *
  * @fixme Consider adding parameters to indicate modification that
  * should be done:  modify_effects, modify_cookie or clear_counters.
  *
  * Ownership of the flow_modify LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_flow_modify(
+extern indigo_error_t indigo_fwd_flow_modify(
     indigo_cookie_t flow_id,
-    of_flow_modify_t *flow_modify,
-    indigo_cookie_t callback_cookie);
+    of_flow_modify_t *flow_modify);
 
 /**
  * @brief Flow delete
  * @param flow_id Flow identifier
- * @param callback_cookie Passed to async response callback
+ * @param [out] flow_stats Statistics for flow
  *
- * Delete a flow from the forwarding engine.  Final stats are returned to
- * the state manager via the response callback.
+ * Delete a flow from the forwarding engine.
  */
 
-extern void indigo_fwd_flow_delete(
+extern indigo_error_t indigo_fwd_flow_delete(
     indigo_cookie_t flow_id,
-    indigo_cookie_t callback_cookie);
+    indigo_fi_flow_stats_t *flow_stats);
 
 /**
  * @brief Flow stats
  * @param flow_id The ID of the flow whose stats are to be retrieved
- * @param callback_cookie Passed to async response callback
+ * @param [out] flow_stats Statistics for flow
  *
- * Get the stats structure from an existing flow
+ * Get the stats structure from an existing flow. The flow_stats object MUST
+ * contain the flow ID.
  */
 
-extern void indigo_fwd_flow_stats_get(
+extern indigo_error_t indigo_fwd_flow_stats_get(
     indigo_cookie_t flow_id,
-    indigo_cookie_t callback_cookie);
-
-/**
- * @brief Modify table properties
- * @param of_table_mod The LOXI request
- * @param callback_cookie Passed to async response callback
- *
- * Modify properties of given table.
- */
-
-extern void indigo_fwd_table_mod(
-      of_table_mod_t *of_table_mod,
-      indigo_cookie_t callback_cookie);
+    indigo_fi_flow_stats_t *flow_stats);
 
 /**
  * @brief Table stats
  * @param table_stats_request The LOXI request
- * @param callback_cookie Passed to async response callback
+ * @param [out] table_stats_reply The LOXI reply
+ * @return Return code from operation
  *
  * Ownership of the table_stats_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_fwd_table_stats_get(
+extern indigo_error_t indigo_fwd_table_stats_get(
     of_table_stats_request_t *table_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_table_stats_reply_t **table_stats_reply);
 
 /**
  * @brief Packet out operation
  * @param packet_out The LOXI packet out message
- *
- * This is a synchronous operation.
  *
  * Ownership of the packet_out LOXI object is maintained by the
  * caller (OF state manager).
@@ -164,8 +142,6 @@ extern indigo_error_t indigo_fwd_packet_out(
  * @brief Experimenter (vendor) extension
  * @param experimenter The message from the controller
  * @param cxn_id Connection ID on which the message arrived
- *
- * This is a synchronous function.
  *
  * Ownership of the experimenter LOXI object is maintained by the
  * caller (OF state manager).

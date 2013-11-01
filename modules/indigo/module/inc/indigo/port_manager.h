@@ -56,8 +56,6 @@ typedef struct indigo_port_config_s {
  * @brief Handle a features get request
  * @param features The features reply message to be filled out
  *
- * This is a synchronous call.
- *
  * Ownership of the features object is maintained by the caller
  */
 extern indigo_error_t indigo_port_features_get(
@@ -68,8 +66,6 @@ extern indigo_error_t indigo_port_features_get(
  * @brief Handle a port_desc_stats get request
  * @param port_desc_stats_reply The port_desc_stats_reply reply message 
  * to be filled out
- *
- * This is a synchronous call.
  *
  * Ownership of the port_desc_stats_reply object is maintained by the caller
  */
@@ -155,67 +151,62 @@ void indigo_port_interface_list_destroy(indigo_port_info_t* list);
 /**
  * @brief Process an OF port modification request
  * @param port_mod The LOXI modification message
- * @param callback_cookie Instance data returned to callback
+ * @return Return code from operation
  *
  * Ownership of the port_mod LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_modify(
-    of_port_mod_t *port_mod,
-    indigo_cookie_t callback_cookie);
+extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
 
 /**
  * @brief Process an OF port status request
  * @param port_stats_request The LOXI request message
- * @param callback_cookie Instance data returned to callback
+ * @param [out] port_stats_reply The LOXI reply message
+ * @return Return code from operation
  *
  * Ownership of the port_stats_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete the this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_stats_get(
+extern indigo_error_t indigo_port_stats_get(
     of_port_stats_request_t *port_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_port_stats_reply_t **port_stats_reply);
 
 /**
  * @brief Process an OF queue config request
  * @param queue_config_request The LOXI request message
- * @param callback_cookie Instance data returned to callback
+ * @param [out] queue_config_reply The LOXI reply message
+ * @return Return code from operation
  *
  * Ownership of the queue_config_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete the this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_queue_config_get(
+extern indigo_error_t indigo_port_queue_config_get(
     of_queue_get_config_request_t *queue_config_request,
-    indigo_cookie_t callback_cookie);
+    of_queue_get_config_reply_t **queue_config_reply);
 
 
 /**
  * @brief Process an OF queue stats request
  * @param queue_stats_request The LOXI request message
- * @param callback_cookie Instance data returned to callback
+ * @param [out] queue_stats_reply The LOXI reply message
+ * @return Return code from operation
  *
  * Ownership of the queue_stats_request LOXI object is maintained by the
- * caller (OF state manager).  However the caller MUST NOT delete the this
- * object until the callback is made.
+ * caller (OF state manager).
  */
 
-extern void indigo_port_queue_stats_get(
+extern indigo_error_t indigo_port_queue_stats_get(
     of_queue_stats_request_t *queue_stats_request,
-    indigo_cookie_t callback_cookie);
+    of_queue_stats_reply_t **queue_stats_reply);
 
 
 /**
  * @brief Experimenter (vendor) extension
  * @param experimenter The message from the controller
  * @param cxn_id Connection ID on which the message arrived
- *
- * This is a synchronous function.
  *
  * Ownership of the experimenter LOXI object is maintained by the
  * caller (OF state manager).

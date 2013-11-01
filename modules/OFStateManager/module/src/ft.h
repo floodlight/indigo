@@ -109,7 +109,6 @@ typedef struct ft_config_s {
 
 typedef struct ft_status_s {
     int current_count;
-    int pending_deletes;
     uint64_t adds;
     uint64_t deletes;
     uint64_t hard_expires;
@@ -278,22 +277,6 @@ ft_entry_modify_effects(ft_instance_t instance,
 
 indigo_error_t
 ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes);
-
-/**
- * Start the delete process for an entry.
- * @param ft The flow table instance
- * @param entry Pointer to the entry
- * @param reason Reason the flow is being removed
- *
- * The delete operation is either started (MARKED) or indicated
- * as waiting due to an outstanding operation.
- *
- * The pending delete count is incremented.
- */
-
-void
-ft_entry_mark_deleted(ft_instance_t ft, ft_entry_t *entry,
-                      indigo_fi_flow_removed_t reason);
 
 /*
  * Spawn a task that iterates over the flowtable
