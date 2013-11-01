@@ -44,9 +44,6 @@ extern ft_instance_t ind_core_ft;
 
 extern int ind_core_xid_alloc(void);
 
-extern void ind_core_flow_mark_deleted(ft_entry_t *entry,
-                                       indigo_fi_flow_removed_t reason);
-
 extern int ind_core_send_error_msg(of_version_t version,
                                    indigo_cxn_id_t cxn_id,
                                    uint32_t xid,
