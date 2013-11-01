@@ -49,28 +49,6 @@ flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
  *
  ****************************************************************/
 
-ptr_cxn_wrapper_t *
-setup_ptr_cxn(void *req,
-              void *reply,
-              indigo_cxn_id_t cxn_id,
-              void *entry
-              )
-{
-    ptr_cxn_wrapper_t *ptr_cxn;
-    if ((ptr_cxn = INDIGO_MEM_ALLOC(sizeof(*ptr_cxn))) == NULL) {
-        return NULL;
-    }
-
-    ptr_cxn->req = req;
-    ptr_cxn->reply = reply;
-    ptr_cxn->cxn_id = cxn_id;
-    ptr_cxn->entry  = entry;
-    ptr_cxn->expected_count = 1;
-    ptr_cxn->received_count = 0;
-
-    return ptr_cxn;
-}
-
 int
 ind_core_xid_alloc(void)
 {
