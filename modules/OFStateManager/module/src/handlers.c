@@ -911,10 +911,10 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     }
 
     /* Skip entry if stats request version is not equal to entry version */
-    if (priv->req->version != entry->effects.actions->version) {
+    if (state->req->version != entry->effects.actions->version) {
         LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
                   "Entry is skipped.",
-                  priv->req->version, entry->effects.actions->version);
+                  state->req->version, entry->effects.actions->version);
         return;
     }
 
