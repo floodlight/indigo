@@ -62,6 +62,11 @@ extern int have_local_connection;
  */
 extern int remote_connection_count;
 
+/**
+ * Role request generation ID
+ */
+extern uint64_t ind_cxn_generation_id;
+
 
 /* conversion functions from cookie with generation id to connection and vice versa */
 void *cxn_to_cookie(connection_t *cxn);
