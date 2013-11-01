@@ -859,6 +859,8 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         if (state->reply == NULL) {
             LOG_ERROR("Failed to allocate of_flow_stats_reply.");
             if (entry == NULL) {
+                /* This is the last callback, so need to clean up
+                 * before returning. */
                 of_flow_stats_request_delete(state->req);
                 INDIGO_MEM_FREE(state);
             }
