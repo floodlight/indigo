@@ -514,8 +514,6 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats;
 
-    /* If the flow was stable, notify forwarding; final cleanup occurs in
-     * flow deleted callback. */
     LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
 
@@ -587,7 +585,7 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
               INDIGO_FLOW_ID_PRINTF_FORMAT, reason,
               INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
 
-    /* After entry look up, this looks like flow delete callback */
+    /* After entry look up, this looks like ind_core_flow_entry_delete */
     entry = ft_lookup(ind_core_ft, stats->flow_id);
     if (entry == NULL) {
         LOG_TRACE("Async flow removed: did not find entry in SM table. id "

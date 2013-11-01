@@ -221,7 +221,10 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             LOG_ERROR("Error %d sending port_stats_get reply to %d", rv, cxn_id);
         }
     } else {
-        LOG_ERROR("Received error %d from port stats get callback", rv);
+        of_port_no_t port_no;
+        of_port_stats_request_port_no_get(obj, &port_no);
+
+        LOG_ERROR("Failed to get stats for port %u: %d", port_no, rv);
         /* @todo sending type 0, code 0 error message */
         if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
@@ -252,25 +255,26 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
     of_queue_get_config_reply_t *reply;
     indigo_error_t rv;
     uint32_t xid;
+    of_port_no_t port;
 
     of_queue_get_config_request_xid_get(obj, &xid);
+    of_queue_get_config_request_port_get(obj, &port);
 
     LOG_TRACE("Handling of_queue_get_config_request message.");
 
     rv = indigo_port_queue_config_get(obj, &reply);
     if (rv == INDIGO_ERROR_NONE) {
-        of_port_no_t port;
-
         of_queue_get_config_reply_xid_set(reply, xid);
-
-        of_queue_get_config_request_port_get(obj, &port);
         of_queue_get_config_reply_port_set(reply, port);
 
         if ((rv = IND_CORE_MSG_SEND(cxn_id, reply)) < 0) {
-            LOG_ERROR("Error %d sending port_stats_get reply to %d", rv, cxn_id);
+            LOG_ERROR("Error %d sending queue_stats_get reply to %d", rv, cxn_id);
         }
     } else {
-        LOG_ERROR("Received error %d from queue config get callback", rv);
+        uint32_t queue_id;
+        of_queue_stats_request_queue_id_get(obj, &queue_id);
+        LOG_ERROR("Failed to get config for queue %u on port %u: %d",
+                  queue_id, port, rv);
         /* @todo sending type 0, code 0 error message */
         if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
@@ -315,7 +319,12 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             of_queue_stats_reply_delete(reply);
         }
     } else {
-        LOG_ERROR("Received error %d from queue stats get callback", rv);
+        of_port_no_t port_no;
+        uint32_t queue_id;
+        of_queue_stats_request_port_no_get(obj, &port_no);
+        of_queue_stats_request_queue_id_get(obj, &queue_id);
+        LOG_ERROR("Failed to get stats for queue %u on port %u: %d",
+                  queue_id, port_no, rv);
         /* @todo sending type 0, code 0 error message */
         if (indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
                                       0, 0, NULL) < 0) {
@@ -600,13 +609,6 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
  * @param cxn_id Connection handler for the owning connection
  * @param _obj Generic type object for the message to be coerced
  * @returns Error code
- *
- * For flow modifies, we do the simplest thing which is to duplicate
- * the flow mod message for each modified entry.  (If you don't do this
- * you need track both the number of callbacks made and the original
- * message so that it is not deleted until all callbacks are completed.)
- *
- * So the handler deletes the duplicated flow mod.
  */
 
 indigo_error_t
@@ -926,7 +928,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         of_flow_stats_reply_entries_bind(state->reply, &list);
         of_flow_stats_entry_init(&stats_entry, state->reply->version, -1, 1);
         if (of_list_flow_stats_entry_append_bind(&list, &stats_entry)) {
-            LOG_ERROR("failed to append to flow stats list during flow_stats callback");
+            LOG_ERROR("failed to append to flow stats list");
             return;
         }
 
