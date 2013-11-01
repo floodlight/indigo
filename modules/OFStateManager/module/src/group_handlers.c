@@ -233,7 +233,7 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     of_object_delete(entry);
     of_object_delete(obj);
 
-    IND_CORE_MSG_SEND(cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 /* TODO segment long replies */
@@ -274,7 +274,7 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
     of_object_delete(entry);
     of_object_delete(obj);
 
-    IND_CORE_MSG_SEND(cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 void

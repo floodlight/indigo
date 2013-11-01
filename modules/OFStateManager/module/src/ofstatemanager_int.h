@@ -76,9 +76,6 @@
         }                                                               \
     } while (0)
 
-#define IND_CORE_MSG_SEND(cxn_id, obj) \
-    indigo_cxn_send_controller_message(cxn_id, (of_object_t *)obj)
-
 /**
  * Local state manager configuration data
  * @li init_done Have values been initialized
