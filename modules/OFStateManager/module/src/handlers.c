@@ -83,23 +83,6 @@ ind_core_unhandled_message(of_object_t *obj, indigo_cxn_id_t cxn_id)
 /****************************************************************/
 
 /**
- * Handle a hello message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-void
-ind_core_hello_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
-{
-    LOG_TRACE("Received HELLO message from %d", cxn_id);
-
-    of_object_delete(_obj);
-}
-
-/****************************************************************/
-
-/**
  * Handle a packet_out message
  * @param cxn_id Connection handler for the owning connection
  * @param _obj Generic type object for the message to be coerced
@@ -936,26 +919,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     /* Ownership of _obj is passed to the iterator for barrier tracking */
-}
-
-/****************************************************************/
-
-/**
- * Handle a echo_reply message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-void
-ind_core_echo_reply_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
-{
-    of_echo_reply_t *obj;
-
-    obj = (of_echo_reply_t *)_obj;
-    LOG_TRACE("Handling of_echo_reply message: %p.", obj);
-
-    /* Handle object of type of_echo_reply_t */
 }
 
 /****************************************************************/

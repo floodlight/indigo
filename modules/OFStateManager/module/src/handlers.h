@@ -33,12 +33,6 @@
 extern void ind_core_unhandled_message(
     of_object_t *obj,
     indigo_cxn_id_t cxn);
-extern void ind_core_echo_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern void ind_core_hello_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
 extern void ind_core_packet_in_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
@@ -76,12 +70,6 @@ extern void ind_core_get_config_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
 extern void ind_core_flow_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern void ind_core_barrier_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern void ind_core_echo_reply_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
 extern void ind_core_aggregate_stats_request_handler(

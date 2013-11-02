@@ -212,10 +212,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     /* Default handlers */
     switch (obj->object_id) {
 
-    case OF_HELLO:
-        ind_core_hello_handler(obj, cxn);
-        break;
-
     case OF_PACKET_OUT:
         ind_core_packet_outs++;
         ind_core_packet_out_handler(obj, cxn);
@@ -280,10 +276,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 
     case OF_FEATURES_REQUEST:
         ind_core_features_request_handler(obj, cxn);
-        break;
-
-    case OF_ECHO_REPLY: /* Handled by cxn_instance for now */
-        ind_core_echo_reply_handler(obj, cxn);
         break;
 
     case OF_EXPERIMENTER:
@@ -391,6 +383,17 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_QUEUE_STATS_REPLY:
     case OF_ROLE_REPLY:
     case OF_TABLE_STATS_REPLY:
+        ind_core_unhandled_message(obj, cxn);
+        break;
+
+    /* These are implemented in OFConnectionManager */
+    case OF_HELLO:
+    case OF_ECHO_REQUEST:
+    case OF_ECHO_REPLY:
+    case OF_BARRIER_REQUEST:
+    case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
+        LOG_ERROR("Expected OFConnectionManager to handle %s",
+                  of_object_id_str[obj->object_id]);
         ind_core_unhandled_message(obj, cxn);
         break;
 
