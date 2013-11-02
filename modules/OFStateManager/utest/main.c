@@ -159,14 +159,12 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
     return;
 }
 
-int
-indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
-                          uint32_t xid, uint16_t type, uint16_t code,
-                          of_octets_t *octets)
+void
+indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                            uint16_t type, uint16_t code)
 {
     AIM_LOG_VERBOSE("Send error msg called for cxn id %d\n",
                       cxn_id);
-    return INDIGO_ERROR_NONE;
 }
 
 void

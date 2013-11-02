@@ -775,27 +775,6 @@ cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
 
 
 /**
- * Send a BAD_REQUEST/EPERM error to the controller.
- *
- * @param cxn Connection from which message arrived
- * @param obj The message object
- */
-static void
-cxn_send_permission_error(connection_t *cxn, of_object_t *obj)
-{
-    of_octets_t octets;
-    uint32_t xid;
-    octets.data = OF_OBJECT_BUFFER_INDEX(obj, 0);
-    octets.bytes = obj->length;
-    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(octets.data));
-    (void) indigo_cxn_send_error_msg(obj->version, cxn->cxn_id, xid,
-                                     OF_ERROR_TYPE_BAD_REQUEST,
-                                     OF_REQUEST_FAILED_EPERM,
-                                     &octets);
-}
-
-
-/**
  * Process an object pulled off a connection.
  *
  * @param cxn Connection from which message arrived
@@ -839,7 +818,9 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
             LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
                         of_object_id_str[obj->object_id]);
-            cxn_send_permission_error(cxn, obj);
+            indigo_cxn_send_error_reply(cxn->cxn_id, obj,
+                                        OF_ERROR_TYPE_BAD_REQUEST,
+                                        OF_REQUEST_FAILED_EPERM);
             of_object_delete(obj);
             return;
         }
@@ -1008,6 +989,54 @@ read_message(connection_t *cxn)
 }
 
 /**
+ * Send an error for a message that we couldn't parse
+ *
+ * This is trickier than usual because we can't trust the message
+ * (it failed validation).
+ */
+static void
+send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
+{
+    of_object_t *error_msg;
+    uint32_t xid;
+    uint16_t code;
+    of_octets_t payload;
+
+    if (len < OF_MESSAGE_MIN_LENGTH) {
+        xid = 0;
+    } else {
+        xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(buf));
+    }
+
+    if (len < OF_MESSAGE_MIN_LENGTH) {
+        code = OF_REQUEST_FAILED_BAD_LEN;
+    } else if (!OF_VERSION_OKAY(of_message_version_get(
+            OF_BUFFER_TO_MESSAGE(buf)))) {
+        code = OF_REQUEST_FAILED_BAD_VERSION;
+    } else {
+        code = OF_REQUEST_FAILED_BAD_TYPE;
+    }
+
+    payload.data = buf;
+    payload.bytes = len;
+
+    error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
+    if (error_msg == NULL) {
+        LOG_ERROR(cxn, "Could not allocate error message");
+        return;
+    }
+
+    of_bad_request_error_msg_xid_set(error_msg, xid);
+    of_bad_request_error_msg_code_set(error_msg, code);
+
+    if (of_bad_request_error_msg_data_set(error_msg, &payload) < 0) {
+        LOG_WARN(cxn, "Failed to append original request to error message");
+    }
+
+    indigo_cxn_send_controller_message(cxn->cxn_id, error_msg);
+}
+
+/**
  * Process a message from the read buffer
  *
  * The read buffer must have a valid message in it to be processed
@@ -1035,28 +1064,8 @@ process_message(connection_t *cxn)
 
     obj = of_object_new_from_message(OF_BUFFER_TO_MESSAGE(new_buf), len);
     if (obj == NULL) {
-        uint32_t xid;
-        uint16_t type = OF_REQUEST_FAILED_BAD_TYPE;
-        of_version_t version;
-
         LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
-
-        /* Check to see if the version was the problem */
-        version = of_message_version_get(OF_BUFFER_TO_MESSAGE(new_buf));
-        if (!OF_VERSION_OKAY(version)) {
-            type = OF_REQUEST_FAILED_BAD_VERSION;
-        }
-
-        /* Get XID from the message; use cxn version */
-        xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(new_buf));
-        /* Generate error message */
-        if (indigo_cxn_send_error_msg(cxn->status.negotiated_version,
-                                      cxn->cxn_id, xid,
-                                      OF_ERROR_TYPE_BAD_REQUEST, type,
-                                      NULL) < 0) {
-            LOG_ERROR(cxn, "Error sending error message for failed parsing");
-        }
-
+        send_parse_error_message(cxn, new_buf, len);
         INDIGO_MEM_FREE(new_buf);
         return;
     }

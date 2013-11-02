@@ -875,42 +875,6 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
                                        of_port_status);
 }
 
-
-/**
- * Send an error message to a controller
- * @param version The version to use for the msg
- * @param cxn_id Controller to receive msg
- * @param xid The transaction ID to use for the message
- * @param type Type of error message
- * @param code Code of error message for this type
- * @param bad_obj If not NULL, convert to octets and use for data
- * @param octets If not NULL use this for the data
- *
- * Note that bad_obj has precendence over octets; if bad_obj is not NULL
- * then octets is ignored.
- *
- */
-
-int
-ind_core_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
-                        uint32_t xid, uint16_t type, uint16_t code,
-                        of_object_t *bad_obj, of_octets_t *octets)
-{
-    of_octets_t obj_octets;
-
-    if (!ind_core_module_enabled) {
-        return INDIGO_ERROR_INIT;
-    }
-
-    if (bad_obj != NULL) {
-        obj_octets.data = OF_OBJECT_BUFFER_INDEX(bad_obj, 0);
-        obj_octets.bytes = bad_obj->length;
-        octets = &obj_octets;
-    }
-
-    return indigo_cxn_send_error_msg(version, cxn_id, xid, type, code, octets);
-}
-
 /**
  * Timer operation to expire flows.
  *

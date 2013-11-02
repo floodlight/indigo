@@ -1071,48 +1071,38 @@ ind_cxn_finish(void)
  * directly in the wire buffer.
  */
 
-indigo_error_t
-indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
-                          uint32_t xid, uint16_t type, uint16_t code,
-                          of_octets_t *octets)
+void
+indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                            uint16_t type, uint16_t code)
 {
     of_error_msg_t *msg;
-    connection_t *cxn;
+    of_octets_t payload;
+    uint32_t xid;
 
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_TCP_CONNECTED(cxn_id)) {
-        return INDIGO_ERROR_PARAM;
-    }
+    payload.data = OF_OBJECT_BUFFER_INDEX(orig, 0);
+    payload.bytes = orig->length;
 
-    cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!OF_VERSION_OKAY(version)) {
-        if (cxn->status.negotiated_version == OF_VERSION_UNKNOWN) {
-            version = OF_VERSION_1_0;
-        } else {
-            version = cxn->status.negotiated_version;
-        }
-        INDIGO_ASSERT(OF_VERSION_OKAY(version));
-    }
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
 
-    LOG_TRACE("Sending error msg to %p. type %d. code %d.",
+    LOG_TRACE("Sending error msg to %s. type %d. code %d.",
               cxn_id_ip_string(cxn_id), type, code);
-    if ((msg = of_hello_failed_error_msg_new(version)) == NULL) {
-        LOG_ERROR("Could not create error message");
-        return INDIGO_ERROR_RESOURCE;
+
+    if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
+        LOG_ERROR("Could not allocate error message");
+        return;
     }
 
     of_hello_failed_error_msg_xid_set(msg, xid);
     of_hello_failed_error_msg_code_set(msg, code);
-    if (octets != NULL) {
-        if (of_hello_failed_error_msg_data_set(msg, octets) < 0) {
-            LOG_WARN("Failed to append data to error message");
-        }
+
+    if (of_hello_failed_error_msg_data_set(msg, &payload) < 0) {
+        LOG_WARN("Failed to append original request to error message");
     }
 
     /* HACK manually set the type field */
     of_wire_buffer_u16_set(OF_OBJECT_TO_WBUF(msg), 8, type);
 
-    indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
-    return INDIGO_ERROR_NONE;
+    indigo_cxn_send_controller_message(cxn_id, msg);
 }
 
 /****************************************************************

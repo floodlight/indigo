@@ -158,8 +158,7 @@ ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     return;
 
 error:
-    indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
-                              err_type, err_code, NULL);
+    indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
     of_object_delete(obj);
 }
 
