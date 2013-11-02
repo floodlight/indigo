@@ -187,9 +187,7 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_port_stats_request_xid_get(obj, &xid);
         of_port_stats_reply_xid_set(reply, xid);
 
-        if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-            LOG_ERROR("Error %d sending port_stats_get reply to %d", rv, cxn_id);
-        }
+        indigo_cxn_send_controller_message(cxn_id, reply);
     } else {
         of_port_no_t port_no;
         of_port_stats_request_port_no_get(obj, &port_no);
@@ -235,9 +233,7 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
         of_queue_get_config_reply_xid_set(reply, xid);
         of_queue_get_config_reply_port_set(reply, port);
 
-        if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-            LOG_ERROR("Error %d sending queue_stats_get reply to %d", rv, cxn_id);
-        }
+        indigo_cxn_send_controller_message(cxn_id, reply);
     } else {
         uint32_t queue_id;
         of_queue_stats_request_queue_id_get(obj, &queue_id);
@@ -280,10 +276,7 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         /* Set the XID to match the request */
         of_queue_stats_reply_xid_set(reply, xid);
 
-        if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-            LOG_ERROR("Error %d sending queue_stats reply to %d", rv, cxn_id);
-            of_queue_stats_reply_delete(reply);
-        }
+        indigo_cxn_send_controller_message(cxn_id, reply);
     } else {
         of_port_no_t port_no;
         uint32_t queue_id;
@@ -789,7 +782,7 @@ ind_core_get_config_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_get_config_request_xid_get(obj, &xid);
     of_get_config_reply_xid_set(reply, xid);
 
-    (void) indigo_cxn_send_controller_message(cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn_id, reply);
 
     of_object_delete(_obj);
 }
@@ -1116,7 +1109,6 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_desc_stats_request_t *obj;
     of_desc_stats_reply_t *reply;
     uint32_t xid;
-    int rv;
     ind_core_desc_stats_t *data;
 
     obj = (of_desc_stats_request_t *)_obj;
@@ -1140,11 +1132,7 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_desc_stats_reply_serial_num_set(reply, data->serial_num);
     of_desc_stats_reply_flags_set(reply, 0);
 
-    if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending desc stats response to %d", cxn_id);
-        of_object_delete(_obj);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn_id, reply);
 
     of_object_delete(_obj);
 }
@@ -1174,12 +1162,8 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto done;
     }
 
-    rv = indigo_cxn_send_controller_message(cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn_id, reply);
     reply = NULL;
-    if (rv < 0) {
-        LOG_ERROR("Error %d sending table_stats reply to cxn %d", rv, cxn_id);
-        goto done;
-    }
 
 done:
     of_table_stats_reply_delete(reply);
@@ -1201,7 +1185,6 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
     uint32_t xid;
     of_port_desc_stats_request_t *obj;
     of_port_desc_stats_reply_t *reply;
-    int rv;
 
     obj = (of_port_desc_stats_request_t *)_obj;
     LOG_TRACE("Handling of_port_desc_stats_request message: %p.", obj);
@@ -1219,10 +1202,7 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
 
     of_port_desc_stats_request_delete(obj);
 
-    if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending port_desc_stats response to %d", cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 /****************************************************************/
@@ -1240,7 +1220,6 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_features_request_t *obj;
     of_features_reply_t *reply;
     uint32_t xid;
-    int rv;
     of_dpid_t dpid;
 
     obj = (of_features_request_t *)_obj;
@@ -1263,10 +1242,7 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     of_features_request_delete(obj);
 
-    if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending features response to %d", cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 /**
@@ -1487,7 +1463,6 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
     of_bsn_get_ip_mask_reply_t *reply;
     uint32_t val32;
     uint8_t index;
-    int rv;
     uint32_t xid;
 
     obj = (of_bsn_get_ip_mask_request_t *)_obj;
@@ -1521,10 +1496,7 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
     }
     of_bsn_get_ip_mask_reply_mask_set(reply, val32);
 
-    if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending get ip mask response to %d", cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 /**
@@ -1540,7 +1512,6 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
 {
     of_bsn_hybrid_get_request_t *obj;
     of_bsn_hybrid_get_reply_t *reply;
-    int rv;
     uint32_t xid;
 
     obj = (of_bsn_hybrid_get_request_t *)_obj;
@@ -1561,8 +1532,5 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
 
     of_bsn_hybrid_get_request_delete(obj);
 
-    if ((rv = indigo_cxn_send_controller_message(cxn_id, reply)) < 0) {
-        LOG_ERROR("Error sending hybrid_get response to %d", cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }

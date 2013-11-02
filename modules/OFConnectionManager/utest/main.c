@@ -94,7 +94,6 @@ static int got_cxn_msg;
 static void
 cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
-    indigo_error_t rv = INDIGO_ERROR_NONE;
     printf("Got msg from %d: type %d\n", cxn_id, obj->object_id);
 
     /* Just respond to echo request */
@@ -109,7 +108,6 @@ cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
         printf("Respond to echo with xid 0x%x\n", xid);
         if ((reply = of_echo_reply_new(echo->version)) == NULL) {
             printf("Could not allocate echo response obj\n");
-            rv = (indigo_error_t)OF_ERROR_RESOURCE;
             goto done;
         }
 
@@ -120,12 +118,7 @@ cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
         of_echo_reply_xid_set(reply, xid);
 
-        if ((rv = indigo_cxn_send_controller_message(cxn_id,
-                                                     (of_object_t *)reply))
-            < 0) {
-            printf("Error %d sending echo response\n", rv);
-            goto done;
-        }
+        indigo_cxn_send_controller_message(cxn_id, reply);
     }
 
  done:

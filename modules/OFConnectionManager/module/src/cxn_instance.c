@@ -503,10 +503,7 @@ periodic_keepalive(void *cookie)
 
     of_echo_request_xid_set(echo, xid);
 
-    if (indigo_cxn_send_controller_message(cxn->cxn_id, echo)) {
-        LOG_ERROR(cxn, "Error sending echo request to %d", cxn->cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, echo);
 
     LOG_VERBOSE(cxn, "Sending echo request xid %u to %d", xid, cxn->cxn_id);
     cxn->keepalive.xid = xid;
@@ -520,27 +517,19 @@ periodic_keepalive(void *cookie)
 static indigo_error_t
 send_barrier_reply(connection_t *cxn)
 {
-   indigo_error_t result = INDIGO_ERROR_NONE;
    of_barrier_reply_t *obj = 0;
 
    if ((obj = of_barrier_reply_new(cxn->status.negotiated_version)) == 0) {
       LOG_ERROR(cxn, "of_barrier_reply_new() failed");
-      result = INDIGO_ERROR_UNKNOWN;
-
-      goto done;
+      return INDIGO_ERROR_UNKNOWN;
    }
 
    of_barrier_reply_xid_set(obj, cxn->barrier.xid);
    LOG_TRACE(cxn, "Respond to barrier req with xid %u from %d",
              cxn->barrier.xid, cxn->cxn_id);
 
-   result = indigo_cxn_send_controller_message(cxn->cxn_id, obj);
-   if (INDIGO_FAILURE(result)) {
-      LOG_ERROR(cxn, "Error sending barrier response to %d", cxn->cxn_id);
-   }
-
- done:
-   return (result);
+   indigo_cxn_send_controller_message(cxn->cxn_id, obj);
+   return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -578,12 +567,9 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_object_delete(_obj);
 
     if (rv >= 0) {
-        rv = indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+        indigo_cxn_send_controller_message(cxn->cxn_id, reply);
     } else {
         of_echo_reply_delete(reply);
-    }
-    if (rv < 0) {
-        LOG_ERROR(cxn, "Error sending echo response to %d", cxn->cxn_id);
     }
 
     return rv;
@@ -714,7 +700,8 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     of_nicira_controller_role_reply_role_set(reply,
         translate_to_nicira_role(cxn->status.role));
 
-    return indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -1339,10 +1326,7 @@ ind_cxn_send_hello(connection_t *cxn)
 
     of_hello_xid_set(hello, (uint32_t)ind_cxn_xid_get());
 
-    if ((rv = indigo_cxn_send_controller_message(cxn->cxn_id,
-                                                 (of_object_t *)hello)) < 0) {
-        LOG_ERROR(cxn, "Error sending hello");
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, hello);
 
     return rv;
 }

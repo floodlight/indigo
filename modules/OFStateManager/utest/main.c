@@ -169,13 +169,12 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
+void
 indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     AIM_LOG_VERBOSE("Send msg called for cxn id %d, obj type %d\n",
                       cxn_id, obj->object_id);
     of_object_delete(obj);
-    return INDIGO_ERROR_NONE;
 }
 
 indigo_error_t

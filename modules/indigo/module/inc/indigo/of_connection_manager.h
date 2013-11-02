@@ -329,12 +329,11 @@ extern void indigo_cxn_outstanding_op_incr(indigo_cxn_id_t cxn_id, int incr);
  *
  * Provided by connection manager, required by state manager
  *
- * Connection Manager takes responsibility for obj even if an error
- * is returned.  This means that if you send the object to more than
- * one connection you must first duplicate it.
+ * Connection Manager takes responsibility for obj. This means that if you
+ * send the object to more than one connection you must first duplicate it.
  */
 
-extern indigo_error_t indigo_cxn_send_controller_message(
+extern void indigo_cxn_send_controller_message(
     indigo_cxn_id_t cxn_id,
     of_object_t *obj);
 

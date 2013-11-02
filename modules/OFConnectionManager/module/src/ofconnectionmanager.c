@@ -705,34 +705,33 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
 
 /* Send an OpenFlow message to a controller connection
  *
- * This routine ALWAYS takes ownership of the object, even if it returns
- * an error.
+ * This routine takes ownership of the object.
+ *
+ * In some cases the message may be dropped.
  */
-indigo_error_t
+void
 indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     uint8_t *data = NULL;
     int len;
-    int rv = INDIGO_ERROR_NONE;
     connection_t *cxn;
 
     LOG_TRACE("Send msg type %d to cxn %d", obj->object_id, cxn_id);
 
     /* TODO create a new public API for this? */
     if (INDIGO_CXN_UNSPECIFIED(cxn_id)) {
-        return ind_cxn_send_async_controller_message(obj);
+        ind_cxn_send_async_controller_message(obj);
+        return;
     }
 
     if (INDIGO_CXN_INVALID(cxn_id)) {
         LOG_ERROR("Invalid or no active connection: %d", cxn_id);
-        rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!CXN_TCP_CONNECTED(cxn)) {
         LOG_ERROR("Connection id %d is not connected", cxn_id);
-        rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
 
@@ -755,7 +754,6 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         if (IS_ASYNC_MSG(obj)) {
             LOG_TRACE("Handshake not complete; drop async msg %s",
                       of_object_id_str[obj->object_id]);
-            rv = INDIGO_ERROR_NOT_READY;
             goto done;
         }
     }
@@ -766,16 +764,12 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         if (CXN_DROP_PACKET_IN(cxn, obj)) {
             LOG_TRACE("Dropping packetIn");
             cxn->status.packet_in_drop++;
-            /* @todo is this the right error code? */
-            rv = INDIGO_ERROR_RESOURCE;
             goto done;
         }
     } else if (obj->object_id == OF_FLOW_REMOVED) {
         if (CXN_DROP_FLOW_REMOVED(cxn, obj)) {
             LOG_TRACE("Dropping flowRemoved");
             cxn->status.flow_removed_drop++;
-            /* @todo is this the right error code? */
-            rv = INDIGO_ERROR_RESOURCE;
             goto done;
         }
     }
@@ -798,13 +792,11 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
         INDIGO_MEM_FREE(data);
-        rv = INDIGO_ERROR_UNKNOWN;
         ind_cxn_disconnect(cxn);
     }
 
  done:
     of_object_delete(obj);
-    return rv;
 }
 
 /**
@@ -1119,7 +1111,8 @@ indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
     /* HACK manually set the type field */
     of_wire_buffer_u16_set(OF_OBJECT_TO_WBUF(msg), 8, type);
 
-    return indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
+    indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
+    return INDIGO_ERROR_NONE;
 }
 
 /****************************************************************

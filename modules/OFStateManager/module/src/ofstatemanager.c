@@ -101,8 +101,6 @@ static int ind_core_connection_count;
 indigo_error_t
 indigo_core_packet_in(of_packet_in_t *packet_in)
 {
-    int rv;
-
     if (!ind_core_module_enabled) {
         LOG_TRACE("Packet in called when not enabled");
         of_object_delete(packet_in);
@@ -112,16 +110,9 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     LOG_TRACE("Packet in rcvd");
     ind_core_packet_ins++;
 
-    rv = indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED,
-                                            packet_in);
+    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, packet_in);
 
-    /* PAN-163.  Not sure why these get printed out; changed to TRACE */
-    /* Don't log error when there is no preferred connection in cxn manager */
-    if (rv != INDIGO_ERROR_NONE && rv != INDIGO_ERROR_NOT_READY) {
-        LOG_TRACE("Error forwarding packet in to controller");
-    }
-
-    return rv;
+    return INDIGO_ERROR_NONE;
 }
 
 
@@ -136,7 +127,6 @@ static void
 send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 {
     of_flow_removed_t *msg;
-    int rv = 0;
     uint32_t secs;
     uint32_t nsecs;
     indigo_time_t current;
@@ -183,11 +173,7 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
     /* @fixme hard_timeout and table_id are not in OF 1.0 */
 
     /* @fixme Should a cxn-id be specified? */
-    rv = indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, msg);
-    if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Error sending flow removed message");
-        return;
-    }
+    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, msg);
 
     return;
 }
@@ -879,21 +865,14 @@ indigo_core_connection_count_notify(int new_count)
 void
 indigo_core_port_status_update(of_port_status_t *of_port_status)
 {
-    int rv;
-
     /*
      * Special case: We allow this call to pass thru even if not enabled.
      */
 
     LOG_TRACE("OF state mgr port status update");
 
-    rv = indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED,
-                                            of_port_status);
-
-    /* Don't log error if controller is not connected */
-    if (rv != INDIGO_ERROR_NONE && rv != INDIGO_ERROR_NOT_READY) {
-        LOG_ERROR("Error sending port status message to controller");
-    }
+    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED,
+                                       of_port_status);
 }
 
 
