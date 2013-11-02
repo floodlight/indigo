@@ -198,8 +198,8 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         return;
     }
 
-    LOG_TRACE("Received msg type %s (%d)",
-             of_object_id_str[obj->object_id], obj->object_id);
+    LOG_TRACE("Received %s message from cxn %d",
+              of_object_id_str[obj->object_id], cxn);
 
     /* Add non-default jump table mechanism here */
     // if (dynamic_handlers[obj->object_id] != NULL) {
@@ -398,7 +398,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         break;
 
     default:
-        LOG_ERROR("Unhandled message type %d\n", obj->object_id);
         ind_core_unhandled_message(obj, cxn);
         break;
     }

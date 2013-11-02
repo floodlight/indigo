@@ -69,8 +69,8 @@ ind_core_xid_alloc(void)
 void
 ind_core_unhandled_message(of_object_t *obj, indigo_cxn_id_t cxn_id)
 {
-    LOG_ERROR("Unhandled message %p from %d.  Object id %d",
-              obj, cxn_id, obj->object_id);
+    LOG_ERROR("Unhandled message %s from cxn %d.",
+              of_object_id_str[obj->object_id], cxn_id);
 
     /* Generate error message */
     indigo_cxn_send_error_reply(cxn_id, obj,
@@ -97,7 +97,6 @@ ind_core_packet_out_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_packet_out_t *obj;
 
     obj = (of_packet_out_t *)_obj;
-    LOG_TRACE("Handling of_packet_out message: %p.", obj);
 
     (void)indigo_fwd_packet_out(obj);
 
@@ -118,8 +117,6 @@ ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     of_port_mod_t *obj = _obj;
     indigo_error_t rv;
-
-    LOG_TRACE("Handling of_port_mod message.");
 
     rv = indigo_port_modify(obj);
 
@@ -154,8 +151,6 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_port_stats_reply_t *reply;
     indigo_error_t rv;
     uint32_t xid = 0;
-
-    LOG_TRACE("Handling of_port_stats_request message.");
 
     rv = indigo_port_stats_get(obj, &reply);
     if (rv == INDIGO_ERROR_NONE) {
@@ -198,8 +193,6 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
     of_queue_get_config_request_xid_get(obj, &xid);
     of_queue_get_config_request_port_get(obj, &port);
 
-    LOG_TRACE("Handling of_queue_get_config_request message.");
-
     rv = indigo_port_queue_config_get(obj, &reply);
     if (rv == INDIGO_ERROR_NONE) {
         of_queue_get_config_reply_xid_set(reply, xid);
@@ -236,8 +229,6 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
 
     of_queue_stats_request_xid_get(obj, &xid);
-
-    LOG_TRACE("Handling of_queue_stats_request message");
 
     rv = indigo_port_queue_stats_get(obj, &reply);
     if (rv == INDIGO_ERROR_NONE) {
@@ -355,7 +346,6 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     obj = (of_flow_modify_t *)_obj;
     ver = obj->version;
-    LOG_TRACE("Handling of_flow_add message: %p, ver %d.", obj, ver);
 
     of_flow_modify_flags_get(obj, &flags);
     of_flow_modify_xid_get(obj, &xid);
@@ -531,7 +521,6 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
 
     obj = (of_flow_modify_t *)_obj;
-    LOG_TRACE("Handling of_flow_modify message: %p.", obj);
 
     struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
     if (state == NULL) {
@@ -576,8 +565,6 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
     of_meta_match_t query;
     ft_entry_t *entry;
-
-    LOG_TRACE("Handling of_flow_modify_strict message.");
 
     /* Form the query */
     rv = flow_mod_setup_query(obj, &query, OF_MATCH_STRICT, 1);
@@ -639,7 +626,6 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
 
     flow_del = (of_flow_delete_t *)_obj;
-    LOG_TRACE("Handling of_flow_delete message: %p.", flow_del);
 
     struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
     if (state == NULL) {
@@ -685,7 +671,6 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     ft_entry_t *entry;
 
     obj = (of_flow_delete_strict_t *)_obj;
-    LOG_TRACE("Handling of_flow_delete_strict message: %p.", obj);
 
     /* Form the query and call mark entries */
     rv = flow_mod_setup_query((of_flow_modify_t *)obj, &query, OF_MATCH_STRICT, 0);
@@ -720,7 +705,6 @@ ind_core_get_config_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     uint32_t xid;
 
     obj = (of_get_config_request_t *)_obj;
-    LOG_TRACE("Handling of_get_config_request message: %p.", obj);
 
     /* Allocate reply */
     reply = of_get_config_reply_new(obj->version);
@@ -879,7 +863,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
 
     obj = (of_flow_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_flow_stats_request message: %p.", obj);
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
@@ -985,7 +968,6 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     indigo_error_t rv;
 
     obj = (of_aggregate_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_aggregate_stats_request message: %p.", obj);
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
@@ -1047,7 +1029,6 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     ind_core_desc_stats_t *data;
 
     obj = (of_desc_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_desc_stats_request message: %p.", obj);
 
     /* Create reply and send to controller */
     if ((reply = of_desc_stats_reply_new(obj->version)) == NULL) {
@@ -1088,8 +1069,6 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_table_stats_request_t *reply = NULL;
     indigo_error_t rv;
 
-    LOG_TRACE("Handling of_table_stats_request message.");
-
     rv = indigo_fwd_table_stats_get(obj, &reply);
     if (rv < 0) {
         reply = NULL;
@@ -1122,7 +1101,6 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
     of_port_desc_stats_reply_t *reply;
 
     obj = (of_port_desc_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_port_desc_stats_request message: %p.", obj);
 
     /* Generate a port_desc_stats reply and send to controller */
     if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
@@ -1158,7 +1136,6 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_dpid_t dpid;
 
     obj = (of_features_request_t *)_obj;
-    LOG_TRACE("Handling of_features_request message: %p.", obj);
 
     /* Generate a features reply and send to controller */
     if ((reply = of_features_reply_new(obj->version)) == NULL) {
@@ -1193,7 +1170,6 @@ ind_core_table_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_table_mod_t *obj;
 
     obj = (of_table_mod_t *)_obj;
-    LOG_TRACE("Handling of_table_mod message: %p.", obj);
 
     /* Handle object of type of_table_mod_t */
 
@@ -1213,7 +1189,6 @@ ind_core_set_config_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_set_config_t *obj;
 
     obj = (of_set_config_t *)_obj;
-    LOG_TRACE("Handling of_set_config message: %p.", obj);
 
     /* Handle object of type of_set_config_t */
     ind_core_of_config.config_set_done = 1;
@@ -1276,8 +1251,6 @@ ind_core_experimenter_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
 
-    LOG_TRACE("Handling of_experimenter message: %p.", fwd_obj);
-
     /* Handle object of type of_experimenter_t */
     if ((fwd_rv = indigo_fwd_experimenter(fwd_obj, cxn_id)) < 0) {
         LOG_TRACE("Error %d from fwd_experimenter", fwd_rv);
@@ -1328,7 +1301,6 @@ ind_core_experimenter_stats_request_handler(of_object_t *_obj,
     of_experimenter_stats_request_t *obj;
 
     obj = (of_experimenter_stats_request_t *)_obj;
-    LOG_TRACE("Handling of_experimenter_stats_request message: %p.", obj);
 
     /* Handle object of type of_experimenter_stats_request_t */
 

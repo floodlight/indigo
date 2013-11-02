@@ -1091,8 +1091,8 @@ process_message(connection_t *cxn)
     }
 
     {       /***** Debug info about message *****/
-        LOG_VERBOSE(cxn, "Received message, obj %p of type %s",
-                    obj, of_object_id_str[obj->object_id]);
+        LOG_VERBOSE(cxn, "Received %s message",
+                    of_object_id_str[obj->object_id]);
         LOG_OBJECT(obj);
 
         if (IS_MSG_OBJ(obj)) {
