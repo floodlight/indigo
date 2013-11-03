@@ -69,8 +69,8 @@ ind_core_xid_alloc(void)
 void
 ind_core_unhandled_message(of_object_t *obj, indigo_cxn_id_t cxn_id)
 {
-    LOG_ERROR("Unhandled message %s from cxn %d.",
-              of_object_id_str[obj->object_id], cxn_id);
+    LOG_WARN("Unhandled message %s from cxn %d.",
+             of_object_id_str[obj->object_id], cxn_id);
 
     /* Generate error message */
     indigo_cxn_send_error_reply(cxn_id, obj,
