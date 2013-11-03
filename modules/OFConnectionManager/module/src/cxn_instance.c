@@ -1060,7 +1060,8 @@ process_message(connection_t *cxn)
     }
 
     if(cxn->trace_pvs) {
-        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn=%d\n", cxn->cxn_id);
+        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn %s\n",
+                   cxn_ip_string(cxn));
         of_object_dump((loci_writer_f)aim_printf, cxn->trace_pvs, obj);
         aim_printf(cxn->trace_pvs, "**\n\n");
     }
