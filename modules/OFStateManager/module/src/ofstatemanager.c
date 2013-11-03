@@ -403,11 +403,11 @@ indigo_error_t
 indigo_core_dpid_set(of_dpid_t dpid)
 {
     if (ind_core_dpid != dpid) {
-        LOG_INFO("Changing switch DPID\n");
+        LOG_INFO("Changing switch DPID");
         INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
         ind_cxn_reset(IND_CXN_RESET_ALL);
     } else {
-        LOG_VERBOSE("Switch DPID set called but unchanged\n");
+        LOG_VERBOSE("Switch DPID set called but unchanged");
     }
 
     return INDIGO_ERROR_NONE;
@@ -463,7 +463,7 @@ ind_core_init(ind_core_config_t *config)
     ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
     if ((ind_core_ft = ft_create(&ft_config)) == NULL) {
-        LOG_ERROR("Unable to allocate flow table\n");
+        LOG_ERROR("Unable to allocate flow table");
         return INDIGO_ERROR_RESOURCE;
     }
 
@@ -497,8 +497,8 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
 
     rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Error deleting flow, id " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+        LOG_ERROR("Error deleting flow " INDIGO_FLOW_ID_PRINTF_FORMAT ": %s",
+                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id), indigo_strerror(rv));
         /* Ignoring failure */
     }
 
@@ -912,8 +912,8 @@ flow_expiration_timer(void *cookie)
         if (entry->idle_timeout > 0) {
             rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
             if (rv != INDIGO_ERROR_NONE) {
-                LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
-                          entry->id, rv);
+                LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                          entry->id, indigo_strerror(rv));
                 continue;
             }
 

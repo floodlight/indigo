@@ -122,7 +122,7 @@ ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_version_t ver = obj->version;
         uint32_t xid = 0;
 
-        LOG_ERROR("Port modify failed: %d", rv);
+        LOG_ERROR("Port modify failed: %s", indigo_strerror(rv));
         of_port_mod_xid_get(obj, &xid);
         indigo_cxn_send_error_reply(
                 cxn_id, obj,
@@ -161,7 +161,8 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_port_no_t port_no;
         of_port_stats_request_port_no_get(obj, &port_no);
 
-        LOG_ERROR("Failed to get stats for port %u: %d", port_no, rv);
+        LOG_ERROR("Failed to get stats for port %u: %s",
+                  port_no, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -200,8 +201,8 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
     } else {
         uint32_t queue_id;
         of_queue_stats_request_queue_id_get(obj, &queue_id);
-        LOG_ERROR("Failed to get config for queue %u on port %u: %d",
-                  queue_id, port, rv);
+        LOG_ERROR("Failed to get config for queue %u on port %u: %s",
+                  queue_id, port, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -239,8 +240,8 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         uint32_t queue_id;
         of_queue_stats_request_port_no_get(obj, &port_no);
         of_queue_stats_request_queue_id_get(obj, &queue_id);
-        LOG_ERROR("Failed to get stats for queue %u on port %u: %d",
-                  queue_id, port_no, rv);
+        LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
+                  queue_id, port_no, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -389,7 +390,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     rv = ft_add(ind_core_ft, flow_id, obj, &entry);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %d", rv);
+        LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %s",
+                  indigo_strerror(rv));
         goto done;
     }
 
@@ -401,7 +403,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
-       LOG_ERROR("Error from Forwarding while inserting flow: %d", rv);
+       LOG_ERROR("Error from Forwarding while inserting flow: %s",
+                 indigo_strerror(rv));
        ind_core_ft->status.forwarding_add_errors += 1;
 
        of_flow_add_xid_get(obj, &xid);
@@ -486,7 +489,8 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
         } else {
-            LOG_ERROR("Error from Forwarding while modifying flow: %d", rv);
+            LOG_ERROR("Error from Forwarding while modifying flow: %d",
+                      indigo_strerror(rv));
             flow_mod_err_msg_send(rv, state->request->version,
                                   state->cxn_id, state->request);
         }
@@ -579,7 +583,8 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (rv == INDIGO_ERROR_NONE) {
         ft_entry_modify_effects(ind_core_ft, entry, obj);
     } else {
-        LOG_ERROR("Error from Forwarding while modifying flow: %d", rv);
+        LOG_ERROR("Error from Forwarding while modifying flow: %d",
+                  indigo_strerror(rv));
         flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
     }
 
@@ -768,8 +773,8 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 
     rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
-                  entry->id, rv);
+        LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                  entry->id, indigo_strerror(rv));
         return;
     }
 
@@ -885,7 +890,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter, 
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to start flow stats iter.");
+        LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
         of_object_delete(_obj);
         INDIGO_MEM_FREE(state);
     }
@@ -913,8 +918,8 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
         indigo_fi_flow_stats_t flow_stats;
         rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
         if (rv != INDIGO_ERROR_NONE) {
-            LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
-                      entry->id, rv);
+            LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                      entry->id, indigo_strerror(rv));
             return;
         }
 
@@ -989,7 +994,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to start aggregate stats iter.");
+        LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
         of_object_delete(_obj);
         INDIGO_MEM_FREE(state);
         return;
@@ -1057,7 +1062,7 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     rv = indigo_fwd_table_stats_get(obj, &reply);
     if (rv < 0) {
         reply = NULL;
-        LOG_ERROR("Table stats returned error %d", rv);
+        LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
         goto done;
     }
 
@@ -1213,10 +1218,10 @@ ind_core_experimenter_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Handle object of type of_experimenter_t */
     if ((fwd_rv = indigo_fwd_experimenter(fwd_obj, cxn_id)) < 0) {
-        LOG_TRACE("Error %d from fwd_experimenter", fwd_rv);
+        LOG_TRACE("Error from fwd_experimenter: %s", indigo_strerror(fwd_rv));
     }
     if ((port_rv = indigo_port_experimenter(port_obj, cxn_id)) < 0) {
-        LOG_TRACE("Error %d from port_experimenter", port_rv);
+        LOG_TRACE("Error from port_experimenter: %s", indigo_strerror(port_rv));
     }
 
     if ((fwd_rv == INDIGO_ERROR_NOT_SUPPORTED) &&
