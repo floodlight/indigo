@@ -1139,24 +1139,6 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 }
 
 /**
- * Handle a table_mod message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- */
-
-void
-ind_core_table_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
-{
-    of_table_mod_t *obj = _obj;
-
-    /* Handle object of type of_table_mod_t */
-    (void) obj;
-
-    of_object_delete(_obj);
-}
-
-/**
  * Handle a set_config message
  * @param cxn_id Connection handler for the owning connection
  * @param _obj Generic type object for the message to be coerced
@@ -1260,28 +1242,6 @@ ind_core_experimenter_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     of_experimenter_delete(fwd_obj);
     of_experimenter_delete(port_obj);
-}
-
-
-/**
- * Handle a experimenter_stats_request message
- * @param cxn_id Connection handler for the owning connection
- * @param _obj Generic type object for the message to be coerced
- * @returns Error code
- *
- * Currently not handled; returns error message to controller
- */
-
-void
-ind_core_experimenter_stats_request_handler(of_object_t *_obj,
-                                            indigo_cxn_id_t cxn_id)
-{
-    of_experimenter_stats_request_t *obj = _obj;
-
-    /* Handle object of type of_experimenter_stats_request_t */
-    (void) obj;
-
-    ind_core_unhandled_message(_obj, cxn_id);
 }
 
 /****************************************************************

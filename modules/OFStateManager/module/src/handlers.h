@@ -87,16 +87,10 @@ extern void ind_core_port_desc_stats_request_handler(
 extern void ind_core_features_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern void ind_core_table_mod_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
 extern void ind_core_set_config_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
 extern void ind_core_experimenter_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern void ind_core_experimenter_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
 extern void ind_core_group_desc_stats_request_handler(

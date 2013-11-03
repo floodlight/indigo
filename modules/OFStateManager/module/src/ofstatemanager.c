@@ -349,17 +349,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     /****************************************************************
      * These are not yet implemented
      ****************************************************************/
-
-#if NOT_YET
-
     case OF_TABLE_MOD:
-        ind_core_table_mod_handler(obj, cxn);
-        break;
-
     case OF_EXPERIMENTER_STATS_REQUEST:
-        ind_core_experimenter_stats_request_handler(obj, cxn);
+        ind_core_unhandled_message(obj, cxn);
         break;
-#endif
 
     /****************************************************************
      * These will never be handled by a switch
