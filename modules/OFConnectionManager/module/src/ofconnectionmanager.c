@@ -45,6 +45,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/errno.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -438,13 +439,13 @@ listen_cxn_init(connection_t *cxn)
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
-        LOG_ERROR("Could not bind to socket for local cxn");
+        LOG_ERROR("Could not bind to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
     /* show that we are willing to listen */
     if (listen(cxn->sd, LOCAL_CXN_BACKLOG) == -1) {
-        LOG_ERROR("Could not listen to socket for local cxn");
+        LOG_ERROR("Could not listen to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -453,7 +454,7 @@ listen_cxn_init(connection_t *cxn)
             cxn->sd, ind_cxn_listen_socket_ready,
             cxn, IND_CXN_EVENT_PRIORITY);
     if (rv < 0) {
-        LOG_ERROR("Could not register with soc man");
+        LOG_ERROR("Could not register with socket manager: %s", indigo_strerror(rv));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -509,7 +510,7 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
         /* Attempt to create the socket */
         cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
-            LOG_ERROR("Failed to create controller connection socket");
+            LOG_ERROR("Failed to create controller connection socket: %s", strerror(errno));
             return NULL;
         }
     } else {
@@ -519,7 +520,7 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
     soc_flags = fcntl(cxn->sd, F_GETFL, 0);
     if (soc_flags == -1 || fcntl(cxn->sd, F_SETFL,
                                  soc_flags | O_NONBLOCK) == -1) {
-        LOG_ERROR("Failed to set non-blocking flag for socket");
+        LOG_ERROR("Failed to set non-blocking flag for socket: %s", strerror(errno));
         close(cxn->sd);
         return NULL;
     }
@@ -715,8 +716,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     uint8_t *data = NULL;
     int len;
     connection_t *cxn;
-
-    LOG_TRACE("Send msg type %d to cxn %d", obj->object_id, cxn_id);
+    uint32_t xid;
 
     /* TODO create a new public API for this? */
     if (INDIGO_CXN_UNSPECIFIED(cxn_id)) {
@@ -735,6 +735,10 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         goto done;
     }
 
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(OF_OBJECT_BUFFER_INDEX(obj, 0)));
+
+    LOG_VERBOSE("cxn %s: Sending %s message xid %u",
+                cxn_ip_string(cxn), of_object_id_str[obj->object_id], xid);
 
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: send to cxn=%d\n", cxn->cxn_id);
@@ -775,8 +779,6 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
     /* Steal the buffer and enqueue the data */
-    LOG_VERBOSE("Sending message type %s to connection %s",
-                of_object_id_str[obj->object_id], cxn_ip_string(cxn));
     LOG_OBJECT(obj);
 
     of_object_wire_buffer_steal((of_object_t *)obj, &data);
@@ -902,7 +904,7 @@ indigo_cxn_status_change_register(indigo_cxn_status_change_f handler,
         }
     }
 
-    LOG_ERROR("Could not find free slot fo status change callback");
+    LOG_ERROR("Could not find free slot for status change callback");
     return INDIGO_ERROR_RESOURCE;
 }
 
@@ -1181,7 +1183,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                     &addrlen);
 
     if (new_sd == -1) {
-        LOG_ERROR("Error on accept for local cxn");
+        LOG_ERROR("Error on accept for local cxn: %s", strerror(errno));
         ++ind_cxn_internal_errors;
         return;
     }
@@ -1257,7 +1259,7 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
         return;
     }
 
-    LOG_VERBOSE("Connection reset for id %d\n", cxn_id);
+    LOG_VERBOSE("Connection reset for id %d", cxn_id);
     if (cxn_id == IND_CXN_RESET_ALL) {
         /* Iterate thru active connections */
         FOREACH_ACTIVE_CXN(cxn_id, cxn) {
