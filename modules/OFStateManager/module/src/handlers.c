@@ -1272,8 +1272,6 @@ ind_core_bsn_set_ip_mask_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     of_bsn_set_ip_mask_xid_get(obj, &xid);
 
-    LOG_TRACE("Received BSN set IP mask message from %d", cxn_id);
-
     of_bsn_set_ip_mask_index_get(obj, &index);
     of_bsn_set_ip_mask_mask_get(obj, &mask);
     of_bsn_set_ip_mask_delete(obj);
@@ -1303,8 +1301,6 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
     uint32_t val32;
     uint8_t index;
     uint32_t xid;
-
-    LOG_TRACE("Received BSN get IP mask request message from %d", cxn_id);
 
     /* Create reply and send to controller */
     if ((reply = of_bsn_get_ip_mask_reply_new(obj->version)) == NULL) {
