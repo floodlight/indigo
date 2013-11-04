@@ -338,6 +338,21 @@ extern void indigo_cxn_send_controller_message(
     of_object_t *obj);
 
 /**
+ * Send an async OpenFlow message to multiple controller connections
+ *
+ * @param obj The LOCI object representing the message
+ *
+ * Provided by connection manager, required by state manager
+ *
+ * The connections sent to are determined by the message version
+ * and the connections' async config.
+ *
+ * Connection Manager takes responsibility for obj.
+ */
+
+extern void indigo_cxn_send_async_message(of_object_t *obj);
+
+/**
  * Send an error message to a controller connection
  *
  * @param cxn_id Controller to receive msg

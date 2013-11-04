@@ -175,6 +175,14 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     of_object_delete(obj);
 }
 
+void
+indigo_cxn_send_async_message(of_object_t *obj)
+{
+    AIM_LOG_VERBOSE("Send async msg called for type %s",
+                    of_object_id_str[obj->object_id]);
+    of_object_delete(obj);
+}
+
 indigo_error_t
 ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {

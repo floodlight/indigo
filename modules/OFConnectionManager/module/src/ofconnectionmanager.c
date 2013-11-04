@@ -67,9 +67,6 @@ static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
 
-static indigo_error_t
-ind_cxn_send_async_controller_message(of_object_t *obj);
-
 /****************************************************************
  * Connection Manager Data shared within module
  ****************************************************************/
@@ -718,12 +715,6 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     connection_t *cxn;
     uint32_t xid;
 
-    /* TODO create a new public API for this? */
-    if (INDIGO_CXN_UNSPECIFIED(cxn_id)) {
-        ind_cxn_send_async_controller_message(obj);
-        return;
-    }
-
     if (INDIGO_CXN_INVALID(cxn_id)) {
         LOG_ERROR("Invalid or no active connection: %d", cxn_id);
         goto done;
@@ -828,8 +819,8 @@ ind_cxn_accepts_async_message(const connection_t *cxn, const of_object_t *obj)
 /**
  * Send an async message to all interested connections.
  */
-static indigo_error_t
-ind_cxn_send_async_controller_message(of_object_t *obj)
+void
+indigo_cxn_send_async_message(of_object_t *obj)
 {
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
@@ -859,11 +850,10 @@ ind_cxn_send_async_controller_message(of_object_t *obj)
     if (first_cxn_id != INDIGO_CXN_ID_UNSPECIFIED) {
         indigo_cxn_send_controller_message(first_cxn_id, obj);
     } else {
-        /* No interested connections */
+        LOG_VERBOSE("Dropping async %s message, no interested connections",
+                    of_object_id_str[obj->object_id]);
         of_object_delete(obj);
     }
-
-    return INDIGO_ERROR_NONE;
 }
 
 /**

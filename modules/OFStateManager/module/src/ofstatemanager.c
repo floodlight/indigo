@@ -110,7 +110,7 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     LOG_TRACE("Packet in rcvd");
     ind_core_packet_ins++;
 
-    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, packet_in);
+    indigo_cxn_send_async_message(packet_in);
 
     return INDIGO_ERROR_NONE;
 }
@@ -172,8 +172,7 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 
     /* @fixme hard_timeout and table_id are not in OF 1.0 */
 
-    /* @fixme Should a cxn-id be specified? */
-    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, msg);
+    indigo_cxn_send_async_message(msg);
 
     return;
 }
@@ -866,8 +865,7 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
 
     LOG_TRACE("OF state mgr port status update");
 
-    indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED,
-                                       of_port_status);
+    indigo_cxn_send_async_message(of_port_status);
 }
 
 /**
