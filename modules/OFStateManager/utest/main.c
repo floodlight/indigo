@@ -364,7 +364,7 @@ depopulate_table(ft_instance_t ft)
         entry = ft_lookup(ft, TEST_KEY(idx));
         TEST_ASSERT(entry != NULL);
         TEST_ASSERT(entry->match.fields.eth_type == TEST_ETH_TYPE(idx));
-        ft_delete_id(ft, TEST_KEY(idx));
+        ft_delete(ft, entry);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
@@ -529,8 +529,8 @@ test_ft_hash(void)
     entry = ft_lookup(ft, TEST_ENT_ID);
 
     /* Should not find next id */
-    entry = ft_lookup(ft, TEST_ENT_ID + 1);
-    TEST_ASSERT(entry == NULL);
+    lookup_entry = ft_lookup(ft, TEST_ENT_ID + 1);
+    TEST_ASSERT(lookup_entry == NULL);
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
@@ -611,7 +611,7 @@ test_ft_hash(void)
     TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
 
-    ft_delete_id(ft, TEST_ENT_ID);
+    ft_delete(ft, entry);
     of_object_delete(flow_add);
 
     /* Delete the table */

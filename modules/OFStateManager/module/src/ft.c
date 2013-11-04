@@ -218,20 +218,6 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 }
 
 indigo_error_t
-ft_delete_id(ft_instance_t ft,
-                       indigo_flow_id_t id)
-{
-    ft_entry_t *entry;
-
-    if ((entry = ft_lookup(ft, id)) == NULL) {
-        LOG_VERBOSE("Delete: Failed to find flow "
-                    INDIGO_FLOW_ID_PRINTF_FORMAT, id);
-        return INDIGO_ERROR_NOT_FOUND;
-    }
-    return ft_delete(ft, entry);
-}
-
-indigo_error_t
 ft_strict_match(ft_instance_t instance,
                of_meta_match_t *query,
                ft_entry_t **entry_ptr)
