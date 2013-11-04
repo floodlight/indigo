@@ -103,13 +103,13 @@ ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
 
     rv = indigo_port_modify(obj);
-
     if (rv != INDIGO_ERROR_NONE) {
         of_version_t ver = obj->version;
-        uint32_t xid = 0;
+        of_port_no_t port_no;
 
-        LOG_ERROR("Port modify failed: %s", indigo_strerror(rv));
-        of_port_mod_xid_get(obj, &xid);
+        of_port_mod_port_no_get(obj, &port_no);
+        LOG_ERROR("Failed to modify port %u: %s", port_no, indigo_strerror(rv));
+
         indigo_cxn_send_error_reply(
                 cxn_id, obj,
                 OF_ERROR_TYPE_PORT_MOD_FAILED_BY_VERSION(ver),
