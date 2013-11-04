@@ -2825,9 +2825,13 @@ typedef struct of_queue_stats_request_s of_queue_stats_request_t;
  *   Accessors for xid, a variable of type uint32.  Functions
  *   are of type of_role_reply_uint32_get_f and _set_f.
  *
- * @param data_get/set ( OF_1_2 OF_1_3).
- *   Accessors for data, a variable of type of_octets.  Functions
- *   are of type of_role_reply_of_octets_get_f and _set_f.
+ * @param role_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for role, a variable of type uint32.  Functions
+ *   are of type of_role_reply_uint32_get_f and _set_f.
+ *
+ * @param generation_id_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for generation_id, a variable of type uint64.  Functions
+ *   are of type of_role_reply_uint64_get_f and _set_f.
  *
  */
 typedef struct of_role_reply_s of_role_reply_t;
@@ -4516,6 +4520,32 @@ typedef struct of_oxm_arp_tpa_s of_oxm_arp_tpa_t;
 typedef struct of_oxm_arp_tpa_masked_s of_oxm_arp_tpa_masked_t;
 
 /**
+ * Structure for of_oxm_bsn_global_vrf_allowed object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint8.  Functions
+ *   are of type of_oxm_bsn_global_vrf_allowed_uint8_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_global_vrf_allowed_s of_oxm_bsn_global_vrf_allowed_t;
+
+/**
+ * Structure for of_oxm_bsn_global_vrf_allowed_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint8.  Functions
+ *   are of type of_oxm_bsn_global_vrf_allowed_masked_uint8_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint8.  Functions
+ *   are of type of_oxm_bsn_global_vrf_allowed_masked_uint8_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_global_vrf_allowed_masked_s of_oxm_bsn_global_vrf_allowed_masked_t;
+
+/**
  * Structure for of_oxm_bsn_in_ports_128 object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -4540,6 +4570,136 @@ typedef struct of_oxm_bsn_in_ports_128_s of_oxm_bsn_in_ports_128_t;
  *
  */
 typedef struct of_oxm_bsn_in_ports_128_masked_s of_oxm_bsn_in_ports_128_masked_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_dst_class_id object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_dst_class_id_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_dst_class_id_s of_oxm_bsn_l3_dst_class_id_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_dst_class_id_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_dst_class_id_masked_uint32_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_dst_class_id_masked_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_dst_class_id_masked_s of_oxm_bsn_l3_dst_class_id_masked_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_interface_class_id object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_interface_class_id_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_interface_class_id_s of_oxm_bsn_l3_interface_class_id_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_interface_class_id_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_interface_class_id_masked_uint32_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_interface_class_id_masked_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_interface_class_id_masked_s of_oxm_bsn_l3_interface_class_id_masked_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_src_class_id object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_src_class_id_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_src_class_id_s of_oxm_bsn_l3_src_class_id_t;
+
+/**
+ * Structure for of_oxm_bsn_l3_src_class_id_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_src_class_id_masked_uint32_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_l3_src_class_id_masked_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_l3_src_class_id_masked_s of_oxm_bsn_l3_src_class_id_masked_t;
+
+/**
+ * Structure for of_oxm_bsn_lag_id object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_lag_id_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_lag_id_s of_oxm_bsn_lag_id_t;
+
+/**
+ * Structure for of_oxm_bsn_lag_id_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_lag_id_masked_uint32_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_lag_id_masked_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_lag_id_masked_s of_oxm_bsn_lag_id_masked_t;
+
+/**
+ * Structure for of_oxm_bsn_vrf object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_vrf_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_vrf_s of_oxm_bsn_vrf_t;
+
+/**
+ * Structure for of_oxm_bsn_vrf_masked object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_vrf_masked_uint32_get_f and _set_f.
+ *
+ * @param value_mask_get/set ( OF_1_2 OF_1_3).
+ *   Accessors for value_mask, a variable of type uint32.  Functions
+ *   are of type of_oxm_bsn_vrf_masked_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_oxm_bsn_vrf_masked_s of_oxm_bsn_vrf_masked_t;
 
 /**
  * Structure for of_oxm_eth_dst object.  Get/set

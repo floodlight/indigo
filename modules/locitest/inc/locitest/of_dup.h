@@ -938,6 +938,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_bsn_global_vrf_allowed_t *
+    of_oxm_bsn_global_vrf_allowed_dup(
+        of_oxm_bsn_global_vrf_allowed_t *src);
+
+extern of_oxm_bsn_global_vrf_allowed_masked_t *
+    of_oxm_bsn_global_vrf_allowed_masked_dup(
+        of_oxm_bsn_global_vrf_allowed_masked_t *src);
+
 extern of_oxm_bsn_in_ports_128_t *
     of_oxm_bsn_in_ports_128_dup(
         of_oxm_bsn_in_ports_128_t *src);
@@ -945,6 +953,46 @@ extern of_oxm_bsn_in_ports_128_t *
 extern of_oxm_bsn_in_ports_128_masked_t *
     of_oxm_bsn_in_ports_128_masked_dup(
         of_oxm_bsn_in_ports_128_masked_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_t *
+    of_oxm_bsn_l3_dst_class_id_dup(
+        of_oxm_bsn_l3_dst_class_id_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_masked_t *
+    of_oxm_bsn_l3_dst_class_id_masked_dup(
+        of_oxm_bsn_l3_dst_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_t *
+    of_oxm_bsn_l3_interface_class_id_dup(
+        of_oxm_bsn_l3_interface_class_id_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_masked_t *
+    of_oxm_bsn_l3_interface_class_id_masked_dup(
+        of_oxm_bsn_l3_interface_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_t *
+    of_oxm_bsn_l3_src_class_id_dup(
+        of_oxm_bsn_l3_src_class_id_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_masked_t *
+    of_oxm_bsn_l3_src_class_id_masked_dup(
+        of_oxm_bsn_l3_src_class_id_masked_t *src);
+
+extern of_oxm_bsn_lag_id_t *
+    of_oxm_bsn_lag_id_dup(
+        of_oxm_bsn_lag_id_t *src);
+
+extern of_oxm_bsn_lag_id_masked_t *
+    of_oxm_bsn_lag_id_masked_dup(
+        of_oxm_bsn_lag_id_masked_t *src);
+
+extern of_oxm_bsn_vrf_t *
+    of_oxm_bsn_vrf_dup(
+        of_oxm_bsn_vrf_t *src);
+
+extern of_oxm_bsn_vrf_masked_t *
+    of_oxm_bsn_vrf_masked_dup(
+        of_oxm_bsn_vrf_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_dup(
@@ -3118,6 +3166,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_2_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_bsn_global_vrf_allowed_t *
+    of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_2_dup(
+        of_oxm_bsn_global_vrf_allowed_t *src);
+
+extern of_oxm_bsn_global_vrf_allowed_masked_t *
+    of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_global_vrf_allowed_masked_t *src);
+
 extern of_oxm_bsn_in_ports_128_t *
     of_oxm_bsn_in_ports_128_OF_VERSION_1_2_dup(
         of_oxm_bsn_in_ports_128_t *src);
@@ -3125,6 +3181,46 @@ extern of_oxm_bsn_in_ports_128_t *
 extern of_oxm_bsn_in_ports_128_masked_t *
     of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_dup(
         of_oxm_bsn_in_ports_128_masked_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_t *
+    of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_dst_class_id_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_masked_t *
+    of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_dst_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_t *
+    of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_interface_class_id_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_masked_t *
+    of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_interface_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_t *
+    of_oxm_bsn_l3_src_class_id_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_src_class_id_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_masked_t *
+    of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_l3_src_class_id_masked_t *src);
+
+extern of_oxm_bsn_lag_id_t *
+    of_oxm_bsn_lag_id_OF_VERSION_1_2_dup(
+        of_oxm_bsn_lag_id_t *src);
+
+extern of_oxm_bsn_lag_id_masked_t *
+    of_oxm_bsn_lag_id_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_lag_id_masked_t *src);
+
+extern of_oxm_bsn_vrf_t *
+    of_oxm_bsn_vrf_OF_VERSION_1_2_dup(
+        of_oxm_bsn_vrf_t *src);
+
+extern of_oxm_bsn_vrf_masked_t *
+    of_oxm_bsn_vrf_masked_OF_VERSION_1_2_dup(
+        of_oxm_bsn_vrf_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_2_dup(
@@ -4274,6 +4370,14 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_OF_VERSION_1_3_dup(
         of_oxm_arp_tpa_masked_t *src);
 
+extern of_oxm_bsn_global_vrf_allowed_t *
+    of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_3_dup(
+        of_oxm_bsn_global_vrf_allowed_t *src);
+
+extern of_oxm_bsn_global_vrf_allowed_masked_t *
+    of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_global_vrf_allowed_masked_t *src);
+
 extern of_oxm_bsn_in_ports_128_t *
     of_oxm_bsn_in_ports_128_OF_VERSION_1_3_dup(
         of_oxm_bsn_in_ports_128_t *src);
@@ -4281,6 +4385,46 @@ extern of_oxm_bsn_in_ports_128_t *
 extern of_oxm_bsn_in_ports_128_masked_t *
     of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_dup(
         of_oxm_bsn_in_ports_128_masked_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_t *
+    of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_dst_class_id_t *src);
+
+extern of_oxm_bsn_l3_dst_class_id_masked_t *
+    of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_dst_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_t *
+    of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_interface_class_id_t *src);
+
+extern of_oxm_bsn_l3_interface_class_id_masked_t *
+    of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_interface_class_id_masked_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_t *
+    of_oxm_bsn_l3_src_class_id_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_src_class_id_t *src);
+
+extern of_oxm_bsn_l3_src_class_id_masked_t *
+    of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_l3_src_class_id_masked_t *src);
+
+extern of_oxm_bsn_lag_id_t *
+    of_oxm_bsn_lag_id_OF_VERSION_1_3_dup(
+        of_oxm_bsn_lag_id_t *src);
+
+extern of_oxm_bsn_lag_id_masked_t *
+    of_oxm_bsn_lag_id_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_lag_id_masked_t *src);
+
+extern of_oxm_bsn_vrf_t *
+    of_oxm_bsn_vrf_OF_VERSION_1_3_dup(
+        of_oxm_bsn_vrf_t *src);
+
+extern of_oxm_bsn_vrf_masked_t *
+    of_oxm_bsn_vrf_masked_OF_VERSION_1_3_dup(
+        of_oxm_bsn_vrf_masked_t *src);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_OF_VERSION_1_3_dup(

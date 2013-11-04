@@ -350,8 +350,20 @@ typedef of_object_t of_oxm_arp_tha_t;
 typedef of_object_t of_oxm_arp_tha_masked_t;
 typedef of_object_t of_oxm_arp_tpa_t;
 typedef of_object_t of_oxm_arp_tpa_masked_t;
+typedef of_object_t of_oxm_bsn_global_vrf_allowed_t;
+typedef of_object_t of_oxm_bsn_global_vrf_allowed_masked_t;
 typedef of_object_t of_oxm_bsn_in_ports_128_t;
 typedef of_object_t of_oxm_bsn_in_ports_128_masked_t;
+typedef of_object_t of_oxm_bsn_l3_dst_class_id_t;
+typedef of_object_t of_oxm_bsn_l3_dst_class_id_masked_t;
+typedef of_object_t of_oxm_bsn_l3_interface_class_id_t;
+typedef of_object_t of_oxm_bsn_l3_interface_class_id_masked_t;
+typedef of_object_t of_oxm_bsn_l3_src_class_id_t;
+typedef of_object_t of_oxm_bsn_l3_src_class_id_masked_t;
+typedef of_object_t of_oxm_bsn_lag_id_t;
+typedef of_object_t of_oxm_bsn_lag_id_masked_t;
+typedef of_object_t of_oxm_bsn_vrf_t;
+typedef of_object_t of_oxm_bsn_vrf_masked_t;
 typedef of_object_t of_oxm_eth_dst_t;
 typedef of_object_t of_oxm_eth_dst_masked_t;
 typedef of_object_t of_oxm_eth_src_t;
@@ -2881,6 +2893,20 @@ extern of_oxm_arp_tpa_masked_t *
     of_oxm_arp_tpa_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_oxm_bsn_global_vrf_allowed_t *
+    of_oxm_bsn_global_vrf_allowed_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_global_vrf_allowed_new(version) \
+    of_oxm_bsn_global_vrf_allowed_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_global_vrf_allowed_masked_t *
+    of_oxm_bsn_global_vrf_allowed_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_global_vrf_allowed_masked_new(version) \
+    of_oxm_bsn_global_vrf_allowed_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_oxm_bsn_in_ports_128_t *
     of_oxm_bsn_in_ports_128_new_tracking(of_version_t version,
         const char *file, int line);
@@ -2893,6 +2919,76 @@ extern of_oxm_bsn_in_ports_128_masked_t *
         const char *file, int line);
 #define of_oxm_bsn_in_ports_128_masked_new(version) \
     of_oxm_bsn_in_ports_128_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_dst_class_id_t *
+    of_oxm_bsn_l3_dst_class_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_dst_class_id_new(version) \
+    of_oxm_bsn_l3_dst_class_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_dst_class_id_masked_t *
+    of_oxm_bsn_l3_dst_class_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_dst_class_id_masked_new(version) \
+    of_oxm_bsn_l3_dst_class_id_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_interface_class_id_t *
+    of_oxm_bsn_l3_interface_class_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_interface_class_id_new(version) \
+    of_oxm_bsn_l3_interface_class_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_interface_class_id_masked_t *
+    of_oxm_bsn_l3_interface_class_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_interface_class_id_masked_new(version) \
+    of_oxm_bsn_l3_interface_class_id_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_src_class_id_t *
+    of_oxm_bsn_l3_src_class_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_src_class_id_new(version) \
+    of_oxm_bsn_l3_src_class_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_l3_src_class_id_masked_t *
+    of_oxm_bsn_l3_src_class_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_l3_src_class_id_masked_new(version) \
+    of_oxm_bsn_l3_src_class_id_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_lag_id_t *
+    of_oxm_bsn_lag_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_lag_id_new(version) \
+    of_oxm_bsn_lag_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_lag_id_masked_t *
+    of_oxm_bsn_lag_id_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_lag_id_masked_new(version) \
+    of_oxm_bsn_lag_id_masked_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_vrf_t *
+    of_oxm_bsn_vrf_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_vrf_new(version) \
+    of_oxm_bsn_vrf_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_oxm_bsn_vrf_masked_t *
+    of_oxm_bsn_vrf_masked_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_oxm_bsn_vrf_masked_new(version) \
+    of_oxm_bsn_vrf_masked_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_oxm_eth_dst_t *
@@ -4655,11 +4751,47 @@ extern of_list_uint8_t *
 #define of_oxm_arp_tpa_masked_new(version) \
     of_oxm_arp_tpa_masked_new_(version)
 
+#define of_oxm_bsn_global_vrf_allowed_new(version) \
+    of_oxm_bsn_global_vrf_allowed_new_(version)
+
+#define of_oxm_bsn_global_vrf_allowed_masked_new(version) \
+    of_oxm_bsn_global_vrf_allowed_masked_new_(version)
+
 #define of_oxm_bsn_in_ports_128_new(version) \
     of_oxm_bsn_in_ports_128_new_(version)
 
 #define of_oxm_bsn_in_ports_128_masked_new(version) \
     of_oxm_bsn_in_ports_128_masked_new_(version)
+
+#define of_oxm_bsn_l3_dst_class_id_new(version) \
+    of_oxm_bsn_l3_dst_class_id_new_(version)
+
+#define of_oxm_bsn_l3_dst_class_id_masked_new(version) \
+    of_oxm_bsn_l3_dst_class_id_masked_new_(version)
+
+#define of_oxm_bsn_l3_interface_class_id_new(version) \
+    of_oxm_bsn_l3_interface_class_id_new_(version)
+
+#define of_oxm_bsn_l3_interface_class_id_masked_new(version) \
+    of_oxm_bsn_l3_interface_class_id_masked_new_(version)
+
+#define of_oxm_bsn_l3_src_class_id_new(version) \
+    of_oxm_bsn_l3_src_class_id_new_(version)
+
+#define of_oxm_bsn_l3_src_class_id_masked_new(version) \
+    of_oxm_bsn_l3_src_class_id_masked_new_(version)
+
+#define of_oxm_bsn_lag_id_new(version) \
+    of_oxm_bsn_lag_id_new_(version)
+
+#define of_oxm_bsn_lag_id_masked_new(version) \
+    of_oxm_bsn_lag_id_masked_new_(version)
+
+#define of_oxm_bsn_vrf_new(version) \
+    of_oxm_bsn_vrf_new_(version)
+
+#define of_oxm_bsn_vrf_masked_new(version) \
+    of_oxm_bsn_vrf_masked_new_(version)
 
 #define of_oxm_eth_dst_new(version) \
     of_oxm_eth_dst_new_(version)
@@ -6415,6 +6547,16 @@ extern of_oxm_arp_tpa_masked_t *
 extern void of_oxm_arp_tpa_masked_init(
     of_oxm_arp_tpa_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_oxm_bsn_global_vrf_allowed_t *
+    of_oxm_bsn_global_vrf_allowed_new_(of_version_t version);
+extern void of_oxm_bsn_global_vrf_allowed_init(
+    of_oxm_bsn_global_vrf_allowed_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_global_vrf_allowed_masked_t *
+    of_oxm_bsn_global_vrf_allowed_masked_new_(of_version_t version);
+extern void of_oxm_bsn_global_vrf_allowed_masked_init(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_oxm_bsn_in_ports_128_t *
     of_oxm_bsn_in_ports_128_new_(of_version_t version);
 extern void of_oxm_bsn_in_ports_128_init(
@@ -6424,6 +6566,56 @@ extern of_oxm_bsn_in_ports_128_masked_t *
     of_oxm_bsn_in_ports_128_masked_new_(of_version_t version);
 extern void of_oxm_bsn_in_ports_128_masked_init(
     of_oxm_bsn_in_ports_128_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_dst_class_id_t *
+    of_oxm_bsn_l3_dst_class_id_new_(of_version_t version);
+extern void of_oxm_bsn_l3_dst_class_id_init(
+    of_oxm_bsn_l3_dst_class_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_dst_class_id_masked_t *
+    of_oxm_bsn_l3_dst_class_id_masked_new_(of_version_t version);
+extern void of_oxm_bsn_l3_dst_class_id_masked_init(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_interface_class_id_t *
+    of_oxm_bsn_l3_interface_class_id_new_(of_version_t version);
+extern void of_oxm_bsn_l3_interface_class_id_init(
+    of_oxm_bsn_l3_interface_class_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_interface_class_id_masked_t *
+    of_oxm_bsn_l3_interface_class_id_masked_new_(of_version_t version);
+extern void of_oxm_bsn_l3_interface_class_id_masked_init(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_src_class_id_t *
+    of_oxm_bsn_l3_src_class_id_new_(of_version_t version);
+extern void of_oxm_bsn_l3_src_class_id_init(
+    of_oxm_bsn_l3_src_class_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_l3_src_class_id_masked_t *
+    of_oxm_bsn_l3_src_class_id_masked_new_(of_version_t version);
+extern void of_oxm_bsn_l3_src_class_id_masked_init(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_lag_id_t *
+    of_oxm_bsn_lag_id_new_(of_version_t version);
+extern void of_oxm_bsn_lag_id_init(
+    of_oxm_bsn_lag_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_lag_id_masked_t *
+    of_oxm_bsn_lag_id_masked_new_(of_version_t version);
+extern void of_oxm_bsn_lag_id_masked_init(
+    of_oxm_bsn_lag_id_masked_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_vrf_t *
+    of_oxm_bsn_vrf_new_(of_version_t version);
+extern void of_oxm_bsn_vrf_init(
+    of_oxm_bsn_vrf_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_oxm_bsn_vrf_masked_t *
+    of_oxm_bsn_vrf_masked_new_(of_version_t version);
+extern void of_oxm_bsn_vrf_masked_init(
+    of_oxm_bsn_vrf_masked_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_oxm_eth_dst_t *
     of_oxm_eth_dst_new_(of_version_t version);
@@ -9559,6 +9751,28 @@ of_oxm_arp_tpa_masked_delete(of_oxm_arp_tpa_masked_t *obj) {
 }
 
 /**
+ * Delete an object of type of_oxm_bsn_global_vrf_allowed_t
+ * @param obj An instance of type of_oxm_bsn_global_vrf_allowed_t
+ *
+ * \ingroup of_oxm_bsn_global_vrf_allowed
+ */
+static inline void
+of_oxm_bsn_global_vrf_allowed_delete(of_oxm_bsn_global_vrf_allowed_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_global_vrf_allowed_masked_t
+ * @param obj An instance of type of_oxm_bsn_global_vrf_allowed_masked_t
+ *
+ * \ingroup of_oxm_bsn_global_vrf_allowed_masked
+ */
+static inline void
+of_oxm_bsn_global_vrf_allowed_masked_delete(of_oxm_bsn_global_vrf_allowed_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_oxm_bsn_in_ports_128_t
  * @param obj An instance of type of_oxm_bsn_in_ports_128_t
  *
@@ -9577,6 +9791,116 @@ of_oxm_bsn_in_ports_128_delete(of_oxm_bsn_in_ports_128_t *obj) {
  */
 static inline void
 of_oxm_bsn_in_ports_128_masked_delete(of_oxm_bsn_in_ports_128_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_dst_class_id_t
+ * @param obj An instance of type of_oxm_bsn_l3_dst_class_id_t
+ *
+ * \ingroup of_oxm_bsn_l3_dst_class_id
+ */
+static inline void
+of_oxm_bsn_l3_dst_class_id_delete(of_oxm_bsn_l3_dst_class_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_dst_class_id_masked_t
+ * @param obj An instance of type of_oxm_bsn_l3_dst_class_id_masked_t
+ *
+ * \ingroup of_oxm_bsn_l3_dst_class_id_masked
+ */
+static inline void
+of_oxm_bsn_l3_dst_class_id_masked_delete(of_oxm_bsn_l3_dst_class_id_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_interface_class_id_t
+ * @param obj An instance of type of_oxm_bsn_l3_interface_class_id_t
+ *
+ * \ingroup of_oxm_bsn_l3_interface_class_id
+ */
+static inline void
+of_oxm_bsn_l3_interface_class_id_delete(of_oxm_bsn_l3_interface_class_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_interface_class_id_masked_t
+ * @param obj An instance of type of_oxm_bsn_l3_interface_class_id_masked_t
+ *
+ * \ingroup of_oxm_bsn_l3_interface_class_id_masked
+ */
+static inline void
+of_oxm_bsn_l3_interface_class_id_masked_delete(of_oxm_bsn_l3_interface_class_id_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_src_class_id_t
+ * @param obj An instance of type of_oxm_bsn_l3_src_class_id_t
+ *
+ * \ingroup of_oxm_bsn_l3_src_class_id
+ */
+static inline void
+of_oxm_bsn_l3_src_class_id_delete(of_oxm_bsn_l3_src_class_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_l3_src_class_id_masked_t
+ * @param obj An instance of type of_oxm_bsn_l3_src_class_id_masked_t
+ *
+ * \ingroup of_oxm_bsn_l3_src_class_id_masked
+ */
+static inline void
+of_oxm_bsn_l3_src_class_id_masked_delete(of_oxm_bsn_l3_src_class_id_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_lag_id_t
+ * @param obj An instance of type of_oxm_bsn_lag_id_t
+ *
+ * \ingroup of_oxm_bsn_lag_id
+ */
+static inline void
+of_oxm_bsn_lag_id_delete(of_oxm_bsn_lag_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_lag_id_masked_t
+ * @param obj An instance of type of_oxm_bsn_lag_id_masked_t
+ *
+ * \ingroup of_oxm_bsn_lag_id_masked
+ */
+static inline void
+of_oxm_bsn_lag_id_masked_delete(of_oxm_bsn_lag_id_masked_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_vrf_t
+ * @param obj An instance of type of_oxm_bsn_vrf_t
+ *
+ * \ingroup of_oxm_bsn_vrf
+ */
+static inline void
+of_oxm_bsn_vrf_delete(of_oxm_bsn_vrf_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_oxm_bsn_vrf_masked_t
+ * @param obj An instance of type of_oxm_bsn_vrf_masked_t
+ *
+ * \ingroup of_oxm_bsn_vrf_masked
+ */
+static inline void
+of_oxm_bsn_vrf_masked_delete(of_oxm_bsn_vrf_masked_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -14734,12 +15058,19 @@ extern void of_role_reply_xid_get(
     of_role_reply_t *obj,
     uint32_t *xid);
 
-extern int WARN_UNUSED_RESULT of_role_reply_data_set(
+extern void of_role_reply_role_set(
     of_role_reply_t *obj,
-    of_octets_t *data);
-extern void of_role_reply_data_get(
+    uint32_t role);
+extern void of_role_reply_role_get(
     of_role_reply_t *obj,
-    of_octets_t *data);
+    uint32_t *role);
+
+extern void of_role_reply_generation_id_set(
+    of_role_reply_t *obj,
+    uint64_t generation_id);
+extern void of_role_reply_generation_id_get(
+    of_role_reply_t *obj,
+    uint64_t *generation_id);
 
 /* Unified accessor functions for of_role_request */
 
@@ -16460,6 +16791,31 @@ extern void of_oxm_arp_tpa_masked_value_mask_get(
     of_oxm_arp_tpa_masked_t *obj,
     uint32_t *value_mask);
 
+/* Unified accessor functions for of_oxm_bsn_global_vrf_allowed */
+
+extern void of_oxm_bsn_global_vrf_allowed_value_set(
+    of_oxm_bsn_global_vrf_allowed_t *obj,
+    uint8_t value);
+extern void of_oxm_bsn_global_vrf_allowed_value_get(
+    of_oxm_bsn_global_vrf_allowed_t *obj,
+    uint8_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_global_vrf_allowed_masked */
+
+extern void of_oxm_bsn_global_vrf_allowed_masked_value_set(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t value);
+extern void of_oxm_bsn_global_vrf_allowed_masked_value_get(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t *value);
+
+extern void of_oxm_bsn_global_vrf_allowed_masked_value_mask_set(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t value_mask);
+extern void of_oxm_bsn_global_vrf_allowed_masked_value_mask_get(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t *value_mask);
+
 /* Unified accessor functions for of_oxm_bsn_in_ports_128 */
 
 extern void of_oxm_bsn_in_ports_128_value_set(
@@ -16484,6 +16840,131 @@ extern void of_oxm_bsn_in_ports_128_masked_value_mask_set(
 extern void of_oxm_bsn_in_ports_128_masked_value_mask_get(
     of_oxm_bsn_in_ports_128_masked_t *obj,
     of_bitmap_128_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_l3_dst_class_id */
+
+extern void of_oxm_bsn_l3_dst_class_id_value_set(
+    of_oxm_bsn_l3_dst_class_id_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_dst_class_id_value_get(
+    of_oxm_bsn_l3_dst_class_id_t *obj,
+    uint32_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_l3_dst_class_id_masked */
+
+extern void of_oxm_bsn_l3_dst_class_id_masked_value_set(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_dst_class_id_masked_value_get(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t *value);
+
+extern void of_oxm_bsn_l3_dst_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t value_mask);
+extern void of_oxm_bsn_l3_dst_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_l3_interface_class_id */
+
+extern void of_oxm_bsn_l3_interface_class_id_value_set(
+    of_oxm_bsn_l3_interface_class_id_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_interface_class_id_value_get(
+    of_oxm_bsn_l3_interface_class_id_t *obj,
+    uint32_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_l3_interface_class_id_masked */
+
+extern void of_oxm_bsn_l3_interface_class_id_masked_value_set(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_interface_class_id_masked_value_get(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t *value);
+
+extern void of_oxm_bsn_l3_interface_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t value_mask);
+extern void of_oxm_bsn_l3_interface_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_l3_src_class_id */
+
+extern void of_oxm_bsn_l3_src_class_id_value_set(
+    of_oxm_bsn_l3_src_class_id_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_src_class_id_value_get(
+    of_oxm_bsn_l3_src_class_id_t *obj,
+    uint32_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_l3_src_class_id_masked */
+
+extern void of_oxm_bsn_l3_src_class_id_masked_value_set(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_l3_src_class_id_masked_value_get(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t *value);
+
+extern void of_oxm_bsn_l3_src_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t value_mask);
+extern void of_oxm_bsn_l3_src_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_lag_id */
+
+extern void of_oxm_bsn_lag_id_value_set(
+    of_oxm_bsn_lag_id_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_lag_id_value_get(
+    of_oxm_bsn_lag_id_t *obj,
+    uint32_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_lag_id_masked */
+
+extern void of_oxm_bsn_lag_id_masked_value_set(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_lag_id_masked_value_get(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t *value);
+
+extern void of_oxm_bsn_lag_id_masked_value_mask_set(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t value_mask);
+extern void of_oxm_bsn_lag_id_masked_value_mask_get(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t *value_mask);
+
+/* Unified accessor functions for of_oxm_bsn_vrf */
+
+extern void of_oxm_bsn_vrf_value_set(
+    of_oxm_bsn_vrf_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_vrf_value_get(
+    of_oxm_bsn_vrf_t *obj,
+    uint32_t *value);
+
+/* Unified accessor functions for of_oxm_bsn_vrf_masked */
+
+extern void of_oxm_bsn_vrf_masked_value_set(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t value);
+extern void of_oxm_bsn_vrf_masked_value_get(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t *value);
+
+extern void of_oxm_bsn_vrf_masked_value_mask_set(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t value_mask);
+extern void of_oxm_bsn_vrf_masked_value_mask_get(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t *value_mask);
 
 /* Unified accessor functions for of_oxm_eth_dst */
 
@@ -18829,8 +19310,20 @@ union of_generic_u {
     of_oxm_arp_tha_masked_t of_oxm_arp_tha_masked;
     of_oxm_arp_tpa_t of_oxm_arp_tpa;
     of_oxm_arp_tpa_masked_t of_oxm_arp_tpa_masked;
+    of_oxm_bsn_global_vrf_allowed_t of_oxm_bsn_global_vrf_allowed;
+    of_oxm_bsn_global_vrf_allowed_masked_t of_oxm_bsn_global_vrf_allowed_masked;
     of_oxm_bsn_in_ports_128_t of_oxm_bsn_in_ports_128;
     of_oxm_bsn_in_ports_128_masked_t of_oxm_bsn_in_ports_128_masked;
+    of_oxm_bsn_l3_dst_class_id_t of_oxm_bsn_l3_dst_class_id;
+    of_oxm_bsn_l3_dst_class_id_masked_t of_oxm_bsn_l3_dst_class_id_masked;
+    of_oxm_bsn_l3_interface_class_id_t of_oxm_bsn_l3_interface_class_id;
+    of_oxm_bsn_l3_interface_class_id_masked_t of_oxm_bsn_l3_interface_class_id_masked;
+    of_oxm_bsn_l3_src_class_id_t of_oxm_bsn_l3_src_class_id;
+    of_oxm_bsn_l3_src_class_id_masked_t of_oxm_bsn_l3_src_class_id_masked;
+    of_oxm_bsn_lag_id_t of_oxm_bsn_lag_id;
+    of_oxm_bsn_lag_id_masked_t of_oxm_bsn_lag_id_masked;
+    of_oxm_bsn_vrf_t of_oxm_bsn_vrf;
+    of_oxm_bsn_vrf_masked_t of_oxm_bsn_vrf_masked;
     of_oxm_eth_dst_t of_oxm_eth_dst;
     of_oxm_eth_dst_masked_t of_oxm_eth_dst_masked;
     of_oxm_eth_src_t of_oxm_eth_src;
@@ -19154,8 +19647,20 @@ union of_oxm_u {
     of_oxm_arp_tha_masked_t arp_tha_masked;
     of_oxm_arp_tpa_t arp_tpa;
     of_oxm_arp_tpa_masked_t arp_tpa_masked;
+    of_oxm_bsn_global_vrf_allowed_t bsn_global_vrf_allowed;
+    of_oxm_bsn_global_vrf_allowed_masked_t bsn_global_vrf_allowed_masked;
     of_oxm_bsn_in_ports_128_t bsn_in_ports_128;
     of_oxm_bsn_in_ports_128_masked_t bsn_in_ports_128_masked;
+    of_oxm_bsn_l3_dst_class_id_t bsn_l3_dst_class_id;
+    of_oxm_bsn_l3_dst_class_id_masked_t bsn_l3_dst_class_id_masked;
+    of_oxm_bsn_l3_interface_class_id_t bsn_l3_interface_class_id;
+    of_oxm_bsn_l3_interface_class_id_masked_t bsn_l3_interface_class_id_masked;
+    of_oxm_bsn_l3_src_class_id_t bsn_l3_src_class_id;
+    of_oxm_bsn_l3_src_class_id_masked_t bsn_l3_src_class_id_masked;
+    of_oxm_bsn_lag_id_t bsn_lag_id;
+    of_oxm_bsn_lag_id_masked_t bsn_lag_id_masked;
+    of_oxm_bsn_vrf_t bsn_vrf;
+    of_oxm_bsn_vrf_masked_t bsn_vrf_masked;
     of_oxm_eth_dst_t eth_dst;
     of_oxm_eth_dst_masked_t eth_dst_masked;
     of_oxm_eth_src_t eth_src;
@@ -19682,6 +20187,18 @@ of_oxm_to_object_id(uint32_t type_len, of_version_t version)
         switch (masked_type) {
         case 0x00: return OF_OXM_BSN_IN_PORTS_128;
         case 0x01: return OF_OXM_BSN_IN_PORTS_128_MASKED;
+        case 0x02: return OF_OXM_BSN_LAG_ID;
+        case 0x03: return OF_OXM_BSN_LAG_ID_MASKED;
+        case 0x04: return OF_OXM_BSN_VRF;
+        case 0x05: return OF_OXM_BSN_VRF_MASKED;
+        case 0x06: return OF_OXM_BSN_GLOBAL_VRF_ALLOWED;
+        case 0x07: return OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED;
+        case 0x08: return OF_OXM_BSN_L3_INTERFACE_CLASS_ID;
+        case 0x09: return OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED;
+        case 0x0a: return OF_OXM_BSN_L3_SRC_CLASS_ID;
+        case 0x0b: return OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED;
+        case 0x0c: return OF_OXM_BSN_L3_DST_CLASS_ID;
+        case 0x0d: return OF_OXM_BSN_L3_DST_CLASS_ID_MASKED;
         default: return OF_OBJECT_INVALID;
         }
     } else {
