@@ -512,8 +512,6 @@ process_flow_removal(ft_entry_t *entry,
                      indigo_fi_flow_stats_t *final_stats,
                      indigo_fi_flow_removed_t reason)
 {
-    indigo_error_t rv;
-
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */
         if (reason != INDIGO_FLOW_REMOVED_OVERWRITE) {
@@ -530,12 +528,8 @@ process_flow_removal(ft_entry_t *entry,
         }
     }
 
-    rv = ft_delete(ind_core_ft, entry);
-    if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Error deleting flow from state mgr. id: "
-                  INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-    }
+    ft_delete(ind_core_ft, entry);
+
     LOG_TRACE("Flow table now has %d entries",
               FT_STATUS(ind_core_ft)->current_count);
 }

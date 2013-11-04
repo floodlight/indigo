@@ -855,7 +855,7 @@ iter_task_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         state->finished = 0;
         state->entries_seen++;
-        ASSERT(ft_delete(state->ft, entry) == 0);
+        ft_delete(state->ft, entry);
     } else {
         state->finished = 1;
     }

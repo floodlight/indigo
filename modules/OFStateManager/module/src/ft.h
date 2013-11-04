@@ -216,8 +216,7 @@ indigo_error_t ft_add(ft_instance_t ft,
  * @param entry Pointer to the entry to be removed
  */
 
-indigo_error_t ft_delete(ft_instance_t ft,
-                         ft_entry_t *entry);
+void ft_delete(ft_instance_t ft, ft_entry_t *entry);
 
 /**
  * Query the flow table (strict match) and return the first match if found
