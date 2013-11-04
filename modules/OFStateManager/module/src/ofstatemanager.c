@@ -485,8 +485,7 @@ ind_core_init(ind_core_config_t *config)
  */
 
 void
-ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
-                           indigo_cxn_id_t cxn_id)
+ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 {
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats;
@@ -899,8 +898,7 @@ flow_expiration_timer(void *cookie)
                 LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                           entry->hard_timeout,
                           INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_HARD_TIMEOUT,
-                                           INDIGO_CXN_ID_UNSPECIFIED);
+                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_HARD_TIMEOUT);
                 continue;
             }
         }
@@ -932,8 +930,7 @@ flow_expiration_timer(void *cookie)
             if (delta >= entry->idle_timeout) {
                 LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                           entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
-                                           INDIGO_CXN_ID_UNSPECIFIED);
+                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT);
                 continue;
             }
         }

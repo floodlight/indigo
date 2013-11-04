@@ -380,7 +380,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Delete existing flow if any */
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
     }
 
     /* No match found, add as normal */
@@ -601,8 +601,7 @@ delete_iter_cb(void *cookie, ft_entry_t *entry)
     struct flow_modify_state *state = cookie;
 
     if (entry != NULL) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE,
-                                   state->cxn_id);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
     } else {
         LOG_TRACE("Finished flow delete task");
         of_object_delete(state->request);
@@ -670,7 +669,6 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
     ft_entry_t *entry;
 
-    /* Form the query and call mark entries */
     rv = flow_mod_setup_query((of_flow_modify_t *)obj, &query, OF_MATCH_STRICT, 0);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(_obj);
@@ -678,10 +676,9 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, cxn_id);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
     }
 
-    /* ind_core_flow_entry_delete copied _obj for barrier tracking */
     of_object_delete(_obj);
 }
 
