@@ -130,11 +130,17 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
     uint32_t secs;
     uint32_t nsecs;
     indigo_time_t current;
+    of_version_t ver;
 
     current = INDIGO_CURRENT_TIME;
 
-    /* TODO get version from OFConnectionManager */
-    if ((msg = of_flow_removed_new(entry->match.version)) == NULL) {
+    if (indigo_cxn_get_async_version(&ver) < 0) {
+        /* No controllers connected */
+        return;
+    }
+
+    if ((msg = of_flow_removed_new(ver)) == NULL) {
+        LOG_ERROR("Failed to allocate flow_removed message");
         return;
     }
 
@@ -168,11 +174,7 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
     of_flow_removed_packet_count_set(msg, entry->packets);
     of_flow_removed_byte_count_set(msg, entry->bytes);
 
-    /* @fixme hard_timeout and table_id are not in OF 1.0 */
-
     indigo_cxn_send_async_message(msg);
-
-    return;
 }
 
 /****************************************************************/
