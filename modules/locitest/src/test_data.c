@@ -1147,6 +1147,31 @@ test_of13_bsn_flow_idle(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/oxm_bsn_global_vrf_allowed.data */
+static int
+test_of13_oxm_bsn_global_vrf_allowed(void) {
+    uint8_t binary[] = {
+        0x00, 0x03, 0x06, 0x01, 0x01, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_oxm_bsn_global_vrf_allowed_new(OF_VERSION_1_3);
+    of_oxm_bsn_global_vrf_allowed_value_set(obj, 1);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 /* Generated from of13/oxm_bsn_in_ports_masked_128.data */
 static int
 test_of13_oxm_bsn_in_ports_masked_128(void) {
@@ -1183,6 +1208,58 @@ test_of13_oxm_bsn_in_ports_masked_128(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/oxm_bsn_l3_src_class_id.data */
+static int
+test_of13_oxm_bsn_l3_src_class_id(void) {
+    uint8_t binary[] = {
+        0x00, 0x03, 0x0a, 0x04, 0x12, 0x34, 0x56, 0x78, 
+        
+    };
+
+    of_object_t *obj;
+
+    obj = of_oxm_bsn_l3_src_class_id_new(OF_VERSION_1_3);
+    of_oxm_bsn_l3_src_class_id_value_set(obj, 0x12345678);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
+/* Generated from of13/oxm_bsn_lag_id.data */
+static int
+test_of13_oxm_bsn_lag_id(void) {
+    uint8_t binary[] = {
+        0x00, 0x03, 0x02, 0x04, 0x12, 0x34, 0x56, 0x78, 
+        
+    };
+
+    of_object_t *obj;
+
+    obj = of_oxm_bsn_lag_id_new(OF_VERSION_1_3);
+    of_oxm_bsn_lag_id_value_set(obj, 0x12345678);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 
 int
 test_datafiles(void)
@@ -1205,6 +1282,9 @@ test_datafiles(void)
     RUN_TEST(of13_bad_match_error_msg);
     RUN_TEST(of13_bad_request_error_msg);
     RUN_TEST(of13_bsn_flow_idle);
+    RUN_TEST(of13_oxm_bsn_global_vrf_allowed);
     RUN_TEST(of13_oxm_bsn_in_ports_masked_128);
+    RUN_TEST(of13_oxm_bsn_l3_src_class_id);
+    RUN_TEST(of13_oxm_bsn_lag_id);
     return TEST_PASS;
 }

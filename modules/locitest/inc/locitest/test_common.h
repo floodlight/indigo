@@ -3804,6 +3804,24 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_populate_scalars(
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_2_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_2_populate(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_2_check(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+
 extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_populate(
     of_oxm_bsn_in_ports_128_t *obj, int value);
 extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_2_check(
@@ -3821,6 +3839,96 @@ extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_populate_scalars(
     of_oxm_bsn_in_ports_128_masked_t *obj, int value);
 extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_2_check_scalars(
     of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_2_populate(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_2_check(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_lag_id_t *obj, int value);
+
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_vrf_OF_VERSION_1_2_populate(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_2_check(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_vrf_t *obj, int value);
+
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_2_populate(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_2_check(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_2_populate_scalars(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_2_check_scalars(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
 
 extern int of_oxm_eth_dst_OF_VERSION_1_2_populate(
     of_oxm_eth_dst_t *obj, int value);
@@ -6333,6 +6441,24 @@ extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_populate_scalars(
 extern int of_oxm_arp_tpa_masked_OF_VERSION_1_3_check_scalars(
     of_oxm_arp_tpa_masked_t *obj, int value);
 
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_3_populate(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_3_check(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_global_vrf_allowed_t *obj, int value);
+
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+extern int of_oxm_bsn_global_vrf_allowed_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj, int value);
+
 extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_populate(
     of_oxm_bsn_in_ports_128_t *obj, int value);
 extern int of_oxm_bsn_in_ports_128_OF_VERSION_1_3_check(
@@ -6350,6 +6476,96 @@ extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_populate_scalars(
     of_oxm_bsn_in_ports_128_masked_t *obj, int value);
 extern int of_oxm_bsn_in_ports_128_masked_OF_VERSION_1_3_check_scalars(
     of_oxm_bsn_in_ports_128_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_dst_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_dst_class_id_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_interface_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_interface_class_id_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_src_class_id_t *obj, int value);
+
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+extern int of_oxm_bsn_l3_src_class_id_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_3_populate(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_3_check(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_lag_id_t *obj, int value);
+extern int of_oxm_bsn_lag_id_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_lag_id_t *obj, int value);
+
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+extern int of_oxm_bsn_lag_id_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_lag_id_masked_t *obj, int value);
+
+extern int of_oxm_bsn_vrf_OF_VERSION_1_3_populate(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_3_check(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_vrf_t *obj, int value);
+extern int of_oxm_bsn_vrf_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_vrf_t *obj, int value);
+
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_3_populate(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_3_check(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_3_populate_scalars(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
+extern int of_oxm_bsn_vrf_masked_OF_VERSION_1_3_check_scalars(
+    of_oxm_bsn_vrf_masked_t *obj, int value);
 
 extern int of_oxm_eth_dst_OF_VERSION_1_3_populate(
     of_oxm_eth_dst_t *obj, int value);

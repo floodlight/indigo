@@ -293,8 +293,20 @@ const char *const of_object_id_str[] = {
     "of_oxm_arp_tha_masked",
     "of_oxm_arp_tpa",
     "of_oxm_arp_tpa_masked",
+    "of_oxm_bsn_global_vrf_allowed",
+    "of_oxm_bsn_global_vrf_allowed_masked",
     "of_oxm_bsn_in_ports_128",
     "of_oxm_bsn_in_ports_128_masked",
+    "of_oxm_bsn_l3_dst_class_id",
+    "of_oxm_bsn_l3_dst_class_id_masked",
+    "of_oxm_bsn_l3_interface_class_id",
+    "of_oxm_bsn_l3_interface_class_id_masked",
+    "of_oxm_bsn_l3_src_class_id",
+    "of_oxm_bsn_l3_src_class_id_masked",
+    "of_oxm_bsn_lag_id",
+    "of_oxm_bsn_lag_id_masked",
+    "of_oxm_bsn_vrf",
+    "of_oxm_bsn_vrf_masked",
     "of_oxm_eth_dst",
     "of_oxm_eth_dst_masked",
     "of_oxm_eth_src",
@@ -46501,22 +46513,21 @@ of_role_reply_xid_set(
 }
 
 /**
- * Get data from an object of type of_role_reply.
+ * Get role from an object of type of_role_reply.
  * @param obj Pointer to an object of type of_role_reply.
- * @param data Pointer to the child object of type
- * of_octets_t to be filled out.
+ * @param role Pointer to the child object of type
+ * uint32_t to be filled out.
  *
  */
 void
-of_role_reply_data_get(
+of_role_reply_role_get(
     of_role_reply_t *obj,
-    of_octets_t *data)
+    uint32_t *role)
 {
     of_wire_buffer_t *wbuf;
     int offset = 0; /* Offset of value relative to the start obj */
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
-    int cur_len = 0; /* Current length of object data */
 
     ASSERT(obj->object_id == OF_ROLE_REPLY);
     ver = obj->version;
@@ -46528,7 +46539,6 @@ of_role_reply_data_get(
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
         offset = 8;
-        cur_len = _END_LEN(obj, offset);
         break;
     default:
         ASSERT(0);
@@ -46536,10 +46546,7 @@ of_role_reply_data_get(
 
     abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
     ASSERT(abs_offset >= 0);
-    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
-    ASSERT(cur_len + abs_offset <= WBUF_CURRENT_BYTES(wbuf));
-    data->bytes = cur_len;
-    data->data = OF_WIRE_BUFFER_INDEX(wbuf, abs_offset);
+    of_wire_buffer_u32_get(wbuf, abs_offset, role);
 
     OF_LENGTH_CHECK_ASSERT(obj);
 
@@ -46547,21 +46554,19 @@ of_role_reply_data_get(
 }
 
 /**
- * Set data in an object of type of_role_reply.
+ * Set role in an object of type of_role_reply.
  * @param obj Pointer to an object of type of_role_reply.
- * @param data The value to write into the object
+ * @param role The value to write into the object
  */
-int WARN_UNUSED_RESULT
-of_role_reply_data_set(
+void
+of_role_reply_role_set(
     of_role_reply_t *obj,
-    of_octets_t *data)
+    uint32_t role)
 {
     of_wire_buffer_t *wbuf;
     int offset = 0; /* Offset of value relative to the start obj */
     int abs_offset; /* Offset of value relative to start of wbuf */
     of_version_t ver;
-    int cur_len = 0; /* Current length of object data */
-    int new_len, delta; /* For set, need new length and delta */
 
     ASSERT(obj->object_id == OF_ROLE_REPLY);
     ver = obj->version;
@@ -46573,7 +46578,6 @@ of_role_reply_data_set(
     case OF_VERSION_1_2:
     case OF_VERSION_1_3:
         offset = 8;
-        cur_len = _END_LEN(obj, offset);
         break;
     default:
         ASSERT(0);
@@ -46581,21 +46585,91 @@ of_role_reply_data_set(
 
     abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
     ASSERT(abs_offset >= 0);
-    ASSERT(cur_len >= 0 && cur_len < 64 * 1024);
-    new_len = data->bytes;
-    of_wire_buffer_grow(wbuf, abs_offset + (new_len - cur_len));
-    of_wire_buffer_octets_data_set(wbuf, abs_offset, data, cur_len);
-
-    /* Not scalar, update lengths if needed */
-    delta = new_len - cur_len;
-    if (delta != 0) {
-        /* Update parent(s) */
-        of_object_parent_length_update((of_object_t *)obj, delta);
-    }
+    of_wire_buffer_u32_set(wbuf, abs_offset, role);
 
     OF_LENGTH_CHECK_ASSERT(obj);
 
-    return OF_ERROR_NONE;
+    return ;
+}
+
+/**
+ * Get generation_id from an object of type of_role_reply.
+ * @param obj Pointer to an object of type of_role_reply.
+ * @param generation_id Pointer to the child object of type
+ * uint64_t to be filled out.
+ *
+ */
+void
+of_role_reply_generation_id_get(
+    of_role_reply_t *obj,
+    uint64_t *generation_id)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u64_get(wbuf, abs_offset, generation_id);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set generation_id in an object of type of_role_reply.
+ * @param obj Pointer to an object of type of_role_reply.
+ * @param generation_id The value to write into the object
+ */
+void
+of_role_reply_generation_id_set(
+    of_role_reply_t *obj,
+    uint64_t generation_id)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_ROLE_REPLY);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 16;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u64_set(wbuf, abs_offset, generation_id);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
 }
 
 /** @} */
@@ -65327,6 +65401,258 @@ of_oxm_arp_tpa_masked_value_mask_set(
 
 /** @} */
 
+/* Unified accessor functions for of_oxm_bsn_global_vrf_allowed */
+/** \ingroup of_oxm_bsn_global_vrf_allowed 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_global_vrf_allowed.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed.
+ * @param value Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_global_vrf_allowed_value_get(
+    of_oxm_bsn_global_vrf_allowed_t *obj,
+    uint8_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_global_vrf_allowed.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_global_vrf_allowed_value_set(
+    of_oxm_bsn_global_vrf_allowed_t *obj,
+    uint8_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_global_vrf_allowed_masked */
+/** \ingroup of_oxm_bsn_global_vrf_allowed_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param value Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_global_vrf_allowed_masked_value_get(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_global_vrf_allowed_masked_value_set(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint8_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_global_vrf_allowed_masked_value_mask_get(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 5;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_global_vrf_allowed_masked_value_mask_set(
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    uint8_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 5;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u8_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
 /* Unified accessor functions for of_oxm_bsn_in_ports_128 */
 /** \ingroup of_oxm_bsn_in_ports_128 
  * @{ */
@@ -65571,6 +65897,1266 @@ of_oxm_bsn_in_ports_128_masked_value_mask_set(
     abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
     ASSERT(abs_offset >= 0);
     of_wire_buffer_bitmap_128_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_dst_class_id */
+/** \ingroup of_oxm_bsn_l3_dst_class_id 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_dst_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_dst_class_id_value_get(
+    of_oxm_bsn_l3_dst_class_id_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_dst_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_dst_class_id_value_set(
+    of_oxm_bsn_l3_dst_class_id_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_dst_class_id_masked */
+/** \ingroup of_oxm_bsn_l3_dst_class_id_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_dst_class_id_masked_value_get(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_dst_class_id_masked_value_set(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_dst_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_l3_dst_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    uint32_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_DST_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_interface_class_id */
+/** \ingroup of_oxm_bsn_l3_interface_class_id 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_interface_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_interface_class_id_value_get(
+    of_oxm_bsn_l3_interface_class_id_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_interface_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_interface_class_id_value_set(
+    of_oxm_bsn_l3_interface_class_id_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_interface_class_id_masked */
+/** \ingroup of_oxm_bsn_l3_interface_class_id_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_interface_class_id_masked_value_get(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_interface_class_id_masked_value_set(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_interface_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_l3_interface_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    uint32_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_src_class_id */
+/** \ingroup of_oxm_bsn_l3_src_class_id 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_src_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_src_class_id_value_get(
+    of_oxm_bsn_l3_src_class_id_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_src_class_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_src_class_id_value_set(
+    of_oxm_bsn_l3_src_class_id_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_l3_src_class_id_masked */
+/** \ingroup of_oxm_bsn_l3_src_class_id_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_src_class_id_masked_value_get(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_l3_src_class_id_masked_value_set(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_l3_src_class_id_masked_value_mask_get(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_l3_src_class_id_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_l3_src_class_id_masked_value_mask_set(
+    of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    uint32_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_lag_id */
+/** \ingroup of_oxm_bsn_lag_id 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_lag_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_lag_id_value_get(
+    of_oxm_bsn_lag_id_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_lag_id.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_lag_id_value_set(
+    of_oxm_bsn_lag_id_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_lag_id_masked */
+/** \ingroup of_oxm_bsn_lag_id_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_lag_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id_masked.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_lag_id_masked_value_get(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_lag_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_lag_id_masked_value_set(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_lag_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_lag_id_masked_value_mask_get(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_lag_id_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_lag_id_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_lag_id_masked_value_mask_set(
+    of_oxm_bsn_lag_id_masked_t *obj,
+    uint32_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_LAG_ID_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_vrf */
+/** \ingroup of_oxm_bsn_vrf 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_vrf.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_vrf_value_get(
+    of_oxm_bsn_vrf_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_vrf.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_vrf_value_set(
+    of_oxm_bsn_vrf_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/** @} */
+
+/* Unified accessor functions for of_oxm_bsn_vrf_masked */
+/** \ingroup of_oxm_bsn_vrf_masked 
+ * @{ */
+
+/**
+ * Get value from an object of type of_oxm_bsn_vrf_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf_masked.
+ * @param value Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_vrf_masked_value_get(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t *value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value in an object of type of_oxm_bsn_vrf_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf_masked.
+ * @param value The value to write into the object
+ */
+void
+of_oxm_bsn_vrf_masked_value_set(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t value)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 4;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Get value_mask from an object of type of_oxm_bsn_vrf_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf_masked.
+ * @param value_mask Pointer to the child object of type
+ * uint32_t to be filled out.
+ *
+ */
+void
+of_oxm_bsn_vrf_masked_value_mask_get(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t *value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_get(wbuf, abs_offset, value_mask);
+
+    OF_LENGTH_CHECK_ASSERT(obj);
+
+    return ;
+}
+
+/**
+ * Set value_mask in an object of type of_oxm_bsn_vrf_masked.
+ * @param obj Pointer to an object of type of_oxm_bsn_vrf_masked.
+ * @param value_mask The value to write into the object
+ */
+void
+of_oxm_bsn_vrf_masked_value_mask_set(
+    of_oxm_bsn_vrf_masked_t *obj,
+    uint32_t value_mask)
+{
+    of_wire_buffer_t *wbuf;
+    int offset = 0; /* Offset of value relative to the start obj */
+    int abs_offset; /* Offset of value relative to start of wbuf */
+    of_version_t ver;
+
+    ASSERT(obj->object_id == OF_OXM_BSN_VRF_MASKED);
+    ver = obj->version;
+    wbuf = OF_OBJECT_TO_WBUF(obj);
+    ASSERT(wbuf != NULL);
+
+    /* By version, determine offset and current length (where needed) */
+    switch (ver) {
+    case OF_VERSION_1_2:
+    case OF_VERSION_1_3:
+        offset = 8;
+        break;
+    default:
+        ASSERT(0);
+    }
+
+    abs_offset = OF_OBJECT_ABSOLUTE_OFFSET(obj, offset);
+    ASSERT(abs_offset >= 0);
+    of_wire_buffer_u32_set(wbuf, abs_offset, value_mask);
 
     OF_LENGTH_CHECK_ASSERT(obj);
 
@@ -121218,6 +122804,258 @@ of_oxm_arp_tpa_masked_init(of_oxm_arp_tpa_masked_t *obj,
 }
 
 
+/* New operators for of_oxm_bsn_global_vrf_allowed */
+
+/**
+ * \defgroup of_oxm_bsn_global_vrf_allowed of_oxm_bsn_global_vrf_allowed
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_global_vrf_allowed_push_wire_values(of_oxm_bsn_global_vrf_allowed_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_GLOBAL_VRF_ALLOWED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_global_vrf_allowed object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_global_vrf_allowed
+ */
+
+of_oxm_bsn_global_vrf_allowed_t *
+of_oxm_bsn_global_vrf_allowed_new_(of_version_t version)
+{
+    of_oxm_bsn_global_vrf_allowed_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED] + of_object_extra_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_global_vrf_allowed_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_global_vrf_allowed_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_global_vrf_allowed_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_global_vrf_allowed_t *
+of_oxm_bsn_global_vrf_allowed_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_global_vrf_allowed_t *obj;
+
+    obj = of_oxm_bsn_global_vrf_allowed_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_global_vrf_allowed.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_global_vrf_allowed_init(of_oxm_bsn_global_vrf_allowed_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED] + of_object_extra_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_GLOBAL_VRF_ALLOWED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_global_vrf_allowed_masked */
+
+/**
+ * \defgroup of_oxm_bsn_global_vrf_allowed_masked of_oxm_bsn_global_vrf_allowed_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_global_vrf_allowed_masked_push_wire_values(of_oxm_bsn_global_vrf_allowed_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_global_vrf_allowed_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_global_vrf_allowed_masked
+ */
+
+of_oxm_bsn_global_vrf_allowed_masked_t *
+of_oxm_bsn_global_vrf_allowed_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED] + of_object_extra_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_global_vrf_allowed_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_global_vrf_allowed_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_global_vrf_allowed_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_global_vrf_allowed_masked_t *
+of_oxm_bsn_global_vrf_allowed_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_global_vrf_allowed_masked_t *obj;
+
+    obj = of_oxm_bsn_global_vrf_allowed_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_global_vrf_allowed_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_global_vrf_allowed_masked_init(of_oxm_bsn_global_vrf_allowed_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED] + of_object_extra_len[version][OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_GLOBAL_VRF_ALLOWED_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
 /* New operators for of_oxm_bsn_in_ports_128 */
 
 /**
@@ -121452,6 +123290,1266 @@ of_oxm_bsn_in_ports_128_masked_init(of_oxm_bsn_in_ports_128_masked_t *obj,
     obj->version = version;
     obj->length = bytes;
     obj->object_id = OF_OXM_BSN_IN_PORTS_128_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_dst_class_id */
+
+/**
+ * \defgroup of_oxm_bsn_l3_dst_class_id of_oxm_bsn_l3_dst_class_id
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_dst_class_id_push_wire_values(of_oxm_bsn_l3_dst_class_id_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_DST_CLASS_ID);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_dst_class_id object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_dst_class_id
+ */
+
+of_oxm_bsn_l3_dst_class_id_t *
+of_oxm_bsn_l3_dst_class_id_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_dst_class_id_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_DST_CLASS_ID];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_dst_class_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_dst_class_id_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_dst_class_id_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_dst_class_id_t *
+of_oxm_bsn_l3_dst_class_id_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_dst_class_id_t *obj;
+
+    obj = of_oxm_bsn_l3_dst_class_id_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_dst_class_id.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_dst_class_id_init(of_oxm_bsn_l3_dst_class_id_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_DST_CLASS_ID];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_DST_CLASS_ID;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_dst_class_id_masked */
+
+/**
+ * \defgroup of_oxm_bsn_l3_dst_class_id_masked of_oxm_bsn_l3_dst_class_id_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_dst_class_id_masked_push_wire_values(of_oxm_bsn_l3_dst_class_id_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_DST_CLASS_ID_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_dst_class_id_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_dst_class_id_masked
+ */
+
+of_oxm_bsn_l3_dst_class_id_masked_t *
+of_oxm_bsn_l3_dst_class_id_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_DST_CLASS_ID_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_dst_class_id_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_dst_class_id_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_dst_class_id_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_dst_class_id_masked_t *
+of_oxm_bsn_l3_dst_class_id_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_dst_class_id_masked_t *obj;
+
+    obj = of_oxm_bsn_l3_dst_class_id_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_dst_class_id_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_dst_class_id_masked_init(of_oxm_bsn_l3_dst_class_id_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_DST_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_DST_CLASS_ID_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_DST_CLASS_ID_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_interface_class_id */
+
+/**
+ * \defgroup of_oxm_bsn_l3_interface_class_id of_oxm_bsn_l3_interface_class_id
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_interface_class_id_push_wire_values(of_oxm_bsn_l3_interface_class_id_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_INTERFACE_CLASS_ID);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_interface_class_id object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_interface_class_id
+ */
+
+of_oxm_bsn_l3_interface_class_id_t *
+of_oxm_bsn_l3_interface_class_id_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_interface_class_id_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_interface_class_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_interface_class_id_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_interface_class_id_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_interface_class_id_t *
+of_oxm_bsn_l3_interface_class_id_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_interface_class_id_t *obj;
+
+    obj = of_oxm_bsn_l3_interface_class_id_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_interface_class_id.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_interface_class_id_init(of_oxm_bsn_l3_interface_class_id_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_INTERFACE_CLASS_ID;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_interface_class_id_masked */
+
+/**
+ * \defgroup of_oxm_bsn_l3_interface_class_id_masked of_oxm_bsn_l3_interface_class_id_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_interface_class_id_masked_push_wire_values(of_oxm_bsn_l3_interface_class_id_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_interface_class_id_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_interface_class_id_masked
+ */
+
+of_oxm_bsn_l3_interface_class_id_masked_t *
+of_oxm_bsn_l3_interface_class_id_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_interface_class_id_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_interface_class_id_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_interface_class_id_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_interface_class_id_masked_t *
+of_oxm_bsn_l3_interface_class_id_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_interface_class_id_masked_t *obj;
+
+    obj = of_oxm_bsn_l3_interface_class_id_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_interface_class_id_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_interface_class_id_masked_init(of_oxm_bsn_l3_interface_class_id_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_INTERFACE_CLASS_ID_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_src_class_id */
+
+/**
+ * \defgroup of_oxm_bsn_l3_src_class_id of_oxm_bsn_l3_src_class_id
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_src_class_id_push_wire_values(of_oxm_bsn_l3_src_class_id_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_SRC_CLASS_ID);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_src_class_id object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_src_class_id
+ */
+
+of_oxm_bsn_l3_src_class_id_t *
+of_oxm_bsn_l3_src_class_id_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_src_class_id_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_src_class_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_src_class_id_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_src_class_id_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_src_class_id_t *
+of_oxm_bsn_l3_src_class_id_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_src_class_id_t *obj;
+
+    obj = of_oxm_bsn_l3_src_class_id_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_src_class_id.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_src_class_id_init(of_oxm_bsn_l3_src_class_id_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID] + of_object_extra_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_SRC_CLASS_ID;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_l3_src_class_id_masked */
+
+/**
+ * \defgroup of_oxm_bsn_l3_src_class_id_masked of_oxm_bsn_l3_src_class_id_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_l3_src_class_id_masked_push_wire_values(of_oxm_bsn_l3_src_class_id_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_l3_src_class_id_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_l3_src_class_id_masked
+ */
+
+of_oxm_bsn_l3_src_class_id_masked_t *
+of_oxm_bsn_l3_src_class_id_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_l3_src_class_id_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_l3_src_class_id_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_l3_src_class_id_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_l3_src_class_id_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_l3_src_class_id_masked_t *
+of_oxm_bsn_l3_src_class_id_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_l3_src_class_id_masked_t *obj;
+
+    obj = of_oxm_bsn_l3_src_class_id_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_l3_src_class_id_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_l3_src_class_id_masked_init(of_oxm_bsn_l3_src_class_id_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_L3_SRC_CLASS_ID_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_lag_id */
+
+/**
+ * \defgroup of_oxm_bsn_lag_id of_oxm_bsn_lag_id
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_lag_id_push_wire_values(of_oxm_bsn_lag_id_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_LAG_ID);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_lag_id object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_lag_id
+ */
+
+of_oxm_bsn_lag_id_t *
+of_oxm_bsn_lag_id_new_(of_version_t version)
+{
+    of_oxm_bsn_lag_id_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_LAG_ID] + of_object_extra_len[version][OF_OXM_BSN_LAG_ID];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_lag_id_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_lag_id_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_lag_id_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_lag_id_t *
+of_oxm_bsn_lag_id_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_lag_id_t *obj;
+
+    obj = of_oxm_bsn_lag_id_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_lag_id.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_lag_id_init(of_oxm_bsn_lag_id_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_LAG_ID] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_LAG_ID] + of_object_extra_len[version][OF_OXM_BSN_LAG_ID];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_LAG_ID;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_lag_id_masked */
+
+/**
+ * \defgroup of_oxm_bsn_lag_id_masked of_oxm_bsn_lag_id_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_lag_id_masked_push_wire_values(of_oxm_bsn_lag_id_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_LAG_ID_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_lag_id_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_lag_id_masked
+ */
+
+of_oxm_bsn_lag_id_masked_t *
+of_oxm_bsn_lag_id_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_lag_id_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_LAG_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_LAG_ID_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_lag_id_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_lag_id_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_lag_id_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_lag_id_masked_t *
+of_oxm_bsn_lag_id_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_lag_id_masked_t *obj;
+
+    obj = of_oxm_bsn_lag_id_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_lag_id_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_lag_id_masked_init(of_oxm_bsn_lag_id_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_LAG_ID_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_LAG_ID_MASKED] + of_object_extra_len[version][OF_OXM_BSN_LAG_ID_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_LAG_ID_MASKED;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_vrf */
+
+/**
+ * \defgroup of_oxm_bsn_vrf of_oxm_bsn_vrf
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_vrf_push_wire_values(of_oxm_bsn_vrf_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_VRF);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_vrf object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_vrf
+ */
+
+of_oxm_bsn_vrf_t *
+of_oxm_bsn_vrf_new_(of_version_t version)
+{
+    of_oxm_bsn_vrf_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_VRF] + of_object_extra_len[version][OF_OXM_BSN_VRF];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_vrf_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_vrf_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_vrf_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_vrf_t *
+of_oxm_bsn_vrf_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_vrf_t *obj;
+
+    obj = of_oxm_bsn_vrf_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_vrf.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_vrf_init(of_oxm_bsn_vrf_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_VRF] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_VRF] + of_object_extra_len[version][OF_OXM_BSN_VRF];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_VRF;
+
+    /* Set up the object's function pointers */
+
+    obj->wire_length_get = of_oxm_wire_length_get;
+    obj->wire_length_set = of_oxm_wire_length_set;
+    obj->wire_type_get = of_oxm_wire_object_id_get;
+    obj->wire_type_set = of_oxm_wire_object_id_set;
+
+    /* Grow the wire buffer */
+    if (obj->wire_object.wbuf != NULL) {
+        int tot_bytes;
+
+        tot_bytes = bytes + obj->wire_object.obj_offset;
+        of_wire_buffer_grow(obj->wire_object.wbuf, tot_bytes);
+    }
+}
+
+
+/* New operators for of_oxm_bsn_vrf_masked */
+
+/**
+ * \defgroup of_oxm_bsn_vrf_masked of_oxm_bsn_vrf_masked
+ */
+
+/**
+ * Helper function to push values into the wire buffer
+ */
+static inline int
+of_oxm_bsn_vrf_masked_push_wire_values(of_oxm_bsn_vrf_masked_t *obj)
+{
+    /* OXM obj; set length and type */
+    of_oxm_wire_length_set((of_object_t *)obj, obj->length);
+    of_oxm_wire_object_id_set((of_object_t *)obj, OF_OXM_BSN_VRF_MASKED);
+
+    return OF_ERROR_NONE;
+}
+
+/**
+ * Create a new of_oxm_bsn_vrf_masked object
+ *
+ * @param version The wire version to use for the object
+ * @return Pointer to the newly create object or NULL on error
+ *
+ * Initializes the new object with it's default fixed length associating
+ * a new underlying wire buffer.
+ *
+ * Use new_from_message to bind an existing message to a message object,
+ * or a _get function for non-message objects.
+ *
+ * \ingroup of_oxm_bsn_vrf_masked
+ */
+
+of_oxm_bsn_vrf_masked_t *
+of_oxm_bsn_vrf_masked_new_(of_version_t version)
+{
+    of_oxm_bsn_vrf_masked_t *obj;
+    int bytes;
+
+    bytes = of_object_fixed_len[version][OF_OXM_BSN_VRF_MASKED] + of_object_extra_len[version][OF_OXM_BSN_VRF_MASKED];
+
+    /* Allocate a maximum-length wire buffer assuming we'll be appending to it. */
+    if ((obj = (of_oxm_bsn_vrf_masked_t *)of_object_new(OF_WIRE_BUFFER_MAX_LENGTH)) == NULL) {
+        return NULL;
+    }
+
+    of_oxm_bsn_vrf_masked_init(obj, version, bytes, 0);
+
+    if (of_oxm_bsn_vrf_masked_push_wire_values(obj) < 0) {
+        FREE(obj);
+        return NULL;
+    }
+
+    return obj;
+}
+
+#if defined(OF_OBJECT_TRACKING)
+
+/*
+ * Tracking objects.  Call the new function and then record location
+ */
+
+of_oxm_bsn_vrf_masked_t *
+of_oxm_bsn_vrf_masked_new_tracking(of_version_t version,
+     const char *file, int line)
+{
+    of_oxm_bsn_vrf_masked_t *obj;
+
+    obj = of_oxm_bsn_vrf_masked_new_(version);
+    of_object_track((of_object_t *)obj, file, line);
+
+    return obj;
+}
+#endif
+
+/**
+ * Initialize an object of type of_oxm_bsn_vrf_masked.
+ *
+ * @param obj Pointer to the object to initialize
+ * @param version The wire version to use for the object
+ * @param bytes How many bytes in the object
+ * @param clean_wire Boolean: If true, clear the wire object control struct
+ *
+ * If bytes < 0, then the default fixed length is used for the object
+ *
+ * This is a "coerce" function that sets up the pointers for the
+ * accessors properly.
+ *
+ * If anything other than 0 is passed in for the buffer size, the underlying
+ * wire buffer will have 'grow' called.
+ */
+
+void
+of_oxm_bsn_vrf_masked_init(of_oxm_bsn_vrf_masked_t *obj,
+    of_version_t version, int bytes, int clean_wire)
+{
+
+    ASSERT(of_object_fixed_len[version][OF_OXM_BSN_VRF_MASKED] >= 0);
+    if (clean_wire) {
+        MEMSET(obj, 0, sizeof(*obj));
+    }
+    if (bytes < 0) {
+        bytes = of_object_fixed_len[version][OF_OXM_BSN_VRF_MASKED] + of_object_extra_len[version][OF_OXM_BSN_VRF_MASKED];
+    }
+    obj->version = version;
+    obj->length = bytes;
+    obj->object_id = OF_OXM_BSN_VRF_MASKED;
 
     /* Set up the object's function pointers */
 
@@ -135812,125 +138910,137 @@ const of_object_init_f of_object_init_map[] = {
     (of_object_init_f)of_oxm_arp_tha_masked_init,                     /* 229 */
     (of_object_init_f)of_oxm_arp_tpa_init,                            /* 230 */
     (of_object_init_f)of_oxm_arp_tpa_masked_init,                     /* 231 */
-    (of_object_init_f)of_oxm_bsn_in_ports_128_init,                   /* 232 */
-    (of_object_init_f)of_oxm_bsn_in_ports_128_masked_init,            /* 233 */
-    (of_object_init_f)of_oxm_eth_dst_init,                            /* 234 */
-    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 235 */
-    (of_object_init_f)of_oxm_eth_src_init,                            /* 236 */
-    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 237 */
-    (of_object_init_f)of_oxm_eth_type_init,                           /* 238 */
-    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 239 */
-    (of_object_init_f)of_oxm_header_init,                             /* 240 */
-    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 241 */
-    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 242 */
-    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 243 */
-    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 244 */
-    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 245 */
-    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 246 */
-    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 247 */
-    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 248 */
-    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 249 */
-    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 250 */
-    (of_object_init_f)of_oxm_in_port_init,                            /* 251 */
-    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 252 */
-    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 253 */
-    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 254 */
-    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 255 */
-    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 256 */
-    (of_object_init_f)of_oxm_ip_proto_init,                           /* 257 */
-    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 258 */
-    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 259 */
-    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 260 */
-    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 261 */
-    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 262 */
-    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 263 */
-    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 264 */
-    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 265 */
-    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 266 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 267 */
-    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 268 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 269 */
-    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 270 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 271 */
-    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 272 */
-    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 273 */
-    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 274 */
-    (of_object_init_f)of_oxm_metadata_init,                           /* 275 */
-    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 276 */
-    (of_object_init_f)of_oxm_mpls_label_init,                         /* 277 */
-    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 278 */
-    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 279 */
-    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 280 */
-    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 281 */
-    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 282 */
-    (of_object_init_f)of_oxm_sctp_src_init,                           /* 283 */
-    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 284 */
-    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 285 */
-    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 286 */
-    (of_object_init_f)of_oxm_tcp_src_init,                            /* 287 */
-    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 288 */
-    (of_object_init_f)of_oxm_udp_dst_init,                            /* 289 */
-    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 290 */
-    (of_object_init_f)of_oxm_udp_src_init,                            /* 291 */
-    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 292 */
-    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 293 */
-    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 294 */
-    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 295 */
-    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 296 */
-    (of_object_init_f)of_packet_queue_init,                           /* 297 */
-    (of_object_init_f)of_port_desc_init,                              /* 298 */
-    (of_object_init_f)of_port_stats_entry_init,                       /* 299 */
-    (of_object_init_f)of_queue_prop_header_init,                      /* 300 */
-    (of_object_init_f)of_queue_prop_experimenter_init,                /* 301 */
-    (of_object_init_f)of_queue_prop_header_init,                      /* 302 */
-    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 303 */
-    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 304 */
-    (of_object_init_f)of_queue_stats_entry_init,                      /* 305 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 306 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 307 */
-    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 308 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 309 */
-    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 310 */
-    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 311 */
-    (of_object_init_f)of_table_feature_prop_header_init,              /* 312 */
-    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 313 */
-    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 314 */
-    (of_object_init_f)of_table_feature_prop_match_init,               /* 315 */
-    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 316 */
-    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 317 */
-    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 318 */
-    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 319 */
-    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 320 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 321 */
-    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 322 */
-    (of_object_init_f)of_table_features_init,                         /* 323 */
-    (of_object_init_f)of_table_stats_entry_init,                      /* 324 */
-    (of_object_init_f)of_uint32_init,                                 /* 325 */
-    (of_object_init_f)of_uint8_init,                                  /* 326 */
-    (of_object_init_f)of_list_action_init,                            /* 327 */
-    (of_object_init_f)of_list_action_id_init,                         /* 328 */
-    (of_object_init_f)of_list_bsn_interface_init,                     /* 329 */
-    (of_object_init_f)of_list_bucket_init,                            /* 330 */
-    (of_object_init_f)of_list_bucket_counter_init,                    /* 331 */
-    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 332 */
-    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 333 */
-    (of_object_init_f)of_list_group_stats_entry_init,                 /* 334 */
-    (of_object_init_f)of_list_hello_elem_init,                        /* 335 */
-    (of_object_init_f)of_list_instruction_init,                       /* 336 */
-    (of_object_init_f)of_list_meter_band_init,                        /* 337 */
-    (of_object_init_f)of_list_meter_band_stats_init,                  /* 338 */
-    (of_object_init_f)of_list_meter_stats_init,                       /* 339 */
-    (of_object_init_f)of_list_oxm_init,                               /* 340 */
-    (of_object_init_f)of_list_packet_queue_init,                      /* 341 */
-    (of_object_init_f)of_list_port_desc_init,                         /* 342 */
-    (of_object_init_f)of_list_port_stats_entry_init,                  /* 343 */
-    (of_object_init_f)of_list_queue_prop_init,                        /* 344 */
-    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 345 */
-    (of_object_init_f)of_list_table_feature_prop_init,                /* 346 */
-    (of_object_init_f)of_list_table_features_init,                    /* 347 */
-    (of_object_init_f)of_list_table_stats_entry_init,                 /* 348 */
-    (of_object_init_f)of_list_uint32_init,                            /* 349 */
-    (of_object_init_f)of_list_uint8_init                              /* 350 */
+    (of_object_init_f)of_oxm_bsn_global_vrf_allowed_init,             /* 232 */
+    (of_object_init_f)of_oxm_bsn_global_vrf_allowed_masked_init,      /* 233 */
+    (of_object_init_f)of_oxm_bsn_in_ports_128_init,                   /* 234 */
+    (of_object_init_f)of_oxm_bsn_in_ports_128_masked_init,            /* 235 */
+    (of_object_init_f)of_oxm_bsn_l3_dst_class_id_init,                /* 236 */
+    (of_object_init_f)of_oxm_bsn_l3_dst_class_id_masked_init,         /* 237 */
+    (of_object_init_f)of_oxm_bsn_l3_interface_class_id_init,          /* 238 */
+    (of_object_init_f)of_oxm_bsn_l3_interface_class_id_masked_init,   /* 239 */
+    (of_object_init_f)of_oxm_bsn_l3_src_class_id_init,                /* 240 */
+    (of_object_init_f)of_oxm_bsn_l3_src_class_id_masked_init,         /* 241 */
+    (of_object_init_f)of_oxm_bsn_lag_id_init,                         /* 242 */
+    (of_object_init_f)of_oxm_bsn_lag_id_masked_init,                  /* 243 */
+    (of_object_init_f)of_oxm_bsn_vrf_init,                            /* 244 */
+    (of_object_init_f)of_oxm_bsn_vrf_masked_init,                     /* 245 */
+    (of_object_init_f)of_oxm_eth_dst_init,                            /* 246 */
+    (of_object_init_f)of_oxm_eth_dst_masked_init,                     /* 247 */
+    (of_object_init_f)of_oxm_eth_src_init,                            /* 248 */
+    (of_object_init_f)of_oxm_eth_src_masked_init,                     /* 249 */
+    (of_object_init_f)of_oxm_eth_type_init,                           /* 250 */
+    (of_object_init_f)of_oxm_eth_type_masked_init,                    /* 251 */
+    (of_object_init_f)of_oxm_header_init,                             /* 252 */
+    (of_object_init_f)of_oxm_icmpv4_code_init,                        /* 253 */
+    (of_object_init_f)of_oxm_icmpv4_code_masked_init,                 /* 254 */
+    (of_object_init_f)of_oxm_icmpv4_type_init,                        /* 255 */
+    (of_object_init_f)of_oxm_icmpv4_type_masked_init,                 /* 256 */
+    (of_object_init_f)of_oxm_icmpv6_code_init,                        /* 257 */
+    (of_object_init_f)of_oxm_icmpv6_code_masked_init,                 /* 258 */
+    (of_object_init_f)of_oxm_icmpv6_type_init,                        /* 259 */
+    (of_object_init_f)of_oxm_icmpv6_type_masked_init,                 /* 260 */
+    (of_object_init_f)of_oxm_in_phy_port_init,                        /* 261 */
+    (of_object_init_f)of_oxm_in_phy_port_masked_init,                 /* 262 */
+    (of_object_init_f)of_oxm_in_port_init,                            /* 263 */
+    (of_object_init_f)of_oxm_in_port_masked_init,                     /* 264 */
+    (of_object_init_f)of_oxm_ip_dscp_init,                            /* 265 */
+    (of_object_init_f)of_oxm_ip_dscp_masked_init,                     /* 266 */
+    (of_object_init_f)of_oxm_ip_ecn_init,                             /* 267 */
+    (of_object_init_f)of_oxm_ip_ecn_masked_init,                      /* 268 */
+    (of_object_init_f)of_oxm_ip_proto_init,                           /* 269 */
+    (of_object_init_f)of_oxm_ip_proto_masked_init,                    /* 270 */
+    (of_object_init_f)of_oxm_ipv4_dst_init,                           /* 271 */
+    (of_object_init_f)of_oxm_ipv4_dst_masked_init,                    /* 272 */
+    (of_object_init_f)of_oxm_ipv4_src_init,                           /* 273 */
+    (of_object_init_f)of_oxm_ipv4_src_masked_init,                    /* 274 */
+    (of_object_init_f)of_oxm_ipv6_dst_init,                           /* 275 */
+    (of_object_init_f)of_oxm_ipv6_dst_masked_init,                    /* 276 */
+    (of_object_init_f)of_oxm_ipv6_flabel_init,                        /* 277 */
+    (of_object_init_f)of_oxm_ipv6_flabel_masked_init,                 /* 278 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_init,                        /* 279 */
+    (of_object_init_f)of_oxm_ipv6_nd_sll_masked_init,                 /* 280 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_init,                     /* 281 */
+    (of_object_init_f)of_oxm_ipv6_nd_target_masked_init,              /* 282 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_init,                        /* 283 */
+    (of_object_init_f)of_oxm_ipv6_nd_tll_masked_init,                 /* 284 */
+    (of_object_init_f)of_oxm_ipv6_src_init,                           /* 285 */
+    (of_object_init_f)of_oxm_ipv6_src_masked_init,                    /* 286 */
+    (of_object_init_f)of_oxm_metadata_init,                           /* 287 */
+    (of_object_init_f)of_oxm_metadata_masked_init,                    /* 288 */
+    (of_object_init_f)of_oxm_mpls_label_init,                         /* 289 */
+    (of_object_init_f)of_oxm_mpls_label_masked_init,                  /* 290 */
+    (of_object_init_f)of_oxm_mpls_tc_init,                            /* 291 */
+    (of_object_init_f)of_oxm_mpls_tc_masked_init,                     /* 292 */
+    (of_object_init_f)of_oxm_sctp_dst_init,                           /* 293 */
+    (of_object_init_f)of_oxm_sctp_dst_masked_init,                    /* 294 */
+    (of_object_init_f)of_oxm_sctp_src_init,                           /* 295 */
+    (of_object_init_f)of_oxm_sctp_src_masked_init,                    /* 296 */
+    (of_object_init_f)of_oxm_tcp_dst_init,                            /* 297 */
+    (of_object_init_f)of_oxm_tcp_dst_masked_init,                     /* 298 */
+    (of_object_init_f)of_oxm_tcp_src_init,                            /* 299 */
+    (of_object_init_f)of_oxm_tcp_src_masked_init,                     /* 300 */
+    (of_object_init_f)of_oxm_udp_dst_init,                            /* 301 */
+    (of_object_init_f)of_oxm_udp_dst_masked_init,                     /* 302 */
+    (of_object_init_f)of_oxm_udp_src_init,                            /* 303 */
+    (of_object_init_f)of_oxm_udp_src_masked_init,                     /* 304 */
+    (of_object_init_f)of_oxm_vlan_pcp_init,                           /* 305 */
+    (of_object_init_f)of_oxm_vlan_pcp_masked_init,                    /* 306 */
+    (of_object_init_f)of_oxm_vlan_vid_init,                           /* 307 */
+    (of_object_init_f)of_oxm_vlan_vid_masked_init,                    /* 308 */
+    (of_object_init_f)of_packet_queue_init,                           /* 309 */
+    (of_object_init_f)of_port_desc_init,                              /* 310 */
+    (of_object_init_f)of_port_stats_entry_init,                       /* 311 */
+    (of_object_init_f)of_queue_prop_header_init,                      /* 312 */
+    (of_object_init_f)of_queue_prop_experimenter_init,                /* 313 */
+    (of_object_init_f)of_queue_prop_header_init,                      /* 314 */
+    (of_object_init_f)of_queue_prop_max_rate_init,                    /* 315 */
+    (of_object_init_f)of_queue_prop_min_rate_init,                    /* 316 */
+    (of_object_init_f)of_queue_stats_entry_init,                      /* 317 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 318 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_init,       /* 319 */
+    (of_object_init_f)of_table_feature_prop_apply_actions_miss_init,  /* 320 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_init,      /* 321 */
+    (of_object_init_f)of_table_feature_prop_apply_setfield_miss_init, /* 322 */
+    (of_object_init_f)of_table_feature_prop_experimenter_init,        /* 323 */
+    (of_object_init_f)of_table_feature_prop_header_init,              /* 324 */
+    (of_object_init_f)of_table_feature_prop_instructions_init,        /* 325 */
+    (of_object_init_f)of_table_feature_prop_instructions_miss_init,   /* 326 */
+    (of_object_init_f)of_table_feature_prop_match_init,               /* 327 */
+    (of_object_init_f)of_table_feature_prop_next_tables_init,         /* 328 */
+    (of_object_init_f)of_table_feature_prop_next_tables_miss_init,    /* 329 */
+    (of_object_init_f)of_table_feature_prop_wildcards_init,           /* 330 */
+    (of_object_init_f)of_table_feature_prop_write_actions_init,       /* 331 */
+    (of_object_init_f)of_table_feature_prop_write_actions_miss_init,  /* 332 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_init,      /* 333 */
+    (of_object_init_f)of_table_feature_prop_write_setfield_miss_init, /* 334 */
+    (of_object_init_f)of_table_features_init,                         /* 335 */
+    (of_object_init_f)of_table_stats_entry_init,                      /* 336 */
+    (of_object_init_f)of_uint32_init,                                 /* 337 */
+    (of_object_init_f)of_uint8_init,                                  /* 338 */
+    (of_object_init_f)of_list_action_init,                            /* 339 */
+    (of_object_init_f)of_list_action_id_init,                         /* 340 */
+    (of_object_init_f)of_list_bsn_interface_init,                     /* 341 */
+    (of_object_init_f)of_list_bucket_init,                            /* 342 */
+    (of_object_init_f)of_list_bucket_counter_init,                    /* 343 */
+    (of_object_init_f)of_list_flow_stats_entry_init,                  /* 344 */
+    (of_object_init_f)of_list_group_desc_stats_entry_init,            /* 345 */
+    (of_object_init_f)of_list_group_stats_entry_init,                 /* 346 */
+    (of_object_init_f)of_list_hello_elem_init,                        /* 347 */
+    (of_object_init_f)of_list_instruction_init,                       /* 348 */
+    (of_object_init_f)of_list_meter_band_init,                        /* 349 */
+    (of_object_init_f)of_list_meter_band_stats_init,                  /* 350 */
+    (of_object_init_f)of_list_meter_stats_init,                       /* 351 */
+    (of_object_init_f)of_list_oxm_init,                               /* 352 */
+    (of_object_init_f)of_list_packet_queue_init,                      /* 353 */
+    (of_object_init_f)of_list_port_desc_init,                         /* 354 */
+    (of_object_init_f)of_list_port_stats_entry_init,                  /* 355 */
+    (of_object_init_f)of_list_queue_prop_init,                        /* 356 */
+    (of_object_init_f)of_list_queue_stats_entry_init,                 /* 357 */
+    (of_object_init_f)of_list_table_feature_prop_init,                /* 358 */
+    (of_object_init_f)of_list_table_features_init,                    /* 359 */
+    (of_object_init_f)of_list_table_stats_entry_init,                 /* 360 */
+    (of_object_init_f)of_list_uint32_init,                            /* 361 */
+    (of_object_init_f)of_list_uint8_init                              /* 362 */
 };
 
 /* This code should be broken out to a different file */
