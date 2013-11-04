@@ -9183,7 +9183,7 @@ test_of_role_reply_create_OF_VERSION_1_2(void)
     obj = of_role_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 8);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ROLE_REPLY);
 
@@ -13103,7 +13103,7 @@ test_of_role_reply_create_OF_VERSION_1_3(void)
     obj = of_role_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 8);
+    TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_ROLE_REPLY);
 
