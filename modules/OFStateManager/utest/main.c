@@ -117,7 +117,7 @@ indigo_fwd_flow_delete(indigo_cookie_t flow_id,
                        indigo_fi_flow_stats_t *flow_stats)
 {
     AIM_LOG_VERBOSE("flow delete called\n");
-    memset(flow_stats, 0, sizeof(flow_stats));
+    memset(flow_stats, 0, sizeof(*flow_stats));
     return INDIGO_ERROR_NONE;
 }
 
