@@ -38,12 +38,6 @@ extern ind_core_of_config_t ind_core_of_config;
 /* The flow table instance visible to all parts of the module */
 extern ft_instance_t ind_core_ft;
 
-/**
- * Generate an XID for a message from this switch (not a reply)
- */
-
-extern int ind_core_xid_alloc(void);
-
 extern void ind_core_flow_entry_delete(ft_entry_t *entry,
                                        indigo_fi_flow_removed_t reason);
 

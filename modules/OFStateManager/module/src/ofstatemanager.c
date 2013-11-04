@@ -140,8 +140,6 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 
     calc_duration(current, entry->insert_time, &secs, &nsecs);
 
-    of_flow_removed_xid_set(msg, ind_core_xid_alloc());
-
     of_flow_removed_cookie_set(msg, entry->cookie);
     of_flow_removed_priority_set(msg, entry->priority);
     of_flow_removed_idle_timeout_set(msg, entry->idle_timeout);
