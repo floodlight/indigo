@@ -49,8 +49,8 @@ cdefs: &cdefs
     doc: "Optimize echo requests based on controller activity. Otherwise echo requests are sent periodically regardless of other activity."
     default: 0
 - OFCONNECTIONMANAGER_CONFIG_OF_VERSION:
-    doc: "Open Flow version to be used"
-    default: 1 # OF_VERSION_1_0
+    doc: "OpenFlow version to be advertised in HELLO message"
+    default: OF_VERSION_1_0
 
 definitions:
   cdefs:

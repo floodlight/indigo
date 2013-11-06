@@ -122,11 +122,11 @@
 /**
  * OFCONNECTIONMANAGER_CONFIG_OF_VERSION
  *
- * Open Flow version to be used */
+ * OpenFlow version to be advertised in HELLO message */
 
 
 #ifndef OFCONNECTIONMANAGER_CONFIG_OF_VERSION
-#define OFCONNECTIONMANAGER_CONFIG_OF_VERSION 1
+#define OFCONNECTIONMANAGER_CONFIG_OF_VERSION OF_VERSION_1_0
 #endif
 
 
