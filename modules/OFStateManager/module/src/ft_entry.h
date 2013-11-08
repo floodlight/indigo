@@ -81,8 +81,6 @@ typedef struct ft_entry_s {
     /* Updated by implementation */
     uint8_t table_id;
     indigo_time_t insert_time;
-    uint64_t packets;
-    uint64_t bytes;
     indigo_time_t last_counter_change;
 
     /* For linked list maintance */

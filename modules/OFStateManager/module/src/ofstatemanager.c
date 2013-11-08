@@ -133,13 +133,16 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
  */
 
 static void
-send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
+send_flow_removed_message(ft_entry_t *entry, 
+                          indigo_fi_flow_removed_t reason,
+                          indigo_fi_flow_stats_t *final_stats)
 {
     of_flow_removed_t *msg;
     int rv = 0;
     uint32_t secs;
     uint32_t nsecs;
     indigo_time_t current;
+    uint64_t packets, bytes;
 
     current = INDIGO_CURRENT_TIME;
 
@@ -177,8 +180,17 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
     of_flow_removed_reason_set(msg, reason);
     of_flow_removed_duration_sec_set(msg, secs);
     of_flow_removed_duration_nsec_set(msg, nsecs);
-    of_flow_removed_packet_count_set(msg, entry->packets);
-    of_flow_removed_byte_count_set(msg, entry->bytes);
+
+    if (final_stats != NULL) {
+        INDIGO_ASSERT(final_stats->flow_id == entry->id);
+        packets = final_stats->packets;
+        bytes = final_stats->bytes;
+    } else {
+        packets = (uint64_t)-1;
+        bytes = (uint64_t)-1;
+    }
+    of_flow_removed_packet_count_set(msg, packets);
+    of_flow_removed_byte_count_set(msg, bytes);
 
     /* @fixme hard_timeout and table_id are not in OF 1.0 */
 
@@ -191,6 +203,46 @@ send_flow_removed_message(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 
     return;
 }
+
+
+/**
+ * @brief Send a idle notification for the given entry
+ * @param entry The local flow table entry
+ */
+
+static void
+send_idle_notification(ft_entry_t *entry)
+{
+    of_bsn_flow_idle_t *msg;
+    int rv = 0;
+
+    /* TODO get version from OFConnectionManager */
+    if ((msg = of_bsn_flow_idle_new(entry->match.version)) == NULL) {
+        return;
+    }
+
+    of_bsn_flow_idle_xid_set(msg, ind_core_xid_alloc());
+
+    of_bsn_flow_idle_cookie_set(msg, entry->cookie);
+    of_bsn_flow_idle_priority_set(msg, entry->priority);
+    of_bsn_flow_idle_table_id_set(msg, entry->table_id);
+
+    if (of_bsn_flow_idle_match_set(msg, &entry->match)) {
+        LOG_ERROR("Failed to set match in idle notification");
+        of_object_delete(msg);
+        return;
+    }
+
+    /* @fixme Should a cxn-id be specified? */
+    rv = indigo_cxn_send_controller_message(INDIGO_CXN_ID_UNSPECIFIED, msg);
+    if (rv != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Error sending idle notification");
+        return;
+    }
+
+    return;
+}
+
 
 /****************************************************************/
 
@@ -541,16 +593,7 @@ process_flow_removal(ft_entry_t *entry,
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */
         if (reason != INDIGO_FLOW_REMOVED_OVERWRITE) {
-            if (final_stats != NULL) {
-                INDIGO_ASSERT(final_stats->flow_id == entry->id);
-                entry->packets = final_stats->packets;
-                entry->bytes = final_stats->bytes;
-            } else {
-                entry->packets = (uint64_t)-1;
-                entry->bytes = (uint64_t)-1;
-            }
-
-            send_flow_removed_message(entry, reason);
+            send_flow_removed_message(entry, reason, final_stats);
         }
     }
 
@@ -956,7 +999,6 @@ flow_expiration_timer(void *cookie)
 
     FT_ITER(ind_core_ft, entry, cur, next) {
         indigo_error_t rv;
-        indigo_fi_flow_stats_t flow_stats;
 
         if (entry->hard_timeout > 0) {
             uint32_t delta;
@@ -972,26 +1014,24 @@ flow_expiration_timer(void *cookie)
             }
         }
 
-        /* Update local copy of counters */
-        /* Only used currently for idle timeouts */
+        /* Get hit status for idle timeouts */
         if (entry->idle_timeout > 0) {
-            rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+            bool hit;
+
+            rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
             if (rv != INDIGO_ERROR_NONE) {
-                LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
+                LOG_ERROR("Failed to get hit status for flow "
+                          INDIGO_FLOW_ID_PRINTF_FORMAT": %d",
                           entry->id, rv);
                 continue;
             }
 
-            if (entry->packets != flow_stats.packets) {
-                entry->packets = flow_stats.packets;
-                entry->last_counter_change = current_time;
-            }
-            if (entry->bytes != flow_stats.bytes) {
-                entry->bytes = flow_stats.bytes;
+            if (hit) {
                 entry->last_counter_change = current_time;
             }
         }
 
+        /* If idle timeout has expired, send notification or delete flow */
         if (entry->idle_timeout > 0) {
             uint32_t delta;
             delta = INDIGO_TIME_DIFF_ms(entry->last_counter_change,
@@ -999,9 +1039,13 @@ flow_expiration_timer(void *cookie)
             if (delta >= entry->idle_timeout) {
                 LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                           entry->idle_timeout, INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
-                                           INDIGO_CXN_ID_UNSPECIFIED);
-                continue;
+
+                if (entry->flags & OF_FLOW_MOD_FLAG_BSN_SEND_IDLE) {
+                    send_idle_notification(entry);
+                } else {
+                    ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_IDLE_TIMEOUT,
+                                               INDIGO_CXN_ID_UNSPECIFIED);
+                }
             }
         }
     }
@@ -1022,8 +1066,6 @@ ind_core_ft_dump(aim_pvs_t* pvs)
         aim_printf(pvs, "priority: %hu\n", entry->priority);
         aim_printf(pvs, "flags: %hu\n", entry->flags);
         aim_printf(pvs, "table_id: %hhu\n", entry->table_id);
-        aim_printf(pvs, "packets: %"PRIu64"\n", entry->packets);
-        aim_printf(pvs, "bytes: %"PRIu64"\n", entry->bytes);
 
         if (entry->match.version == OF_VERSION_1_0) {
             int rv;
