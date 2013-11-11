@@ -90,7 +90,7 @@ extern indigo_error_t indigo_core_packet_in(of_packet_in_t *packet_in);
  * State Manager takes responsibility for the object
  */
 
-extern indigo_error_t indigo_core_receive_controller_message(
+extern void indigo_core_receive_controller_message(
     indigo_cxn_id_t cxn,
     of_object_t *obj);
 

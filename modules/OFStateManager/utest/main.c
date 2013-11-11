@@ -117,7 +117,7 @@ indigo_fwd_flow_delete(indigo_cookie_t flow_id,
                        indigo_fi_flow_stats_t *flow_stats)
 {
     AIM_LOG_VERBOSE("flow delete called\n");
-    memset(flow_stats, 0, sizeof(flow_stats));
+    memset(flow_stats, 0, sizeof(*flow_stats));
     return INDIGO_ERROR_NONE;
 }
 
@@ -159,22 +159,34 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
     return;
 }
 
-int
-indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
-                          uint32_t xid, uint16_t type, uint16_t code,
-                          of_octets_t *octets)
+void
+indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                            uint16_t type, uint16_t code)
 {
     AIM_LOG_VERBOSE("Send error msg called for cxn id %d\n",
                       cxn_id);
-    return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
+void
 indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     AIM_LOG_VERBOSE("Send msg called for cxn id %d, obj type %d\n",
                       cxn_id, obj->object_id);
     of_object_delete(obj);
+}
+
+void
+indigo_cxn_send_async_message(of_object_t *obj)
+{
+    AIM_LOG_VERBOSE("Send async msg called for type %s",
+                    of_object_id_str[obj->object_id]);
+    of_object_delete(obj);
+}
+
+indigo_error_t
+indigo_cxn_get_async_version(of_version_t *ver)
+{
+    *ver = OF_VERSION_1_0;
     return INDIGO_ERROR_NONE;
 }
 
@@ -352,7 +364,7 @@ depopulate_table(ft_instance_t ft)
         entry = ft_lookup(ft, TEST_KEY(idx));
         TEST_ASSERT(entry != NULL);
         TEST_ASSERT(entry->match.fields.eth_type == TEST_ETH_TYPE(idx));
-        ft_delete_id(ft, TEST_KEY(idx));
+        ft_delete(ft, entry);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
@@ -401,14 +413,14 @@ message_deleted(of_object_t *obj)
     outstanding_op_cnt--;
 }
 
-static int
+static void
 handle_message(of_object_t *obj)
 {
     assert(outstanding_op_cnt >= 0);
     outstanding_op_cnt++;
     obj->track_info.delete_cb = message_deleted;
     obj->track_info.delete_cookie = NULL;
-    return indigo_core_receive_controller_message(0, obj);
+    indigo_core_receive_controller_message(0, obj);
 }
 
 static int
@@ -517,8 +529,8 @@ test_ft_hash(void)
     entry = ft_lookup(ft, TEST_ENT_ID);
 
     /* Should not find next id */
-    entry = ft_lookup(ft, TEST_ENT_ID + 1);
-    TEST_ASSERT(entry == NULL);
+    lookup_entry = ft_lookup(ft, TEST_ENT_ID + 1);
+    TEST_ASSERT(lookup_entry == NULL);
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
@@ -599,7 +611,7 @@ test_ft_hash(void)
     TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
 
-    ft_delete_id(ft, TEST_ENT_ID);
+    ft_delete(ft, entry);
     of_object_delete(flow_add);
 
     /* Delete the table */
@@ -843,7 +855,7 @@ iter_task_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         state->finished = 0;
         state->entries_seen++;
-        ASSERT(ft_delete(state->ft, entry) == 0);
+        ft_delete(state->ft, entry);
     } else {
         state->finished = 1;
     }
@@ -899,7 +911,7 @@ test_hello(void)
     of_hello_t *hello;
 
     hello = of_hello_new(OF_VERSION_1_0);
-    TEST_INDIGO_OK(indigo_core_receive_controller_message(0, hello));
+    indigo_core_receive_controller_message(0, hello);
 
     return TEST_PASS;
 }
@@ -911,7 +923,7 @@ test_packet_out(void)
 
     pkt_out = of_packet_out_new(OF_VERSION_1_0);
     /* Could add params, but core doesn't do anything with them */
-    TEST_INDIGO_OK(indigo_core_receive_controller_message(0, pkt_out));
+    indigo_core_receive_controller_message(0, pkt_out);
 
     return TEST_PASS;
 }
@@ -935,7 +947,7 @@ test_experimenter(void)
 
     exp = of_experimenter_new(OF_VERSION_1_0);
     /* Could add params, but core doesn't do anything with them */
-    TEST_INDIGO_OK(indigo_core_receive_controller_message(0, exp));
+    indigo_core_receive_controller_message(0, exp);
 
     return TEST_PASS;
 }
@@ -999,7 +1011,7 @@ delete_all_entries(ft_instance_t ft)
     TEST_ASSERT(flow_del != NULL);
     of_flow_delete_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
     TEST_OK(of_flow_delete_match_set(flow_del, &match));
-    TEST_INDIGO_OK(handle_message(flow_del));
+    handle_message(flow_del);
     TEST_INDIGO_OK(do_barrier());
 
     TEST_OK(depopulate_table(ft));
@@ -1021,7 +1033,7 @@ test_simple_add_del(void)
         TEST_ASSERT(flow_add != NULL);
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
-        TEST_INDIGO_OK(handle_message(flow_add));
+        handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
@@ -1051,7 +1063,7 @@ test_exact_add_del(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(handle_message(flow_add));
+        handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
@@ -1066,7 +1078,7 @@ test_exact_add_del(void)
         of_flow_delete_strict_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
         of_flow_delete_strict_priority_set(flow_del, prio);
         TEST_OK(of_flow_delete_strict_match_set(flow_del, &match));
-        TEST_INDIGO_OK(handle_message(flow_del));
+        handle_message(flow_del);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT - (idx + 1));
         of_flow_add_delete(flow_add_keep[idx]);
@@ -1095,7 +1107,7 @@ test_modify(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(handle_message(flow_add));
+        handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
@@ -1110,7 +1122,7 @@ test_modify(void)
         of_flow_modify_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_match_set(flow_mod, &match));
-        TEST_INDIGO_OK(handle_message(flow_mod));
+        handle_message(flow_mod);
         TEST_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);
@@ -1142,7 +1154,7 @@ test_modify_strict(void)
         TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
-        TEST_INDIGO_OK(handle_message(flow_add));
+        handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, idx + 1);
     }
@@ -1157,7 +1169,7 @@ test_modify_strict(void)
         of_flow_modify_strict_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_strict_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_strict_match_set(flow_mod, &match));
-        TEST_INDIGO_OK(handle_message(flow_mod));
+        handle_message(flow_mod);
         TEST_INDIGO_OK(do_barrier());
         CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);

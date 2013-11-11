@@ -45,6 +45,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
+#include <sys/errno.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -65,9 +66,6 @@ static int module_enabled = 0;
 static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
-
-static indigo_error_t
-ind_cxn_send_async_controller_message(of_object_t *obj);
 
 /****************************************************************
  * Connection Manager Data shared within module
@@ -438,13 +436,13 @@ listen_cxn_init(connection_t *cxn)
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
-        LOG_ERROR("Could not bind to socket for local cxn");
+        LOG_ERROR("Could not bind to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
     /* show that we are willing to listen */
     if (listen(cxn->sd, LOCAL_CXN_BACKLOG) == -1) {
-        LOG_ERROR("Could not listen to socket for local cxn");
+        LOG_ERROR("Could not listen to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -453,7 +451,7 @@ listen_cxn_init(connection_t *cxn)
             cxn->sd, ind_cxn_listen_socket_ready,
             cxn, IND_CXN_EVENT_PRIORITY);
     if (rv < 0) {
-        LOG_ERROR("Could not register with soc man");
+        LOG_ERROR("Could not register with socket manager: %s", indigo_strerror(rv));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -509,7 +507,7 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
         /* Attempt to create the socket */
         cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
-            LOG_ERROR("Failed to create controller connection socket");
+            LOG_ERROR("Failed to create controller connection socket: %s", strerror(errno));
             return NULL;
         }
     } else {
@@ -519,7 +517,7 @@ connection_socket_setup(indigo_cxn_protocol_params_t *protocol_params,
     soc_flags = fcntl(cxn->sd, F_GETFL, 0);
     if (soc_flags == -1 || fcntl(cxn->sd, F_SETFL,
                                  soc_flags | O_NONBLOCK) == -1) {
-        LOG_ERROR("Failed to set non-blocking flag for socket");
+        LOG_ERROR("Failed to set non-blocking flag for socket: %s", strerror(errno));
         close(cxn->sd);
         return NULL;
     }
@@ -705,37 +703,33 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
 
 /* Send an OpenFlow message to a controller connection
  *
- * This routine ALWAYS takes ownership of the object, even if it returns
- * an error.
+ * This routine takes ownership of the object.
+ *
+ * In some cases the message may be dropped.
  */
-indigo_error_t
+void
 indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     uint8_t *data = NULL;
     int len;
-    int rv = INDIGO_ERROR_NONE;
     connection_t *cxn;
-
-    LOG_TRACE("Send msg type %d to cxn %d", obj->object_id, cxn_id);
-
-    /* TODO create a new public API for this? */
-    if (INDIGO_CXN_UNSPECIFIED(cxn_id)) {
-        return ind_cxn_send_async_controller_message(obj);
-    }
+    uint32_t xid;
 
     if (INDIGO_CXN_INVALID(cxn_id)) {
         LOG_ERROR("Invalid or no active connection: %d", cxn_id);
-        rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!CXN_TCP_CONNECTED(cxn)) {
         LOG_ERROR("Connection id %d is not connected", cxn_id);
-        rv = INDIGO_ERROR_NOT_FOUND;
         goto done;
     }
 
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(OF_OBJECT_BUFFER_INDEX(obj, 0)));
+
+    LOG_VERBOSE("cxn %s: Sending %s message xid %u",
+                cxn_ip_string(cxn), of_object_id_str[obj->object_id], xid);
 
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: send to cxn=%d\n", cxn->cxn_id);
@@ -755,7 +749,6 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         if (IS_ASYNC_MSG(obj)) {
             LOG_TRACE("Handshake not complete; drop async msg %s",
                       of_object_id_str[obj->object_id]);
-            rv = INDIGO_ERROR_NOT_READY;
             goto done;
         }
     }
@@ -766,23 +759,17 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         if (CXN_DROP_PACKET_IN(cxn, obj)) {
             LOG_TRACE("Dropping packetIn");
             cxn->status.packet_in_drop++;
-            /* @todo is this the right error code? */
-            rv = INDIGO_ERROR_RESOURCE;
             goto done;
         }
     } else if (obj->object_id == OF_FLOW_REMOVED) {
         if (CXN_DROP_FLOW_REMOVED(cxn, obj)) {
             LOG_TRACE("Dropping flowRemoved");
             cxn->status.flow_removed_drop++;
-            /* @todo is this the right error code? */
-            rv = INDIGO_ERROR_RESOURCE;
             goto done;
         }
     }
 
     /* Steal the buffer and enqueue the data */
-    LOG_VERBOSE("Sending message type %s to connection %s",
-                of_object_id_str[obj->object_id], cxn_ip_string(cxn));
     LOG_OBJECT(obj);
 
     of_object_wire_buffer_steal((of_object_t *)obj, &data);
@@ -798,13 +785,11 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
         INDIGO_MEM_FREE(data);
-        rv = INDIGO_ERROR_UNKNOWN;
         ind_cxn_disconnect(cxn);
     }
 
  done:
     of_object_delete(obj);
-    return rv;
 }
 
 /**
@@ -834,8 +819,8 @@ ind_cxn_accepts_async_message(const connection_t *cxn, const of_object_t *obj)
 /**
  * Send an async message to all interested connections.
  */
-static indigo_error_t
-ind_cxn_send_async_controller_message(of_object_t *obj)
+void
+indigo_cxn_send_async_message(of_object_t *obj)
 {
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
@@ -865,11 +850,10 @@ ind_cxn_send_async_controller_message(of_object_t *obj)
     if (first_cxn_id != INDIGO_CXN_ID_UNSPECIFIED) {
         indigo_cxn_send_controller_message(first_cxn_id, obj);
     } else {
-        /* No interested connections */
+        LOG_VERBOSE("Dropping async %s message, no interested connections",
+                    of_object_id_str[obj->object_id]);
         of_object_delete(obj);
     }
-
-    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -910,7 +894,7 @@ indigo_cxn_status_change_register(indigo_cxn_status_change_f handler,
         }
     }
 
-    LOG_ERROR("Could not find free slot fo status change callback");
+    LOG_ERROR("Could not find free slot for status change callback");
     return INDIGO_ERROR_RESOURCE;
 }
 
@@ -1079,47 +1063,38 @@ ind_cxn_finish(void)
  * directly in the wire buffer.
  */
 
-indigo_error_t
-indigo_cxn_send_error_msg(of_version_t version, indigo_cxn_id_t cxn_id,
-                          uint32_t xid, uint16_t type, uint16_t code,
-                          of_octets_t *octets)
+void
+indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                            uint16_t type, uint16_t code)
 {
     of_error_msg_t *msg;
-    connection_t *cxn;
+    of_octets_t payload;
+    uint32_t xid;
 
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_TCP_CONNECTED(cxn_id)) {
-        return INDIGO_ERROR_PARAM;
-    }
+    payload.data = OF_OBJECT_BUFFER_INDEX(orig, 0);
+    payload.bytes = orig->length;
 
-    cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!OF_VERSION_OKAY(version)) {
-        if (cxn->status.negotiated_version == OF_VERSION_UNKNOWN) {
-            version = OF_VERSION_1_0;
-        } else {
-            version = cxn->status.negotiated_version;
-        }
-        INDIGO_ASSERT(OF_VERSION_OKAY(version));
-    }
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
 
-    LOG_TRACE("Sending error msg to %p. type %d. code %d.",
+    LOG_TRACE("Sending error msg to %s. type %d. code %d.",
               cxn_id_ip_string(cxn_id), type, code);
-    if ((msg = of_hello_failed_error_msg_new(version)) == NULL) {
-        LOG_ERROR("Could not create error message");
-        return INDIGO_ERROR_RESOURCE;
+
+    if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
+        LOG_ERROR("Could not allocate error message");
+        return;
     }
 
     of_hello_failed_error_msg_xid_set(msg, xid);
     of_hello_failed_error_msg_code_set(msg, code);
-    if (octets != NULL) {
-        if (of_hello_failed_error_msg_data_set(msg, octets) < 0) {
-            LOG_WARN("Failed to append data to error message");
-        }
+
+    if (of_hello_failed_error_msg_data_set(msg, &payload) < 0) {
+        LOG_WARN("Failed to append original request to error message");
     }
 
     /* HACK manually set the type field */
     of_wire_buffer_u16_set(OF_OBJECT_TO_WBUF(msg), 8, type);
 
-    return indigo_cxn_send_controller_message(cxn_id, (of_object_t *)msg);
+    indigo_cxn_send_controller_message(cxn_id, msg);
 }
 
 /****************************************************************
@@ -1198,7 +1173,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                     &addrlen);
 
     if (new_sd == -1) {
-        LOG_ERROR("Error on accept for local cxn");
+        LOG_ERROR("Error on accept for local cxn: %s", strerror(errno));
         ++ind_cxn_internal_errors;
         return;
     }
@@ -1274,7 +1249,7 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
         return;
     }
 
-    LOG_VERBOSE("Connection reset for id %d\n", cxn_id);
+    LOG_VERBOSE("Connection reset for id %d", cxn_id);
     if (cxn_id == IND_CXN_RESET_ALL) {
         /* Iterate thru active connections */
         FOREACH_ACTIVE_CXN(cxn_id, cxn) {

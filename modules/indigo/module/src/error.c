@@ -17,28 +17,16 @@
  *
  ****************************************************************/
 
-/*
- * Internal declarations.  These are broken out to avoid
- * circular dependencies
- */
+#include <indigo/indigo.h>
 
-#ifndef OFSTATEMANAGER_DECS_H
-#define OFSTATEMANAGER_DECS_H
-
-#include "ofstatemanager_int.h"
-
-#include "ft.h"
-
-extern int ind_core_init_done;
-extern int ind_core_module_enabled;
-
-/* State manager configuration data, shared within module */
-extern ind_core_of_config_t ind_core_of_config;
-
-/* The flow table instance visible to all parts of the module */
-extern ft_instance_t ind_core_ft;
-
-extern void ind_core_flow_entry_delete(ft_entry_t *entry,
-                                       indigo_fi_flow_removed_t reason);
-
-#endif /* OFSTATEMANAGER_DECS_H */
+const char *
+indigo_strerror(indigo_error_t code)
+{
+    switch (code) {
+#define ERROR(name, value, description) case value: return description;
+        INDIGO_ERRORS
+#undef ERROR
+        default:
+            return "Unknown error code";
+    }
+}

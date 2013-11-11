@@ -69,7 +69,7 @@ ind_core_group_delete_one(ind_core_group_t *group)
     INDIGO_MEM_FREE(group);
 }
 
-indigo_error_t
+void
 ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     of_group_mod_t *obj = _obj;
@@ -155,13 +155,11 @@ ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     of_object_delete(obj);
-    return INDIGO_ERROR_NONE;
+    return;
 
 error:
-    indigo_cxn_send_error_msg(obj->version, cxn_id, xid,
-                              err_type, err_code, NULL);
+    indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
     of_object_delete(obj);
-    return INDIGO_ERROR_UNKNOWN;
 }
 
 static void
@@ -181,7 +179,7 @@ ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
 }
 
 /* TODO segment long replies */
-indigo_error_t
+void
 ind_core_group_stats_request_handler(of_object_t *_obj,
                                      indigo_cxn_id_t cxn_id)
 {
@@ -234,12 +232,11 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     of_object_delete(entry);
     of_object_delete(obj);
 
-    IND_CORE_MSG_SEND(cxn_id, reply);
-    return INDIGO_ERROR_NONE;
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
 /* TODO segment long replies */
-indigo_error_t
+void
 ind_core_group_desc_stats_request_handler(of_object_t *_obj,
                                           indigo_cxn_id_t cxn_id)
 {
@@ -276,15 +273,13 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
     of_object_delete(entry);
     of_object_delete(obj);
 
-    IND_CORE_MSG_SEND(cxn_id, reply);
-    return INDIGO_ERROR_NONE;
+    indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
-indigo_error_t
+void
 ind_core_group_features_stats_request_handler(of_object_t *_obj,
                                               indigo_cxn_id_t cxn_id)
 {
     of_group_features_stats_request_t *obj = _obj;
     ind_core_unhandled_message(obj, cxn_id);
-    return INDIGO_ERROR_NONE;
 }

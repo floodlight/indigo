@@ -111,7 +111,7 @@ cxn_data_hexdump(unsigned char *buf, int bytes)
         AIM_LOG_TRACE("%s", display);
         bytes -= PER_LINE;
         buf_offset += PER_LINE;
-	}
+    }
 }
 
 /****************************************************************
@@ -447,17 +447,17 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
     int rv = INDIGO_ERROR_NONE;
 
     if (obj->object_id != OF_HELLO) {
-        LOG_ERROR(cxn, "Expecting HELLO but received message of type %s (%d)",
-                  of_object_id_str[obj->object_id], obj->object_id);
+        LOG_ERROR(cxn, "Expecting HELLO but received %s message",
+                  of_object_id_str[obj->object_id]);
         rv = INDIGO_ERROR_PROTOCOL;
     } else {
-        LOG_VERBOSE(cxn, "Received HELLO message (version %d) from %s",
-                    obj->version, cxn_ip_string(cxn));
+        LOG_VERBOSE(cxn, "Received HELLO message (version %d)",
+                    obj->version);
 
         cxn->status.negotiated_version = aim_imin(cxn->config_params.version,  obj->version);
 
-        LOG_VERBOSE(cxn, "Set version to %d for %s", cxn->status.negotiated_version,
-                    cxn_ip_string(cxn));
+        LOG_VERBOSE(cxn, "Negotiated version %d",
+                    cxn->status.negotiated_version);
     }
 
     of_object_delete(obj);
@@ -503,12 +503,9 @@ periodic_keepalive(void *cookie)
 
     of_echo_request_xid_set(echo, xid);
 
-    if (indigo_cxn_send_controller_message(cxn->cxn_id, echo)) {
-        LOG_ERROR(cxn, "Error sending echo request to %d", cxn->cxn_id);
-        return;
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, echo);
 
-    LOG_VERBOSE(cxn, "Sending echo request xid %u to %d", xid, cxn->cxn_id);
+    LOG_VERBOSE(cxn, "Sending echo request xid %u", xid);
     cxn->keepalive.xid = xid;
     cxn->keepalive.outstanding_echo_cnt++;
 }
@@ -520,27 +517,18 @@ periodic_keepalive(void *cookie)
 static indigo_error_t
 send_barrier_reply(connection_t *cxn)
 {
-   indigo_error_t result = INDIGO_ERROR_NONE;
    of_barrier_reply_t *obj = 0;
 
    if ((obj = of_barrier_reply_new(cxn->status.negotiated_version)) == 0) {
-      LOG_ERROR(cxn, "of_barrier_reply_new() failed");
-      result = INDIGO_ERROR_UNKNOWN;
-
-      goto done;
+      LOG_ERROR(cxn, "Failed to allocate barrier reply");
+      return INDIGO_ERROR_UNKNOWN;
    }
 
    of_barrier_reply_xid_set(obj, cxn->barrier.xid);
-   LOG_TRACE(cxn, "Respond to barrier req with xid %u from %d",
-             cxn->barrier.xid, cxn->cxn_id);
+   LOG_TRACE(cxn, "Responding to barrier request xid %u", cxn->barrier.xid);
 
-   result = indigo_cxn_send_controller_message(cxn->cxn_id, obj);
-   if (INDIGO_FAILURE(result)) {
-      LOG_ERROR(cxn, "Error sending barrier response to %d", cxn->cxn_id);
-   }
-
- done:
-   return (result);
+   indigo_cxn_send_controller_message(cxn->cxn_id, obj);
+   return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -550,17 +538,14 @@ send_barrier_reply(connection_t *cxn)
 static indigo_error_t
 echo_request_handle(connection_t *cxn, of_object_t *_obj)
 {
-    of_echo_request_t *echo;
+    of_echo_request_t *echo = _obj;
     of_echo_reply_t *reply = NULL;
     of_octets_t data;
     uint32_t xid;
     int rv = INDIGO_ERROR_NONE;
 
-    echo = (of_echo_request_t *)_obj;
-    LOG_TRACE(cxn, "Handling of_echo_request message: %p.", echo);
-
     of_echo_request_xid_get(echo, &xid);
-    LOG_TRACE(cxn, "Respond to echo with xid %u from %d", xid, cxn->cxn_id);
+    LOG_TRACE(cxn, "Responding to echo with xid %u", xid);
 
     if ((reply = of_echo_reply_new(echo->version)) == NULL) {
         LOG_TRACE(cxn, "Could not allocate echo response obj");
@@ -578,12 +563,9 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_object_delete(_obj);
 
     if (rv >= 0) {
-        rv = indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+        indigo_cxn_send_controller_message(cxn->cxn_id, reply);
     } else {
         of_echo_reply_delete(reply);
-    }
-    if (rv < 0) {
-        LOG_ERROR(cxn, "Error sending echo response to %d", cxn->cxn_id);
     }
 
     return rv;
@@ -596,22 +578,19 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
 static indigo_error_t
 echo_reply_handle(connection_t *cxn, of_object_t *_obj)
 {
-    of_echo_reply_t *reply;
+    of_echo_reply_t *reply = _obj;
     uint32_t xid;
     int rv = INDIGO_ERROR_NONE;
 
-    reply = (of_echo_reply_t *)_obj;
-    LOG_TRACE(cxn, "Handling of_echo_reply message: %p.", reply);
-
     of_echo_reply_xid_get(reply, &xid);
-    LOG_VERBOSE(cxn,
-                "Received echo reply with xid %u for %d, expecting xid %u",
-                xid, cxn->cxn_id, cxn->keepalive.xid);
 
     if (xid == cxn->keepalive.xid) {
+        LOG_VERBOSE(cxn, "Received expected echo reply with xid %u", xid);
         /* This is actually redundant with the reset in process_message */
-        LOG_VERBOSE(cxn, "Matched expected echo reply, resetting echo count");
         cxn->keepalive.outstanding_echo_cnt = 0;
+    } else {
+        LOG_VERBOSE(cxn, "Received unexpected echo reply with xid %u, "
+                    "expected xid %u", xid, cxn->keepalive.xid);
     }
 
     of_object_delete(_obj);
@@ -626,14 +605,10 @@ echo_reply_handle(connection_t *cxn, of_object_t *_obj)
 static indigo_error_t
 barrier_request_handle(connection_t *cxn, of_object_t *_obj)
 {
-    of_barrier_request_t *obj;
-
-    obj = (of_barrier_request_t *)_obj;
-    LOG_TRACE(cxn, "Handling of_barrier_request message: %p.", obj);
+    of_barrier_request_t *obj = _obj;
 
     of_barrier_request_xid_get(obj, &cxn->barrier.xid);
-    LOG_TRACE(cxn, "Got barrier req with xid %u from %d",
-              cxn->barrier.xid, cxn->cxn_id);
+    LOG_TRACE(cxn, "Got barrier req with xid %u", cxn->barrier.xid);
 
     of_barrier_request_delete(obj);
 
@@ -714,7 +689,8 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     of_nicira_controller_role_reply_role_set(reply,
         translate_to_nicira_role(cxn->status.role));
 
-    return indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -788,27 +764,6 @@ cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
 
 
 /**
- * Send a BAD_REQUEST/EPERM error to the controller.
- *
- * @param cxn Connection from which message arrived
- * @param obj The message object
- */
-static void
-cxn_send_permission_error(connection_t *cxn, of_object_t *obj)
-{
-    of_octets_t octets;
-    uint32_t xid;
-    octets.data = OF_OBJECT_BUFFER_INDEX(obj, 0);
-    octets.bytes = obj->length;
-    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(octets.data));
-    (void) indigo_cxn_send_error_msg(obj->version, cxn->cxn_id, xid,
-                                     OF_ERROR_TYPE_BAD_REQUEST,
-                                     OF_REQUEST_FAILED_EPERM,
-                                     &octets);
-}
-
-
-/**
  * Process an object pulled off a connection.
  *
  * @param cxn Connection from which message arrived
@@ -816,22 +771,26 @@ cxn_send_permission_error(connection_t *cxn, of_object_t *obj)
  *
  * Handle echo request, echo reply and barrier request locally
  */
-static indigo_error_t
+static void
 of_msg_process(connection_t *cxn, of_object_t *obj)
 {
     /* Note that the messages handled in cxn_instance are not tracked */
     switch (obj->object_id) {
     case OF_ECHO_REQUEST:
-        return (echo_request_handle(cxn, obj));
+        echo_request_handle(cxn, obj);
+        return;
 
     case OF_ECHO_REPLY:
-        return (echo_reply_handle(cxn, obj));
+        echo_reply_handle(cxn, obj);
+        return;
 
     case OF_BARRIER_REQUEST:
-        return (barrier_request_handle(cxn, obj));
+        barrier_request_handle(cxn, obj);
+        return;
 
     case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
-        return nicira_controller_role_request_handle(cxn, obj);
+        nicira_controller_role_request_handle(cxn, obj);
+        return;
 
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
@@ -848,9 +807,11 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
             LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
                         of_object_id_str[obj->object_id]);
-            cxn_send_permission_error(cxn, obj);
+            indigo_cxn_send_error_reply(cxn->cxn_id, obj,
+                                        OF_ERROR_TYPE_BAD_REQUEST,
+                                        OF_REQUEST_FAILED_EPERM);
             of_object_delete(obj);
-            return INDIGO_ERROR_NONE;
+            return;
         }
 
     default:
@@ -860,7 +821,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     /* Passing the message to the state manager; register and set callback */
     cxn_message_track_setup(cxn, obj);
 
-    return (OF_MSG_CALLBACK(cxn, obj));
+    OF_MSG_CALLBACK(cxn, obj);
 }
 
 /**
@@ -1017,6 +978,54 @@ read_message(connection_t *cxn)
 }
 
 /**
+ * Send an error for a message that we couldn't parse
+ *
+ * This is trickier than usual because we can't trust the message
+ * (it failed validation).
+ */
+static void
+send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
+{
+    of_object_t *error_msg;
+    uint32_t xid;
+    uint16_t code;
+    of_octets_t payload;
+
+    if (len < OF_MESSAGE_MIN_LENGTH) {
+        xid = 0;
+    } else {
+        xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(buf));
+    }
+
+    if (len < OF_MESSAGE_MIN_LENGTH) {
+        code = OF_REQUEST_FAILED_BAD_LEN;
+    } else if (!OF_VERSION_OKAY(of_message_version_get(
+            OF_BUFFER_TO_MESSAGE(buf)))) {
+        code = OF_REQUEST_FAILED_BAD_VERSION;
+    } else {
+        code = OF_REQUEST_FAILED_BAD_TYPE;
+    }
+
+    payload.data = buf;
+    payload.bytes = len;
+
+    error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
+    if (error_msg == NULL) {
+        LOG_ERROR(cxn, "Could not allocate error message");
+        return;
+    }
+
+    of_bad_request_error_msg_xid_set(error_msg, xid);
+    of_bad_request_error_msg_code_set(error_msg, code);
+
+    if (of_bad_request_error_msg_data_set(error_msg, &payload) < 0) {
+        LOG_WARN(cxn, "Failed to append original request to error message");
+    }
+
+    indigo_cxn_send_controller_message(cxn->cxn_id, error_msg);
+}
+
+/**
  * Process a message from the read buffer
  *
  * The read buffer must have a valid message in it to be processed
@@ -1044,34 +1053,15 @@ process_message(connection_t *cxn)
 
     obj = of_object_new_from_message(OF_BUFFER_TO_MESSAGE(new_buf), len);
     if (obj == NULL) {
-        uint32_t xid;
-        uint16_t type = OF_REQUEST_FAILED_BAD_TYPE;
-        of_version_t version;
-
         LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
-
-        /* Check to see if the version was the problem */
-        version = of_message_version_get(OF_BUFFER_TO_MESSAGE(new_buf));
-        if (!OF_VERSION_OKAY(version)) {
-            type = OF_REQUEST_FAILED_BAD_VERSION;
-        }
-
-        /* Get XID from the message; use cxn version */
-        xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(new_buf));
-        /* Generate error message */
-        if (indigo_cxn_send_error_msg(cxn->status.negotiated_version,
-                                      cxn->cxn_id, xid,
-                                      OF_ERROR_TYPE_BAD_REQUEST, type,
-                                      NULL) < 0) {
-            LOG_ERROR(cxn, "Error sending error message for failed parsing");
-        }
-
+        send_parse_error_message(cxn, new_buf, len);
         INDIGO_MEM_FREE(new_buf);
         return;
     }
 
     if(cxn->trace_pvs) {
-        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn=%d\n", cxn->cxn_id);
+        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn %s\n",
+                   cxn_ip_string(cxn));
         of_object_dump((loci_writer_f)aim_printf, cxn->trace_pvs, obj);
         aim_printf(cxn->trace_pvs, "**\n\n");
     }
@@ -1091,8 +1081,10 @@ process_message(connection_t *cxn)
     }
 
     {       /***** Debug info about message *****/
-        LOG_VERBOSE(cxn, "Received message, obj %p of type %s",
-                    obj, of_object_id_str[obj->object_id]);
+        uint32_t xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(
+            OF_OBJECT_BUFFER_INDEX(obj, 0)));
+        LOG_VERBOSE(cxn, "Received %s message xid %u",
+                    of_object_id_str[obj->object_id], xid);
         LOG_OBJECT(obj);
 
         if (IS_MSG_OBJ(obj)) {
@@ -1107,15 +1099,13 @@ process_message(connection_t *cxn)
     /* FIXME:  Needs to be generalized to "handshake" state */
     if (!VERSION_IS_SET(cxn)) {/* Get version from initial hello message */
         if ((rv = check_for_hello(cxn, obj)) < 0) {
-            LOG_ERROR(cxn, "Error %d in check for hello", rv);
+            LOG_ERROR(cxn, "Failed to check for hello", indigo_strerror(rv));
             /* @fixme Should state be updated for some return codes? */
             return;
         }
     } else {
         /* Process received message (object); handler owns obj */
-        if ((rv = of_msg_process(cxn, obj)) < 0) {
-            LOG_ERROR(cxn, "OF message callback returned %d", rv);
-        }
+        of_msg_process(cxn, obj);
     }
 }
 
@@ -1225,7 +1215,7 @@ ind_cxn_process_write_buffer(connection_t *cxn)
 
     if (written < 0) {
         /* Error writing to connection socket */
-        LOG_ERROR(cxn, "Error writing to socket");
+        LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -1337,10 +1327,7 @@ ind_cxn_send_hello(connection_t *cxn)
 
     of_hello_xid_set(hello, (uint32_t)ind_cxn_xid_get());
 
-    if ((rv = indigo_cxn_send_controller_message(cxn->cxn_id,
-                                                 (of_object_t *)hello)) < 0) {
-        LOG_ERROR(cxn, "Error sending hello");
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, hello);
 
     return rv;
 }
@@ -1376,14 +1363,16 @@ ind_cxn_try_to_connect(connection_t *cxn)
 
         cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
-            LOG_ERROR(cxn, "Failed to create controller connection socket");
+            LOG_ERROR(cxn, "Failed to create controller connection socket: %s",
+                      strerror(errno));
             return -1;
         }
 
         soc_flags = fcntl(cxn->sd, F_GETFL, 0);
         if (soc_flags == -1 || fcntl(cxn->sd, F_SETFL,
                                      soc_flags | O_NONBLOCK) == -1) {
-            LOG_ERROR(cxn, "Failed to set non-blocking flag for socket");
+            LOG_ERROR(cxn, "Failed to set non-blocking flag for socket: %s",
+                      strerror(errno));
             close(cxn->sd);
             cxn->sd = -1;
             return -1;

@@ -25,25 +25,35 @@
 #ifndef _INDIGO_ERROR_H_
 #define _INDIGO_ERROR_H_
 
+#define INDIGO_ERRORS \
+    ERROR(NONE,             0, "Success") \
+    ERROR(PENDING,          1, "Operation is pending") \
+    ERROR(RESOURCE,        -1, "Could not allocate space") \
+    ERROR(PARAM,           -2, "Bad parameter") \
+    ERROR(VERSION,         -3, "Version not supported") \
+    ERROR(RANGE,           -4, "Out of range") \
+    ERROR(COMPAT,          -5, "Incompatible assignment") \
+    ERROR(PARSE,           -6, "Error in parsing data") \
+    ERROR(INIT,            -7, "Uninitialized component") \
+    ERROR(EXISTS,          -8, "Object exists unexpectedly") \
+    ERROR(NOT_FOUND,       -9, "Object was not found") \
+    ERROR(NOT_SUPPORTED,  -10, "Operation not supported") \
+    ERROR(TIME_OUT,       -11, "Operation timed out") \
+    ERROR(PROTOCOL,       -12, "Protocol error") \
+    ERROR(CONNECTION,     -13, "Connection error") \
+    ERROR(NOT_READY,      -14, "Agent not ready") \
+    ERROR(UNKNOWN,        -15, "Unknown error")
+
 typedef enum indigo_error_e {
-    INDIGO_ERROR_NONE            = 0,     /**< Success, no error */
-    INDIGO_ERROR_PENDING         = 1,     /**< Operation is pending */
-    INDIGO_ERROR_RESOURCE        = -1,    /**< Could not allocate space */
-    INDIGO_ERROR_PARAM           = -2,    /**< Bad parameter */
-    INDIGO_ERROR_VERSION         = -3,    /**< Version not supported */
-    INDIGO_ERROR_RANGE           = -4,    /**< Out of range */
-    INDIGO_ERROR_COMPAT          = -5,    /**< Incompatible assignment */
-    INDIGO_ERROR_PARSE           = -6,    /**< Error in parsing data */
-    INDIGO_ERROR_INIT            = -7,    /**< Uninitialized component */
-    INDIGO_ERROR_EXISTS          = -8,    /**< Object exists unexpectedly */
-    INDIGO_ERROR_NOT_FOUND       = -9,    /**< Object was not found */
-    INDIGO_ERROR_NOT_SUPPORTED   = -10,   /**< Operation not supported */
-    INDIGO_ERROR_TIME_OUT        = -11,   /**< Operation timed out */
-    INDIGO_ERROR_PROTOCOL        = -12,   /**< Protocol error */
-    INDIGO_ERROR_CONNECTION      = -13,   /**< Connection error */
-    INDIGO_ERROR_NOT_READY       = -14,   /**< Agent not ready */
-    INDIGO_ERROR_UNKNOWN         = -15    /**< Unknown error */
+#define ERROR(name, value, description) INDIGO_ERROR_##name = value,
+    INDIGO_ERRORS
+#undef ERROR
 } indigo_error_t;
+
+/**
+ * Translate an error code to a description string
+ */
+const char *indigo_strerror(indigo_error_t code);
 
 /**
  * Error code test macros.
