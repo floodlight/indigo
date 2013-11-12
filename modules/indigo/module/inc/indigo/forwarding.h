@@ -115,7 +115,7 @@ extern indigo_error_t indigo_fwd_flow_stats_get(
 
 /**
  * @brief Flow hit status
- * @param flow_id The ID of the flow whose hit status are to be retrieved
+ * @param flow_id The ID of the flow whose hit status is to be retrieved
  * @param [out] hit_status True if entry hit since last time API was called
  *
  * Get the hit status of an existing flow.
