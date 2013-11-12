@@ -342,24 +342,6 @@ ft_entry_modify_effects(ft_instance_t instance,
     return err;
 }
 
-indigo_error_t
-ft_entry_clear_counters(ft_entry_t *entry, uint64_t *packets, uint64_t *bytes)
-{
-    if (packets) {
-        *packets = entry->packets;
-    }
-    if (bytes) {
-        *bytes = entry->bytes;
-    }
-
-    entry->packets = 0;
-    entry->bytes = 0;
-
-    /* @fixme Update last counter update/change? */
-
-    return INDIGO_ERROR_NONE;
-}
-
 /*
  * Flowtable iterator task
  *
