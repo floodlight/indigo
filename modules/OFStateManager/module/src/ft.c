@@ -203,7 +203,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
+void
 ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
     LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
@@ -213,22 +213,6 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 
     ft->status.current_count -= 1;
     ft->status.deletes += 1;
-
-    return INDIGO_ERROR_NONE;
-}
-
-indigo_error_t
-ft_delete_id(ft_instance_t ft,
-                       indigo_flow_id_t id)
-{
-    ft_entry_t *entry;
-
-    if ((entry = ft_lookup(ft, id)) == NULL) {
-        LOG_VERBOSE("Delete: Failed to find flow "
-                    INDIGO_FLOW_ID_PRINTF_FORMAT, id);
-        return INDIGO_ERROR_NOT_FOUND;
-    }
-    return ft_delete(ft, entry);
 }
 
 indigo_error_t

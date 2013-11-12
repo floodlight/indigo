@@ -30,114 +30,96 @@
 #include <indigo/of_connection_manager.h>
 
 /* handlers.c */
-extern indigo_error_t ind_core_unhandled_message(
+extern void ind_core_unhandled_message(
     of_object_t *obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_echo_request_handler(
+extern void ind_core_packet_in_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_hello_handler(
+extern void ind_core_packet_out_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_packet_in_handler(
+extern void ind_core_port_mod_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_packet_out_handler(
+extern void ind_core_port_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_port_mod_handler(
+extern void ind_core_queue_get_config_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_port_stats_request_handler(
+extern void ind_core_queue_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_queue_get_config_request_handler(
+extern void ind_core_flow_add_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_queue_stats_request_handler(
+extern void ind_core_flow_modify_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_add_handler(
+extern void ind_core_flow_modify_strict_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_modify_handler(
+extern void ind_core_flow_delete_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_modify_strict_handler(
+extern void ind_core_flow_delete_strict_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_delete_handler(
+extern void ind_core_get_config_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_delete_strict_handler(
+extern void ind_core_flow_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_get_config_request_handler(
+extern void ind_core_aggregate_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_flow_stats_request_handler(
+extern void ind_core_desc_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_barrier_request_handler(
+extern void ind_core_table_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_echo_reply_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_aggregate_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_desc_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_table_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_port_desc_stats_request_handler(
+extern void ind_core_port_desc_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_features_request_handler(
+extern void ind_core_features_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_table_mod_handler(
+extern void ind_core_set_config_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_set_config_handler(
+extern void ind_core_experimenter_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_experimenter_handler(
+extern void ind_core_group_desc_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_experimenter_stats_request_handler(
+extern void ind_core_group_features_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_group_desc_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_group_features_stats_request_handler(
-    of_object_t *_obj,
-    indigo_cxn_id_t cxn);
-extern indigo_error_t ind_core_bsn_get_ip_mask_request_handler(
+extern void ind_core_bsn_get_ip_mask_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_bsn_set_ip_mask_handler(
+extern void ind_core_bsn_set_ip_mask_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-extern indigo_error_t ind_core_bsn_hybrid_get_request_handler(
+extern void ind_core_bsn_hybrid_get_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 
 /* group_handlers.c */
-indigo_error_t ind_core_group_mod_handler(
+void ind_core_group_mod_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-indigo_error_t ind_core_group_stats_request_handler(
+void ind_core_group_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-indigo_error_t ind_core_group_desc_stats_request_handler(
+void ind_core_group_desc_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-indigo_error_t ind_core_group_features_stats_request_handler(
+void ind_core_group_features_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 
