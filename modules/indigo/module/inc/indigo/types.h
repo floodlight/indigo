@@ -31,6 +31,7 @@
 #define _INDIGO_TYPES_H_
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 /**
  * @brief Generic cookie type

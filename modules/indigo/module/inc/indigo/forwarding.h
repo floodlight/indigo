@@ -114,6 +114,18 @@ extern indigo_error_t indigo_fwd_flow_stats_get(
     indigo_fi_flow_stats_t *flow_stats);
 
 /**
+ * @brief Flow hit status
+ * @param flow_id The ID of the flow whose hit status is to be retrieved
+ * @param [out] hit_status True if entry hit since last time API was called
+ *
+ * Get the hit status of an existing flow.
+ */
+
+extern indigo_error_t indigo_fwd_flow_hit_status_get(
+    indigo_cookie_t flow_id,
+    bool *hit_status);
+
+/**
  * @brief Table stats
  * @param table_stats_request The LOXI request
  * @param [out] table_stats_reply The LOXI reply

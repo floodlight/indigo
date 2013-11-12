@@ -131,6 +131,15 @@ indigo_error_t indigo_fwd_flow_stats_get(
 }
 
 indigo_error_t
+indigo_fwd_flow_hit_status_get(indigo_cookie_t flow_id,
+                               bool *is_hit)
+{
+    AIM_LOG_VERBOSE("flow hit status get called\n");
+    *is_hit = 0;
+    return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
 indigo_fwd_packet_out(of_packet_out_t *of_packet_out)
 {
     AIM_LOG_VERBOSE("packet out called\n");
