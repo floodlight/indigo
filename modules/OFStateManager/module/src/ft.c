@@ -28,6 +28,7 @@
 
 #include "ofstatemanager_log.h"
 #include "ft.h"
+#include "expiration.h"
 
 static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p);
 static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
@@ -519,6 +520,10 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     }
 
     list_init(&entry->iterators);
+
+    if (entry->idle_timeout || entry->hard_timeout) {
+        ind_core_expiration_add(entry);
+    }
 }
 
 /**
@@ -558,6 +563,10 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
         INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
             entry->cookie)]));
         list_remove(&entry->cookie_links);
+    }
+
+    if (entry->idle_timeout || entry->hard_timeout) {
+        ind_core_expiration_remove(entry);
     }
 }
 
