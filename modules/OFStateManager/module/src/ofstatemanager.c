@@ -963,6 +963,7 @@ flow_expiration_timer(void *cookie)
                           INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                 if (entry->flags & OF_FLOW_MOD_FLAG_BSN_SEND_IDLE) {
                     send_idle_notification(entry);
+                    entry->last_counter_change = current_time;
                 } else {
                     ind_core_flow_entry_delete(entry, 
                                                INDIGO_FLOW_REMOVED_IDLE_TIMEOUT);
