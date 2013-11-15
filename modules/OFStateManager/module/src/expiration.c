@@ -24,6 +24,7 @@
 
 #include <OFStateManager/ofstatemanager_config.h>
 #include <indigo/indigo.h>
+#include <SocketManager/socketmanager.h>
 
 #include "ofstatemanager_log.h"
 #include "ofstatemanager_decs.h"
@@ -32,6 +33,7 @@
 static void send_idle_notification(ft_entry_t *entry);
 
 static LIST_DEFINE(expiration_queue);
+static bool task_running = false;
 
 static indigo_time_t
 calc_expiration_time(ft_entry_t *entry, int *reason)
@@ -125,20 +127,47 @@ expire_flow(ft_entry_t *entry, int reason)
     }
 }
 
-void
-ind_core_expiration_timer(void *cookie)
+static ind_soc_task_status_t
+expiration_task(void *cookie)
 {
-    list_links_t *cur, *next;
     indigo_time_t current_time = INDIGO_CURRENT_TIME;
     (void) cookie;
-    LIST_FOREACH_SAFE(&expiration_queue, cur, next) {
-        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, expiration);
+
+    while (!list_empty(&expiration_queue)) {
         int reason;
+        list_links_t *links = expiration_queue.links.next;
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(links, expiration);
         if (calc_expiration_time(entry, &reason) <= current_time) {
             expire_flow(entry, reason);
         } else {
             break;
         }
+        if (ind_soc_should_yield()) {
+            return IND_SOC_TASK_CONTINUE;
+        }
+    }
+
+    task_running = false;
+    return IND_SOC_TASK_FINISHED;
+}
+
+void
+ind_core_expiration_timer(void *cookie)
+{
+    int rv;
+    (void) cookie;
+
+    if (task_running) {
+        AIM_LOG_VERBOSE("Not starting expiration task because it is already running");
+        return;
+    }
+
+    if ((rv = ind_soc_task_register(expiration_task, NULL,
+                                    IND_SOC_LOWEST_PRIORITY)) < 0) {
+        AIM_LOG_ERROR("Failed to start flow expiration task: %s",
+                      indigo_strerror(rv));
+    } else {
+        task_running = true;
     }
 }
 
