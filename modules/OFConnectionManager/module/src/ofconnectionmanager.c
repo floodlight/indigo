@@ -77,6 +77,8 @@ int successful_handshakes; /* Number of times handshake completes */
 
 uint32_t ind_cxn_internal_errors;
 
+uint64_t ind_cxn_generation_id;
+
 /****************************************************************
  * Connection Manager Private Data
  ****************************************************************/
@@ -397,6 +399,11 @@ module_init(void)
     }
 
     ind_cfg_register(&ind_cxn_cfg_ops);
+
+    /* Pseudo-random generation ID to force controller to ask for it */
+    ind_cxn_generation_id = INDIGO_CURRENT_TIME * 0x9e3779b97f4a7c13llu;
+
+    LOG_VERBOSE("Initial generation id: 0x%016"PRIx64, ind_cxn_generation_id);
 
     return INDIGO_ERROR_NONE;
 }

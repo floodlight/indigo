@@ -627,6 +627,17 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
     return (INDIGO_ERROR_NONE);
 }
 
+static const char *
+role_to_string(indigo_cxn_role_t role)
+{
+    switch (role) {
+    case INDIGO_CXN_R_MASTER: return "master";
+    case INDIGO_CXN_R_SLAVE: return "slave";
+    case INDIGO_CXN_R_EQUAL: return "equal";
+    default: ASSERT(0); return "unknown";
+    }
+}
+
 static indigo_cxn_role_t
 translate_from_nicira_role(uint32_t wire_role)
 {
@@ -673,14 +684,17 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     of_object_delete(_obj);
 
     role = translate_from_nicira_role(wire_role);
-    LOG_VERBOSE(cxn, "Cxn role request: %s", role == INDIGO_CXN_R_MASTER ?
-                "master" : role == INDIGO_CXN_R_SLAVE ? "slave" : "equal");
+    if (role == INDIGO_CXN_R_UNKNOWN) {
+        LOG_ERROR(cxn, "Invalid role in role request message");
+        return INDIGO_ERROR_UNKNOWN;
+    }
+
+    LOG_VERBOSE(cxn, "Cxn role request: %s", role_to_string(role));
     if (role != cxn->status.role) {
         if (role == INDIGO_CXN_R_MASTER) {
             ind_cxn_change_master(cxn->cxn_id);
         } else {
-            LOG_INFO(cxn, "Setting role to %s",
-                     role == INDIGO_CXN_R_SLAVE ? "slave" : "equal");
+            LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
             cxn->status.role = role;
         }
     }
@@ -691,6 +705,100 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
 
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
     return INDIGO_ERROR_NONE;
+}
+
+static indigo_cxn_role_t
+translate_from_openflow_role(uint32_t wire_role)
+{
+    switch (wire_role) {
+    case OF_CONTROLLER_ROLE_EQUAL: return INDIGO_CXN_R_EQUAL;
+    case OF_CONTROLLER_ROLE_MASTER: return INDIGO_CXN_R_MASTER;
+    case OF_CONTROLLER_ROLE_SLAVE: return INDIGO_CXN_R_SLAVE;
+    default: return INDIGO_CXN_R_UNKNOWN;
+    }
+}
+
+static uint32_t
+translate_to_openflow_role(indigo_cxn_role_t role)
+{
+    switch (role) {
+    case INDIGO_CXN_R_MASTER: return OF_CONTROLLER_ROLE_MASTER;
+    case INDIGO_CXN_R_SLAVE: return OF_CONTROLLER_ROLE_SLAVE;
+    case INDIGO_CXN_R_EQUAL: return OF_CONTROLLER_ROLE_EQUAL;
+    default: ASSERT(0); return 0;
+    }
+}
+
+/**
+ * Handle a role request
+ */
+static void
+role_request_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_role_request_t *request = _obj;
+    of_role_reply_t *reply = NULL;
+    uint32_t xid;
+    uint32_t wire_role;
+    indigo_cxn_role_t role;
+    uint64_t generation_id;
+
+    if ((reply = of_role_reply_new(_obj->version)) == NULL) {
+        of_object_delete(_obj);
+        return;
+    }
+
+    request = (of_role_request_t *)_obj;
+    of_role_request_xid_get(request, &xid);
+    of_role_request_role_get(request, &wire_role);
+    of_role_request_generation_id_get(request, &generation_id);
+
+    if (wire_role != OF_CONTROLLER_ROLE_NOCHANGE) {
+        role = translate_from_openflow_role(wire_role);
+        if (role == INDIGO_CXN_R_UNKNOWN) {
+            LOG_VERBOSE(cxn, "Failed role request (bad role)");
+            indigo_cxn_send_error_reply(
+                cxn->cxn_id, request,
+                OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
+                OF_ROLE_REQUEST_FAILED_BAD_ROLE);
+            of_object_delete(_obj);
+            return;
+        }
+
+        LOG_VERBOSE(cxn, "Cxn role request: %s gen %"PRIu64,
+                    role_to_string(role), generation_id);
+
+        if (role == INDIGO_CXN_R_MASTER || role == INDIGO_CXN_R_SLAVE) {
+            if ((int64_t)(generation_id - ind_cxn_generation_id) < 0) {
+                LOG_VERBOSE(cxn, "Failed role request (stale generation ID)");
+                indigo_cxn_send_error_reply(
+                    cxn->cxn_id, request,
+                    OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
+                    OF_ROLE_REQUEST_FAILED_STALE);
+                of_object_delete(_obj);
+                return;
+            } else {
+                ind_cxn_generation_id = generation_id;
+            }
+        }
+
+        if (role != cxn->status.role) {
+            if (role == INDIGO_CXN_R_MASTER) {
+                ind_cxn_change_master(cxn->cxn_id);
+            } else {
+                LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
+                cxn->status.role = role;
+            }
+        }
+    }
+
+    of_role_reply_xid_set(reply, xid);
+    of_role_reply_role_set(reply,
+        translate_to_openflow_role(cxn->status.role));
+    of_role_reply_generation_id_set(reply, ind_cxn_generation_id);
+
+    of_object_delete(_obj);
+
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
 /**
@@ -792,6 +900,10 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         nicira_controller_role_request_handle(cxn, obj);
         return;
 
+    case OF_ROLE_REQUEST:
+        role_request_handle(cxn, obj);
+        return;
+
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
     case OF_FLOW_DELETE:
@@ -804,12 +916,14 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_BSN_SET_IP_MASK:
     case OF_BSN_SET_MIRRORING:
     case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
+    case OF_GROUP_MOD:
         if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
+            uint16_t code = cxn->status.negotiated_version < OF_VERSION_1_2 ?
+                OF_REQUEST_FAILED_EPERM : OF_REQUEST_FAILED_IS_SLAVE;
             LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
                         of_object_id_str[obj->object_id]);
             indigo_cxn_send_error_reply(cxn->cxn_id, obj,
-                                        OF_ERROR_TYPE_BAD_REQUEST,
-                                        OF_REQUEST_FAILED_EPERM);
+                                        OF_ERROR_TYPE_BAD_REQUEST, code);
             of_object_delete(obj);
             return;
         }
@@ -1432,7 +1546,7 @@ void
 ind_cxn_disconnected_init(connection_t *cxn)
 {
     cxn->status.state = INDIGO_CXN_S_DISCONNECTED;
-    cxn->status.role = INDIGO_CXN_R_UNKNOWN;
+    cxn->status.role = INDIGO_CXN_R_EQUAL;
     cxn->status.negotiated_version = OF_VERSION_UNKNOWN;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
     cxn->flags = 0;
