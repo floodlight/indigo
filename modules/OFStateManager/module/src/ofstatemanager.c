@@ -39,8 +39,7 @@
 #include "ofstatemanager_decs.h"
 #include "handlers.h"
 #include "ft.h"
-
-static void flow_expiration_timer(void *cookie);
+#include "expiration.h"
 
 static void
 process_flow_removal(ft_entry_t *entry,
@@ -185,41 +184,6 @@ send_flow_removed_message(ft_entry_t *entry,
     }
     of_flow_removed_packet_count_set(msg, packets);
     of_flow_removed_byte_count_set(msg, bytes);
-
-    indigo_cxn_send_async_message(msg);
-}
-
-
-/**
- * @brief Send a idle notification for the given entry
- * @param entry The local flow table entry
- */
-
-static void
-send_idle_notification(ft_entry_t *entry)
-{
-    of_bsn_flow_idle_t *msg;
-    of_version_t ver;
-
-    if (indigo_cxn_get_async_version(&ver) < 0) {
-        /* No controllers connected */
-        return;
-    }
-
-    if ((msg = of_bsn_flow_idle_new(ver)) == NULL) {
-        LOG_ERROR("Failed to allocate flow_idle message");
-        return;
-    }
-
-    of_bsn_flow_idle_cookie_set(msg, entry->cookie);
-    of_bsn_flow_idle_priority_set(msg, entry->priority);
-    of_bsn_flow_idle_table_id_set(msg, entry->table_id);
-
-    if (of_bsn_flow_idle_match_set(msg, &entry->match)) {
-        LOG_ERROR("Failed to set match in idle notification");
-        of_object_delete(msg);
-        return;
-    }
 
     indigo_cxn_send_async_message(msg);
 }
@@ -620,14 +584,14 @@ ind_core_enable_set(int enable)
         LOG_INFO("Enabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_register_with_priority(
-                flow_expiration_timer, NULL,
+                ind_core_expiration_timer, NULL,
                 ind_core_config.stats_check_ms, -10);
         }
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {
         LOG_INFO("Disabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
-            ind_soc_timer_event_unregister(flow_expiration_timer, NULL);
+            ind_soc_timer_event_unregister(ind_core_expiration_timer, NULL);
         }
         ind_core_module_enabled = 0;
     } else {
@@ -898,79 +862,6 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
     LOG_TRACE("OF state mgr port status update");
 
     indigo_cxn_send_async_message(of_port_status);
-}
-
-/**
- * Timer operation to expire flows.
- *
- * Calls indigo_fwd_flow_stats_get for each flow in the table. The expiration
- * is done in flow_expiration_timer_cb when the reply is received.
- *
- * Ignore this call if the module is not enabled.
- */
-static void
-flow_expiration_timer(void *cookie)
-{
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
-    indigo_time_t current_time = INDIGO_CURRENT_TIME;
-
-    if (!ind_core_module_enabled) {
-        return;
-    }
-
-    FT_ITER(ind_core_ft, entry, cur, next) {
-        indigo_error_t rv;
-
-        if (entry->hard_timeout > 0) {
-            uint32_t delta;
-            delta = INDIGO_TIME_DIFF_ms(entry->insert_time,
-                                        current_time) / 1000;
-            if (delta >= entry->hard_timeout) {
-                LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                          entry->hard_timeout,
-                          INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_HARD_TIMEOUT);
-                continue;
-            }
-        }
-
-        /* Get hit status for idle timeouts */
-        if (entry->idle_timeout > 0) {
-            bool hit;
-
-            rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
-            if (rv != INDIGO_ERROR_NONE) {
-                LOG_ERROR("Failed to get hit status for flow "
-                          INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
-                          entry->id, indigo_strerror(rv));
-                continue;
-            }
-
-            if (hit) {
-                entry->last_counter_change = current_time;
-            }
-        }
-
-        /* If idle timeout has expired, send notification or delete flow */
-        if (entry->idle_timeout > 0) {
-            uint32_t delta;
-            delta = INDIGO_TIME_DIFF_ms(entry->last_counter_change,
-                                        current_time) / 1000;
-            if (delta >= entry->idle_timeout) {
-                LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                          entry->idle_timeout, 
-                          INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                if (entry->flags & OF_FLOW_MOD_FLAG_BSN_SEND_IDLE) {
-                    send_idle_notification(entry);
-                    entry->last_counter_change = current_time;
-                } else {
-                    ind_core_flow_entry_delete(entry, 
-                                               INDIGO_FLOW_REMOVED_IDLE_TIMEOUT);
-                }
-            }
-        }
-    }
 }
 
 void
