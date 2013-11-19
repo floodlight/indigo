@@ -1147,6 +1147,94 @@ test_of13_bsn_flow_idle(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/bsn_lacp_stats_reply.data */
+static int
+test_of13_bsn_lacp_stats_reply(void) {
+    uint8_t binary[] = {
+        0x04, 0x13, 0x00, 0x3c, 0x12, 0x34, 0x56, 0x78, 
+        0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x5c, 0x16, 0xc7, 0x00, 0x00, 0x00, 0x01, 
+        0x00, 0x00, 0xf1, 0x11, 0xf2, 0x22, 0x01, 0x02, 
+        0x03, 0x04, 0x05, 0x06, 0xf3, 0x33, 0xf4, 0x44, 
+        0xf5, 0x55, 0x02, 0x00, 0xf6, 0x66, 0x0a, 0x0b, 
+        0x0c, 0x0d, 0x0e, 0x0f, 0xf7, 0x77, 0xf8, 0x88, 
+        0xf9, 0x99, 0x00, 0x00, 
+    };
+
+    of_object_t *obj;
+
+    obj = of_bsn_lacp_stats_reply_new(OF_VERSION_1_3);
+    of_bsn_lacp_stats_reply_xid_set(obj, 0x12345678);
+    {
+        of_object_t *entries = of_list_bsn_lacp_stats_entry_new(OF_VERSION_1_3);
+        {
+            of_object_t *elem = of_bsn_lacp_stats_entry_new(OF_VERSION_1_3);
+            of_bsn_lacp_stats_entry_port_no_set(elem, 0xf111);
+            of_bsn_lacp_stats_entry_actor_sys_priority_set(elem, 0xf222);
+            {
+                of_mac_addr_t mac = { { 1, 2, 3, 4, 5, 6 } };
+                of_bsn_lacp_stats_entry_actor_sys_mac_set(elem, mac);
+            }
+            of_bsn_lacp_stats_entry_actor_port_priority_set(elem, 0xf333);
+            of_bsn_lacp_stats_entry_actor_port_num_set(elem, 0xf444);
+            of_bsn_lacp_stats_entry_actor_key_set(elem, 0xf555);
+            of_bsn_lacp_stats_entry_partner_sys_priority_set(elem, 0xf666);
+            of_bsn_lacp_stats_entry_convergence_status_set(elem, LACP_OUT_OF_SYNC);
+            {
+                of_mac_addr_t mac = { { 0xa, 0xb, 0xc, 0xd, 0xe, 0xf } };
+                of_bsn_lacp_stats_entry_partner_sys_mac_set(elem, mac);
+            }
+            of_bsn_lacp_stats_entry_partner_port_priority_set(elem, 0xf777);
+            of_bsn_lacp_stats_entry_partner_port_num_set(elem, 0xf888);
+            of_bsn_lacp_stats_entry_partner_key_set(elem, 0xf999);
+            of_list_append(entries, elem);
+            of_object_delete(elem);
+        }
+        of_bsn_lacp_stats_reply_entries_set(obj, entries);
+        of_object_delete(entries);
+    }
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
+/* Generated from of13/bsn_lacp_stats_request.data */
+static int
+test_of13_bsn_lacp_stats_request(void) {
+    uint8_t binary[] = {
+        0x04, 0x12, 0x00, 0x18, 0x12, 0x34, 0x56, 0x78, 
+        0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x5c, 0x16, 0xc7, 0x00, 0x00, 0x00, 0x01, 
+        
+    };
+
+    of_object_t *obj;
+
+    obj = of_bsn_lacp_stats_request_new(OF_VERSION_1_3);
+    of_bsn_lacp_stats_request_xid_set(obj, 0x12345678);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 /* Generated from of13/oxm_bsn_global_vrf_allowed.data */
 static int
 test_of13_oxm_bsn_global_vrf_allowed(void) {
@@ -1282,6 +1370,8 @@ test_datafiles(void)
     RUN_TEST(of13_bad_match_error_msg);
     RUN_TEST(of13_bad_request_error_msg);
     RUN_TEST(of13_bsn_flow_idle);
+    RUN_TEST(of13_bsn_lacp_stats_reply);
+    RUN_TEST(of13_bsn_lacp_stats_request);
     RUN_TEST(of13_oxm_bsn_global_vrf_allowed);
     RUN_TEST(of13_oxm_bsn_in_ports_masked_128);
     RUN_TEST(of13_oxm_bsn_l3_src_class_id);

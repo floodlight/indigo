@@ -146,6 +146,18 @@ extern of_bsn_hybrid_get_request_t *
     of_bsn_hybrid_get_request_dup(
         of_bsn_hybrid_get_request_t *src);
 
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_dup(
+        of_bsn_lacp_convergence_notif_t *src);
+
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_dup(
+        of_bsn_lacp_stats_reply_t *src);
+
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_dup(
+        of_bsn_lacp_stats_request_t *src);
+
 extern of_bsn_pdu_rx_reply_t *
     of_bsn_pdu_rx_reply_dup(
         of_bsn_pdu_rx_reply_t *src);
@@ -178,6 +190,14 @@ extern of_bsn_set_l2_table_request_t *
     of_bsn_set_l2_table_request_dup(
         of_bsn_set_l2_table_request_t *src);
 
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_dup(
+        of_bsn_set_lacp_reply_t *src);
+
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_dup(
+        of_bsn_set_lacp_request_t *src);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_dup(
         of_bsn_set_mirroring_t *src);
@@ -201,6 +221,22 @@ extern of_bsn_shell_output_t *
 extern of_bsn_shell_status_t *
     of_bsn_shell_status_dup(
         of_bsn_shell_status_t *src);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_dup(
+        of_bsn_stats_reply_t *src);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_dup(
+        of_bsn_stats_request_t *src);
+
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_dup(
+        of_bsn_time_reply_t *src);
+
+extern of_bsn_time_request_t *
+    of_bsn_time_request_dup(
+        of_bsn_time_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_dup(
@@ -757,6 +793,10 @@ extern of_action_strip_vlan_t *
 extern of_bsn_interface_t *
     of_bsn_interface_dup(
         of_bsn_interface_t *src);
+
+extern of_bsn_lacp_stats_entry_t *
+    of_bsn_lacp_stats_entry_dup(
+        of_bsn_lacp_stats_entry_t *src);
 
 extern of_bsn_vport_t *
     of_bsn_vport_dup(
@@ -1378,6 +1418,10 @@ extern of_list_bsn_interface_t *
     of_list_bsn_interface_dup(
         of_list_bsn_interface_t *src);
 
+extern of_list_bsn_lacp_stats_entry_t *
+    of_list_bsn_lacp_stats_entry_dup(
+        of_list_bsn_lacp_stats_entry_t *src);
+
 extern of_list_bucket_t *
     of_list_bucket_dup(
         of_list_bucket_t *src);
@@ -1609,6 +1653,14 @@ extern of_bsn_shell_output_t *
 extern of_bsn_shell_status_t *
     of_bsn_shell_status_OF_VERSION_1_0_dup(
         of_bsn_shell_status_t *src);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_OF_VERSION_1_0_dup(
+        of_bsn_stats_reply_t *src);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_OF_VERSION_1_0_dup(
+        of_bsn_stats_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_0_dup(
@@ -2089,6 +2141,14 @@ extern of_bsn_set_pktin_suppression_reply_t *
 extern of_bsn_set_pktin_suppression_request_t *
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_dup(
         of_bsn_set_pktin_suppression_request_t *src);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_OF_VERSION_1_1_dup(
+        of_bsn_stats_reply_t *src);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_OF_VERSION_1_1_dup(
+        of_bsn_stats_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_1_dup(
@@ -2713,6 +2773,14 @@ extern of_bsn_set_pktin_suppression_reply_t *
 extern of_bsn_set_pktin_suppression_request_t *
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_dup(
         of_bsn_set_pktin_suppression_request_t *src);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_OF_VERSION_1_2_dup(
+        of_bsn_stats_reply_t *src);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_OF_VERSION_1_2_dup(
+        of_bsn_stats_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_2_dup(
@@ -3682,6 +3750,18 @@ extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_3_dup(
         of_bsn_header_t *src);
 
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_OF_VERSION_1_3_dup(
+        of_bsn_lacp_convergence_notif_t *src);
+
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_OF_VERSION_1_3_dup(
+        of_bsn_lacp_stats_reply_t *src);
+
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_OF_VERSION_1_3_dup(
+        of_bsn_lacp_stats_request_t *src);
+
 extern of_bsn_pdu_rx_reply_t *
     of_bsn_pdu_rx_reply_OF_VERSION_1_3_dup(
         of_bsn_pdu_rx_reply_t *src);
@@ -3702,6 +3782,14 @@ extern of_bsn_pdu_tx_request_t *
     of_bsn_pdu_tx_request_OF_VERSION_1_3_dup(
         of_bsn_pdu_tx_request_t *src);
 
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_OF_VERSION_1_3_dup(
+        of_bsn_set_lacp_reply_t *src);
+
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_OF_VERSION_1_3_dup(
+        of_bsn_set_lacp_request_t *src);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_OF_VERSION_1_3_dup(
         of_bsn_set_mirroring_t *src);
@@ -3713,6 +3801,22 @@ extern of_bsn_set_pktin_suppression_reply_t *
 extern of_bsn_set_pktin_suppression_request_t *
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dup(
         of_bsn_set_pktin_suppression_request_t *src);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_OF_VERSION_1_3_dup(
+        of_bsn_stats_reply_t *src);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_OF_VERSION_1_3_dup(
+        of_bsn_stats_request_t *src);
+
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_OF_VERSION_1_3_dup(
+        of_bsn_time_reply_t *src);
+
+extern of_bsn_time_request_t *
+    of_bsn_time_request_OF_VERSION_1_3_dup(
+        of_bsn_time_request_t *src);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_OF_VERSION_1_3_dup(
@@ -3757,6 +3861,14 @@ extern of_experimenter_t *
 extern of_experimenter_error_msg_t *
     of_experimenter_error_msg_OF_VERSION_1_3_dup(
         of_experimenter_error_msg_t *src);
+
+extern of_experimenter_stats_reply_t *
+    of_experimenter_stats_reply_OF_VERSION_1_3_dup(
+        of_experimenter_stats_reply_t *src);
+
+extern of_experimenter_stats_request_t *
+    of_experimenter_stats_request_OF_VERSION_1_3_dup(
+        of_experimenter_stats_request_t *src);
 
 extern of_features_reply_t *
     of_features_reply_OF_VERSION_1_3_dup(
@@ -4197,6 +4309,10 @@ extern of_action_set_queue_t *
 extern of_bsn_interface_t *
     of_bsn_interface_OF_VERSION_1_3_dup(
         of_bsn_interface_t *src);
+
+extern of_bsn_lacp_stats_entry_t *
+    of_bsn_lacp_stats_entry_OF_VERSION_1_3_dup(
+        of_bsn_lacp_stats_entry_t *src);
 
 extern of_bsn_vport_t *
     of_bsn_vport_OF_VERSION_1_3_dup(
@@ -4809,6 +4925,10 @@ extern of_list_action_id_t *
 extern of_list_bsn_interface_t *
     of_list_bsn_interface_OF_VERSION_1_3_dup(
         of_list_bsn_interface_t *src);
+
+extern of_list_bsn_lacp_stats_entry_t *
+    of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_dup(
+        of_list_bsn_lacp_stats_entry_t *src);
 
 extern of_list_bucket_t *
     of_list_bucket_OF_VERSION_1_3_dup(
