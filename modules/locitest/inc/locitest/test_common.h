@@ -402,6 +402,24 @@ extern int of_bsn_shell_status_OF_VERSION_1_0_populate_scalars(
 extern int of_bsn_shell_status_OF_VERSION_1_0_check_scalars(
     of_bsn_shell_status_t *obj, int value);
 
+extern int of_bsn_stats_reply_OF_VERSION_1_0_populate(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_0_check(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_0_populate_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_0_check_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+
+extern int of_bsn_stats_request_OF_VERSION_1_0_populate(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_0_check(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_0_populate_scalars(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_0_check_scalars(
+    of_bsn_stats_request_t *obj, int value);
+
 extern int of_bsn_virtual_port_create_reply_OF_VERSION_1_0_populate(
     of_bsn_virtual_port_create_reply_t *obj, int value);
 extern int of_bsn_virtual_port_create_reply_OF_VERSION_1_0_check(
@@ -1454,6 +1472,24 @@ extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_populate_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
 extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_check_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
+
+extern int of_bsn_stats_reply_OF_VERSION_1_1_populate(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_1_check(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_1_populate_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_1_check_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+
+extern int of_bsn_stats_request_OF_VERSION_1_1_populate(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_1_check(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_1_populate_scalars(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_1_check_scalars(
+    of_bsn_stats_request_t *obj, int value);
 
 extern int of_bsn_virtual_port_create_reply_OF_VERSION_1_1_populate(
     of_bsn_virtual_port_create_reply_t *obj, int value);
@@ -2822,6 +2858,24 @@ extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_populate_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
 extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_check_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
+
+extern int of_bsn_stats_reply_OF_VERSION_1_2_populate(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_2_check(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_2_populate_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_2_check_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+
+extern int of_bsn_stats_request_OF_VERSION_1_2_populate(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_2_check(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_2_populate_scalars(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_2_check_scalars(
+    of_bsn_stats_request_t *obj, int value);
 
 extern int of_bsn_virtual_port_create_reply_OF_VERSION_1_2_populate(
     of_bsn_virtual_port_create_reply_t *obj, int value);
@@ -4956,6 +5010,33 @@ extern int of_bsn_header_OF_VERSION_1_3_populate_scalars(
 extern int of_bsn_header_OF_VERSION_1_3_check_scalars(
     of_bsn_header_t *obj, int value);
 
+extern int of_bsn_lacp_convergence_notif_OF_VERSION_1_3_populate(
+    of_bsn_lacp_convergence_notif_t *obj, int value);
+extern int of_bsn_lacp_convergence_notif_OF_VERSION_1_3_check(
+    of_bsn_lacp_convergence_notif_t *obj, int value);
+extern int of_bsn_lacp_convergence_notif_OF_VERSION_1_3_populate_scalars(
+    of_bsn_lacp_convergence_notif_t *obj, int value);
+extern int of_bsn_lacp_convergence_notif_OF_VERSION_1_3_check_scalars(
+    of_bsn_lacp_convergence_notif_t *obj, int value);
+
+extern int of_bsn_lacp_stats_reply_OF_VERSION_1_3_populate(
+    of_bsn_lacp_stats_reply_t *obj, int value);
+extern int of_bsn_lacp_stats_reply_OF_VERSION_1_3_check(
+    of_bsn_lacp_stats_reply_t *obj, int value);
+extern int of_bsn_lacp_stats_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_lacp_stats_reply_t *obj, int value);
+extern int of_bsn_lacp_stats_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_lacp_stats_reply_t *obj, int value);
+
+extern int of_bsn_lacp_stats_request_OF_VERSION_1_3_populate(
+    of_bsn_lacp_stats_request_t *obj, int value);
+extern int of_bsn_lacp_stats_request_OF_VERSION_1_3_check(
+    of_bsn_lacp_stats_request_t *obj, int value);
+extern int of_bsn_lacp_stats_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_lacp_stats_request_t *obj, int value);
+extern int of_bsn_lacp_stats_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_lacp_stats_request_t *obj, int value);
+
 extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_populate(
     of_bsn_pdu_rx_reply_t *obj, int value);
 extern int of_bsn_pdu_rx_reply_OF_VERSION_1_3_check(
@@ -5001,6 +5082,24 @@ extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_populate_scalars(
 extern int of_bsn_pdu_tx_request_OF_VERSION_1_3_check_scalars(
     of_bsn_pdu_tx_request_t *obj, int value);
 
+extern int of_bsn_set_lacp_reply_OF_VERSION_1_3_populate(
+    of_bsn_set_lacp_reply_t *obj, int value);
+extern int of_bsn_set_lacp_reply_OF_VERSION_1_3_check(
+    of_bsn_set_lacp_reply_t *obj, int value);
+extern int of_bsn_set_lacp_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_set_lacp_reply_t *obj, int value);
+extern int of_bsn_set_lacp_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_set_lacp_reply_t *obj, int value);
+
+extern int of_bsn_set_lacp_request_OF_VERSION_1_3_populate(
+    of_bsn_set_lacp_request_t *obj, int value);
+extern int of_bsn_set_lacp_request_OF_VERSION_1_3_check(
+    of_bsn_set_lacp_request_t *obj, int value);
+extern int of_bsn_set_lacp_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_set_lacp_request_t *obj, int value);
+extern int of_bsn_set_lacp_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_set_lacp_request_t *obj, int value);
+
 extern int of_bsn_set_mirroring_OF_VERSION_1_3_populate(
     of_bsn_set_mirroring_t *obj, int value);
 extern int of_bsn_set_mirroring_OF_VERSION_1_3_check(
@@ -5027,6 +5126,42 @@ extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_populate_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
 extern int of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_check_scalars(
     of_bsn_set_pktin_suppression_request_t *obj, int value);
+
+extern int of_bsn_stats_reply_OF_VERSION_1_3_populate(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_3_check(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+extern int of_bsn_stats_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_stats_reply_t *obj, int value);
+
+extern int of_bsn_stats_request_OF_VERSION_1_3_populate(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_3_check(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_stats_request_t *obj, int value);
+extern int of_bsn_stats_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_stats_request_t *obj, int value);
+
+extern int of_bsn_time_reply_OF_VERSION_1_3_populate(
+    of_bsn_time_reply_t *obj, int value);
+extern int of_bsn_time_reply_OF_VERSION_1_3_check(
+    of_bsn_time_reply_t *obj, int value);
+extern int of_bsn_time_reply_OF_VERSION_1_3_populate_scalars(
+    of_bsn_time_reply_t *obj, int value);
+extern int of_bsn_time_reply_OF_VERSION_1_3_check_scalars(
+    of_bsn_time_reply_t *obj, int value);
+
+extern int of_bsn_time_request_OF_VERSION_1_3_populate(
+    of_bsn_time_request_t *obj, int value);
+extern int of_bsn_time_request_OF_VERSION_1_3_check(
+    of_bsn_time_request_t *obj, int value);
+extern int of_bsn_time_request_OF_VERSION_1_3_populate_scalars(
+    of_bsn_time_request_t *obj, int value);
+extern int of_bsn_time_request_OF_VERSION_1_3_check_scalars(
+    of_bsn_time_request_t *obj, int value);
 
 extern int of_bsn_virtual_port_create_reply_OF_VERSION_1_3_populate(
     of_bsn_virtual_port_create_reply_t *obj, int value);
@@ -5126,6 +5261,24 @@ extern int of_experimenter_error_msg_OF_VERSION_1_3_populate_scalars(
     of_experimenter_error_msg_t *obj, int value);
 extern int of_experimenter_error_msg_OF_VERSION_1_3_check_scalars(
     of_experimenter_error_msg_t *obj, int value);
+
+extern int of_experimenter_stats_reply_OF_VERSION_1_3_populate(
+    of_experimenter_stats_reply_t *obj, int value);
+extern int of_experimenter_stats_reply_OF_VERSION_1_3_check(
+    of_experimenter_stats_reply_t *obj, int value);
+extern int of_experimenter_stats_reply_OF_VERSION_1_3_populate_scalars(
+    of_experimenter_stats_reply_t *obj, int value);
+extern int of_experimenter_stats_reply_OF_VERSION_1_3_check_scalars(
+    of_experimenter_stats_reply_t *obj, int value);
+
+extern int of_experimenter_stats_request_OF_VERSION_1_3_populate(
+    of_experimenter_stats_request_t *obj, int value);
+extern int of_experimenter_stats_request_OF_VERSION_1_3_check(
+    of_experimenter_stats_request_t *obj, int value);
+extern int of_experimenter_stats_request_OF_VERSION_1_3_populate_scalars(
+    of_experimenter_stats_request_t *obj, int value);
+extern int of_experimenter_stats_request_OF_VERSION_1_3_check_scalars(
+    of_experimenter_stats_request_t *obj, int value);
 
 extern int of_features_reply_OF_VERSION_1_3_populate(
     of_features_reply_t *obj, int value);
@@ -6098,6 +6251,15 @@ extern int of_bsn_interface_OF_VERSION_1_3_populate_scalars(
     of_bsn_interface_t *obj, int value);
 extern int of_bsn_interface_OF_VERSION_1_3_check_scalars(
     of_bsn_interface_t *obj, int value);
+
+extern int of_bsn_lacp_stats_entry_OF_VERSION_1_3_populate(
+    of_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_bsn_lacp_stats_entry_OF_VERSION_1_3_check(
+    of_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_bsn_lacp_stats_entry_OF_VERSION_1_3_populate_scalars(
+    of_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_bsn_lacp_stats_entry_OF_VERSION_1_3_check_scalars(
+    of_bsn_lacp_stats_entry_t *obj, int value);
 
 extern int of_bsn_vport_header_OF_VERSION_1_3_populate(
     of_bsn_vport_header_t *obj, int value);
@@ -7413,6 +7575,15 @@ extern int of_list_bsn_interface_OF_VERSION_1_3_populate_scalars(
 extern int of_list_bsn_interface_OF_VERSION_1_3_check_scalars(
     of_list_bsn_interface_t *obj, int value);
 
+extern int of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_populate(
+    of_list_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_check(
+    of_list_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_populate_scalars(
+    of_list_bsn_lacp_stats_entry_t *obj, int value);
+extern int of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_check_scalars(
+    of_list_bsn_lacp_stats_entry_t *obj, int value);
+
 extern int of_list_bucket_OF_VERSION_1_3_populate(
     of_list_bucket_t *obj, int value);
 extern int of_list_bucket_OF_VERSION_1_3_check(
@@ -7892,6 +8063,13 @@ extern int
 extern int
     list_check_of_list_bsn_interface_OF_VERSION_1_3(
     of_list_bsn_interface_t *list, int value);
+
+extern int
+    list_setup_of_list_bsn_lacp_stats_entry_OF_VERSION_1_3(
+    of_list_bsn_lacp_stats_entry_t *list, int value);
+extern int
+    list_check_of_list_bsn_lacp_stats_entry_OF_VERSION_1_3(
+    of_list_bsn_lacp_stats_entry_t *list, int value);
 
 extern int
     list_setup_of_list_bucket_OF_VERSION_1_3(

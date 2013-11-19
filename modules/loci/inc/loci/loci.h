@@ -159,6 +159,9 @@ typedef of_object_t of_bsn_get_mirroring_request_t;
 typedef of_object_t of_bsn_header_t;
 typedef of_object_t of_bsn_hybrid_get_reply_t;
 typedef of_object_t of_bsn_hybrid_get_request_t;
+typedef of_object_t of_bsn_lacp_convergence_notif_t;
+typedef of_object_t of_bsn_lacp_stats_reply_t;
+typedef of_object_t of_bsn_lacp_stats_request_t;
 typedef of_object_t of_bsn_pdu_rx_reply_t;
 typedef of_object_t of_bsn_pdu_rx_request_t;
 typedef of_object_t of_bsn_pdu_rx_timeout_t;
@@ -167,12 +170,18 @@ typedef of_object_t of_bsn_pdu_tx_request_t;
 typedef of_object_t of_bsn_set_ip_mask_t;
 typedef of_object_t of_bsn_set_l2_table_reply_t;
 typedef of_object_t of_bsn_set_l2_table_request_t;
+typedef of_object_t of_bsn_set_lacp_reply_t;
+typedef of_object_t of_bsn_set_lacp_request_t;
 typedef of_object_t of_bsn_set_mirroring_t;
 typedef of_object_t of_bsn_set_pktin_suppression_reply_t;
 typedef of_object_t of_bsn_set_pktin_suppression_request_t;
 typedef of_object_t of_bsn_shell_command_t;
 typedef of_object_t of_bsn_shell_output_t;
 typedef of_object_t of_bsn_shell_status_t;
+typedef of_object_t of_bsn_stats_reply_t;
+typedef of_object_t of_bsn_stats_request_t;
+typedef of_object_t of_bsn_time_reply_t;
+typedef of_object_t of_bsn_time_request_t;
 typedef of_object_t of_bsn_virtual_port_create_reply_t;
 typedef of_object_t of_bsn_virtual_port_create_request_t;
 typedef of_object_t of_bsn_virtual_port_remove_reply_t;
@@ -310,6 +319,7 @@ typedef of_object_t of_action_set_vlan_pcp_t;
 typedef of_object_t of_action_set_vlan_vid_t;
 typedef of_object_t of_action_strip_vlan_t;
 typedef of_object_t of_bsn_interface_t;
+typedef of_object_t of_bsn_lacp_stats_entry_t;
 typedef of_object_t of_bsn_vport_header_t;
 typedef of_object_t of_bsn_vport_q_in_q_t;
 typedef of_object_t of_bucket_t;
@@ -458,6 +468,7 @@ typedef of_object_t of_uint8_t;
 typedef of_object_t of_list_action_t;
 typedef of_object_t of_list_action_id_t;
 typedef of_object_t of_list_bsn_interface_t;
+typedef of_object_t of_list_bsn_lacp_stats_entry_t;
 typedef of_object_t of_list_bucket_t;
 typedef of_object_t of_list_bucket_counter_t;
 typedef of_object_t of_list_flow_stats_entry_t;
@@ -967,6 +978,45 @@ extern of_bsn_hybrid_get_request_t *
     of_bsn_hybrid_get_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_lacp_convergence_notif_new(version) \
+    of_bsn_lacp_convergence_notif_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_lacp_convergence_notif_new_from_message(msg) \
+    of_bsn_lacp_convergence_notif_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_lacp_stats_reply_new(version) \
+    of_bsn_lacp_stats_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_lacp_stats_reply_new_from_message(msg) \
+    of_bsn_lacp_stats_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_lacp_stats_request_new(version) \
+    of_bsn_lacp_stats_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_lacp_stats_request_new_from_message(msg) \
+    of_bsn_lacp_stats_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_bsn_pdu_rx_reply_t *
     of_bsn_pdu_rx_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1071,6 +1121,32 @@ extern of_bsn_set_l2_table_request_t *
     of_bsn_set_l2_table_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_set_lacp_reply_new(version) \
+    of_bsn_set_lacp_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_set_lacp_reply_new_from_message(msg) \
+    of_bsn_set_lacp_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_set_lacp_request_new(version) \
+    of_bsn_set_lacp_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_set_lacp_request_new_from_message(msg) \
+    of_bsn_set_lacp_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1147,6 +1223,58 @@ extern of_bsn_shell_status_t *
         const char *file, int line);
 #define of_bsn_shell_status_new_from_message(msg) \
     of_bsn_shell_status_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_stats_reply_new(version) \
+    of_bsn_stats_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_stats_reply_new_from_message(msg) \
+    of_bsn_stats_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_stats_request_new(version) \
+    of_bsn_stats_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_stats_request_new_from_message(msg) \
+    of_bsn_stats_request_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_time_reply_new(version) \
+    of_bsn_time_reply_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_time_reply_new_from_message(msg) \
+    of_bsn_time_reply_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_bsn_time_request_t *
+    of_bsn_time_request_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_time_request_new(version) \
+    of_bsn_time_request_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_bsn_time_request_t *
+    of_bsn_time_request_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_bsn_time_request_new_from_message(msg) \
+    of_bsn_time_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_bsn_virtual_port_create_reply_t *
@@ -2578,6 +2706,13 @@ extern of_bsn_interface_t *
     of_bsn_interface_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_bsn_lacp_stats_entry_t *
+    of_bsn_lacp_stats_entry_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_bsn_lacp_stats_entry_new(version) \
+    of_bsn_lacp_stats_entry_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_bsn_vport_t *
     of_bsn_vport_new_tracking(of_version_t version,
         const char *file, int line);
@@ -3663,6 +3798,13 @@ extern of_list_bsn_interface_t *
     of_list_bsn_interface_new_tracking(version, \
         __FILE__, __LINE__)
 
+extern of_list_bsn_lacp_stats_entry_t *
+    of_list_bsn_lacp_stats_entry_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_list_bsn_lacp_stats_entry_new(version) \
+    of_list_bsn_lacp_stats_entry_new_tracking(version, \
+        __FILE__, __LINE__)
+
 extern of_list_bucket_t *
     of_list_bucket_new_tracking(of_version_t version,
         const char *file, int line);
@@ -3977,6 +4119,21 @@ extern of_list_uint8_t *
 #define of_bsn_hybrid_get_request_new_from_message(msg) \
     of_bsn_hybrid_get_request_new_from_message_(msg)
 
+#define of_bsn_lacp_convergence_notif_new(version) \
+    of_bsn_lacp_convergence_notif_new_(version)
+#define of_bsn_lacp_convergence_notif_new_from_message(msg) \
+    of_bsn_lacp_convergence_notif_new_from_message_(msg)
+
+#define of_bsn_lacp_stats_reply_new(version) \
+    of_bsn_lacp_stats_reply_new_(version)
+#define of_bsn_lacp_stats_reply_new_from_message(msg) \
+    of_bsn_lacp_stats_reply_new_from_message_(msg)
+
+#define of_bsn_lacp_stats_request_new(version) \
+    of_bsn_lacp_stats_request_new_(version)
+#define of_bsn_lacp_stats_request_new_from_message(msg) \
+    of_bsn_lacp_stats_request_new_from_message_(msg)
+
 #define of_bsn_pdu_rx_reply_new(version) \
     of_bsn_pdu_rx_reply_new_(version)
 #define of_bsn_pdu_rx_reply_new_from_message(msg) \
@@ -4017,6 +4174,16 @@ extern of_list_uint8_t *
 #define of_bsn_set_l2_table_request_new_from_message(msg) \
     of_bsn_set_l2_table_request_new_from_message_(msg)
 
+#define of_bsn_set_lacp_reply_new(version) \
+    of_bsn_set_lacp_reply_new_(version)
+#define of_bsn_set_lacp_reply_new_from_message(msg) \
+    of_bsn_set_lacp_reply_new_from_message_(msg)
+
+#define of_bsn_set_lacp_request_new(version) \
+    of_bsn_set_lacp_request_new_(version)
+#define of_bsn_set_lacp_request_new_from_message(msg) \
+    of_bsn_set_lacp_request_new_from_message_(msg)
+
 #define of_bsn_set_mirroring_new(version) \
     of_bsn_set_mirroring_new_(version)
 #define of_bsn_set_mirroring_new_from_message(msg) \
@@ -4046,6 +4213,26 @@ extern of_list_uint8_t *
     of_bsn_shell_status_new_(version)
 #define of_bsn_shell_status_new_from_message(msg) \
     of_bsn_shell_status_new_from_message_(msg)
+
+#define of_bsn_stats_reply_new(version) \
+    of_bsn_stats_reply_new_(version)
+#define of_bsn_stats_reply_new_from_message(msg) \
+    of_bsn_stats_reply_new_from_message_(msg)
+
+#define of_bsn_stats_request_new(version) \
+    of_bsn_stats_request_new_(version)
+#define of_bsn_stats_request_new_from_message(msg) \
+    of_bsn_stats_request_new_from_message_(msg)
+
+#define of_bsn_time_reply_new(version) \
+    of_bsn_time_reply_new_(version)
+#define of_bsn_time_reply_new_from_message(msg) \
+    of_bsn_time_reply_new_from_message_(msg)
+
+#define of_bsn_time_request_new(version) \
+    of_bsn_time_request_new_(version)
+#define of_bsn_time_request_new_from_message(msg) \
+    of_bsn_time_request_new_from_message_(msg)
 
 #define of_bsn_virtual_port_create_reply_new(version) \
     of_bsn_virtual_port_create_reply_new_(version)
@@ -4616,6 +4803,9 @@ extern of_list_uint8_t *
 #define of_bsn_interface_new(version) \
     of_bsn_interface_new_(version)
 
+#define of_bsn_lacp_stats_entry_new(version) \
+    of_bsn_lacp_stats_entry_new_(version)
+
 #define of_bsn_vport_new(version) \
     of_bsn_vport_new_(version)
 
@@ -5081,6 +5271,9 @@ extern of_list_uint8_t *
 #define of_list_bsn_interface_new(version) \
     of_list_bsn_interface_new_(version)
 
+#define of_list_bsn_lacp_stats_entry_new(version) \
+    of_list_bsn_lacp_stats_entry_new_(version)
+
 #define of_list_bucket_new(version) \
     of_list_bucket_new_(version)
 
@@ -5377,6 +5570,27 @@ extern of_bsn_hybrid_get_request_t *
 extern void of_bsn_hybrid_get_request_init(
     of_bsn_hybrid_get_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_new_(of_version_t version);
+extern of_bsn_lacp_convergence_notif_t *
+    of_bsn_lacp_convergence_notif_new_from_message_(of_message_t msg);
+extern void of_bsn_lacp_convergence_notif_init(
+    of_bsn_lacp_convergence_notif_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_new_(of_version_t version);
+extern of_bsn_lacp_stats_reply_t *
+    of_bsn_lacp_stats_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_lacp_stats_reply_init(
+    of_bsn_lacp_stats_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_new_(of_version_t version);
+extern of_bsn_lacp_stats_request_t *
+    of_bsn_lacp_stats_request_new_from_message_(of_message_t msg);
+extern void of_bsn_lacp_stats_request_init(
+    of_bsn_lacp_stats_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_pdu_rx_reply_t *
     of_bsn_pdu_rx_reply_new_(of_version_t version);
 extern of_bsn_pdu_rx_reply_t *
@@ -5433,6 +5647,20 @@ extern of_bsn_set_l2_table_request_t *
 extern void of_bsn_set_l2_table_request_init(
     of_bsn_set_l2_table_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_new_(of_version_t version);
+extern of_bsn_set_lacp_reply_t *
+    of_bsn_set_lacp_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_set_lacp_reply_init(
+    of_bsn_set_lacp_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_new_(of_version_t version);
+extern of_bsn_set_lacp_request_t *
+    of_bsn_set_lacp_request_new_from_message_(of_message_t msg);
+extern void of_bsn_set_lacp_request_init(
+    of_bsn_set_lacp_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_set_mirroring_t *
     of_bsn_set_mirroring_new_(of_version_t version);
 extern of_bsn_set_mirroring_t *
@@ -5474,6 +5702,34 @@ extern of_bsn_shell_status_t *
     of_bsn_shell_status_new_from_message_(of_message_t msg);
 extern void of_bsn_shell_status_init(
     of_bsn_shell_status_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_new_(of_version_t version);
+extern of_bsn_stats_reply_t *
+    of_bsn_stats_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_stats_reply_init(
+    of_bsn_stats_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_new_(of_version_t version);
+extern of_bsn_stats_request_t *
+    of_bsn_stats_request_new_from_message_(of_message_t msg);
+extern void of_bsn_stats_request_init(
+    of_bsn_stats_request_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_new_(of_version_t version);
+extern of_bsn_time_reply_t *
+    of_bsn_time_reply_new_from_message_(of_message_t msg);
+extern void of_bsn_time_reply_init(
+    of_bsn_time_reply_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_bsn_time_request_t *
+    of_bsn_time_request_new_(of_version_t version);
+extern of_bsn_time_request_t *
+    of_bsn_time_request_new_from_message_(of_message_t msg);
+extern void of_bsn_time_request_init(
+    of_bsn_time_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_bsn_virtual_port_create_reply_t *
     of_bsn_virtual_port_create_reply_new_(of_version_t version);
@@ -6322,6 +6578,11 @@ extern of_bsn_interface_t *
 extern void of_bsn_interface_init(
     of_bsn_interface_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_bsn_lacp_stats_entry_t *
+    of_bsn_lacp_stats_entry_new_(of_version_t version);
+extern void of_bsn_lacp_stats_entry_init(
+    of_bsn_lacp_stats_entry_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_bsn_vport_t *
     of_bsn_vport_new_(of_version_t version);
 extern void of_bsn_vport_init(
@@ -7097,6 +7358,11 @@ extern of_list_bsn_interface_t *
 extern void of_list_bsn_interface_init(
     of_list_bsn_interface_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_list_bsn_lacp_stats_entry_t *
+    of_list_bsn_lacp_stats_entry_new_(of_version_t version);
+extern void of_list_bsn_lacp_stats_entry_init(
+    of_list_bsn_lacp_stats_entry_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_list_bucket_t *
     of_list_bucket_new_(of_version_t version);
 extern void of_list_bucket_init(
@@ -7573,6 +7839,39 @@ of_bsn_hybrid_get_request_delete(of_bsn_hybrid_get_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bsn_lacp_convergence_notif_t
+ * @param obj An instance of type of_bsn_lacp_convergence_notif_t
+ *
+ * \ingroup of_bsn_lacp_convergence_notif
+ */
+static inline void
+of_bsn_lacp_convergence_notif_delete(of_bsn_lacp_convergence_notif_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_lacp_stats_reply_t
+ * @param obj An instance of type of_bsn_lacp_stats_reply_t
+ *
+ * \ingroup of_bsn_lacp_stats_reply
+ */
+static inline void
+of_bsn_lacp_stats_reply_delete(of_bsn_lacp_stats_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_lacp_stats_request_t
+ * @param obj An instance of type of_bsn_lacp_stats_request_t
+ *
+ * \ingroup of_bsn_lacp_stats_request
+ */
+static inline void
+of_bsn_lacp_stats_request_delete(of_bsn_lacp_stats_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_bsn_pdu_rx_reply_t
  * @param obj An instance of type of_bsn_pdu_rx_reply_t
  *
@@ -7661,6 +7960,28 @@ of_bsn_set_l2_table_request_delete(of_bsn_set_l2_table_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_bsn_set_lacp_reply_t
+ * @param obj An instance of type of_bsn_set_lacp_reply_t
+ *
+ * \ingroup of_bsn_set_lacp_reply
+ */
+static inline void
+of_bsn_set_lacp_reply_delete(of_bsn_set_lacp_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_set_lacp_request_t
+ * @param obj An instance of type of_bsn_set_lacp_request_t
+ *
+ * \ingroup of_bsn_set_lacp_request
+ */
+static inline void
+of_bsn_set_lacp_request_delete(of_bsn_set_lacp_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_bsn_set_mirroring_t
  * @param obj An instance of type of_bsn_set_mirroring_t
  *
@@ -7723,6 +8044,50 @@ of_bsn_shell_output_delete(of_bsn_shell_output_t *obj) {
  */
 static inline void
 of_bsn_shell_status_delete(of_bsn_shell_status_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_stats_reply_t
+ * @param obj An instance of type of_bsn_stats_reply_t
+ *
+ * \ingroup of_bsn_stats_reply
+ */
+static inline void
+of_bsn_stats_reply_delete(of_bsn_stats_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_stats_request_t
+ * @param obj An instance of type of_bsn_stats_request_t
+ *
+ * \ingroup of_bsn_stats_request
+ */
+static inline void
+of_bsn_stats_request_delete(of_bsn_stats_request_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_time_reply_t
+ * @param obj An instance of type of_bsn_time_reply_t
+ *
+ * \ingroup of_bsn_time_reply
+ */
+static inline void
+of_bsn_time_reply_delete(of_bsn_time_reply_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_time_request_t
+ * @param obj An instance of type of_bsn_time_request_t
+ *
+ * \ingroup of_bsn_time_request
+ */
+static inline void
+of_bsn_time_request_delete(of_bsn_time_request_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -9252,6 +9617,17 @@ of_action_strip_vlan_delete(of_action_strip_vlan_t *obj) {
  */
 static inline void
 of_bsn_interface_delete(of_bsn_interface_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_bsn_lacp_stats_entry_t
+ * @param obj An instance of type of_bsn_lacp_stats_entry_t
+ *
+ * \ingroup of_bsn_lacp_stats_entry
+ */
+static inline void
+of_bsn_lacp_stats_entry_delete(of_bsn_lacp_stats_entry_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10961,6 +11337,17 @@ of_list_bsn_interface_delete(of_list_bsn_interface_t *obj) {
 }
 
 /**
+ * Delete an object of type of_list_bsn_lacp_stats_entry_t
+ * @param obj An instance of type of_list_bsn_lacp_stats_entry_t
+ *
+ * \ingroup of_list_bsn_lacp_stats_entry
+ */
+static inline void
+of_list_bsn_lacp_stats_entry_delete(of_list_bsn_lacp_stats_entry_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_list_bucket_t
  * @param obj An instance of type of_list_bucket_t
  *
@@ -12235,6 +12622,182 @@ extern void of_bsn_hybrid_get_request_subtype_get(
     of_bsn_hybrid_get_request_t *obj,
     uint32_t *subtype);
 
+/* Unified accessor functions for of_bsn_lacp_convergence_notif */
+
+extern void of_bsn_lacp_convergence_notif_xid_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t xid);
+extern void of_bsn_lacp_convergence_notif_xid_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_lacp_convergence_notif_experimenter_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_lacp_convergence_notif_experimenter_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_lacp_convergence_notif_subtype_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t subtype);
+extern void of_bsn_lacp_convergence_notif_subtype_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_lacp_convergence_notif_convergence_status_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint8_t convergence_status);
+extern void of_bsn_lacp_convergence_notif_convergence_status_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint8_t *convergence_status);
+
+extern void of_bsn_lacp_convergence_notif_port_no_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_lacp_convergence_notif_port_no_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_lacp_convergence_notif_actor_sys_priority_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t actor_sys_priority);
+extern void of_bsn_lacp_convergence_notif_actor_sys_priority_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *actor_sys_priority);
+
+extern void of_bsn_lacp_convergence_notif_actor_sys_mac_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_mac_addr_t actor_sys_mac);
+extern void of_bsn_lacp_convergence_notif_actor_sys_mac_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_mac_addr_t *actor_sys_mac);
+
+extern void of_bsn_lacp_convergence_notif_actor_port_priority_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t actor_port_priority);
+extern void of_bsn_lacp_convergence_notif_actor_port_priority_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *actor_port_priority);
+
+extern void of_bsn_lacp_convergence_notif_actor_port_num_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t actor_port_num);
+extern void of_bsn_lacp_convergence_notif_actor_port_num_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *actor_port_num);
+
+extern void of_bsn_lacp_convergence_notif_actor_key_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t actor_key);
+extern void of_bsn_lacp_convergence_notif_actor_key_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *actor_key);
+
+extern void of_bsn_lacp_convergence_notif_partner_sys_priority_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t partner_sys_priority);
+extern void of_bsn_lacp_convergence_notif_partner_sys_priority_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *partner_sys_priority);
+
+extern void of_bsn_lacp_convergence_notif_partner_sys_mac_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_mac_addr_t partner_sys_mac);
+extern void of_bsn_lacp_convergence_notif_partner_sys_mac_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    of_mac_addr_t *partner_sys_mac);
+
+extern void of_bsn_lacp_convergence_notif_partner_port_priority_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t partner_port_priority);
+extern void of_bsn_lacp_convergence_notif_partner_port_priority_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *partner_port_priority);
+
+extern void of_bsn_lacp_convergence_notif_partner_port_num_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t partner_port_num);
+extern void of_bsn_lacp_convergence_notif_partner_port_num_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *partner_port_num);
+
+extern void of_bsn_lacp_convergence_notif_partner_key_set(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t partner_key);
+extern void of_bsn_lacp_convergence_notif_partner_key_get(
+    of_bsn_lacp_convergence_notif_t *obj,
+    uint16_t *partner_key);
+
+/* Unified accessor functions for of_bsn_lacp_stats_reply */
+
+extern void of_bsn_lacp_stats_reply_xid_set(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_lacp_stats_reply_xid_get(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_lacp_stats_reply_flags_set(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint16_t flags);
+extern void of_bsn_lacp_stats_reply_flags_get(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint16_t *flags);
+
+extern void of_bsn_lacp_stats_reply_experimenter_set(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_lacp_stats_reply_experimenter_get(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_lacp_stats_reply_subtype_set(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_lacp_stats_reply_subtype_get(
+    of_bsn_lacp_stats_reply_t *obj,
+    uint32_t *subtype);
+
+extern int WARN_UNUSED_RESULT of_bsn_lacp_stats_reply_entries_set(
+    of_bsn_lacp_stats_reply_t *obj,
+    of_list_bsn_lacp_stats_entry_t *entries);
+extern void of_bsn_lacp_stats_reply_entries_bind(
+    of_bsn_lacp_stats_reply_t *obj,
+    of_list_bsn_lacp_stats_entry_t *entries);
+extern of_list_bsn_lacp_stats_entry_t *of_bsn_lacp_stats_reply_entries_get(
+    of_bsn_lacp_stats_reply_t *obj);
+
+/* Unified accessor functions for of_bsn_lacp_stats_request */
+
+extern void of_bsn_lacp_stats_request_xid_set(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_lacp_stats_request_xid_get(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_lacp_stats_request_flags_set(
+    of_bsn_lacp_stats_request_t *obj,
+    uint16_t flags);
+extern void of_bsn_lacp_stats_request_flags_get(
+    of_bsn_lacp_stats_request_t *obj,
+    uint16_t *flags);
+
+extern void of_bsn_lacp_stats_request_experimenter_set(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_lacp_stats_request_experimenter_get(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_lacp_stats_request_subtype_set(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_lacp_stats_request_subtype_get(
+    of_bsn_lacp_stats_request_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_bsn_pdu_rx_reply */
 
 extern void of_bsn_pdu_rx_reply_xid_set(
@@ -12264,6 +12827,20 @@ extern void of_bsn_pdu_rx_reply_status_set(
 extern void of_bsn_pdu_rx_reply_status_get(
     of_bsn_pdu_rx_reply_t *obj,
     uint32_t *status);
+
+extern void of_bsn_pdu_rx_reply_port_no_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_pdu_rx_reply_port_no_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_pdu_rx_reply_slot_num_set(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint8_t slot_num);
+extern void of_bsn_pdu_rx_reply_slot_num_get(
+    of_bsn_pdu_rx_reply_t *obj,
+    uint8_t *slot_num);
 
 /* Unified accessor functions for of_bsn_pdu_rx_request */
 
@@ -12382,6 +12959,20 @@ extern void of_bsn_pdu_tx_reply_status_set(
 extern void of_bsn_pdu_tx_reply_status_get(
     of_bsn_pdu_tx_reply_t *obj,
     uint32_t *status);
+
+extern void of_bsn_pdu_tx_reply_port_no_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_pdu_tx_reply_port_no_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_pdu_tx_reply_slot_num_set(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint8_t slot_num);
+extern void of_bsn_pdu_tx_reply_slot_num_get(
+    of_bsn_pdu_tx_reply_t *obj,
+    uint8_t *slot_num);
 
 /* Unified accessor functions for of_bsn_pdu_tx_request */
 
@@ -12551,6 +13142,115 @@ extern void of_bsn_set_l2_table_request_l2_table_priority_set(
 extern void of_bsn_set_l2_table_request_l2_table_priority_get(
     of_bsn_set_l2_table_request_t *obj,
     uint16_t *l2_table_priority);
+
+/* Unified accessor functions for of_bsn_set_lacp_reply */
+
+extern void of_bsn_set_lacp_reply_xid_set(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_set_lacp_reply_xid_get(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_set_lacp_reply_experimenter_set(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_set_lacp_reply_experimenter_get(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_set_lacp_reply_subtype_set(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_set_lacp_reply_subtype_get(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_set_lacp_reply_status_set(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t status);
+extern void of_bsn_set_lacp_reply_status_get(
+    of_bsn_set_lacp_reply_t *obj,
+    uint32_t *status);
+
+extern void of_bsn_set_lacp_reply_port_no_set(
+    of_bsn_set_lacp_reply_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_set_lacp_reply_port_no_get(
+    of_bsn_set_lacp_reply_t *obj,
+    of_port_no_t *port_no);
+
+/* Unified accessor functions for of_bsn_set_lacp_request */
+
+extern void of_bsn_set_lacp_request_xid_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_set_lacp_request_xid_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_set_lacp_request_experimenter_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_set_lacp_request_experimenter_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_set_lacp_request_subtype_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_set_lacp_request_subtype_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_set_lacp_request_enabled_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint8_t enabled);
+extern void of_bsn_set_lacp_request_enabled_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint8_t *enabled);
+
+extern void of_bsn_set_lacp_request_port_no_set(
+    of_bsn_set_lacp_request_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_set_lacp_request_port_no_get(
+    of_bsn_set_lacp_request_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_set_lacp_request_actor_sys_priority_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t actor_sys_priority);
+extern void of_bsn_set_lacp_request_actor_sys_priority_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t *actor_sys_priority);
+
+extern void of_bsn_set_lacp_request_actor_sys_mac_set(
+    of_bsn_set_lacp_request_t *obj,
+    of_mac_addr_t actor_sys_mac);
+extern void of_bsn_set_lacp_request_actor_sys_mac_get(
+    of_bsn_set_lacp_request_t *obj,
+    of_mac_addr_t *actor_sys_mac);
+
+extern void of_bsn_set_lacp_request_actor_port_priority_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t actor_port_priority);
+extern void of_bsn_set_lacp_request_actor_port_priority_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t *actor_port_priority);
+
+extern void of_bsn_set_lacp_request_actor_port_num_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t actor_port_num);
+extern void of_bsn_set_lacp_request_actor_port_num_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t *actor_port_num);
+
+extern void of_bsn_set_lacp_request_actor_key_set(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t actor_key);
+extern void of_bsn_set_lacp_request_actor_key_get(
+    of_bsn_set_lacp_request_t *obj,
+    uint16_t *actor_key);
 
 /* Unified accessor functions for of_bsn_set_mirroring */
 
@@ -12766,6 +13466,119 @@ extern void of_bsn_shell_status_status_set(
 extern void of_bsn_shell_status_status_get(
     of_bsn_shell_status_t *obj,
     uint32_t *status);
+
+/* Unified accessor functions for of_bsn_stats_reply */
+
+extern void of_bsn_stats_reply_xid_set(
+    of_bsn_stats_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_stats_reply_xid_get(
+    of_bsn_stats_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_stats_reply_flags_set(
+    of_bsn_stats_reply_t *obj,
+    uint16_t flags);
+extern void of_bsn_stats_reply_flags_get(
+    of_bsn_stats_reply_t *obj,
+    uint16_t *flags);
+
+extern void of_bsn_stats_reply_experimenter_set(
+    of_bsn_stats_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_stats_reply_experimenter_get(
+    of_bsn_stats_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_stats_reply_subtype_set(
+    of_bsn_stats_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_stats_reply_subtype_get(
+    of_bsn_stats_reply_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_bsn_stats_request */
+
+extern void of_bsn_stats_request_xid_set(
+    of_bsn_stats_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_stats_request_xid_get(
+    of_bsn_stats_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_stats_request_flags_set(
+    of_bsn_stats_request_t *obj,
+    uint16_t flags);
+extern void of_bsn_stats_request_flags_get(
+    of_bsn_stats_request_t *obj,
+    uint16_t *flags);
+
+extern void of_bsn_stats_request_experimenter_set(
+    of_bsn_stats_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_stats_request_experimenter_get(
+    of_bsn_stats_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_stats_request_subtype_set(
+    of_bsn_stats_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_stats_request_subtype_get(
+    of_bsn_stats_request_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_bsn_time_reply */
+
+extern void of_bsn_time_reply_xid_set(
+    of_bsn_time_reply_t *obj,
+    uint32_t xid);
+extern void of_bsn_time_reply_xid_get(
+    of_bsn_time_reply_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_time_reply_experimenter_set(
+    of_bsn_time_reply_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_time_reply_experimenter_get(
+    of_bsn_time_reply_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_time_reply_subtype_set(
+    of_bsn_time_reply_t *obj,
+    uint32_t subtype);
+extern void of_bsn_time_reply_subtype_get(
+    of_bsn_time_reply_t *obj,
+    uint32_t *subtype);
+
+extern void of_bsn_time_reply_time_ms_set(
+    of_bsn_time_reply_t *obj,
+    uint64_t time_ms);
+extern void of_bsn_time_reply_time_ms_get(
+    of_bsn_time_reply_t *obj,
+    uint64_t *time_ms);
+
+/* Unified accessor functions for of_bsn_time_request */
+
+extern void of_bsn_time_request_xid_set(
+    of_bsn_time_request_t *obj,
+    uint32_t xid);
+extern void of_bsn_time_request_xid_get(
+    of_bsn_time_request_t *obj,
+    uint32_t *xid);
+
+extern void of_bsn_time_request_experimenter_set(
+    of_bsn_time_request_t *obj,
+    uint32_t experimenter);
+extern void of_bsn_time_request_experimenter_get(
+    of_bsn_time_request_t *obj,
+    uint32_t *experimenter);
+
+extern void of_bsn_time_request_subtype_set(
+    of_bsn_time_request_t *obj,
+    uint32_t subtype);
+extern void of_bsn_time_request_subtype_get(
+    of_bsn_time_request_t *obj,
+    uint32_t *subtype);
 
 /* Unified accessor functions for of_bsn_virtual_port_create_reply */
 
@@ -15835,6 +16648,92 @@ extern void of_bsn_interface_ipv4_netmask_get(
     of_bsn_interface_t *obj,
     of_ipv4_t *ipv4_netmask);
 
+/* Unified accessor functions for of_bsn_lacp_stats_entry */
+
+extern void of_bsn_lacp_stats_entry_port_no_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_port_no_t port_no);
+extern void of_bsn_lacp_stats_entry_port_no_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_port_no_t *port_no);
+
+extern void of_bsn_lacp_stats_entry_actor_sys_priority_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t actor_sys_priority);
+extern void of_bsn_lacp_stats_entry_actor_sys_priority_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *actor_sys_priority);
+
+extern void of_bsn_lacp_stats_entry_actor_sys_mac_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_mac_addr_t actor_sys_mac);
+extern void of_bsn_lacp_stats_entry_actor_sys_mac_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_mac_addr_t *actor_sys_mac);
+
+extern void of_bsn_lacp_stats_entry_actor_port_priority_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t actor_port_priority);
+extern void of_bsn_lacp_stats_entry_actor_port_priority_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *actor_port_priority);
+
+extern void of_bsn_lacp_stats_entry_actor_port_num_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t actor_port_num);
+extern void of_bsn_lacp_stats_entry_actor_port_num_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *actor_port_num);
+
+extern void of_bsn_lacp_stats_entry_actor_key_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t actor_key);
+extern void of_bsn_lacp_stats_entry_actor_key_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *actor_key);
+
+extern void of_bsn_lacp_stats_entry_convergence_status_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint8_t convergence_status);
+extern void of_bsn_lacp_stats_entry_convergence_status_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint8_t *convergence_status);
+
+extern void of_bsn_lacp_stats_entry_partner_sys_priority_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t partner_sys_priority);
+extern void of_bsn_lacp_stats_entry_partner_sys_priority_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *partner_sys_priority);
+
+extern void of_bsn_lacp_stats_entry_partner_sys_mac_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_mac_addr_t partner_sys_mac);
+extern void of_bsn_lacp_stats_entry_partner_sys_mac_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    of_mac_addr_t *partner_sys_mac);
+
+extern void of_bsn_lacp_stats_entry_partner_port_priority_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t partner_port_priority);
+extern void of_bsn_lacp_stats_entry_partner_port_priority_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *partner_port_priority);
+
+extern void of_bsn_lacp_stats_entry_partner_port_num_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t partner_port_num);
+extern void of_bsn_lacp_stats_entry_partner_port_num_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *partner_port_num);
+
+extern void of_bsn_lacp_stats_entry_partner_key_set(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t partner_key);
+extern void of_bsn_lacp_stats_entry_partner_key_get(
+    of_bsn_lacp_stats_entry_t *obj,
+    uint16_t *partner_key);
+
 /* Unified accessor functions for of_bsn_vport_header */
 
 /* Unified accessor functions for of_bsn_vport_q_in_q */
@@ -18474,6 +19373,29 @@ extern int of_list_bsn_interface_append(
          (rv) == OF_ERROR_NONE;   \
          (rv) = of_list_bsn_interface_next((list), (elt)))
 
+/* Unified accessor functions for of_list_bsn_lacp_stats_entry */
+
+extern int of_list_bsn_lacp_stats_entry_first(
+    of_list_bsn_lacp_stats_entry_t *list, of_bsn_lacp_stats_entry_t *obj);
+extern int of_list_bsn_lacp_stats_entry_next(
+    of_list_bsn_lacp_stats_entry_t *list, of_bsn_lacp_stats_entry_t *obj);
+extern int of_list_bsn_lacp_stats_entry_append_bind(
+    of_list_bsn_lacp_stats_entry_t *list, of_bsn_lacp_stats_entry_t *obj);
+extern int of_list_bsn_lacp_stats_entry_append(
+    of_list_bsn_lacp_stats_entry_t *list, of_bsn_lacp_stats_entry_t *obj);
+
+/**
+ * Iteration macro for list of type of_list_bsn_lacp_stats_entry
+ * @param list Pointer to the list being iterated over of
+ * type of_list_bsn_lacp_stats_entry
+ * @param elt Pointer to an element of type of_bsn_lacp_stats_entry
+ * @param rv On exiting the loop will have the value OF_ERROR_RANGE.
+ */
+#define OF_LIST_BSN_LACP_STATS_ENTRY_ITER(list, elt, rv)  \
+    for ((rv) = of_list_bsn_lacp_stats_entry_first((list), (elt));   \
+         (rv) == OF_ERROR_NONE;   \
+         (rv) = of_list_bsn_lacp_stats_entry_next((list), (elt)))
+
 /* Unified accessor functions for of_list_bucket */
 
 extern int of_list_bucket_first(
@@ -19117,6 +20039,9 @@ union of_generic_u {
     of_bsn_header_t of_bsn_header;
     of_bsn_hybrid_get_reply_t of_bsn_hybrid_get_reply;
     of_bsn_hybrid_get_request_t of_bsn_hybrid_get_request;
+    of_bsn_lacp_convergence_notif_t of_bsn_lacp_convergence_notif;
+    of_bsn_lacp_stats_reply_t of_bsn_lacp_stats_reply;
+    of_bsn_lacp_stats_request_t of_bsn_lacp_stats_request;
     of_bsn_pdu_rx_reply_t of_bsn_pdu_rx_reply;
     of_bsn_pdu_rx_request_t of_bsn_pdu_rx_request;
     of_bsn_pdu_rx_timeout_t of_bsn_pdu_rx_timeout;
@@ -19125,12 +20050,18 @@ union of_generic_u {
     of_bsn_set_ip_mask_t of_bsn_set_ip_mask;
     of_bsn_set_l2_table_reply_t of_bsn_set_l2_table_reply;
     of_bsn_set_l2_table_request_t of_bsn_set_l2_table_request;
+    of_bsn_set_lacp_reply_t of_bsn_set_lacp_reply;
+    of_bsn_set_lacp_request_t of_bsn_set_lacp_request;
     of_bsn_set_mirroring_t of_bsn_set_mirroring;
     of_bsn_set_pktin_suppression_reply_t of_bsn_set_pktin_suppression_reply;
     of_bsn_set_pktin_suppression_request_t of_bsn_set_pktin_suppression_request;
     of_bsn_shell_command_t of_bsn_shell_command;
     of_bsn_shell_output_t of_bsn_shell_output;
     of_bsn_shell_status_t of_bsn_shell_status;
+    of_bsn_stats_reply_t of_bsn_stats_reply;
+    of_bsn_stats_request_t of_bsn_stats_request;
+    of_bsn_time_reply_t of_bsn_time_reply;
+    of_bsn_time_request_t of_bsn_time_request;
     of_bsn_virtual_port_create_reply_t of_bsn_virtual_port_create_reply;
     of_bsn_virtual_port_create_request_t of_bsn_virtual_port_create_request;
     of_bsn_virtual_port_remove_reply_t of_bsn_virtual_port_remove_reply;
@@ -19270,6 +20201,7 @@ union of_generic_u {
     of_action_set_vlan_vid_t of_action_set_vlan_vid;
     of_action_strip_vlan_t of_action_strip_vlan;
     of_bsn_interface_t of_bsn_interface;
+    of_bsn_lacp_stats_entry_t of_bsn_lacp_stats_entry;
     of_bsn_vport_header_t of_bsn_vport_header;
     of_bsn_vport_q_in_q_t of_bsn_vport_q_in_q;
     of_bucket_t of_bucket;
@@ -19420,6 +20352,7 @@ union of_generic_u {
     of_list_action_t of_list_action;
     of_list_action_id_t of_list_action_id;
     of_list_bsn_interface_t of_list_bsn_interface;
+    of_list_bsn_lacp_stats_entry_t of_list_bsn_lacp_stats_entry;
     of_list_bucket_t of_list_bucket;
     of_list_bucket_counter_t of_list_bucket_counter;
     of_list_flow_stats_entry_t of_list_flow_stats_entry;
@@ -19778,6 +20711,9 @@ of_object_parent_length_update(of_object_t *obj, int delta)
  * top level message: Action, instruction, error, stats, queue_props, oxm
  */
 #define OF_EXPERIMENTER_TYPE 0xffff
+
+int of_experimenter_stats_request_to_object_id(uint32_t experimenter, uint32_t subtype, int ver);
+int of_experimenter_stats_reply_to_object_id(uint32_t experimenter, uint32_t subtype, int ver);
 
 /**
  * action wire type to object ID array.
@@ -20573,8 +21509,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
     if ((experimenter_id == OF_EXPERIMENTER_ID_BSN) &&
             (version == OF_VERSION_1_3)) {
 
+        if (subtype == 43) {
+            return OF_BSN_LACP_CONVERGENCE_NOTIF;
+        }
+
         if (subtype == 9) {
             return OF_BSN_GET_INTERFACES_REQUEST;
+        }
+
+        if (subtype == 17) {
+            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
         }
 
         if (subtype == 34) {
@@ -20589,8 +21533,16 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_SET_PKTIN_SUPPRESSION_REPLY;
         }
 
+        if (subtype == 45) {
+            return OF_BSN_TIME_REPLY;
+        }
+
         if (subtype == 26) {
             return OF_BSN_VIRTUAL_PORT_REMOVE_REPLY;
+        }
+
+        if (subtype == 41) {
+            return OF_BSN_SET_LACP_REQUEST;
         }
 
         if (subtype == 11) {
@@ -20621,8 +21573,8 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
             return OF_BSN_BW_ENABLE_SET_REPLY;
         }
 
-        if (subtype == 17) {
-            return OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST;
+        if (subtype == 44) {
+            return OF_BSN_TIME_REQUEST;
         }
 
         if (subtype == 10) {
@@ -20635,6 +21587,10 @@ of_message_experimenter_to_object_id(of_message_t msg, of_version_t version) {
 
         if (subtype == 21) {
             return OF_BSN_BW_CLEAR_DATA_REQUEST;
+        }
+
+        if (subtype == 42) {
+            return OF_BSN_SET_LACP_REPLY;
         }
 
         if (subtype == 35) {
@@ -20711,6 +21667,7 @@ of_message_to_object_id(of_message_t msg, int length) {
     uint16_t stats_type;
     uint16_t err_type;
     uint8_t flow_mod_cmd;
+    uint32_t experimenter, subtype;
 
     if (length < OF_MESSAGE_MIN_LENGTH) {
         return OF_OBJECT_INVALID;
@@ -20749,10 +21706,23 @@ of_message_to_object_id(of_message_t msg, int length) {
             return OF_OBJECT_INVALID;
         }
         stats_type = of_message_stats_type_get(msg);
-        if (obj_id == OF_STATS_REQUEST) {
-            obj_id = of_stats_request_to_object_id(stats_type, ver);
+        if (stats_type == OF_STATS_TYPE_EXPERIMENTER) {
+            if (length < OF_MESSAGE_STATS_EXPERIMENTER_MIN_LENGTH) {
+                return OF_OBJECT_INVALID;
+            }
+            experimenter = of_message_stats_experimenter_id_get(msg);
+            subtype = of_message_stats_experimenter_subtype_get(msg);
+            if (obj_id == OF_STATS_REQUEST) {
+                obj_id = of_experimenter_stats_request_to_object_id(experimenter, subtype, ver);
+            } else {
+                obj_id = of_experimenter_stats_reply_to_object_id(experimenter, subtype, ver);
+            }
         } else {
-            obj_id = of_stats_reply_to_object_id(stats_type, ver);
+            if (obj_id == OF_STATS_REQUEST) {
+                obj_id = of_stats_request_to_object_id(stats_type, ver);
+            } else {
+                obj_id = of_stats_reply_to_object_id(stats_type, ver);
+            }
         }
     }
 
@@ -20867,6 +21837,12 @@ of_object_to_stats_type(of_object_id_t id, of_version_t version)
         return -1;
     }
     switch (id) {
+    case OF_BSN_LACP_STATS_REPLY:
+    case OF_BSN_LACP_STATS_REQUEST:
+        if (version == OF_VERSION_1_0) break;
+        if (version == OF_VERSION_1_1) break;
+        if (version == OF_VERSION_1_2) break;
+        return 65535;
     case OF_METER_CONFIG_STATS_REPLY:
     case OF_METER_CONFIG_STATS_REQUEST:
         if (version == OF_VERSION_1_0) break;
@@ -21151,6 +22127,17 @@ of_wire_message_object_id_set(of_wire_buffer_t *wbuf, of_object_id_t id)
     if ((type = of_object_to_stats_type(id, ver)) >= 0) {
         /* It's a stats obj */
         of_message_stats_type_set(msg, type);
+        if (type == OF_STATS_TYPE_EXPERIMENTER) {
+            switch (id) {
+            case OF_BSN_LACP_STATS_REQUEST:
+            case OF_BSN_LACP_STATS_REPLY:
+                of_message_stats_experimenter_id_set(msg, OF_EXPERIMENTER_ID_BSN);
+                of_message_stats_experimenter_subtype_set(msg, 1);
+                break;
+            default:
+                break;
+            }
+        }
     }
     if ((type = of_object_to_error_type(id, ver)) >= 0) {
         /* It's an error obj */

@@ -724,7 +724,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_0_scalar(void)
     obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 23);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
 
@@ -732,7 +732,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_0_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 23);
     }
 
     /* Set up incrementing values for scalar members */
@@ -817,7 +817,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_0_scalar(void)
     obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_0);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_0);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 23);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
 
@@ -825,7 +825,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_0_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 23);
     }
 
     /* Set up incrementing values for scalar members */
@@ -1151,6 +1151,42 @@ test_of_bsn_shell_status_OF_VERSION_1_0_scalar(void)
 }
 
 static int
+test_of_bsn_stats_reply_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_stats_reply_t *obj;
+
+    obj = of_bsn_stats_reply_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REPLY);
+
+    of_bsn_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_request_OF_VERSION_1_0_scalar(void)
+{
+    of_bsn_stats_request_t *obj;
+
+    obj = of_bsn_stats_request_new(OF_VERSION_1_0);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_0);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REQUEST);
+
+    of_bsn_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_virtual_port_create_reply_OF_VERSION_1_0_scalar(void)
 {
     of_bsn_virtual_port_create_reply_t *obj;
@@ -1459,19 +1495,6 @@ test_of_experimenter_stats_reply_OF_VERSION_1_0_scalar(void)
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REPLY);
 
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_reply_OF_VERSION_1_0_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_reply_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
-
     of_experimenter_stats_reply_delete(obj);
 
     /* To do: Check memory */
@@ -1489,19 +1512,6 @@ test_of_experimenter_stats_request_OF_VERSION_1_0_scalar(void)
     TEST_ASSERT(obj->length == 16);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REQUEST);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 16);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_request_OF_VERSION_1_0_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_request_OF_VERSION_1_0_check_scalars(obj, 1) != 0);
 
     of_experimenter_stats_request_delete(obj);
 
@@ -4268,7 +4278,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_1_scalar(void)
     obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
 
@@ -4276,7 +4286,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_1_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -4361,7 +4371,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_1_scalar(void)
     obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_1);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_1);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
 
@@ -4369,7 +4379,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_1_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -4503,6 +4513,42 @@ test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_scalar(void)
     TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
 
     of_bsn_set_pktin_suppression_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_reply_OF_VERSION_1_1_scalar(void)
+{
+    of_bsn_stats_reply_t *obj;
+
+    obj = of_bsn_stats_reply_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REPLY);
+
+    of_bsn_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_request_OF_VERSION_1_1_scalar(void)
+{
+    of_bsn_stats_request_t *obj;
+
+    obj = of_bsn_stats_request_new(OF_VERSION_1_1);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_1);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REQUEST);
+
+    of_bsn_stats_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -4817,19 +4863,6 @@ test_of_experimenter_stats_reply_OF_VERSION_1_1_scalar(void)
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REPLY);
 
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 24);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_reply_OF_VERSION_1_1_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_reply_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
-
     of_experimenter_stats_reply_delete(obj);
 
     /* To do: Check memory */
@@ -4847,19 +4880,6 @@ test_of_experimenter_stats_request_OF_VERSION_1_1_scalar(void)
     TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REQUEST);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 24);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_request_OF_VERSION_1_1_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_request_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
 
     of_experimenter_stats_request_delete(obj);
 
@@ -8633,7 +8653,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_2_scalar(void)
     obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
 
@@ -8641,7 +8661,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_2_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -8726,7 +8746,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_2_scalar(void)
     obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_2);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_2);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
 
@@ -8734,7 +8754,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_2_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -8868,6 +8888,42 @@ test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_scalar(void)
     TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
 
     of_bsn_set_pktin_suppression_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_reply_OF_VERSION_1_2_scalar(void)
+{
+    of_bsn_stats_reply_t *obj;
+
+    obj = of_bsn_stats_reply_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REPLY);
+
+    of_bsn_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_request_OF_VERSION_1_2_scalar(void)
+{
+    of_bsn_stats_request_t *obj;
+
+    obj = of_bsn_stats_request_new(OF_VERSION_1_2);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_2);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REQUEST);
+
+    of_bsn_stats_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -9213,19 +9269,6 @@ test_of_experimenter_stats_reply_OF_VERSION_1_2_scalar(void)
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REPLY);
 
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 24);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_reply_OF_VERSION_1_2_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_reply_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
-
     of_experimenter_stats_reply_delete(obj);
 
     /* To do: Check memory */
@@ -9243,19 +9286,6 @@ test_of_experimenter_stats_request_OF_VERSION_1_2_scalar(void)
     TEST_ASSERT(obj->length == 24);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REQUEST);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 24);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_experimenter_stats_request_OF_VERSION_1_2_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_experimenter_stats_request_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
 
     of_experimenter_stats_request_delete(obj);
 
@@ -15848,6 +15878,99 @@ test_of_bsn_header_OF_VERSION_1_3_scalar(void)
 }
 
 static int
+test_of_bsn_lacp_convergence_notif_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_lacp_convergence_notif_t *obj;
+
+    obj = of_bsn_lacp_convergence_notif_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 52);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_LACP_CONVERGENCE_NOTIF);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 52);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_lacp_convergence_notif_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_lacp_convergence_notif_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_lacp_convergence_notif_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_lacp_stats_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_lacp_stats_reply_t *obj;
+
+    obj = of_bsn_lacp_stats_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_LACP_STATS_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_lacp_stats_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_lacp_stats_reply_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_lacp_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_lacp_stats_request_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_lacp_stats_request_t *obj;
+
+    obj = of_bsn_lacp_stats_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_LACP_STATS_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_lacp_stats_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_lacp_stats_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_lacp_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_bsn_pdu_rx_reply_OF_VERSION_1_3_scalar(void)
 {
     of_bsn_pdu_rx_reply_t *obj;
@@ -15855,7 +15978,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_3_scalar(void)
     obj = of_bsn_pdu_rx_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_RX_REPLY);
 
@@ -15863,7 +15986,7 @@ test_of_bsn_pdu_rx_reply_OF_VERSION_1_3_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -15948,7 +16071,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_3_scalar(void)
     obj = of_bsn_pdu_tx_reply_new(OF_VERSION_1_3);
     TEST_ASSERT(obj != NULL);
     TEST_ASSERT(obj->version == OF_VERSION_1_3);
-    TEST_ASSERT(obj->length == 20);
+    TEST_ASSERT(obj->length == 25);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_BSN_PDU_TX_REPLY);
 
@@ -15956,7 +16079,7 @@ test_of_bsn_pdu_tx_reply_OF_VERSION_1_3_scalar(void)
         int length;
 
         obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 20);
+        TEST_ASSERT(length == 25);
     }
 
     /* Set up incrementing values for scalar members */
@@ -15997,6 +16120,68 @@ test_of_bsn_pdu_tx_request_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(of_bsn_pdu_tx_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_bsn_pdu_tx_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_lacp_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_set_lacp_reply_t *obj;
+
+    obj = of_bsn_set_lacp_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_LACP_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_lacp_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_lacp_reply_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_lacp_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_set_lacp_request_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_set_lacp_request_t *obj;
+
+    obj = of_bsn_set_lacp_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 38);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_SET_LACP_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 38);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_set_lacp_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_set_lacp_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_set_lacp_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16090,6 +16275,104 @@ test_of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_bsn_set_pktin_suppression_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_stats_reply_t *obj;
+
+    obj = of_bsn_stats_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REPLY);
+
+    of_bsn_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_stats_request_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_stats_request_t *obj;
+
+    obj = of_bsn_stats_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_STATS_REQUEST);
+
+    of_bsn_stats_request_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_time_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_time_reply_t *obj;
+
+    obj = of_bsn_time_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_TIME_REPLY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 24);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_time_reply_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_time_reply_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_time_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_time_request_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_time_request_t *obj;
+
+    obj = of_bsn_time_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_TIME_REQUEST);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_time_request_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_time_request_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_time_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -16418,6 +16701,42 @@ test_of_experimenter_error_msg_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(of_experimenter_error_msg_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_experimenter_error_msg_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_experimenter_stats_reply_OF_VERSION_1_3_scalar(void)
+{
+    of_experimenter_stats_reply_t *obj;
+
+    obj = of_experimenter_stats_reply_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REPLY);
+
+    of_experimenter_stats_reply_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_experimenter_stats_request_OF_VERSION_1_3_scalar(void)
+{
+    of_experimenter_stats_request_t *obj;
+
+    obj = of_experimenter_stats_request_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 24);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_EXPERIMENTER_STATS_REQUEST);
+
+    of_experimenter_stats_request_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -19636,6 +19955,37 @@ test_of_bsn_interface_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(of_bsn_interface_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_bsn_interface_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_bsn_lacp_stats_entry_OF_VERSION_1_3_scalar(void)
+{
+    of_bsn_lacp_stats_entry_t *obj;
+
+    obj = of_bsn_lacp_stats_entry_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 36);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_BSN_LACP_STATS_ENTRY);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 36);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_bsn_lacp_stats_entry_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_bsn_lacp_stats_entry_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_bsn_lacp_stats_entry_delete(obj);
 
     /* To do: Check memory */
     return TEST_PASS;
@@ -24012,6 +24362,24 @@ test_of_list_bsn_interface_OF_VERSION_1_3_scalar(void)
 }
 
 static int
+test_of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_scalar(void)
+{
+    of_list_bsn_lacp_stats_entry_t *obj;
+
+    obj = of_list_bsn_lacp_stats_entry_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 0);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_LIST_BSN_LACP_STATS_ENTRY);
+
+    of_list_bsn_lacp_stats_entry_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_list_bucket_OF_VERSION_1_3_scalar(void)
 {
     of_list_bucket_t *obj;
@@ -24429,6 +24797,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_shell_command_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_shell_output_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_shell_status_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_stats_reply_OF_VERSION_1_0_scalar);
+    RUN_TEST(of_bsn_stats_request_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_0_scalar);
     RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_0_scalar);
@@ -24546,6 +24916,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_1_scalar);
+    RUN_TEST(of_bsn_stats_reply_OF_VERSION_1_1_scalar);
+    RUN_TEST(of_bsn_stats_request_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_1_scalar);
     RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_1_scalar);
@@ -24698,6 +25070,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_2_scalar);
+    RUN_TEST(of_bsn_stats_reply_OF_VERSION_1_2_scalar);
+    RUN_TEST(of_bsn_stats_request_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_2_scalar);
     RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_2_scalar);
@@ -24935,14 +25309,23 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_bsn_get_mirroring_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_get_mirroring_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_header_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_lacp_convergence_notif_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_lacp_stats_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_lacp_stats_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_pdu_rx_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_pdu_rx_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_pdu_rx_timeout_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_pdu_tx_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_pdu_tx_request_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_set_lacp_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_set_lacp_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_set_mirroring_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_stats_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_stats_request_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_time_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_time_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_virtual_port_create_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_virtual_port_create_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_scalar);
@@ -24954,6 +25337,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_error_msg_OF_VERSION_1_3_scalar);
     RUN_TEST(of_experimenter_OF_VERSION_1_3_scalar);
     RUN_TEST(of_experimenter_error_msg_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_experimenter_stats_reply_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_experimenter_stats_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_features_reply_OF_VERSION_1_3_scalar);
     RUN_TEST(of_features_request_OF_VERSION_1_3_scalar);
     RUN_TEST(of_flow_add_OF_VERSION_1_3_scalar);
@@ -25062,6 +25447,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_action_set_nw_ttl_OF_VERSION_1_3_scalar);
     RUN_TEST(of_action_set_queue_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_interface_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_bsn_lacp_stats_entry_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_vport_header_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bsn_vport_q_in_q_OF_VERSION_1_3_scalar);
     RUN_TEST(of_bucket_OF_VERSION_1_3_scalar);
@@ -25208,6 +25594,7 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_list_action_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_action_id_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_bsn_interface_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_bucket_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_bucket_counter_OF_VERSION_1_3_scalar);
     RUN_TEST(of_list_flow_stats_entry_OF_VERSION_1_3_scalar);
