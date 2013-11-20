@@ -431,15 +431,20 @@ listen_cxn_init(connection_t *cxn)
 {
     struct sockaddr_in cxn_addr;
     indigo_error_t rv;
+    indigo_cxn_params_tcp_over_ipv4_t *params;
 
     LOG_VERBOSE("Initializing listening socket");
+
+    params = &cxn->protocol_params.tcp_over_ipv4;
 
     /* complete the socket structure */
     memset(&cxn_addr, 0, sizeof(cxn_addr));
     cxn_addr.sin_family = AF_INET;
-    cxn_addr.sin_addr.s_addr = htonl(INADDR_ANY); /* @fixme */
-    cxn_addr.sin_port =
-        htons(cxn->protocol_params.tcp_over_ipv4.controller_port);
+    if (inet_pton(AF_INET, params->controller_ip, &cxn_addr.sin_addr) != 1) {
+        LOG_ERROR("Could not convert %s to inet address", params->controller_ip);
+        return INDIGO_ERROR_UNKNOWN;
+    }
+    cxn_addr.sin_port = htons(params->controller_port);
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
