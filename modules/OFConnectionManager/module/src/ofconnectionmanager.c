@@ -1,13 +1,13 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc. 
- * 
+ *        Copyright 2013, Big Switch Networks, Inc.
+ *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
  * with the License. You may obtain a copy of the License at
- * 
+ *
  *        http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
@@ -166,7 +166,7 @@ void *cxn_to_cookie(connection_t *cxn)
 {
     void *cookie;
     if (CXN_ACTIVE(cxn)) {
-        cookie = (void *) 
+        cookie = (void *)
             ((uintptr_t)
              (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
               (cxn->cxn_id & CXN_ID_MASK)));
@@ -651,7 +651,7 @@ indigo_cxn_connection_config_get(
         return INDIGO_ERROR_PARAM;
     }
 
-    INDIGO_MEM_COPY(config, &connection[cxn_id].config_params, 
+    INDIGO_MEM_COPY(config, &connection[cxn_id].config_params,
                     sizeof(*config));
 
     return INDIGO_ERROR_NONE;
@@ -1362,25 +1362,25 @@ indigo_cxn_get_async_version(of_version_t* of_version)
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
 
-    /* See if there is any connection with role as MASTER */ 
+    /* See if there is any connection with role as MASTER */
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_MASTER) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See if there is any connection with role as EQUAL */ 
+    /* See if there is any connection with role as EQUAL */
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_EQUAL) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See if there is any connection with role as SLAVE */ 
+    /* See if there is any connection with role as SLAVE */
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_SLAVE) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
-    /* See if there is any connection with role as UNKNOWN, e.g. oftest */ 
+    /* See if there is any connection with role as UNKNOWN, e.g. oftest */
     FOREACH_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_UNKNOWN) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
