@@ -25,6 +25,7 @@
 #include <OFStateManager/ofstatemanager_config.h>
 #include <OFStateManager/ofstatemanager.h>
 #include <indigo/indigo.h>
+#include <BigList/biglist.h>
 
 #include "ofstatemanager_log.h"
 #include "listener.h"
