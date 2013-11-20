@@ -114,7 +114,9 @@ typedef struct connection_s {
 
     /* To detect object staleness */
     uint32_t generation_id;
-    
+
+    /* Used by the bsn_time_request message handler */
+    indigo_time_t hello_time;
 } connection_t;
 
 
