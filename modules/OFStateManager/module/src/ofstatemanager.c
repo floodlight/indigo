@@ -40,6 +40,7 @@
 #include "handlers.h"
 #include "ft.h"
 #include "expiration.h"
+#include "listener.h"
 
 static void
 process_flow_removal(ft_entry_t *entry,
@@ -108,6 +109,12 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
 
     LOG_TRACE("Packet in rcvd");
     ind_core_packet_ins++;
+
+    if (ind_core_packet_in_notify(packet_in) == IND_CORE_LISTENER_RESULT_DROP) {
+        LOG_TRACE("Listener dropped packet-in");
+        of_object_delete(packet_in);
+        return INDIGO_ERROR_NONE;
+    }
 
     indigo_cxn_send_async_message(packet_in);
 
@@ -212,13 +219,11 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     LOG_TRACE("Received %s message from cxn %d",
               of_object_id_str[obj->object_id], cxn);
 
-    /* Add non-default jump table mechanism here */
-    // if (dynamic_handlers[obj->object_id] != NULL) {
-    //     rv = dynamic_handlers[obj->object_id](obj, cxn);
-    //     LOG_TRACE("Handled msg %s with dynamic hndlr. rv %d (%s)",
-    //           of_object_id_str[obj->object_id], rv, ls_error_strings[rv]);
-    //     return rv;
-    // }
+    if (ind_core_message_notify(cxn, obj) == IND_CORE_LISTENER_RESULT_DROP) {
+        LOG_TRACE("Listener dropped message");
+        of_object_delete(obj);
+        return;
+    }
 
     /* Default handlers */
     switch (obj->object_id) {
@@ -860,6 +865,12 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
      */
 
     LOG_TRACE("OF state mgr port status update");
+
+    if (ind_core_port_status_notify(of_port_status) == IND_CORE_LISTENER_RESULT_DROP) {
+        LOG_TRACE("Listener dropped port status update");
+        of_object_delete(of_port_status);
+        return;
+    }
 
     indigo_cxn_send_async_message(of_port_status);
 }
