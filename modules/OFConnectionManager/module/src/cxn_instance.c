@@ -802,6 +802,37 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
 }
 
 /**
+ * Handle a BSN time request
+ */
+
+static void
+bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_bsn_time_request_t *request = _obj;
+    of_bsn_time_reply_t *reply;
+    uint32_t xid;
+    uint64_t time_ms;
+
+    of_bsn_time_request_xid_get(request, &xid);
+
+    reply = of_bsn_time_reply_new(request->version);
+    if (reply == NULL) {
+        LOG_ERROR(cxn, "Failed to allocate of_bsn_time_reply");
+        of_object_delete(request);
+        return;
+    }
+
+    time_ms = INDIGO_TIME_DIFF_ms(cxn->hello_time, INDIGO_CURRENT_TIME);
+
+    of_bsn_time_reply_xid_set(reply, xid);
+    of_bsn_time_reply_time_ms_set(reply, time_ms);
+
+    of_object_delete(request);
+
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+}
+
+/**
  * Callback routine for message object delete
  *
  * @param obj The object about to be deleted
@@ -902,6 +933,10 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 
     case OF_ROLE_REQUEST:
         role_request_handle(cxn, obj);
+        return;
+
+    case OF_BSN_TIME_REQUEST:
+        bsn_time_request_handle(cxn, obj);
         return;
 
     /* Check permissions and fall through */
@@ -1443,6 +1478,8 @@ ind_cxn_send_hello(connection_t *cxn)
 
     indigo_cxn_send_controller_message(cxn->cxn_id, hello);
 
+    cxn->hello_time = INDIGO_CURRENT_TIME;
+
     return rv;
 }
 
@@ -1558,6 +1595,7 @@ ind_cxn_disconnected_init(connection_t *cxn)
     cxn->status.messages_in = 0;
     cxn->status.messages_out = 0;
     cxn->fail_count = 0;
+    cxn->hello_time = 0;
 }
 
 /**
