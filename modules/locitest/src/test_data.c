@@ -1235,6 +1235,32 @@ test_of13_bsn_lacp_stats_request(void) {
     return TEST_PASS;
 }
 
+/* Generated from of13/instruction_bsn_disable_src_mac_check.data */
+static int
+test_of13_instruction_bsn_disable_src_mac_check(void) {
+    uint8_t binary[] = {
+        0xff, 0xff, 0x00, 0x10, 0x00, 0x5c, 0x16, 0xc7, 
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+        
+    };
+
+    of_object_t *obj;
+
+    obj = of_instruction_bsn_disable_src_mac_check_new(OF_VERSION_1_3);
+
+    if (sizeof(binary) != WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj))
+        || memcmp(binary, WBUF_BUF(OF_OBJECT_TO_WBUF(obj)), sizeof(binary))) {
+	show_failure(binary, sizeof(binary),
+		     WBUF_BUF(OF_OBJECT_TO_WBUF(obj)),
+		     WBUF_CURRENT_BYTES(OF_OBJECT_TO_WBUF(obj)));
+	of_object_delete(obj);
+	return TEST_FAIL;
+    }
+
+    of_object_delete(obj);
+    return TEST_PASS;
+}
+
 /* Generated from of13/oxm_bsn_global_vrf_allowed.data */
 static int
 test_of13_oxm_bsn_global_vrf_allowed(void) {
@@ -1372,6 +1398,7 @@ test_datafiles(void)
     RUN_TEST(of13_bsn_flow_idle);
     RUN_TEST(of13_bsn_lacp_stats_reply);
     RUN_TEST(of13_bsn_lacp_stats_request);
+    RUN_TEST(of13_instruction_bsn_disable_src_mac_check);
     RUN_TEST(of13_oxm_bsn_global_vrf_allowed);
     RUN_TEST(of13_oxm_bsn_in_ports_masked_128);
     RUN_TEST(of13_oxm_bsn_l3_src_class_id);

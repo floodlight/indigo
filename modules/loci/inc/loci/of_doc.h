@@ -9,7 +9,7 @@
  *
  * This file is for documentation purposes only
  *
- * Once the code is in a working state, this documentation will be
+ * Once the code is in a working state, this documentation will be 
  * transfered to the actual source files
  *
  * The functions documented here are simple templates for accessors that
@@ -23,12 +23,12 @@
  * @li @c list The list abstraction for data members
  * @li @c list_element An element of a list (usually a composite object)
  *
- * List elements get special treatment for iterating across a list or
+ * List elements get special treatment for iterating across a list or 
  * appending new entries to the list.  All others have 'set' and 'get'
- * operations.
+ * operations.  
  *
  * Scalars operations are "stateless" in that they simply
- * update the underlying data or return that data.
+ * update the underlying data or return that data.  
  *
  * Composites and list members update structures to point to the
  * underlying data.  As a result, care must be taken that objects are
@@ -81,10 +81,10 @@ extern int of_object_scalar_member_set(of_object_t *obj, uint32_t value);
 /**
  * Generic documentation for an octets data get method
  * @param obj The object being accessed
- * @param value A pointer to an of_octets_t structure to be filled out
+ * @param value A pointer to an of_octets_t structure to be filled out 
  * @return OF_ERROR_XXX
  *
- * NOTE:
+ * NOTE: 
  * Sets *bytes to the number of bytes in the octet string.
  */
 extern int of_object_octets_member_data_get(of_object_t *obj, of_octets_t *value);
@@ -96,8 +96,8 @@ extern int of_object_octets_member_data_get(of_object_t *obj, of_octets_t *value
  * which data will be copied to wire buffer
  * @return OF_ERROR_XXX
  *
- * Copies data from the memory pointed to by value into the underlying
- * wire buffer, extending the buffer if necessary.  The length of obj
+ * Copies data from the memory pointed to by value into the underlying 
+ * wire buffer, extending the buffer if necessary.  The length of obj 
  * is updated.
  *
  * If the length of obj changes (because the existing octets instance is of
@@ -119,7 +119,7 @@ extern int of_object_octets_member_data_set(of_object_t *obj, of_octets_t *value
  * The result should be treated as READ ONLY information as modifying
  * the buffer could cause corruption of the underlying LOCI object.
  * To change the value (especially the length) of an octets data member,
- * allocate and set a memory buffer and use the octets_member_data_set
+ * allocate and set a memory buffer and use the octets_member_data_set 
  * function.
  */
 extern int of_object_octets_member_ptr_get(of_object_t *obj, of_octets_t *value);
@@ -131,7 +131,7 @@ extern int of_object_octets_member_ptr_get(of_object_t *obj, of_octets_t *value)
  * @return OF_ERROR_XXX
  *
  * A composite is a structure with multiple components.  On a 'get'
- * operation, a pointer (value) to an unused instance of the appropriate
+ * operation, a pointer (value) to an unused instance of the appropriate 
  * type is passed to this routine.  That instance is intialized with the
  * proper accessor functions for the sub-object type and the wire object
  * is set up to point to obj's wire buffer at the appropriate offset.
@@ -140,7 +140,7 @@ extern int of_object_octets_member_ptr_get(of_object_t *obj, of_octets_t *value)
  * affect the length, then the corresponding composite_set must be
  * called to commit those changes to the parent.
  */
-extern int of_object_composite_member_get(of_object_t *obj,
+extern int of_object_composite_member_get(of_object_t *obj, 
                                           of_object_t *value);
 
 /**
@@ -151,7 +151,7 @@ extern int of_object_composite_member_get(of_object_t *obj,
  *
  * A composite is a structure with multiple components.  On a 'set'
  * operation, a pointer (value) to an instance of the appropriate type
- * is passed to this routine.
+ * is passed to this routine.  
  *
  * If the parent (obj) and the child (value) point to the same underlying
  * wire object, then the changes to the underlying buffer are already
@@ -163,7 +163,7 @@ extern int of_object_composite_member_get(of_object_t *obj,
  *
  * In either case, the length of the parent will be updated if it changes.
  */
-extern int of_object_composite_member_set(of_object_t *obj,
+extern int of_object_composite_member_set(of_object_t *obj, 
                                           of_object_t *value);
 
 /**
@@ -190,7 +190,7 @@ extern int of_object_composite_member_set(of_object_t *obj,
  * @sa of_object_list_append_bind
  * @sa of_object_list_append
  */
-extern int of_object_list_member_get(of_object_t *obj,
+extern int of_object_list_member_get(of_object_t *obj, 
                                      of_list_object_t *value);
 
 /**
@@ -200,28 +200,28 @@ extern int of_object_list_member_get(of_object_t *obj,
  * @return OF_ERROR_RANGE if the list is empty
  *
  * A list is an array of instances of objects of a common (possibly
- * polymorphic) type.
+ * polymorphic) type.  
  *
  * This routine is intended for iterating through a list for
  * reading.  Normally a 'get' operation will be done on the parent
  * of the list to retrieve (a pointer to) the list, and then this routine
- * will be called to set up a generic entry representing the first
+ * will be called to set up a generic entry representing the first 
  * element of the list.
  *
  * @sa of_object_list_entry_next
  */
-extern int of_object_list_entry_first(of_list_object_t *obj,
+extern int of_object_list_entry_first(of_list_object_t *obj, 
                                       of_object_t *value);
 
 /**
  * Generic documentation for a list entry next call
  * @param obj The list object being accessed
  * @param value Pointer to a generic list entry instance
- * @return OF_ERROR_RANGE if the value already points to the last item
+ * @return OF_ERROR_RANGE if the value already points to the last item 
  * in the list
 
  * A list is an array of instances of objects of a common (possibly
- * polymorphic) type.
+ * polymorphic) type.  
  *
  * The corresponding list_entry_first must be called on the pair of
  * parameters initially.  There after, this routine will advance the
@@ -234,7 +234,7 @@ extern int of_object_list_entry_first(of_list_object_t *obj,
  *
  * @sa of_object_list_entry_first
  */
-extern int of_object_list_entry_next(of_list_object_t *obj,
+extern int of_object_list_entry_next(of_list_object_t *obj, 
                                      of_object_t *value);
 
 /**
@@ -258,7 +258,7 @@ extern int of_object_list_entry_next(of_list_object_t *obj,
  *
  * @sa of_object_list_entry_append
  */
-extern int of_object_list_entry_append_bind(of_list_object_t *obj,
+extern int of_object_list_entry_append_bind(of_list_object_t *obj, 
                                             of_object_t *value);
 
 /**
@@ -276,7 +276,7 @@ extern int of_object_list_entry_append_bind(of_list_object_t *obj,
  *
  * @sa of_object_list_entry_append_bind
  */
-extern int of_object_list_entry_append(of_list_object_t *obj,
+extern int of_object_list_entry_append(of_list_object_t *obj, 
                                        of_object_t *value);
 
 /* This is from loci.h */

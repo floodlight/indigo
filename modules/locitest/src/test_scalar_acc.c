@@ -7448,19 +7448,6 @@ test_of_instruction_experimenter_OF_VERSION_1_1_scalar(void)
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_INSTRUCTION_EXPERIMENTER);
 
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 8);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_instruction_experimenter_OF_VERSION_1_1_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_instruction_experimenter_OF_VERSION_1_1_check_scalars(obj, 1) != 0);
-
     of_instruction_experimenter_delete(obj);
 
     /* To do: Check memory */
@@ -11667,19 +11654,6 @@ test_of_instruction_experimenter_OF_VERSION_1_2_scalar(void)
     TEST_ASSERT(obj->length == 8);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_INSTRUCTION_EXPERIMENTER);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 8);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_instruction_experimenter_OF_VERSION_1_2_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_instruction_experimenter_OF_VERSION_1_2_check_scalars(obj, 1) != 0);
 
     of_instruction_experimenter_delete(obj);
 
@@ -20312,6 +20286,55 @@ test_of_instruction_apply_actions_OF_VERSION_1_3_scalar(void)
 }
 
 static int
+test_of_instruction_bsn_OF_VERSION_1_3_scalar(void)
+{
+    of_instruction_bsn_t *obj;
+
+    obj = of_instruction_bsn_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_INSTRUCTION_BSN);
+
+    of_instruction_bsn_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
+test_of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_scalar(void)
+{
+    of_instruction_bsn_disable_src_mac_check_t *obj;
+
+    obj = of_instruction_bsn_disable_src_mac_check_new(OF_VERSION_1_3);
+    TEST_ASSERT(obj != NULL);
+    TEST_ASSERT(obj->version == OF_VERSION_1_3);
+    TEST_ASSERT(obj->length == 16);
+    TEST_ASSERT(obj->parent == NULL);
+    TEST_ASSERT(obj->object_id == OF_INSTRUCTION_BSN_DISABLE_SRC_MAC_CHECK);
+
+    if (obj->wire_length_get != NULL) {
+        int length;
+
+        obj->wire_length_get((of_object_t *)obj, &length);
+        TEST_ASSERT(length == 16);
+    }
+
+    /* Set up incrementing values for scalar members */
+    of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_populate_scalars(obj, 1);
+
+    /* Check values just set */
+    TEST_ASSERT(of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
+
+    of_instruction_bsn_disable_src_mac_check_delete(obj);
+
+    /* To do: Check memory */
+    return TEST_PASS;
+}
+
+static int
 test_of_instruction_clear_actions_OF_VERSION_1_3_scalar(void)
 {
     of_instruction_clear_actions_t *obj;
@@ -20353,19 +20376,6 @@ test_of_instruction_experimenter_OF_VERSION_1_3_scalar(void)
     TEST_ASSERT(obj->length == 8);
     TEST_ASSERT(obj->parent == NULL);
     TEST_ASSERT(obj->object_id == OF_INSTRUCTION_EXPERIMENTER);
-
-    if (obj->wire_length_get != NULL) {
-        int length;
-
-        obj->wire_length_get((of_object_t *)obj, &length);
-        TEST_ASSERT(length == 8);
-    }
-
-    /* Set up incrementing values for scalar members */
-    of_instruction_experimenter_OF_VERSION_1_3_populate_scalars(obj, 1);
-
-    /* Check values just set */
-    TEST_ASSERT(of_instruction_experimenter_OF_VERSION_1_3_check_scalars(obj, 1) != 0);
 
     of_instruction_experimenter_delete(obj);
 
@@ -25460,6 +25470,8 @@ run_scalar_acc_tests(void)
     RUN_TEST(of_hello_elem_header_OF_VERSION_1_3_scalar);
     RUN_TEST(of_hello_elem_versionbitmap_OF_VERSION_1_3_scalar);
     RUN_TEST(of_instruction_apply_actions_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_instruction_bsn_OF_VERSION_1_3_scalar);
+    RUN_TEST(of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_scalar);
     RUN_TEST(of_instruction_clear_actions_OF_VERSION_1_3_scalar);
     RUN_TEST(of_instruction_experimenter_OF_VERSION_1_3_scalar);
     RUN_TEST(of_instruction_goto_table_OF_VERSION_1_3_scalar);

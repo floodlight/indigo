@@ -742,6 +742,8 @@ int of_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_header_
 int of_hello_elem_header_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_hello_elem_header_t *obj);
 int of_hello_elem_versionbitmap_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_hello_elem_versionbitmap_t *obj);
 int of_instruction_apply_actions_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_apply_actions_t *obj);
+int of_instruction_bsn_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_bsn_t *obj);
+int of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_bsn_disable_src_mac_check_t *obj);
 int of_instruction_clear_actions_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_clear_actions_t *obj);
 int of_instruction_experimenter_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_experimenter_t *obj);
 int of_instruction_goto_table_OF_VERSION_1_3_dump(loci_writer_f writer, void* cookie, of_instruction_goto_table_t *obj);
