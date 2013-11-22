@@ -4332,6 +4332,36 @@ typedef struct of_instruction_s of_instruction_t;
 typedef struct of_instruction_apply_actions_s of_instruction_apply_actions_t;
 
 /**
+ * Structure for of_instruction_bsn object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_instruction_bsn_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_instruction_bsn_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_instruction_bsn_s of_instruction_bsn_t;
+
+/**
+ * Structure for of_instruction_bsn_disable_src_mac_check object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_instruction_bsn_disable_src_mac_check_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_instruction_bsn_disable_src_mac_check_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_instruction_bsn_disable_src_mac_check_s of_instruction_bsn_disable_src_mac_check_t;
+
+/**
  * Structure for of_instruction_clear_actions object.  Get/set
  * accessors available in all versions unless noted otherwise
  *

@@ -4,9 +4,9 @@
 /* See the file LICENSE.loci which should have been included in the source distribution */
 
 /**************************************************************************//**
- *
+ * 
  * loci Doxygen Header
- *
+ * 
  *****************************************************************************/
 #ifndef __LOCI_DOX_H__
 #define __LOCI_DOX_H__
@@ -15,7 +15,7 @@
  * @defgroup loci loci - loci Description
  *
 
-The documentation overview for this module should go here.
+The documentation overview for this module should go here. 
 
  *
  * @{
@@ -23,7 +23,7 @@ The documentation overview for this module should go here.
  * @defgroup loci-loci Public Interface
  * @defgroup loci-config Compile Time Configuration
  * @defgroup loci-porting Porting Macros
- *
+ * 
  * @}
  *
  */
