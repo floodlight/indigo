@@ -858,6 +858,14 @@ extern of_instruction_apply_actions_t *
     of_instruction_apply_actions_dup(
         of_instruction_apply_actions_t *src);
 
+extern of_instruction_bsn_t *
+    of_instruction_bsn_dup(
+        of_instruction_bsn_t *src);
+
+extern of_instruction_bsn_disable_src_mac_check_t *
+    of_instruction_bsn_disable_src_mac_check_dup(
+        of_instruction_bsn_disable_src_mac_check_t *src);
+
 extern of_instruction_clear_actions_t *
     of_instruction_clear_actions_dup(
         of_instruction_clear_actions_t *src);
@@ -4373,6 +4381,14 @@ extern of_instruction_t *
 extern of_instruction_apply_actions_t *
     of_instruction_apply_actions_OF_VERSION_1_3_dup(
         of_instruction_apply_actions_t *src);
+
+extern of_instruction_bsn_t *
+    of_instruction_bsn_OF_VERSION_1_3_dup(
+        of_instruction_bsn_t *src);
+
+extern of_instruction_bsn_disable_src_mac_check_t *
+    of_instruction_bsn_disable_src_mac_check_OF_VERSION_1_3_dup(
+        of_instruction_bsn_disable_src_mac_check_t *src);
 
 extern of_instruction_clear_actions_t *
     of_instruction_clear_actions_OF_VERSION_1_3_dup(
