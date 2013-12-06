@@ -110,7 +110,8 @@ typedef struct timer_event_s {
     indigo_time_t last_call;
 } timer_event_t;
 
-#define TIMER_EVENT_MAX 16
+/* Change to 48 for now */
+#define TIMER_EVENT_MAX 48
 static timer_event_t timer_event[TIMER_EVENT_MAX];
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
