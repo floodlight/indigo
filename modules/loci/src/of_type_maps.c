@@ -846,6 +846,9 @@ of_experimenter_stats_request_to_object_id(uint32_t experimenter, uint32_t subty
     case OF_EXPERIMENTER_ID_BSN:
         switch (subtype) {
         case 1: return OF_BSN_LACP_STATS_REQUEST;
+        case 6: return OF_BSN_SWITCH_PIPELINE_STATS_REQUEST;
+        case 8: return OF_BSN_PORT_COUNTER_STATS_REQUEST;
+        case 9: return OF_BSN_VLAN_COUNTER_STATS_REQUEST;
         }
     }
     return OF_OBJECT_INVALID;
@@ -858,6 +861,9 @@ of_experimenter_stats_reply_to_object_id(uint32_t experimenter, uint32_t subtype
     case OF_EXPERIMENTER_ID_BSN:
         switch (subtype) {
         case 1: return OF_BSN_LACP_STATS_REPLY;
+        case 6: return OF_BSN_SWITCH_PIPELINE_STATS_REPLY;
+        case 8: return OF_BSN_PORT_COUNTER_STATS_REPLY;
+        case 9: return OF_BSN_VLAN_COUNTER_STATS_REPLY;
         }
     }
     return OF_OBJECT_INVALID;

@@ -733,6 +733,48 @@ typedef struct of_bsn_get_mirroring_reply_s of_bsn_get_mirroring_reply_t;
 typedef struct of_bsn_get_mirroring_request_s of_bsn_get_mirroring_request_t;
 
 /**
+ * Structure for of_bsn_get_switch_pipeline_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param pipeline_get/set ( OF_1_3).
+ *   Accessors for pipeline, a variable of type of_desc_str.  Functions
+ *   are of type of_bsn_get_switch_pipeline_reply_of_desc_str_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_get_switch_pipeline_reply_s of_bsn_get_switch_pipeline_reply_t;
+
+/**
+ * Structure for of_bsn_get_switch_pipeline_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_get_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_get_switch_pipeline_request_s of_bsn_get_switch_pipeline_request_t;
+
+/**
  * Structure for of_bsn_header object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -1074,6 +1116,60 @@ typedef struct of_bsn_pdu_tx_reply_s of_bsn_pdu_tx_reply_t;
 typedef struct of_bsn_pdu_tx_request_s of_bsn_pdu_tx_request_t;
 
 /**
+ * Structure for of_bsn_port_counter_stats_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_port_counter_stats_reply_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param entries_get/set ( OF_1_3).
+ *   Accessors for entries, a variable of type of_list_bsn_port_counter_stats_entry.  Functions
+ *   are of type of_bsn_port_counter_stats_reply_of_list_bsn_port_counter_stats_entry_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_port_counter_stats_reply_s of_bsn_port_counter_stats_reply_t;
+
+/**
+ * Structure for of_bsn_port_counter_stats_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_port_counter_stats_request_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_port_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param port_no_get/set ( OF_1_3).
+ *   Accessors for port_no, a variable of type of_port_no.  Functions
+ *   are of type of_bsn_port_counter_stats_request_of_port_no_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_port_counter_stats_request_s of_bsn_port_counter_stats_request_t;
+
+/**
  * Structure for of_bsn_set_ip_mask object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -1318,6 +1414,52 @@ typedef struct of_bsn_set_pktin_suppression_reply_s of_bsn_set_pktin_suppression
 typedef struct of_bsn_set_pktin_suppression_request_s of_bsn_set_pktin_suppression_request_t;
 
 /**
+ * Structure for of_bsn_set_switch_pipeline_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ * @param status_get/set ( OF_1_3).
+ *   Accessors for status, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_reply_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_set_switch_pipeline_reply_s of_bsn_set_switch_pipeline_reply_t;
+
+/**
+ * Structure for of_bsn_set_switch_pipeline_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_set_switch_pipeline_request_uint32_get_f and _set_f.
+ *
+ * @param pipeline_get/set ( OF_1_3).
+ *   Accessors for pipeline, a variable of type of_desc_str.  Functions
+ *   are of type of_bsn_set_switch_pipeline_request_of_desc_str_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_set_switch_pipeline_request_s of_bsn_set_switch_pipeline_request_t;
+
+/**
  * Structure for of_bsn_shell_command object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -1435,6 +1577,56 @@ typedef struct of_bsn_stats_reply_s of_bsn_stats_reply_t;
  *
  */
 typedef struct of_bsn_stats_request_s of_bsn_stats_request_t;
+
+/**
+ * Structure for of_bsn_switch_pipeline_stats_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_reply_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param entries_get/set ( OF_1_3).
+ *   Accessors for entries, a variable of type of_list_bsn_switch_pipeline_stats_entry.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_reply_of_list_bsn_switch_pipeline_stats_entry_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_switch_pipeline_stats_reply_s of_bsn_switch_pipeline_stats_reply_t;
+
+/**
+ * Structure for of_bsn_switch_pipeline_stats_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_request_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_request_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_request_uint32_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_switch_pipeline_stats_request_s of_bsn_switch_pipeline_stats_request_t;
 
 /**
  * Structure for of_bsn_time_reply object.  Get/set
@@ -1573,6 +1765,60 @@ typedef struct of_bsn_virtual_port_remove_reply_s of_bsn_virtual_port_remove_rep
  *
  */
 typedef struct of_bsn_virtual_port_remove_request_s of_bsn_virtual_port_remove_request_t;
+
+/**
+ * Structure for of_bsn_vlan_counter_stats_reply object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_vlan_counter_stats_reply_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_reply_uint32_get_f and _set_f.
+ *
+ * @param entries_get/set ( OF_1_3).
+ *   Accessors for entries, a variable of type of_list_bsn_vlan_counter_stats_entry.  Functions
+ *   are of type of_bsn_vlan_counter_stats_reply_of_list_bsn_vlan_counter_stats_entry_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_vlan_counter_stats_reply_s of_bsn_vlan_counter_stats_reply_t;
+
+/**
+ * Structure for of_bsn_vlan_counter_stats_request object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param xid_get/set ( OF_1_3).
+ *   Accessors for xid, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param flags_get/set ( OF_1_3).
+ *   Accessors for flags, a variable of type uint16.  Functions
+ *   are of type of_bsn_vlan_counter_stats_request_uint16_get_f and _set_f.
+ *
+ * @param experimenter_get/set ( OF_1_3).
+ *   Accessors for experimenter, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param subtype_get/set ( OF_1_3).
+ *   Accessors for subtype, a variable of type uint32.  Functions
+ *   are of type of_bsn_vlan_counter_stats_request_uint32_get_f and _set_f.
+ *
+ * @param vlan_vid_get/set ( OF_1_3).
+ *   Accessors for vlan_vid, a variable of type uint16.  Functions
+ *   are of type of_bsn_vlan_counter_stats_request_uint16_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_vlan_counter_stats_request_s of_bsn_vlan_counter_stats_request_t;
 
 /**
  * Structure for of_desc_stats_reply object.  Get/set
@@ -4067,6 +4313,47 @@ typedef struct of_bsn_interface_s of_bsn_interface_t;
 typedef struct of_bsn_lacp_stats_entry_s of_bsn_lacp_stats_entry_t;
 
 /**
+ * Structure for of_bsn_port_counter_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param port_no_get/set ( OF_1_3).
+ *   Accessors for port_no, a variable of type of_port_no.  Functions
+ *   are of type of_bsn_port_counter_stats_entry_of_port_no_get_f and _set_f.
+ *
+ * @param values_get/set ( OF_1_3).
+ *   Accessors for values, a variable of type of_list_uint64.  Functions
+ *   are of type of_bsn_port_counter_stats_entry_of_list_uint64_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_port_counter_stats_entry_s of_bsn_port_counter_stats_entry_t;
+
+/**
+ * Structure for of_bsn_switch_pipeline_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param pipeline_get/set ( OF_1_3).
+ *   Accessors for pipeline, a variable of type of_desc_str.  Functions
+ *   are of type of_bsn_switch_pipeline_stats_entry_of_desc_str_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_switch_pipeline_stats_entry_s of_bsn_switch_pipeline_stats_entry_t;
+
+/**
+ * Structure for of_bsn_vlan_counter_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param vlan_vid_get/set ( OF_1_3).
+ *   Accessors for vlan_vid, a variable of type uint16.  Functions
+ *   are of type of_bsn_vlan_counter_stats_entry_uint16_get_f and _set_f.
+ *
+ * @param values_get/set ( OF_1_3).
+ *   Accessors for values, a variable of type of_list_uint64.  Functions
+ *   are of type of_bsn_vlan_counter_stats_entry_of_list_uint64_get_f and _set_f.
+ *
+ */
+typedef struct of_bsn_vlan_counter_stats_entry_s of_bsn_vlan_counter_stats_entry_t;
+
+/**
  * Structure for of_bsn_vport object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -6422,6 +6709,17 @@ typedef struct of_table_stats_entry_s of_table_stats_entry_t;
 typedef struct of_uint32_s of_uint32_t;
 
 /**
+ * Structure for of_uint64 object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param value_get/set ( OF_1_3).
+ *   Accessors for value, a variable of type uint64.  Functions
+ *   are of type of_uint64_uint64_get_f and _set_f.
+ *
+ */
+typedef struct of_uint64_s of_uint64_t;
+
+/**
  * Structure for of_uint8 object.  Get/set
  * accessors available in all versions unless noted otherwise
  *
@@ -6491,6 +6789,51 @@ typedef struct of_list_bsn_interface_s of_list_bsn_interface_t;
  * Copy an item to the end of a list
  */
 typedef struct of_list_bsn_lacp_stats_entry_s of_list_bsn_lacp_stats_entry_t;
+
+/**
+ * Structure for of_list_bsn_port_counter_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param first Function of type of_list_bsn_port_counter_stats_entry_first_f.
+ * Setup a TBD class object to the first entry in the list
+ * @param next Function of type of_list_bsn_port_counter_stats_entry_next_f.
+ * Advance a TBD class object to the next entry in the list
+ * @param append_bind Function of type of_list_bsn_port_counter_stats_entry_append_bind_f
+ * Setup a TBD class object for append to the end of the current list
+ * @param append  Function of type @ref of_list_bsn_port_counter_stats_entry_append_f.
+ * Copy an item to the end of a list
+ */
+typedef struct of_list_bsn_port_counter_stats_entry_s of_list_bsn_port_counter_stats_entry_t;
+
+/**
+ * Structure for of_list_bsn_switch_pipeline_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param first Function of type of_list_bsn_switch_pipeline_stats_entry_first_f.
+ * Setup a TBD class object to the first entry in the list
+ * @param next Function of type of_list_bsn_switch_pipeline_stats_entry_next_f.
+ * Advance a TBD class object to the next entry in the list
+ * @param append_bind Function of type of_list_bsn_switch_pipeline_stats_entry_append_bind_f
+ * Setup a TBD class object for append to the end of the current list
+ * @param append  Function of type @ref of_list_bsn_switch_pipeline_stats_entry_append_f.
+ * Copy an item to the end of a list
+ */
+typedef struct of_list_bsn_switch_pipeline_stats_entry_s of_list_bsn_switch_pipeline_stats_entry_t;
+
+/**
+ * Structure for of_list_bsn_vlan_counter_stats_entry object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param first Function of type of_list_bsn_vlan_counter_stats_entry_first_f.
+ * Setup a TBD class object to the first entry in the list
+ * @param next Function of type of_list_bsn_vlan_counter_stats_entry_next_f.
+ * Advance a TBD class object to the next entry in the list
+ * @param append_bind Function of type of_list_bsn_vlan_counter_stats_entry_append_bind_f
+ * Setup a TBD class object for append to the end of the current list
+ * @param append  Function of type @ref of_list_bsn_vlan_counter_stats_entry_append_f.
+ * Copy an item to the end of a list
+ */
+typedef struct of_list_bsn_vlan_counter_stats_entry_s of_list_bsn_vlan_counter_stats_entry_t;
 
 /**
  * Structure for of_list_bucket object.  Get/set
@@ -6791,6 +7134,21 @@ typedef struct of_list_table_stats_entry_s of_list_table_stats_entry_t;
  * Copy an item to the end of a list
  */
 typedef struct of_list_uint32_s of_list_uint32_t;
+
+/**
+ * Structure for of_list_uint64 object.  Get/set
+ * accessors available in all versions unless noted otherwise
+ *
+ * @param first Function of type of_list_uint64_first_f.
+ * Setup a TBD class object to the first entry in the list
+ * @param next Function of type of_list_uint64_next_f.
+ * Advance a TBD class object to the next entry in the list
+ * @param append_bind Function of type of_list_uint64_append_bind_f
+ * Setup a TBD class object for append to the end of the current list
+ * @param append  Function of type @ref of_list_uint64_append_f.
+ * Copy an item to the end of a list
+ */
+typedef struct of_list_uint64_s of_list_uint64_t;
 
 /**
  * Structure for of_list_uint8 object.  Get/set

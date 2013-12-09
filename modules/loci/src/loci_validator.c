@@ -541,6 +541,7 @@ static inline int of_bad_action_error_msg_OF_VERSION_1_2_validate(uint8_t *buf, 
 static inline int of_aggregate_stats_request_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_aggregate_stats_reply_OF_VERSION_1_2_validate(uint8_t *buf, int len);
 static inline int of_list_uint8_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_list_uint64_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_uint32_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_table_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_table_features_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -561,11 +562,15 @@ static inline int of_list_group_desc_stats_entry_OF_VERSION_1_3_validate(uint8_t
 static inline int of_list_flow_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_bucket_counter_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_bucket_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_list_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_list_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_list_bsn_port_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_bsn_interface_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_action_id_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_list_action_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_uint8_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_uint64_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_uint32_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_table_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_table_features_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -710,6 +715,9 @@ static inline int of_bucket_counter_OF_VERSION_1_3_validate(uint8_t *buf, int le
 static inline int of_bucket_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_vport_q_in_q_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_vport_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_port_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_lacp_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_interface_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_action_set_queue_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -828,19 +836,27 @@ static inline int of_echo_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 static inline int of_echo_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_desc_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_vlan_counter_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_vlan_counter_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_virtual_port_remove_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_virtual_port_remove_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_virtual_port_create_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_virtual_port_create_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_time_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_time_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_switch_pipeline_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_switch_pipeline_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_switch_pipeline_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_set_switch_pipeline_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_pktin_suppression_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_mirroring_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_lacp_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_set_lacp_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_port_counter_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_port_counter_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_pdu_tx_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_pdu_tx_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_pdu_rx_timeout_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -850,6 +866,8 @@ static inline int of_bsn_lacp_stats_request_OF_VERSION_1_3_validate(uint8_t *buf
 static inline int of_bsn_lacp_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_lacp_convergence_notif_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_header_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_get_switch_pipeline_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
+static inline int of_bsn_get_switch_pipeline_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_mirroring_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len);
 static inline int of_bsn_get_interfaces_request_OF_VERSION_1_3_validate(uint8_t *buf, int len);
@@ -8281,6 +8299,16 @@ of_list_uint8_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_list_uint64_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if ((len / 8) * 8 != len) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
 of_list_uint32_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if ((len / 4) * 4 != len) {
@@ -8685,6 +8713,32 @@ of_list_bucket_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_list_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    /* TODO verify U16 len elements */
+
+    return 0;
+}
+
+static inline int
+of_list_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if ((len / 256) * 256 != len) {
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_list_bsn_port_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    /* TODO verify U16 len elements */
+
+    return 0;
+}
+
+static inline int
 of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if ((len / 36) * 36 != len) {
@@ -8975,6 +9029,17 @@ of_uint8_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 1) {
         VALIDATOR_LOG("Class of_uint8.  Len %d too small, < %d", len, 1);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_uint64_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 8) {
+        VALIDATOR_LOG("Class of_uint64.  Len %d too small, < %d", len, 8);
         return -1;
     }
 
@@ -10800,6 +10865,57 @@ of_bsn_vport_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 8) {
+        VALIDATOR_LOG("Class of_bsn_vlan_counter_stats_entry.  Len %d too small, < %d", len, 8);
+        return -1;
+    }
+
+
+    {    int values_len = len - 8;
+
+
+        if (of_list_uint64_OF_VERSION_1_3_validate(buf + 8, values_len) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 256) {
+        VALIDATOR_LOG("Class of_bsn_switch_pipeline_stats_entry.  Len %d too small, < %d", len, 256);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_port_counter_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 8) {
+        VALIDATOR_LOG("Class of_bsn_port_counter_stats_entry.  Len %d too small, < %d", len, 8);
+        return -1;
+    }
+
+
+    {    int values_len = len - 8;
+
+
+        if (of_list_uint64_OF_VERSION_1_3_validate(buf + 8, values_len) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_lacp_stats_entry_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 36) {
@@ -12320,6 +12436,37 @@ of_desc_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_vlan_counter_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 26) {
+        VALIDATOR_LOG("Class of_bsn_vlan_counter_stats_request.  Len %d too small, < %d", len, 26);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_vlan_counter_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_vlan_counter_stats_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+
+    {    int entries_len = len - 24;
+
+
+        if (of_list_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_validate(buf + 24, entries_len) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_virtual_port_remove_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 20) {
@@ -12386,6 +12533,37 @@ of_bsn_time_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 }
 
 static inline int
+of_bsn_switch_pipeline_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_switch_pipeline_stats_request.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_switch_pipeline_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_switch_pipeline_stats_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+
+    {    int entries_len = len - 24;
+
+
+        if (of_list_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_validate(buf + 24, entries_len) < 0) {
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static inline int
 of_bsn_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 24) {
@@ -12401,6 +12579,28 @@ of_bsn_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 24) {
         VALIDATOR_LOG("Class of_bsn_stats_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_switch_pipeline_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 272) {
+        VALIDATOR_LOG("Class of_bsn_set_switch_pipeline_request.  Len %d too small, < %d", len, 272);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_set_switch_pipeline_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 20) {
+        VALIDATOR_LOG("Class of_bsn_set_switch_pipeline_reply.  Len %d too small, < %d", len, 20);
         return -1;
     }
 
@@ -12457,6 +12657,37 @@ of_bsn_set_lacp_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
     if (len < 24) {
         VALIDATOR_LOG("Class of_bsn_set_lacp_reply.  Len %d too small, < %d", len, 24);
         return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_port_counter_stats_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 28) {
+        VALIDATOR_LOG("Class of_bsn_port_counter_stats_request.  Len %d too small, < %d", len, 28);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_port_counter_stats_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 24) {
+        VALIDATOR_LOG("Class of_bsn_port_counter_stats_reply.  Len %d too small, < %d", len, 24);
+        return -1;
+    }
+
+
+    {    int entries_len = len - 24;
+
+
+        if (of_list_bsn_port_counter_stats_entry_OF_VERSION_1_3_validate(buf + 24, entries_len) < 0) {
+            return -1;
+        }
     }
 
     return 0;
@@ -12564,6 +12795,28 @@ of_bsn_header_OF_VERSION_1_3_validate(uint8_t *buf, int len)
 {
     if (len < 16) {
         VALIDATOR_LOG("Class of_bsn_header.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_get_switch_pipeline_request_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 16) {
+        VALIDATOR_LOG("Class of_bsn_get_switch_pipeline_request.  Len %d too small, < %d", len, 16);
+        return -1;
+    }
+
+    return 0;
+}
+
+static inline int
+of_bsn_get_switch_pipeline_reply_OF_VERSION_1_3_validate(uint8_t *buf, int len)
+{
+    if (len < 272) {
+        VALIDATOR_LOG("Class of_bsn_get_switch_pipeline_reply.  Len %d too small, < %d", len, 272);
         return -1;
     }
 
@@ -13011,6 +13264,10 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_desc_stats_request_OF_VERSION_1_3_validate(buf, len);
     case OF_DESC_STATS_REPLY:
         return of_desc_stats_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_VLAN_COUNTER_STATS_REQUEST:
+        return of_bsn_vlan_counter_stats_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_VLAN_COUNTER_STATS_REPLY:
+        return of_bsn_vlan_counter_stats_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_VIRTUAL_PORT_REMOVE_REQUEST:
         return of_bsn_virtual_port_remove_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_VIRTUAL_PORT_REMOVE_REPLY:
@@ -13023,10 +13280,18 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_bsn_time_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_TIME_REPLY:
         return of_bsn_time_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_SWITCH_PIPELINE_STATS_REQUEST:
+        return of_bsn_switch_pipeline_stats_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_SWITCH_PIPELINE_STATS_REPLY:
+        return of_bsn_switch_pipeline_stats_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_STATS_REQUEST:
         return of_bsn_stats_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_STATS_REPLY:
         return of_bsn_stats_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_SET_SWITCH_PIPELINE_REQUEST:
+        return of_bsn_set_switch_pipeline_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_SET_SWITCH_PIPELINE_REPLY:
+        return of_bsn_set_switch_pipeline_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
         return of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_SET_PKTIN_SUPPRESSION_REPLY:
@@ -13037,6 +13302,10 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_bsn_set_lacp_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_SET_LACP_REPLY:
         return of_bsn_set_lacp_reply_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_PORT_COUNTER_STATS_REQUEST:
+        return of_bsn_port_counter_stats_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_PORT_COUNTER_STATS_REPLY:
+        return of_bsn_port_counter_stats_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_PDU_TX_REQUEST:
         return of_bsn_pdu_tx_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_PDU_TX_REPLY:
@@ -13055,6 +13324,10 @@ of_validate_message_OF_VERSION_1_3(of_message_t msg, int len)
         return of_bsn_lacp_convergence_notif_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_HEADER:
         return of_bsn_header_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_GET_SWITCH_PIPELINE_REQUEST:
+        return of_bsn_get_switch_pipeline_request_OF_VERSION_1_3_validate(buf, len);
+    case OF_BSN_GET_SWITCH_PIPELINE_REPLY:
+        return of_bsn_get_switch_pipeline_reply_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REQUEST:
         return of_bsn_get_mirroring_request_OF_VERSION_1_3_validate(buf, len);
     case OF_BSN_GET_MIRRORING_REPLY:
