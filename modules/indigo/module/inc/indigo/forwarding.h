@@ -212,13 +212,13 @@ void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
 
 /**
  * @brief Get existing switch pipeline
- * @param pipeline Pipeline string
+ * @param pipeline Pipeline string describing switch operational mode
  */
 void indigo_fwd_pipeline_get(of_desc_str_t *pipeline);
 
 /**
  * @brief Set switch pipeline
- * @param pipeline Pipeline string
+ * @param pipeline Pipeline string describing switch operational mode
  */
 indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t *pipeline);
 
@@ -227,8 +227,10 @@ indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t *pipeline);
  * @param pipelines List of pipelines
  * @param num_pipelines Number of pipelines
  *
- * Forwarding should allocate memory for the pipeline list and set num_pipelines
- * to the number of elements. Caller should free the memory.
+ * Forwarding should allocate memory using malloc() for the pipeline list and
+ * set num_pipelines to the number of elements.
+ *
+ * Caller should use INDIGO_MEM_FREE() to free memory.
  */
 void indigo_fwd_pipeline_stats_get(of_desc_str_t **pipelines, int *num_pipelines);
 

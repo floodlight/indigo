@@ -1392,6 +1392,7 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_bsn_set_switch_pipeline_request_t *obj = _obj;
     of_bsn_set_switch_pipeline_reply_t *reply;
     uint32_t xid;
+    int rv;
     of_desc_str_t pipeline;
 
     if ((reply = of_bsn_set_switch_pipeline_reply_new(obj->version)) == NULL) {
@@ -1404,9 +1405,9 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_bsn_set_switch_pipeline_request_xid_get(obj, &xid);
     of_bsn_set_switch_pipeline_request_delete(obj);
 
-    LOG_TRACE("Setting pipeline: %s", (char *)&pipeline);
-    if (indigo_fwd_pipeline_set(&pipeline) != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to set pipeline");
+    LOG_INFO("Setting pipeline: %s", (char *)&pipeline);
+    if ((rv = indigo_fwd_pipeline_set(&pipeline)) != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to set pipeline: %s", indigo_strerror(rv));
         of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
     } else {
         of_bsn_set_switch_pipeline_reply_status_set(reply, 0);
@@ -1451,17 +1452,18 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
     indigo_fwd_pipeline_stats_get(&pipelines, &num_pipelines);
     of_list_bsn_switch_pipeline_stats_entry_t list;
     of_bsn_switch_pipeline_stats_reply_entries_bind(reply, &list);
-    for (i = 0; i != num_pipelines; i++) {
+    for (i = 0; i < num_pipelines; i++) {
         of_bsn_switch_pipeline_stats_entry_t entry;
 
         of_bsn_switch_pipeline_stats_entry_init(&entry, version, -1, 1);
         if (of_list_bsn_switch_pipeline_stats_entry_append_bind(&list,
                                                                 &entry)) {
             LOG_ERROR("Failed to append to pipeline stats list");
-            INDIGO_MEM_FREE(pipelines);
-            return;
+            break;
+        } else {
+            of_bsn_switch_pipeline_stats_entry_pipeline_set(&entry,
+                                                            pipelines[i]);
         }
-        of_bsn_switch_pipeline_stats_entry_pipeline_set(&entry, pipelines[i]);
     }
     INDIGO_MEM_FREE(pipelines);
 
