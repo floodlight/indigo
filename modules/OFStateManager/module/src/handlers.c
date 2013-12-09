@@ -1344,3 +1344,126 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
+
+/**
+ * Handle a BSN switch pipeline get request
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+void
+ind_core_bsn_sw_pipeline_get_request_handler(of_object_t *_obj,
+                                             indigo_cxn_id_t cxn_id)
+{
+    of_bsn_get_switch_pipeline_request_t *obj = _obj;
+    of_bsn_get_switch_pipeline_reply_t *reply;
+    uint32_t xid;
+    of_desc_str_t pipeline;
+
+    if ((reply = of_bsn_get_switch_pipeline_reply_new(obj->version)) == NULL) {
+        LOG_ERROR("Failed to create sw pipeline get reply message");
+        of_bsn_get_switch_pipeline_request_delete(obj);
+        return;
+    }
+
+    of_bsn_get_switch_pipeline_request_xid_get(obj, &xid);
+    of_bsn_get_switch_pipeline_request_delete(obj);
+
+    indigo_fwd_pipeline_get(&pipeline);
+
+    of_bsn_get_switch_pipeline_reply_xid_set(reply, xid);
+    of_bsn_get_switch_pipeline_reply_pipeline_set(reply, pipeline);
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+}
+
+/**
+ * Handle a BSN switch pipeline set request
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+void
+ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
+                                             indigo_cxn_id_t cxn_id)
+{
+    of_bsn_set_switch_pipeline_request_t *obj = _obj;
+    of_bsn_set_switch_pipeline_reply_t *reply;
+    uint32_t xid;
+    of_desc_str_t pipeline;
+
+    if ((reply = of_bsn_set_switch_pipeline_reply_new(obj->version)) == NULL) {
+        LOG_ERROR("Failed to create sw pipeline set reply message");
+        of_bsn_set_switch_pipeline_request_delete(obj);
+        return;
+    }
+
+    of_bsn_set_switch_pipeline_request_pipeline_get(obj, &pipeline);
+    of_bsn_set_switch_pipeline_request_xid_get(obj, &xid);
+    of_bsn_set_switch_pipeline_request_delete(obj);
+
+    LOG_TRACE("Setting pipeline: %s", (char *)&pipeline);
+    if (indigo_fwd_pipeline_set(&pipeline) != INDIGO_ERROR_NONE) {
+        LOG_ERROR("Failed to set pipeline");
+        of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
+    } else {
+        of_bsn_set_switch_pipeline_reply_status_set(reply, 0);
+    }
+
+    of_bsn_set_switch_pipeline_reply_xid_set(reply, xid);
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+}
+
+/**
+ * Handle a BSN switch pipeline stats request
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+void
+ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
+                                               indigo_cxn_id_t cxn_id)
+{
+    of_bsn_switch_pipeline_stats_request_t *obj = _obj;
+    of_bsn_switch_pipeline_stats_reply_t *reply;
+    of_version_t version;
+    uint32_t xid;
+    int i;
+    int num_pipelines;
+    of_desc_str_t *pipelines;
+
+    if ((reply = of_bsn_switch_pipeline_stats_reply_new(obj->version)) == NULL) {
+        LOG_ERROR("Failed to create sw pipeline stats reply message");
+        of_bsn_switch_pipeline_stats_request_delete(obj);
+        return;
+    }
+
+    version = obj->version;
+    of_bsn_switch_pipeline_stats_request_xid_get(obj, &xid);
+    of_bsn_switch_pipeline_stats_request_delete(obj);
+
+    of_bsn_switch_pipeline_stats_reply_xid_set(reply, xid);
+
+    indigo_fwd_pipeline_stats_get(&pipelines, &num_pipelines);
+    of_list_bsn_switch_pipeline_stats_entry_t list;
+    of_bsn_switch_pipeline_stats_reply_entries_bind(reply, &list);
+    for (i = 0; i != num_pipelines; i++) {
+        of_bsn_switch_pipeline_stats_entry_t entry;
+
+        of_bsn_switch_pipeline_stats_entry_init(&entry, version, -1, 1);
+        if (of_list_bsn_switch_pipeline_stats_entry_append_bind(&list,
+                                                                &entry)) {
+            LOG_ERROR("Failed to append to pipeline stats list");
+            INDIGO_MEM_FREE(pipelines);
+            return;
+        }
+        of_bsn_switch_pipeline_stats_entry_pipeline_set(&entry, pipelines[i]);
+    }
+    INDIGO_MEM_FREE(pipelines);
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+}

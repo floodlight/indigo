@@ -210,6 +210,28 @@ void indigo_fwd_group_delete(uint32_t id);
  */
 void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
 
+/**
+ * @brief Get existing switch pipeline
+ * @param pipeline Pipeline string
+ */
+void indigo_fwd_pipeline_get(of_desc_str_t *pipeline);
+
+/**
+ * @brief Set switch pipeline
+ * @param pipeline Pipeline string
+ */
+indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t *pipeline);
+
+/**
+ * @brief Get a list of supported switch pipelines
+ * @param pipelines List of pipelines
+ * @param num_pipelines Number of pipelines
+ *
+ * Forwarding should allocate memory for the pipeline list and set num_pipelines
+ * to the number of elements. Caller should free the memory.
+ */
+void indigo_fwd_pipeline_stats_get(of_desc_str_t **pipelines, int *num_pipelines);
+
 /****************************************************************
  * Function provided for port manager
  ****************************************************************/
