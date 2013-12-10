@@ -108,6 +108,15 @@ extern void ind_core_bsn_set_ip_mask_handler(
 extern void ind_core_bsn_hybrid_get_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
+extern void ind_core_bsn_sw_pipeline_get_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+extern void ind_core_bsn_sw_pipeline_set_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+extern void ind_core_bsn_sw_pipeline_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
 
 /* group_handlers.c */
 void ind_core_group_mod_handler(
