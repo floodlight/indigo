@@ -310,7 +310,26 @@ indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry)
 {
 }
 
+void
+indigo_fwd_pipeline_get(of_desc_str_t *pipeline)
+{
+    AIM_LOG_VERBOSE("fwd switch pipeline get");
+    strcpy((char *)pipeline, "some_pipeline");
+}
 
+indigo_error_t
+indigo_fwd_pipeline_set(of_desc_str_t *pipeline)
+{
+    AIM_LOG_VERBOSE("fwd switch pipeline set: %s", (char *)pipeline);
+    return INDIGO_ERROR_NONE;
+}
+
+void
+indigo_fwd_pipeline_stats_get(of_desc_str_t **pipeline, int *num_pipelines)
+{
+    AIM_LOG_VERBOSE("fwd switch pipeline stats get");
+    *num_pipelines = 0;
+}
 
 static int
 check_table_entry_states(ft_instance_t ft)

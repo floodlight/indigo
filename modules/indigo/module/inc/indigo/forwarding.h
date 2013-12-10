@@ -210,6 +210,41 @@ void indigo_fwd_group_delete(uint32_t id);
  */
 void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
 
+/**
+ * Switch pipeline management
+ *
+ * The switch pipeline defines the flow of packets through the functional
+ * units of the switch, and the set of tables consulted by these units.
+ *
+ * The standard method of configuring the switch pipeline is the OF 1.3
+ * table-features multipart message. However, this message is not sufficently
+ * expressive to represent the flow of packets through a realistic switch.
+ */
+
+/**
+ * @brief Get existing switch pipeline
+ * @param pipeline Pipeline string describing switch operational mode
+ */
+void indigo_fwd_pipeline_get(of_desc_str_t *pipeline);
+
+/**
+ * @brief Set switch pipeline
+ * @param pipeline Pipeline string describing switch operational mode
+ */
+indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t *pipeline);
+
+/**
+ * @brief Get a list of supported switch pipelines
+ * @param pipelines List of pipelines
+ * @param num_pipelines Number of pipelines
+ *
+ * Forwarding should allocate memory using INDIGO_MEM_ALLOC() for the pipeline
+ * list and set num_pipelines to the number of elements.
+ *
+ * Caller should use INDIGO_MEM_FREE() to free memory.
+ */
+void indigo_fwd_pipeline_stats_get(of_desc_str_t **pipelines, int *num_pipelines);
+
 /****************************************************************
  * Function provided for port manager
  ****************************************************************/
