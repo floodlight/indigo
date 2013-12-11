@@ -311,16 +311,16 @@ indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry)
 }
 
 void
-indigo_fwd_pipeline_get(of_desc_str_t *pipeline)
+indigo_fwd_pipeline_get(of_desc_str_t pipeline)
 {
     AIM_LOG_VERBOSE("fwd switch pipeline get");
-    strcpy((char *)pipeline, "some_pipeline");
+    strcpy(pipeline, "some_pipeline");
 }
 
 indigo_error_t
-indigo_fwd_pipeline_set(of_desc_str_t *pipeline)
+indigo_fwd_pipeline_set(of_desc_str_t pipeline)
 {
-    AIM_LOG_VERBOSE("fwd switch pipeline set: %s", (char *)pipeline);
+    AIM_LOG_VERBOSE("fwd switch pipeline set: %s", pipeline);
     return INDIGO_ERROR_NONE;
 }
 
