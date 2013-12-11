@@ -225,13 +225,13 @@ void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
  * @brief Get existing switch pipeline
  * @param pipeline Pipeline string describing switch operational mode
  */
-void indigo_fwd_pipeline_get(of_desc_str_t *pipeline);
+void indigo_fwd_pipeline_get(of_desc_str_t pipeline);
 
 /**
  * @brief Set switch pipeline
  * @param pipeline Pipeline string describing switch operational mode
  */
-indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t *pipeline);
+indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t pipeline);
 
 /**
  * @brief Get a list of supported switch pipelines

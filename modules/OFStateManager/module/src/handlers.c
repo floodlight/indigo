@@ -1370,7 +1370,7 @@ ind_core_bsn_sw_pipeline_get_request_handler(of_object_t *_obj,
     of_bsn_get_switch_pipeline_request_xid_get(obj, &xid);
     of_bsn_get_switch_pipeline_request_delete(obj);
 
-    indigo_fwd_pipeline_get(&pipeline);
+    indigo_fwd_pipeline_get(pipeline);
 
     of_bsn_get_switch_pipeline_reply_xid_set(reply, xid);
     of_bsn_get_switch_pipeline_reply_pipeline_set(reply, pipeline);
@@ -1405,8 +1405,8 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_bsn_set_switch_pipeline_request_xid_get(obj, &xid);
     of_bsn_set_switch_pipeline_request_delete(obj);
 
-    LOG_INFO("Setting pipeline: %s", (char *)&pipeline);
-    if ((rv = indigo_fwd_pipeline_set(&pipeline)) != INDIGO_ERROR_NONE) {
+    LOG_INFO("Setting pipeline: %s", pipeline);
+    if ((rv = indigo_fwd_pipeline_set(pipeline)) != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to set pipeline: %s", indigo_strerror(rv));
         of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
     } else {
