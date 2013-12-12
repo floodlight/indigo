@@ -67,4 +67,17 @@ typedef struct indigo_fi_flow_stats {
     uint64_t bytes;           /**< Number of bytes in flow  */
 } indigo_fi_flow_stats_t;
 
+/**
+ * @brief VLAN statistics counters
+ *
+ * Should be set to -1 if not supported.
+ */
+
+typedef struct indigo_fi_vlan_stats {
+    uint64_t rx_bytes;
+    uint64_t rx_packets;
+    uint64_t tx_bytes;
+    uint64_t tx_packets;
+} indigo_fi_vlan_stats_t;
+
 #endif /* _INDIGO_FI_H_ */
