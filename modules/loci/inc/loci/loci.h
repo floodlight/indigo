@@ -112,7 +112,6 @@ extern int of_wire_buffer_of_match_get(of_object_t *obj, int offset,
                                     of_match_t *match);
 extern int of_wire_buffer_of_match_set(of_object_t *obj, int offset,
                                     of_match_t *match, int cur_len);
-extern void of_extension_object_id_set(of_object_t *obj, of_object_id_t id);
 
 /* LOCI inheritance parent typedefs */
 typedef union of_queue_prop_u of_queue_prop_t;
@@ -121,6 +120,7 @@ typedef union of_bsn_vport_u of_bsn_vport_t;
 typedef union of_table_feature_prop_u of_table_feature_prop_t;
 typedef union of_action_u of_action_t;
 typedef union of_instruction_u of_instruction_t;
+typedef union of_instruction_id_u of_instruction_id_t;
 typedef union of_meter_band_u of_meter_band_t;
 typedef union of_action_id_u of_action_id_t;
 typedef union of_oxm_u of_oxm_t;
@@ -219,12 +219,15 @@ typedef of_object_t of_flow_stats_reply_t;
 typedef of_object_t of_flow_stats_request_t;
 typedef of_object_t of_get_config_reply_t;
 typedef of_object_t of_get_config_request_t;
+typedef of_object_t of_group_add_t;
+typedef of_object_t of_group_delete_t;
 typedef of_object_t of_group_desc_stats_reply_t;
 typedef of_object_t of_group_desc_stats_request_t;
 typedef of_object_t of_group_features_stats_reply_t;
 typedef of_object_t of_group_features_stats_request_t;
 typedef of_object_t of_group_mod_t;
 typedef of_object_t of_group_mod_failed_error_msg_t;
+typedef of_object_t of_group_modify_t;
 typedef of_object_t of_group_stats_reply_t;
 typedef of_object_t of_group_stats_request_t;
 typedef of_object_t of_hello_t;
@@ -351,6 +354,16 @@ typedef of_object_t of_instruction_clear_actions_t;
 typedef of_object_t of_instruction_experimenter_t;
 typedef of_object_t of_instruction_goto_table_t;
 typedef of_object_t of_instruction_header_t;
+typedef of_object_t of_instruction_id_apply_actions_t;
+typedef of_object_t of_instruction_id_bsn_t;
+typedef of_object_t of_instruction_id_bsn_disable_src_mac_check_t;
+typedef of_object_t of_instruction_id_clear_actions_t;
+typedef of_object_t of_instruction_id_experimenter_t;
+typedef of_object_t of_instruction_id_goto_table_t;
+typedef of_object_t of_instruction_id_header_t;
+typedef of_object_t of_instruction_id_meter_t;
+typedef of_object_t of_instruction_id_write_actions_t;
+typedef of_object_t of_instruction_id_write_metadata_t;
 typedef of_object_t of_instruction_meter_t;
 typedef of_object_t of_instruction_write_actions_t;
 typedef of_object_t of_instruction_write_metadata_t;
@@ -544,7 +557,7 @@ extern void of_object_delete(of_object_t *obj);
 typedef void (*of_wire_length_get_f)(of_object_t *obj, int *bytes);
 typedef void (*of_wire_length_set_f)(of_object_t *obj, int bytes);
 typedef void (*of_wire_type_get_f)(of_object_t *obj, of_object_id_t *id);
-typedef void (*of_wire_type_set_f)(of_object_t *obj, of_object_id_t id);
+typedef void (*of_wire_type_set_f)(of_object_t *obj);
 
 /****************************************************************
  *
@@ -1778,6 +1791,32 @@ extern of_get_config_request_t *
     of_get_config_request_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
+extern of_group_add_t *
+    of_group_add_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_group_add_new(version) \
+    of_group_add_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_group_add_t *
+    of_group_add_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_group_add_new_from_message(msg) \
+    of_group_add_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_group_delete_t *
+    of_group_delete_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_group_delete_new(version) \
+    of_group_delete_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_group_delete_t *
+    of_group_delete_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_group_delete_new_from_message(msg) \
+    of_group_delete_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_new_tracking(of_version_t version,
         const char *file, int line);
@@ -1854,6 +1893,19 @@ extern of_group_mod_failed_error_msg_t *
         const char *file, int line);
 #define of_group_mod_failed_error_msg_new_from_message(msg) \
     of_group_mod_failed_error_msg_new_from_message_tracking(msg, \
+        __FILE__, __LINE__)
+
+extern of_group_modify_t *
+    of_group_modify_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_group_modify_new(version) \
+    of_group_modify_new_tracking(version, \
+        __FILE__, __LINE__)
+extern of_group_modify_t *
+    of_group_modify_new_from_message_tracking(of_message_t msg,
+        const char *file, int line);
+#define of_group_modify_new_from_message(msg) \
+    of_group_modify_new_from_message_tracking(msg, \
         __FILE__, __LINE__)
 
 extern of_group_stats_reply_t *
@@ -3029,6 +3081,83 @@ extern of_instruction_header_t *
         const char *file, int line);
 #define of_instruction_header_new(version) \
     of_instruction_header_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_t *
+    of_instruction_id_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_new(version) \
+    of_instruction_id_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_apply_actions_t *
+    of_instruction_id_apply_actions_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_apply_actions_new(version) \
+    of_instruction_id_apply_actions_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_bsn_t *
+    of_instruction_id_bsn_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_bsn_new(version) \
+    of_instruction_id_bsn_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_bsn_disable_src_mac_check_t *
+    of_instruction_id_bsn_disable_src_mac_check_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_bsn_disable_src_mac_check_new(version) \
+    of_instruction_id_bsn_disable_src_mac_check_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_clear_actions_t *
+    of_instruction_id_clear_actions_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_clear_actions_new(version) \
+    of_instruction_id_clear_actions_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_experimenter_t *
+    of_instruction_id_experimenter_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_experimenter_new(version) \
+    of_instruction_id_experimenter_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_goto_table_t *
+    of_instruction_id_goto_table_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_goto_table_new(version) \
+    of_instruction_id_goto_table_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_header_t *
+    of_instruction_id_header_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_header_new(version) \
+    of_instruction_id_header_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_meter_t *
+    of_instruction_id_meter_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_meter_new(version) \
+    of_instruction_id_meter_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_write_actions_t *
+    of_instruction_id_write_actions_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_write_actions_new(version) \
+    of_instruction_id_write_actions_new_tracking(version, \
+        __FILE__, __LINE__)
+
+extern of_instruction_id_write_metadata_t *
+    of_instruction_id_write_metadata_new_tracking(of_version_t version,
+        const char *file, int line);
+#define of_instruction_id_write_metadata_new(version) \
+    of_instruction_id_write_metadata_new_tracking(version, \
         __FILE__, __LINE__)
 
 extern of_instruction_meter_t *
@@ -4639,6 +4768,16 @@ extern of_list_uint8_t *
 #define of_get_config_request_new_from_message(msg) \
     of_get_config_request_new_from_message_(msg)
 
+#define of_group_add_new(version) \
+    of_group_add_new_(version)
+#define of_group_add_new_from_message(msg) \
+    of_group_add_new_from_message_(msg)
+
+#define of_group_delete_new(version) \
+    of_group_delete_new_(version)
+#define of_group_delete_new_from_message(msg) \
+    of_group_delete_new_from_message_(msg)
+
 #define of_group_desc_stats_reply_new(version) \
     of_group_desc_stats_reply_new_(version)
 #define of_group_desc_stats_reply_new_from_message(msg) \
@@ -4668,6 +4807,11 @@ extern of_list_uint8_t *
     of_group_mod_failed_error_msg_new_(version)
 #define of_group_mod_failed_error_msg_new_from_message(msg) \
     of_group_mod_failed_error_msg_new_from_message_(msg)
+
+#define of_group_modify_new(version) \
+    of_group_modify_new_(version)
+#define of_group_modify_new_from_message(msg) \
+    of_group_modify_new_from_message_(msg)
 
 #define of_group_stats_reply_new(version) \
     of_group_stats_reply_new_(version)
@@ -5147,6 +5291,39 @@ extern of_list_uint8_t *
 
 #define of_instruction_header_new(version) \
     of_instruction_header_new_(version)
+
+#define of_instruction_id_new(version) \
+    of_instruction_id_new_(version)
+
+#define of_instruction_id_apply_actions_new(version) \
+    of_instruction_id_apply_actions_new_(version)
+
+#define of_instruction_id_bsn_new(version) \
+    of_instruction_id_bsn_new_(version)
+
+#define of_instruction_id_bsn_disable_src_mac_check_new(version) \
+    of_instruction_id_bsn_disable_src_mac_check_new_(version)
+
+#define of_instruction_id_clear_actions_new(version) \
+    of_instruction_id_clear_actions_new_(version)
+
+#define of_instruction_id_experimenter_new(version) \
+    of_instruction_id_experimenter_new_(version)
+
+#define of_instruction_id_goto_table_new(version) \
+    of_instruction_id_goto_table_new_(version)
+
+#define of_instruction_id_header_new(version) \
+    of_instruction_id_header_new_(version)
+
+#define of_instruction_id_meter_new(version) \
+    of_instruction_id_meter_new_(version)
+
+#define of_instruction_id_write_actions_new(version) \
+    of_instruction_id_write_actions_new_(version)
+
+#define of_instruction_id_write_metadata_new(version) \
+    of_instruction_id_write_metadata_new_(version)
 
 #define of_instruction_meter_new(version) \
     of_instruction_meter_new_(version)
@@ -6290,6 +6467,20 @@ extern of_get_config_request_t *
 extern void of_get_config_request_init(
     of_get_config_request_t *obj, of_version_t version, int bytes, int clean_wire);
 
+extern of_group_add_t *
+    of_group_add_new_(of_version_t version);
+extern of_group_add_t *
+    of_group_add_new_from_message_(of_message_t msg);
+extern void of_group_add_init(
+    of_group_add_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_group_delete_t *
+    of_group_delete_new_(of_version_t version);
+extern of_group_delete_t *
+    of_group_delete_new_from_message_(of_message_t msg);
+extern void of_group_delete_init(
+    of_group_delete_t *obj, of_version_t version, int bytes, int clean_wire);
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_new_(of_version_t version);
 extern of_group_desc_stats_reply_t *
@@ -6331,6 +6522,13 @@ extern of_group_mod_failed_error_msg_t *
     of_group_mod_failed_error_msg_new_from_message_(of_message_t msg);
 extern void of_group_mod_failed_error_msg_init(
     of_group_mod_failed_error_msg_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_group_modify_t *
+    of_group_modify_new_(of_version_t version);
+extern of_group_modify_t *
+    of_group_modify_new_from_message_(of_message_t msg);
+extern void of_group_modify_init(
+    of_group_modify_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_group_stats_reply_t *
     of_group_stats_reply_new_(of_version_t version);
@@ -7072,6 +7270,61 @@ extern of_instruction_header_t *
     of_instruction_header_new_(of_version_t version);
 extern void of_instruction_header_init(
     of_instruction_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_t *
+    of_instruction_id_new_(of_version_t version);
+extern void of_instruction_id_init(
+    of_instruction_id_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_apply_actions_t *
+    of_instruction_id_apply_actions_new_(of_version_t version);
+extern void of_instruction_id_apply_actions_init(
+    of_instruction_id_apply_actions_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_bsn_t *
+    of_instruction_id_bsn_new_(of_version_t version);
+extern void of_instruction_id_bsn_init(
+    of_instruction_id_bsn_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_bsn_disable_src_mac_check_t *
+    of_instruction_id_bsn_disable_src_mac_check_new_(of_version_t version);
+extern void of_instruction_id_bsn_disable_src_mac_check_init(
+    of_instruction_id_bsn_disable_src_mac_check_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_clear_actions_t *
+    of_instruction_id_clear_actions_new_(of_version_t version);
+extern void of_instruction_id_clear_actions_init(
+    of_instruction_id_clear_actions_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_experimenter_t *
+    of_instruction_id_experimenter_new_(of_version_t version);
+extern void of_instruction_id_experimenter_init(
+    of_instruction_id_experimenter_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_goto_table_t *
+    of_instruction_id_goto_table_new_(of_version_t version);
+extern void of_instruction_id_goto_table_init(
+    of_instruction_id_goto_table_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_header_t *
+    of_instruction_id_header_new_(of_version_t version);
+extern void of_instruction_id_header_init(
+    of_instruction_id_header_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_meter_t *
+    of_instruction_id_meter_new_(of_version_t version);
+extern void of_instruction_id_meter_init(
+    of_instruction_id_meter_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_write_actions_t *
+    of_instruction_id_write_actions_new_(of_version_t version);
+extern void of_instruction_id_write_actions_init(
+    of_instruction_id_write_actions_t *obj, of_version_t version, int bytes, int clean_wire);
+
+extern of_instruction_id_write_metadata_t *
+    of_instruction_id_write_metadata_new_(of_version_t version);
+extern void of_instruction_id_write_metadata_init(
+    of_instruction_id_write_metadata_t *obj, of_version_t version, int bytes, int clean_wire);
 
 extern of_instruction_meter_t *
     of_instruction_meter_new_(of_version_t version);
@@ -8919,6 +9172,28 @@ of_get_config_request_delete(of_get_config_request_t *obj) {
 }
 
 /**
+ * Delete an object of type of_group_add_t
+ * @param obj An instance of type of_group_add_t
+ *
+ * \ingroup of_group_add
+ */
+static inline void
+of_group_add_delete(of_group_add_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_group_delete_t
+ * @param obj An instance of type of_group_delete_t
+ *
+ * \ingroup of_group_delete
+ */
+static inline void
+of_group_delete_delete(of_group_delete_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
  * Delete an object of type of_group_desc_stats_reply_t
  * @param obj An instance of type of_group_desc_stats_reply_t
  *
@@ -8981,6 +9256,17 @@ of_group_mod_delete(of_group_mod_t *obj) {
  */
 static inline void
 of_group_mod_failed_error_msg_delete(of_group_mod_failed_error_msg_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_group_modify_t
+ * @param obj An instance of type of_group_modify_t
+ *
+ * \ingroup of_group_modify
+ */
+static inline void
+of_group_modify_delete(of_group_modify_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -10422,6 +10708,127 @@ of_instruction_goto_table_delete(of_instruction_goto_table_t *obj) {
  */
 static inline void
 of_instruction_header_delete(of_instruction_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_t
+ * @param obj An instance of type of_instruction_id_t
+ *
+ * \ingroup of_instruction_id
+ */
+static inline void
+of_instruction_id_delete(of_instruction_id_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_apply_actions_t
+ * @param obj An instance of type of_instruction_id_apply_actions_t
+ *
+ * \ingroup of_instruction_id_apply_actions
+ */
+static inline void
+of_instruction_id_apply_actions_delete(of_instruction_id_apply_actions_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_bsn_t
+ * @param obj An instance of type of_instruction_id_bsn_t
+ *
+ * \ingroup of_instruction_id_bsn
+ */
+static inline void
+of_instruction_id_bsn_delete(of_instruction_id_bsn_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_bsn_disable_src_mac_check_t
+ * @param obj An instance of type of_instruction_id_bsn_disable_src_mac_check_t
+ *
+ * \ingroup of_instruction_id_bsn_disable_src_mac_check
+ */
+static inline void
+of_instruction_id_bsn_disable_src_mac_check_delete(of_instruction_id_bsn_disable_src_mac_check_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_clear_actions_t
+ * @param obj An instance of type of_instruction_id_clear_actions_t
+ *
+ * \ingroup of_instruction_id_clear_actions
+ */
+static inline void
+of_instruction_id_clear_actions_delete(of_instruction_id_clear_actions_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_experimenter_t
+ * @param obj An instance of type of_instruction_id_experimenter_t
+ *
+ * \ingroup of_instruction_id_experimenter
+ */
+static inline void
+of_instruction_id_experimenter_delete(of_instruction_id_experimenter_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_goto_table_t
+ * @param obj An instance of type of_instruction_id_goto_table_t
+ *
+ * \ingroup of_instruction_id_goto_table
+ */
+static inline void
+of_instruction_id_goto_table_delete(of_instruction_id_goto_table_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_header_t
+ * @param obj An instance of type of_instruction_id_header_t
+ *
+ * \ingroup of_instruction_id_header
+ */
+static inline void
+of_instruction_id_header_delete(of_instruction_id_header_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_meter_t
+ * @param obj An instance of type of_instruction_id_meter_t
+ *
+ * \ingroup of_instruction_id_meter
+ */
+static inline void
+of_instruction_id_meter_delete(of_instruction_id_meter_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_write_actions_t
+ * @param obj An instance of type of_instruction_id_write_actions_t
+ *
+ * \ingroup of_instruction_id_write_actions
+ */
+static inline void
+of_instruction_id_write_actions_delete(of_instruction_id_write_actions_t *obj) {
+    of_object_delete((of_object_t *)(obj));
+}
+
+/**
+ * Delete an object of type of_instruction_id_write_metadata_t
+ * @param obj An instance of type of_instruction_id_write_metadata_t
+ *
+ * \ingroup of_instruction_id_write_metadata
+ */
+static inline void
+of_instruction_id_write_metadata_delete(of_instruction_id_write_metadata_t *obj) {
     of_object_delete((of_object_t *)(obj));
 }
 
@@ -15849,6 +16256,70 @@ extern void of_get_config_request_xid_get(
     of_get_config_request_t *obj,
     uint32_t *xid);
 
+/* Unified accessor functions for of_group_add */
+
+extern void of_group_add_xid_set(
+    of_group_add_t *obj,
+    uint32_t xid);
+extern void of_group_add_xid_get(
+    of_group_add_t *obj,
+    uint32_t *xid);
+
+extern void of_group_add_group_type_set(
+    of_group_add_t *obj,
+    uint8_t group_type);
+extern void of_group_add_group_type_get(
+    of_group_add_t *obj,
+    uint8_t *group_type);
+
+extern void of_group_add_group_id_set(
+    of_group_add_t *obj,
+    uint32_t group_id);
+extern void of_group_add_group_id_get(
+    of_group_add_t *obj,
+    uint32_t *group_id);
+
+extern int WARN_UNUSED_RESULT of_group_add_buckets_set(
+    of_group_add_t *obj,
+    of_list_bucket_t *buckets);
+extern void of_group_add_buckets_bind(
+    of_group_add_t *obj,
+    of_list_bucket_t *buckets);
+extern of_list_bucket_t *of_group_add_buckets_get(
+    of_group_add_t *obj);
+
+/* Unified accessor functions for of_group_delete */
+
+extern void of_group_delete_xid_set(
+    of_group_delete_t *obj,
+    uint32_t xid);
+extern void of_group_delete_xid_get(
+    of_group_delete_t *obj,
+    uint32_t *xid);
+
+extern void of_group_delete_group_type_set(
+    of_group_delete_t *obj,
+    uint8_t group_type);
+extern void of_group_delete_group_type_get(
+    of_group_delete_t *obj,
+    uint8_t *group_type);
+
+extern void of_group_delete_group_id_set(
+    of_group_delete_t *obj,
+    uint32_t group_id);
+extern void of_group_delete_group_id_get(
+    of_group_delete_t *obj,
+    uint32_t *group_id);
+
+extern int WARN_UNUSED_RESULT of_group_delete_buckets_set(
+    of_group_delete_t *obj,
+    of_list_bucket_t *buckets);
+extern void of_group_delete_buckets_bind(
+    of_group_delete_t *obj,
+    of_list_bucket_t *buckets);
+extern of_list_bucket_t *of_group_delete_buckets_get(
+    of_group_delete_t *obj);
+
 /* Unified accessor functions for of_group_desc_stats_reply */
 
 extern void of_group_desc_stats_reply_xid_set(
@@ -16001,13 +16472,6 @@ extern void of_group_mod_xid_get(
     of_group_mod_t *obj,
     uint32_t *xid);
 
-extern void of_group_mod_command_set(
-    of_group_mod_t *obj,
-    uint16_t command);
-extern void of_group_mod_command_get(
-    of_group_mod_t *obj,
-    uint16_t *command);
-
 extern void of_group_mod_group_type_set(
     of_group_mod_t *obj,
     uint8_t group_type);
@@ -16053,6 +16517,38 @@ extern int WARN_UNUSED_RESULT of_group_mod_failed_error_msg_data_set(
 extern void of_group_mod_failed_error_msg_data_get(
     of_group_mod_failed_error_msg_t *obj,
     of_octets_t *data);
+
+/* Unified accessor functions for of_group_modify */
+
+extern void of_group_modify_xid_set(
+    of_group_modify_t *obj,
+    uint32_t xid);
+extern void of_group_modify_xid_get(
+    of_group_modify_t *obj,
+    uint32_t *xid);
+
+extern void of_group_modify_group_type_set(
+    of_group_modify_t *obj,
+    uint8_t group_type);
+extern void of_group_modify_group_type_get(
+    of_group_modify_t *obj,
+    uint8_t *group_type);
+
+extern void of_group_modify_group_id_set(
+    of_group_modify_t *obj,
+    uint32_t group_id);
+extern void of_group_modify_group_id_get(
+    of_group_modify_t *obj,
+    uint32_t *group_id);
+
+extern int WARN_UNUSED_RESULT of_group_modify_buckets_set(
+    of_group_modify_t *obj,
+    of_list_bucket_t *buckets);
+extern void of_group_modify_buckets_bind(
+    of_group_modify_t *obj,
+    of_list_bucket_t *buckets);
+extern of_list_bucket_t *of_group_modify_buckets_get(
+    of_group_modify_t *obj);
 
 /* Unified accessor functions for of_group_stats_reply */
 
@@ -16240,13 +16736,6 @@ extern void of_meter_mod_xid_set(
 extern void of_meter_mod_xid_get(
     of_meter_mod_t *obj,
     uint32_t *xid);
-
-extern void of_meter_mod_command_set(
-    of_meter_mod_t *obj,
-    uint16_t command);
-extern void of_meter_mod_command_get(
-    of_meter_mod_t *obj,
-    uint16_t *command);
 
 extern void of_meter_mod_flags_set(
     of_meter_mod_t *obj,
@@ -17272,6 +17761,20 @@ extern void of_action_group_group_id_get(
 
 /* Unified accessor functions for of_action_id_bsn */
 
+extern void of_action_id_bsn_experimenter_set(
+    of_action_id_bsn_t *obj,
+    uint32_t experimenter);
+extern void of_action_id_bsn_experimenter_get(
+    of_action_id_bsn_t *obj,
+    uint32_t *experimenter);
+
+extern void of_action_id_bsn_subtype_set(
+    of_action_id_bsn_t *obj,
+    uint32_t subtype);
+extern void of_action_id_bsn_subtype_get(
+    of_action_id_bsn_t *obj,
+    uint32_t *subtype);
+
 /* Unified accessor functions for of_action_id_bsn_mirror */
 
 extern void of_action_id_bsn_mirror_experimenter_set(
@@ -17314,11 +17817,32 @@ extern void of_action_id_bsn_set_tunnel_dst_subtype_get(
 
 /* Unified accessor functions for of_action_id_experimenter */
 
+extern void of_action_id_experimenter_experimenter_set(
+    of_action_id_experimenter_t *obj,
+    uint32_t experimenter);
+extern void of_action_id_experimenter_experimenter_get(
+    of_action_id_experimenter_t *obj,
+    uint32_t *experimenter);
+
 /* Unified accessor functions for of_action_id_group */
 
 /* Unified accessor functions for of_action_id_header */
 
 /* Unified accessor functions for of_action_id_nicira */
+
+extern void of_action_id_nicira_experimenter_set(
+    of_action_id_nicira_t *obj,
+    uint32_t experimenter);
+extern void of_action_id_nicira_experimenter_get(
+    of_action_id_nicira_t *obj,
+    uint32_t *experimenter);
+
+extern void of_action_id_nicira_subtype_set(
+    of_action_id_nicira_t *obj,
+    uint16_t subtype);
+extern void of_action_id_nicira_subtype_get(
+    of_action_id_nicira_t *obj,
+    uint16_t *subtype);
 
 /* Unified accessor functions for of_action_id_nicira_dec_ttl */
 
@@ -18131,6 +18655,61 @@ extern void of_instruction_goto_table_table_id_get(
     uint8_t *table_id);
 
 /* Unified accessor functions for of_instruction_header */
+
+/* Unified accessor functions for of_instruction_id_apply_actions */
+
+/* Unified accessor functions for of_instruction_id_bsn */
+
+extern void of_instruction_id_bsn_experimenter_set(
+    of_instruction_id_bsn_t *obj,
+    uint32_t experimenter);
+extern void of_instruction_id_bsn_experimenter_get(
+    of_instruction_id_bsn_t *obj,
+    uint32_t *experimenter);
+
+extern void of_instruction_id_bsn_subtype_set(
+    of_instruction_id_bsn_t *obj,
+    uint32_t subtype);
+extern void of_instruction_id_bsn_subtype_get(
+    of_instruction_id_bsn_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_instruction_id_bsn_disable_src_mac_check */
+
+extern void of_instruction_id_bsn_disable_src_mac_check_experimenter_set(
+    of_instruction_id_bsn_disable_src_mac_check_t *obj,
+    uint32_t experimenter);
+extern void of_instruction_id_bsn_disable_src_mac_check_experimenter_get(
+    of_instruction_id_bsn_disable_src_mac_check_t *obj,
+    uint32_t *experimenter);
+
+extern void of_instruction_id_bsn_disable_src_mac_check_subtype_set(
+    of_instruction_id_bsn_disable_src_mac_check_t *obj,
+    uint32_t subtype);
+extern void of_instruction_id_bsn_disable_src_mac_check_subtype_get(
+    of_instruction_id_bsn_disable_src_mac_check_t *obj,
+    uint32_t *subtype);
+
+/* Unified accessor functions for of_instruction_id_clear_actions */
+
+/* Unified accessor functions for of_instruction_id_experimenter */
+
+extern void of_instruction_id_experimenter_experimenter_set(
+    of_instruction_id_experimenter_t *obj,
+    uint32_t experimenter);
+extern void of_instruction_id_experimenter_experimenter_get(
+    of_instruction_id_experimenter_t *obj,
+    uint32_t *experimenter);
+
+/* Unified accessor functions for of_instruction_id_goto_table */
+
+/* Unified accessor functions for of_instruction_id_header */
+
+/* Unified accessor functions for of_instruction_id_meter */
+
+/* Unified accessor functions for of_instruction_id_write_actions */
+
+/* Unified accessor functions for of_instruction_id_write_metadata */
 
 /* Unified accessor functions for of_instruction_meter */
 
@@ -21251,12 +21830,15 @@ union of_generic_u {
     of_flow_stats_request_t of_flow_stats_request;
     of_get_config_reply_t of_get_config_reply;
     of_get_config_request_t of_get_config_request;
+    of_group_add_t of_group_add;
+    of_group_delete_t of_group_delete;
     of_group_desc_stats_reply_t of_group_desc_stats_reply;
     of_group_desc_stats_request_t of_group_desc_stats_request;
     of_group_features_stats_reply_t of_group_features_stats_reply;
     of_group_features_stats_request_t of_group_features_stats_request;
     of_group_mod_t of_group_mod;
     of_group_mod_failed_error_msg_t of_group_mod_failed_error_msg;
+    of_group_modify_t of_group_modify;
     of_group_stats_reply_t of_group_stats_reply;
     of_group_stats_request_t of_group_stats_request;
     of_hello_t of_hello;
@@ -21385,6 +21967,16 @@ union of_generic_u {
     of_instruction_experimenter_t of_instruction_experimenter;
     of_instruction_goto_table_t of_instruction_goto_table;
     of_instruction_header_t of_instruction_header;
+    of_instruction_id_apply_actions_t of_instruction_id_apply_actions;
+    of_instruction_id_bsn_t of_instruction_id_bsn;
+    of_instruction_id_bsn_disable_src_mac_check_t of_instruction_id_bsn_disable_src_mac_check;
+    of_instruction_id_clear_actions_t of_instruction_id_clear_actions;
+    of_instruction_id_experimenter_t of_instruction_id_experimenter;
+    of_instruction_id_goto_table_t of_instruction_id_goto_table;
+    of_instruction_id_header_t of_instruction_id_header;
+    of_instruction_id_meter_t of_instruction_id_meter;
+    of_instruction_id_write_actions_t of_instruction_id_write_actions;
+    of_instruction_id_write_metadata_t of_instruction_id_write_metadata;
     of_instruction_meter_t of_instruction_meter;
     of_instruction_write_actions_t of_instruction_write_actions;
     of_instruction_write_metadata_t of_instruction_write_metadata;
@@ -21683,6 +22275,27 @@ union of_instruction_u {
     of_instruction_meter_t meter;
     of_instruction_write_actions_t write_actions;
     of_instruction_write_metadata_t write_metadata;
+};
+
+/**
+ * Inheritance super class for of_instruction_id
+ *
+ * This class is the union of of_instruction_id classes.  You can refer
+ * to it untyped by refering to the member 'header' whose structure
+ * is common across all sub-classes.
+ */
+
+union of_instruction_id_u {
+    of_instruction_id_header_t header; /* Generic instance */
+    of_instruction_id_apply_actions_t apply_actions;
+    of_instruction_id_bsn_t bsn;
+    of_instruction_id_bsn_disable_src_mac_check_t bsn_disable_src_mac_check;
+    of_instruction_id_clear_actions_t clear_actions;
+    of_instruction_id_experimenter_t experimenter;
+    of_instruction_id_goto_table_t goto_table;
+    of_instruction_id_meter_t meter;
+    of_instruction_id_write_actions_t write_actions;
+    of_instruction_id_write_metadata_t write_metadata;
 };
 
 /**
@@ -22255,6 +22868,37 @@ of_flow_mod_to_object_id(int flow_mod, of_version_t version)
     }
 
     return of_flow_mod_type_to_id[version][flow_mod];
+}
+
+/**
+ * group_mod wire type to object ID array.
+ * Treat as private; use function accessor below
+ */
+
+extern const of_object_id_t *const of_group_mod_type_to_id[OF_VERSION_ARRAY_MAX];
+
+#define OF_GROUP_MOD_ITEM_COUNT 3
+
+
+/**
+ * Map an group_mod wire value to an OF object
+ * @param group_mod The group_mod type wire value
+ * @param version The version associated with the check
+ * @return The group_mod OF object type
+ * @return OF_OBJECT_INVALID if type does not map to an object
+ *
+ */
+static inline of_object_id_t
+of_group_mod_to_object_id(int group_mod, of_version_t version)
+{
+    if (!OF_VERSION_OKAY(version)) {
+        return OF_OBJECT_INVALID;
+    }
+    if (group_mod < 0 || group_mod >= OF_GROUP_MOD_ITEM_COUNT) {
+        return OF_OBJECT_INVALID;
+    }
+
+    return of_group_mod_type_to_id[version][group_mod];
 }
 
 /* NOTE: We could optimize the OXM and only generate OF 1.2 versions. */
@@ -22858,6 +23502,7 @@ of_message_to_object_id(of_message_t msg, int length) {
     uint16_t err_type;
     uint8_t flow_mod_cmd;
     uint32_t experimenter, subtype;
+    uint16_t group_mod_cmd;
 
     if (length < OF_MESSAGE_MIN_LENGTH) {
         return OF_OBJECT_INVALID;
@@ -22922,6 +23567,14 @@ of_message_to_object_id(of_message_t msg, int length) {
         }
         err_type = of_message_error_type_get(msg);
         obj_id = of_error_msg_to_object_id(err_type, ver);
+    }
+
+    if (obj_id == OF_GROUP_MOD) {
+        if (length < OF_MESSAGE_MIN_GROUP_MOD_LENGTH) {
+            return OF_OBJECT_INVALID;
+        }
+        group_mod_cmd = of_message_group_mod_command_get(msg);
+        obj_id = of_group_mod_to_object_id(group_mod_cmd, ver);
     }
 
     return obj_id;
@@ -23241,6 +23894,43 @@ of_object_to_flow_mod_command(of_object_id_t id, of_version_t version)
     return -1; /* Not recognized as flow mod type object for this version */
 }
 
+
+/**
+ * Map an object ID to a group-mod command value
+ * @param id An object ID
+ * @return The wire value for the group-mod command
+ * @return -1 if not supported for this version
+ * @return -1 if id is not a specific stats type ID
+ *
+ * Note that the value is returned as a signed integer.  So -1 is
+ * an error code, while 0xffff is the usual "experimenter" code.
+ */
+
+static inline int
+of_object_to_group_mod_command(of_object_id_t id, of_version_t version)
+{
+    if (!OF_VERSION_OKAY(version)) {
+        return -1;
+    }
+    switch (id) {
+    case OF_GROUP_ADD:
+        if (OF_GROUP_MOD_COMMAND_ADD_SUPPORTED(version))
+            return OF_GROUP_MOD_COMMAND_ADD_BY_VERSION(version);
+        break;
+    case OF_GROUP_MODIFY:
+        if (OF_GROUP_MOD_COMMAND_MODIFY_SUPPORTED(version))
+            return OF_GROUP_MOD_COMMAND_MODIFY_BY_VERSION(version);
+        break;
+    case OF_GROUP_DELETE:
+        if (OF_GROUP_MOD_COMMAND_DELETE_SUPPORTED(version))
+            return OF_GROUP_MOD_COMMAND_DELETE_BY_VERSION(version);
+        break;
+    default:
+        break;
+    }
+    return -1; /* Not recognized as group mod type object for this version */
+}
+
 extern const int *const of_object_fixed_len[OF_VERSION_ARRAY_MAX];
 extern const int *const of_object_extra_len[OF_VERSION_ARRAY_MAX];
 
@@ -23303,85 +23993,6 @@ of_object_wire_init(of_object_t *obj, of_object_id_t base_object_id,
     return OF_ERROR_NONE;
 }
 
-
-
-/**
- * Map a message in a wire buffer object to its OF object id.
- * @param wbuf Pointer to a wire buffer object, populated with an OF message
- * @returns The object ID of the message
- * @returns OF_OBJECT_INVALID if unable to parse the message type
- *
- * Version must be set in the buffer prior to calling this routine
- */
-
-static inline int
-of_wire_message_object_id_set(of_wire_buffer_t *wbuf, of_object_id_t id)
-{
-    int type;
-    of_version_t ver;
-    of_message_t msg;
-
-    msg = (of_message_t)WBUF_BUF(wbuf);
-
-    ver = of_message_version_get(msg);
-
-    /* ASSERT(id is a message object) */
-
-    if ((type = of_object_to_wire_type(id, ver)) < 0) {
-        return OF_ERROR_PARAM;
-    }
-    of_message_type_set(msg, type);
-
-    if ((type = of_object_to_stats_type(id, ver)) >= 0) {
-        /* It's a stats obj */
-        of_message_stats_type_set(msg, type);
-        if (type == OF_STATS_TYPE_EXPERIMENTER) {
-            switch (id) {
-            case OF_BSN_LACP_STATS_REQUEST:
-            case OF_BSN_LACP_STATS_REPLY:
-                of_message_stats_experimenter_id_set(msg, OF_EXPERIMENTER_ID_BSN);
-                of_message_stats_experimenter_subtype_set(msg, 1);
-                break;
-            case OF_BSN_SWITCH_PIPELINE_STATS_REQUEST:
-            case OF_BSN_SWITCH_PIPELINE_STATS_REPLY:
-                of_message_stats_experimenter_id_set(msg, OF_EXPERIMENTER_ID_BSN);
-                of_message_stats_experimenter_subtype_set(msg, 6);
-                break;
-            case OF_BSN_PORT_COUNTER_STATS_REQUEST:
-            case OF_BSN_PORT_COUNTER_STATS_REPLY:
-                of_message_stats_experimenter_id_set(msg, OF_EXPERIMENTER_ID_BSN);
-                of_message_stats_experimenter_subtype_set(msg, 8);
-                break;
-            case OF_BSN_VLAN_COUNTER_STATS_REQUEST:
-            case OF_BSN_VLAN_COUNTER_STATS_REPLY:
-                of_message_stats_experimenter_id_set(msg, OF_EXPERIMENTER_ID_BSN);
-                of_message_stats_experimenter_subtype_set(msg, 9);
-                break;
-            default:
-                break;
-            }
-        }
-    }
-    if ((type = of_object_to_error_type(id, ver)) >= 0) {
-        /* It's an error obj */
-        of_message_error_type_set(msg, type);
-    }
-    if ((type = of_object_to_flow_mod_command(id, ver)) >= 0) {
-        /* It's a flow mod obj */
-        of_message_flow_mod_command_set(msg, ver, type);
-    }
-    if (of_object_id_is_extension(id, ver)) {
-        uint32_t val32;
-
-        /* Set the experimenter and subtype codes */
-        val32 = of_extension_to_experimenter_id(id, ver);
-        of_message_experimenter_id_set(msg, val32);
-        val32 = of_extension_to_experimenter_subtype(id, ver);
-        of_message_experimenter_subtype_set(msg, val32);
-    }
-
-    return OF_ERROR_NONE;
-}
 
 /****************************************************************
  *
@@ -23599,14 +24210,10 @@ extern void of_object_message_wire_length_get(of_object_t *obj, int *bytes);
 extern void of_object_message_wire_length_set(of_object_t *obj, int bytes);
 
 extern void of_oxm_wire_length_get(of_object_t *obj, int *bytes);
-extern void of_oxm_wire_length_set(of_object_t *obj, int bytes);
 extern void of_oxm_wire_object_id_get(of_object_t *obj, of_object_id_t *id);
-extern void of_oxm_wire_object_id_set(of_object_t *obj, of_object_id_t id);
 
 extern void of_tlv16_wire_length_get(of_object_t *obj, int *bytes);
 extern void of_tlv16_wire_length_set(of_object_t *obj, int bytes);
-
-extern void of_tlv16_wire_object_id_set(of_object_t *obj, of_object_id_t id);
 
 /* Wire length is uint16 at front of structure */
 extern void of_u16_len_wire_length_get(of_object_t *obj, int *bytes);

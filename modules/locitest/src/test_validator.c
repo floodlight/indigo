@@ -382,15 +382,6 @@ test_validate_all(void)
     }
 
     {
-        of_experimenter_t *obj = of_experimenter_new(OF_VERSION_1_0);
-        of_message_t msg;
-        of_experimenter_OF_VERSION_1_0_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_experimenter_delete(obj);
-    }
-
-    {
         of_echo_request_t *obj = of_echo_request_new(OF_VERSION_1_0);
         of_message_t msg;
         of_echo_request_OF_VERSION_1_0_populate(obj, 1);
@@ -985,21 +976,21 @@ test_validate_all(void)
     }
 
     {
+        of_group_modify_t *obj = of_group_modify_new(OF_VERSION_1_1);
+        of_message_t msg;
+        of_group_modify_OF_VERSION_1_1_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_modify_delete(obj);
+    }
+
+    {
         of_group_mod_failed_error_msg_t *obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_1);
         of_message_t msg;
         of_group_mod_failed_error_msg_OF_VERSION_1_1_populate(obj, 1);
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_mod_failed_error_msg_delete(obj);
-    }
-
-    {
-        of_group_mod_t *obj = of_group_mod_new(OF_VERSION_1_1);
-        of_message_t msg;
-        of_group_mod_OF_VERSION_1_1_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_group_mod_delete(obj);
     }
 
     {
@@ -1018,6 +1009,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_desc_stats_reply_delete(obj);
+    }
+
+    {
+        of_group_delete_t *obj = of_group_delete_new(OF_VERSION_1_1);
+        of_message_t msg;
+        of_group_delete_OF_VERSION_1_1_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_delete_delete(obj);
+    }
+
+    {
+        of_group_add_t *obj = of_group_add_new(OF_VERSION_1_1);
+        of_message_t msg;
+        of_group_add_OF_VERSION_1_1_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_add_delete(obj);
     }
 
     {
@@ -1135,15 +1144,6 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_features_reply_delete(obj);
-    }
-
-    {
-        of_experimenter_t *obj = of_experimenter_new(OF_VERSION_1_1);
-        of_message_t msg;
-        of_experimenter_OF_VERSION_1_1_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_experimenter_delete(obj);
     }
 
     {
@@ -1678,21 +1678,21 @@ test_validate_all(void)
     }
 
     {
+        of_group_modify_t *obj = of_group_modify_new(OF_VERSION_1_2);
+        of_message_t msg;
+        of_group_modify_OF_VERSION_1_2_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_modify_delete(obj);
+    }
+
+    {
         of_group_mod_failed_error_msg_t *obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_2);
         of_message_t msg;
         of_group_mod_failed_error_msg_OF_VERSION_1_2_populate(obj, 1);
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_mod_failed_error_msg_delete(obj);
-    }
-
-    {
-        of_group_mod_t *obj = of_group_mod_new(OF_VERSION_1_2);
-        of_message_t msg;
-        of_group_mod_OF_VERSION_1_2_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_group_mod_delete(obj);
     }
 
     {
@@ -1729,6 +1729,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_desc_stats_reply_delete(obj);
+    }
+
+    {
+        of_group_delete_t *obj = of_group_delete_new(OF_VERSION_1_2);
+        of_message_t msg;
+        of_group_delete_OF_VERSION_1_2_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_delete_delete(obj);
+    }
+
+    {
+        of_group_add_t *obj = of_group_add_new(OF_VERSION_1_2);
+        of_message_t msg;
+        of_group_add_OF_VERSION_1_2_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_add_delete(obj);
     }
 
     {
@@ -1855,15 +1873,6 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_experimenter_error_msg_delete(obj);
-    }
-
-    {
-        of_experimenter_t *obj = of_experimenter_new(OF_VERSION_1_2);
-        of_message_t msg;
-        of_experimenter_OF_VERSION_1_2_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_experimenter_delete(obj);
     }
 
     {
@@ -2515,21 +2524,21 @@ test_validate_all(void)
     }
 
     {
+        of_group_modify_t *obj = of_group_modify_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_group_modify_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_modify_delete(obj);
+    }
+
+    {
         of_group_mod_failed_error_msg_t *obj = of_group_mod_failed_error_msg_new(OF_VERSION_1_3);
         of_message_t msg;
         of_group_mod_failed_error_msg_OF_VERSION_1_3_populate(obj, 1);
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_mod_failed_error_msg_delete(obj);
-    }
-
-    {
-        of_group_mod_t *obj = of_group_mod_new(OF_VERSION_1_3);
-        of_message_t msg;
-        of_group_mod_OF_VERSION_1_3_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_group_mod_delete(obj);
     }
 
     {
@@ -2566,6 +2575,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_group_desc_stats_reply_delete(obj);
+    }
+
+    {
+        of_group_delete_t *obj = of_group_delete_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_group_delete_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_delete_delete(obj);
+    }
+
+    {
+        of_group_add_t *obj = of_group_add_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_group_add_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_group_add_delete(obj);
     }
 
     {
@@ -2695,15 +2722,6 @@ test_validate_all(void)
     }
 
     {
-        of_experimenter_t *obj = of_experimenter_new(OF_VERSION_1_3);
-        of_message_t msg;
-        of_experimenter_OF_VERSION_1_3_populate(obj, 1);
-        msg = OF_OBJECT_TO_MESSAGE(obj);
-        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
-        of_experimenter_delete(obj);
-    }
-
-    {
         of_echo_request_t *obj = of_echo_request_new(OF_VERSION_1_3);
         of_message_t msg;
         of_echo_request_OF_VERSION_1_3_populate(obj, 1);
@@ -2737,6 +2755,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_desc_stats_reply_delete(obj);
+    }
+
+    {
+        of_bsn_vlan_counter_stats_request_t *obj = of_bsn_vlan_counter_stats_request_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_vlan_counter_stats_request_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_vlan_counter_stats_request_delete(obj);
+    }
+
+    {
+        of_bsn_vlan_counter_stats_reply_t *obj = of_bsn_vlan_counter_stats_reply_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_vlan_counter_stats_reply_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_vlan_counter_stats_reply_delete(obj);
     }
 
     {
@@ -2794,6 +2830,42 @@ test_validate_all(void)
     }
 
     {
+        of_bsn_switch_pipeline_stats_request_t *obj = of_bsn_switch_pipeline_stats_request_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_switch_pipeline_stats_request_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_switch_pipeline_stats_request_delete(obj);
+    }
+
+    {
+        of_bsn_switch_pipeline_stats_reply_t *obj = of_bsn_switch_pipeline_stats_reply_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_switch_pipeline_stats_reply_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_switch_pipeline_stats_reply_delete(obj);
+    }
+
+    {
+        of_bsn_set_switch_pipeline_request_t *obj = of_bsn_set_switch_pipeline_request_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_set_switch_pipeline_request_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_set_switch_pipeline_request_delete(obj);
+    }
+
+    {
+        of_bsn_set_switch_pipeline_reply_t *obj = of_bsn_set_switch_pipeline_reply_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_set_switch_pipeline_reply_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_set_switch_pipeline_reply_delete(obj);
+    }
+
+    {
         of_bsn_set_pktin_suppression_request_t *obj = of_bsn_set_pktin_suppression_request_new(OF_VERSION_1_3);
         of_message_t msg;
         of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_populate(obj, 1);
@@ -2836,6 +2908,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_bsn_set_lacp_reply_delete(obj);
+    }
+
+    {
+        of_bsn_port_counter_stats_request_t *obj = of_bsn_port_counter_stats_request_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_port_counter_stats_request_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_port_counter_stats_request_delete(obj);
+    }
+
+    {
+        of_bsn_port_counter_stats_reply_t *obj = of_bsn_port_counter_stats_reply_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_port_counter_stats_reply_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_port_counter_stats_reply_delete(obj);
     }
 
     {
@@ -2908,6 +2998,24 @@ test_validate_all(void)
         msg = OF_OBJECT_TO_MESSAGE(obj);
         TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
         of_bsn_lacp_convergence_notif_delete(obj);
+    }
+
+    {
+        of_bsn_get_switch_pipeline_request_t *obj = of_bsn_get_switch_pipeline_request_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_get_switch_pipeline_request_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_get_switch_pipeline_request_delete(obj);
+    }
+
+    {
+        of_bsn_get_switch_pipeline_reply_t *obj = of_bsn_get_switch_pipeline_reply_new(OF_VERSION_1_3);
+        of_message_t msg;
+        of_bsn_get_switch_pipeline_reply_OF_VERSION_1_3_populate(obj, 1);
+        msg = OF_OBJECT_TO_MESSAGE(obj);
+        TEST_ASSERT(of_validate_message(msg, of_message_length_get(msg)) == 0);
+        of_bsn_get_switch_pipeline_reply_delete(obj);
     }
 
     {
