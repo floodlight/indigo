@@ -505,6 +505,8 @@ ind_core_init(ind_core_config_t *config)
 
     ind_core_connection_count = 0;
 
+    ind_core_group_init();
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;

@@ -32,32 +32,31 @@
 #include <indigo/of_state_manager.h>
 #include <indigo/forwarding.h>
 #include <loci/loci.h>
-#include <AIM/aim_list.h>
 #include "ofstatemanager_decs.h"
 #include "ofstatemanager_int.h"
 #include "handlers.h"
+#include <BigHash/bighash.h>
 
 typedef struct ind_core_group_s {
-    list_links_t links;
+    bighash_entry_t hash_entry;
     uint32_t id;
     uint32_t type;
     of_list_bucket_t *buckets;
     indigo_time_t creation_time;
 } ind_core_group_t;
 
-static LIST_DEFINE(ind_core_groups_list);
+#define TEMPLATE_NAME group_hashtable
+#define TEMPLATE_OBJ_TYPE ind_core_group_t
+#define TEMPLATE_KEY_FIELD id
+#define TEMPLATE_ENTRY_FIELD hash_entry
+#include <BigHash/bighash_template.h>
+
+static bighash_table_t *ind_core_group_hashtable;
 
 static ind_core_group_t *
 ind_core_group_lookup(uint32_t id)
 {
-    list_links_t *cur;
-    LIST_FOREACH(&ind_core_groups_list, cur) {
-        ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
-        if (group->id == id) {
-            return group;
-        }
-    }
-    return NULL;
+    return group_hashtable_first(ind_core_group_hashtable, &id);
 }
 
 static void
@@ -65,7 +64,7 @@ ind_core_group_delete_one(ind_core_group_t *group)
 {
     indigo_fwd_group_delete(group->id);
     of_object_delete(group->buckets);
-    list_remove(&group->links);
+    bighash_remove(ind_core_group_hashtable, &group->hash_entry);
     INDIGO_MEM_FREE(group);
 }
 
@@ -113,7 +112,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     AIM_TRUE_OR_DIE(group->buckets != NULL);
     group->creation_time = INDIGO_CURRENT_TIME;
 
-    list_push(&ind_core_groups_list, &group->links);
+    group_hashtable_insert(ind_core_group_hashtable, group);
 
     of_object_delete(obj);
     return;
@@ -193,9 +192,9 @@ ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (id == OF_GROUP_ALL) {
-        list_links_t *cur, *next;
-        LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
-            group = container_of(cur, links, ind_core_group_t);
+        bighash_iter_t iter;
+        for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
+                group; group = bighash_iter_next(&iter)) {
             ind_core_group_delete_one(group);
         }
     } else if (group != NULL) {
@@ -240,7 +239,6 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     of_group_stats_entry_t *entry;
     uint32_t xid;
     uint32_t id;
-    list_links_t *cur, *next;
     indigo_time_t current_time = INDIGO_CURRENT_TIME;
 
     of_group_stats_request_group_id_get(obj, &id);
@@ -256,8 +254,10 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     AIM_TRUE_OR_DIE(entry != NULL);
 
     if (id == OF_GROUP_ALL) {
-        LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
-            ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
+        bighash_iter_t iter;
+        ind_core_group_t *group;
+        for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
+                group; group = bighash_iter_next(&iter)) {
             ind_core_group_stats_entry_populate(entry, group, current_time);
 
             if (of_list_append(&entries, entry) < 0) {
@@ -296,7 +296,8 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
     of_list_group_desc_stats_entry_t entries;
     of_group_desc_stats_entry_t *entry;
     uint32_t xid;
-    list_links_t *cur, *next;
+    ind_core_group_t *group;
+    bighash_iter_t iter;
 
     reply = of_group_desc_stats_reply_new(obj->version);
     AIM_TRUE_OR_DIE(reply != NULL);
@@ -308,8 +309,8 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
     entry = of_group_desc_stats_entry_new(entries.version);
     AIM_TRUE_OR_DIE(entry != NULL);
 
-    LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
-        ind_core_group_t *group = container_of(cur, links, ind_core_group_t);
+    for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
+            group; group = bighash_iter_next(&iter)) {
         of_group_desc_stats_entry_group_type_set(entry, group->type);
         of_group_desc_stats_entry_group_id_set(entry, group->id);
         if (of_group_desc_stats_entry_buckets_set(entry, group->buckets) < 0) {
@@ -333,4 +334,11 @@ ind_core_group_features_stats_request_handler(of_object_t *_obj,
 {
     of_group_features_stats_request_t *obj = _obj;
     ind_core_unhandled_message(obj, cxn_id);
+}
+
+void
+ind_core_group_init(void)
+{
+    ind_core_group_hashtable = bighash_table_create(1024);
+    AIM_TRUE_OR_DIE(ind_core_group_hashtable != NULL);
 }
