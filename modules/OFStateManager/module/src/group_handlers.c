@@ -70,11 +70,10 @@ ind_core_group_delete_one(ind_core_group_t *group)
 }
 
 void
-ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
+ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
-    of_group_mod_t *obj = _obj;
+    of_group_add_t *obj = _obj;
     uint32_t xid;
-    uint16_t command;
     uint8_t type;
     uint32_t id;
     of_list_bucket_t buckets;
@@ -83,75 +82,127 @@ ind_core_group_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     uint16_t err_code = OF_GROUP_MOD_FAILED_EPERM;
     indigo_error_t result;
 
-    of_group_mod_xid_get(obj, &xid);
-    of_group_mod_command_get(obj, &command);
-    of_group_mod_group_type_get(obj, &type);
-    of_group_mod_group_id_get(obj, &id);
-    of_group_mod_buckets_bind(obj, &buckets);
+    of_group_add_xid_get(obj, &xid);
+    of_group_add_group_type_get(obj, &type);
+    of_group_add_group_id_get(obj, &id);
+    of_group_add_buckets_bind(obj, &buckets);
 
     if (id <= OF_GROUP_MAX) {
         group = ind_core_group_lookup(id);
     }
 
-    if (command == OF_GROUP_ADD) {
-        if (group != NULL) {
-            err_code = OF_GROUP_MOD_FAILED_GROUP_EXISTS;
-            goto error;
-        } else if (id > OF_GROUP_MAX) {
-            err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
-            goto error;
-        }
+    if (group != NULL) {
+        err_code = OF_GROUP_MOD_FAILED_GROUP_EXISTS;
+        goto error;
+    } else if (id > OF_GROUP_MAX) {
+        err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+        goto error;
+    }
 
+    result = indigo_fwd_group_add(id, type, &buckets);
+    if (result < 0) {
+        err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+        goto error;
+    }
+
+    group = INDIGO_MEM_ALLOC(sizeof(*group));
+    AIM_TRUE_OR_DIE(group != NULL);
+    group->id = id;
+    group->type = type;
+    group->buckets = of_object_dup(&buckets);
+    AIM_TRUE_OR_DIE(group->buckets != NULL);
+    group->creation_time = INDIGO_CURRENT_TIME;
+
+    list_push(&ind_core_groups_list, &group->links);
+
+    of_object_delete(obj);
+    return;
+
+error:
+    indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
+    of_object_delete(obj);
+}
+
+void
+ind_core_group_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
+{
+    of_group_mod_t *obj = _obj;
+    uint32_t xid;
+    uint8_t type;
+    uint32_t id;
+    of_list_bucket_t buckets;
+    ind_core_group_t *group = NULL;
+    uint16_t err_type = OF_ERROR_TYPE_GROUP_MOD_FAILED;
+    uint16_t err_code = OF_GROUP_MOD_FAILED_EPERM;
+    indigo_error_t result;
+
+    of_group_modify_xid_get(obj, &xid);
+    of_group_modify_group_type_get(obj, &type);
+    of_group_modify_group_id_get(obj, &id);
+    of_group_modify_buckets_bind(obj, &buckets);
+
+    if (id <= OF_GROUP_MAX) {
+        group = ind_core_group_lookup(id);
+    }
+
+    if (group == NULL) {
+        err_code = OF_GROUP_MOD_FAILED_UNKNOWN_GROUP;
+        goto error;
+    }
+
+    if (group->type == type) {
+        result = indigo_fwd_group_modify(id, &buckets);
+    } else {
+        indigo_fwd_group_delete(id);
         result = indigo_fwd_group_add(id, type, &buckets);
-        if (result < 0) {
-            err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
-            goto error;
-        }
+    }
 
-        group = INDIGO_MEM_ALLOC(sizeof(*group));
-        AIM_TRUE_OR_DIE(group != NULL);
-        group->id = id;
-        group->type = type;
-        group->buckets = of_object_dup(&buckets);
-        AIM_TRUE_OR_DIE(group->buckets != NULL);
-        group->creation_time = INDIGO_CURRENT_TIME;
+    if (result < 0) {
+        err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+        goto error;
+    }
 
-        list_push(&ind_core_groups_list, &group->links);
-    } else if (command == OF_GROUP_MODIFY) {
-        if (group == NULL) {
-            err_code = OF_GROUP_MOD_FAILED_UNKNOWN_GROUP;
-            goto error;
-        }
+    group->type = type;
+    of_object_delete(group->buckets);
+    group->buckets = of_object_dup(&buckets);
+    AIM_TRUE_OR_DIE(group->buckets != NULL);
 
-        if (group->type == type) {
-            result = indigo_fwd_group_modify(id, &buckets);
-        } else {
-            indigo_fwd_group_delete(id);
-            result = indigo_fwd_group_add(id, type, &buckets);
-        }
+    of_object_delete(obj);
+    return;
 
-        if (result < 0) {
-            err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
-            goto error;
-        }
+error:
+    indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
+    of_object_delete(obj);
+}
 
-        group->type = type;
-        of_object_delete(group->buckets);
-        group->buckets = of_object_dup(&buckets);
-        AIM_TRUE_OR_DIE(group->buckets != NULL);
-    } else if (command == OF_GROUP_DELETE) {
-        if (id == OF_GROUP_ALL) {
-            list_links_t *cur, *next;
-            LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
-                group = container_of(cur, links, ind_core_group_t);
-                ind_core_group_delete_one(group);
-            }
-        } else if (group != NULL) {
+void
+ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
+{
+    of_group_delete_t *obj = _obj;
+    uint32_t xid;
+    uint32_t id;
+    ind_core_group_t *group = NULL;
+    uint16_t err_type = OF_ERROR_TYPE_GROUP_MOD_FAILED;
+    uint16_t err_code = OF_GROUP_MOD_FAILED_EPERM;
+
+    of_group_delete_xid_get(obj, &xid);
+    of_group_delete_group_id_get(obj, &id);
+
+    if (id <= OF_GROUP_MAX) {
+        group = ind_core_group_lookup(id);
+    }
+
+    if (id == OF_GROUP_ALL) {
+        list_links_t *cur, *next;
+        LIST_FOREACH_SAFE(&ind_core_groups_list, cur, next) {
+            group = container_of(cur, links, ind_core_group_t);
             ind_core_group_delete_one(group);
-        } else if (id > OF_GROUP_MAX) {
-            err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
-            goto error;
         }
+    } else if (group != NULL) {
+        ind_core_group_delete_one(group);
+    } else if (id > OF_GROUP_MAX) {
+        err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+        goto error;
     }
 
     of_object_delete(obj);

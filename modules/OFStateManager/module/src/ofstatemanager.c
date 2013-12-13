@@ -314,8 +314,16 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
      * Group messages
      ****************************************************************/
 
-    case OF_GROUP_MOD:
-        ind_core_group_mod_handler(obj, cxn);
+    case OF_GROUP_ADD:
+        ind_core_group_add_handler(obj, cxn);
+        break;
+
+    case OF_GROUP_MODIFY:
+        ind_core_group_modify_handler(obj, cxn);
+        break;
+
+    case OF_GROUP_DELETE:
+        ind_core_group_delete_handler(obj, cxn);
         break;
 
     case OF_GROUP_STATS_REQUEST:
