@@ -80,4 +80,25 @@ typedef struct indigo_fi_vlan_stats {
     uint64_t tx_packets;
 } indigo_fi_vlan_stats_t;
 
+/**
+ * @brief Port statistics counters
+ *
+ * Should be set to -1 if not supported.
+ */
+
+typedef struct indigo_fi_port_stats {
+    uint64_t rx_bytes;
+    uint64_t rx_packets_unicast;
+    uint64_t rx_packets_broadcast;
+    uint64_t rx_packets_multicast;
+    uint64_t rx_dropped;
+    uint64_t rx_errors;
+    uint64_t tx_bytes;
+    uint64_t tx_packets_unicast;
+    uint64_t tx_packets_broadcast;
+    uint64_t tx_packets_multicast;
+    uint64_t tx_dropped;
+    uint64_t tx_errors;
+} indigo_fi_port_stats_t;
+
 #endif /* _INDIGO_FI_H_ */

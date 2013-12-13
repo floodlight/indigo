@@ -174,6 +174,18 @@ extern indigo_error_t indigo_port_stats_get(
     of_port_stats_reply_t **port_stats_reply);
 
 /**
+ * @brief Process an extended port stats request
+ * @param port_no The OpenFlow port number
+ * @param [out] port_stats Statistics for the port
+ *
+ * Only supported counters need to be set. The rest will default to -1.
+ */
+
+void indigo_port_extended_stats_get(
+    of_port_no_t port_no,
+    indigo_fi_port_stats_t *port_stats);
+
+/**
  * @brief Process an OF queue config request
  * @param queue_config_request The LOXI request message
  * @param [out] queue_config_reply The LOXI reply message
