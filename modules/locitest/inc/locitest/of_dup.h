@@ -134,6 +134,14 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_get_switch_pipeline_reply_t *
+    of_bsn_get_switch_pipeline_reply_dup(
+        of_bsn_get_switch_pipeline_reply_t *src);
+
+extern of_bsn_get_switch_pipeline_request_t *
+    of_bsn_get_switch_pipeline_request_dup(
+        of_bsn_get_switch_pipeline_request_t *src);
+
 extern of_bsn_header_t *
     of_bsn_header_dup(
         of_bsn_header_t *src);
@@ -178,6 +186,14 @@ extern of_bsn_pdu_tx_request_t *
     of_bsn_pdu_tx_request_dup(
         of_bsn_pdu_tx_request_t *src);
 
+extern of_bsn_port_counter_stats_reply_t *
+    of_bsn_port_counter_stats_reply_dup(
+        of_bsn_port_counter_stats_reply_t *src);
+
+extern of_bsn_port_counter_stats_request_t *
+    of_bsn_port_counter_stats_request_dup(
+        of_bsn_port_counter_stats_request_t *src);
+
 extern of_bsn_set_ip_mask_t *
     of_bsn_set_ip_mask_dup(
         of_bsn_set_ip_mask_t *src);
@@ -210,6 +226,14 @@ extern of_bsn_set_pktin_suppression_request_t *
     of_bsn_set_pktin_suppression_request_dup(
         of_bsn_set_pktin_suppression_request_t *src);
 
+extern of_bsn_set_switch_pipeline_reply_t *
+    of_bsn_set_switch_pipeline_reply_dup(
+        of_bsn_set_switch_pipeline_reply_t *src);
+
+extern of_bsn_set_switch_pipeline_request_t *
+    of_bsn_set_switch_pipeline_request_dup(
+        of_bsn_set_switch_pipeline_request_t *src);
+
 extern of_bsn_shell_command_t *
     of_bsn_shell_command_dup(
         of_bsn_shell_command_t *src);
@@ -229,6 +253,14 @@ extern of_bsn_stats_reply_t *
 extern of_bsn_stats_request_t *
     of_bsn_stats_request_dup(
         of_bsn_stats_request_t *src);
+
+extern of_bsn_switch_pipeline_stats_reply_t *
+    of_bsn_switch_pipeline_stats_reply_dup(
+        of_bsn_switch_pipeline_stats_reply_t *src);
+
+extern of_bsn_switch_pipeline_stats_request_t *
+    of_bsn_switch_pipeline_stats_request_dup(
+        of_bsn_switch_pipeline_stats_request_t *src);
 
 extern of_bsn_time_reply_t *
     of_bsn_time_reply_dup(
@@ -253,6 +285,14 @@ extern of_bsn_virtual_port_remove_reply_t *
 extern of_bsn_virtual_port_remove_request_t *
     of_bsn_virtual_port_remove_request_dup(
         of_bsn_virtual_port_remove_request_t *src);
+
+extern of_bsn_vlan_counter_stats_reply_t *
+    of_bsn_vlan_counter_stats_reply_dup(
+        of_bsn_vlan_counter_stats_reply_t *src);
+
+extern of_bsn_vlan_counter_stats_request_t *
+    of_bsn_vlan_counter_stats_request_dup(
+        of_bsn_vlan_counter_stats_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_dup(
@@ -346,6 +386,14 @@ extern of_get_config_request_t *
     of_get_config_request_dup(
         of_get_config_request_t *src);
 
+extern of_group_add_t *
+    of_group_add_dup(
+        of_group_add_t *src);
+
+extern of_group_delete_t *
+    of_group_delete_dup(
+        of_group_delete_t *src);
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_dup(
         of_group_desc_stats_reply_t *src);
@@ -369,6 +417,10 @@ extern of_group_mod_t *
 extern of_group_mod_failed_error_msg_t *
     of_group_mod_failed_error_msg_dup(
         of_group_mod_failed_error_msg_t *src);
+
+extern of_group_modify_t *
+    of_group_modify_dup(
+        of_group_modify_t *src);
 
 extern of_group_stats_reply_t *
     of_group_stats_reply_dup(
@@ -798,6 +850,18 @@ extern of_bsn_lacp_stats_entry_t *
     of_bsn_lacp_stats_entry_dup(
         of_bsn_lacp_stats_entry_t *src);
 
+extern of_bsn_port_counter_stats_entry_t *
+    of_bsn_port_counter_stats_entry_dup(
+        of_bsn_port_counter_stats_entry_t *src);
+
+extern of_bsn_switch_pipeline_stats_entry_t *
+    of_bsn_switch_pipeline_stats_entry_dup(
+        of_bsn_switch_pipeline_stats_entry_t *src);
+
+extern of_bsn_vlan_counter_stats_entry_t *
+    of_bsn_vlan_counter_stats_entry_dup(
+        of_bsn_vlan_counter_stats_entry_t *src);
+
 extern of_bsn_vport_t *
     of_bsn_vport_dup(
         of_bsn_vport_t *src);
@@ -881,6 +945,50 @@ extern of_instruction_goto_table_t *
 extern of_instruction_header_t *
     of_instruction_header_dup(
         of_instruction_header_t *src);
+
+extern of_instruction_id_t *
+    of_instruction_id_dup(
+        of_instruction_id_t *src);
+
+extern of_instruction_id_apply_actions_t *
+    of_instruction_id_apply_actions_dup(
+        of_instruction_id_apply_actions_t *src);
+
+extern of_instruction_id_bsn_t *
+    of_instruction_id_bsn_dup(
+        of_instruction_id_bsn_t *src);
+
+extern of_instruction_id_bsn_disable_src_mac_check_t *
+    of_instruction_id_bsn_disable_src_mac_check_dup(
+        of_instruction_id_bsn_disable_src_mac_check_t *src);
+
+extern of_instruction_id_clear_actions_t *
+    of_instruction_id_clear_actions_dup(
+        of_instruction_id_clear_actions_t *src);
+
+extern of_instruction_id_experimenter_t *
+    of_instruction_id_experimenter_dup(
+        of_instruction_id_experimenter_t *src);
+
+extern of_instruction_id_goto_table_t *
+    of_instruction_id_goto_table_dup(
+        of_instruction_id_goto_table_t *src);
+
+extern of_instruction_id_header_t *
+    of_instruction_id_header_dup(
+        of_instruction_id_header_t *src);
+
+extern of_instruction_id_meter_t *
+    of_instruction_id_meter_dup(
+        of_instruction_id_meter_t *src);
+
+extern of_instruction_id_write_actions_t *
+    of_instruction_id_write_actions_dup(
+        of_instruction_id_write_actions_t *src);
+
+extern of_instruction_id_write_metadata_t *
+    of_instruction_id_write_metadata_dup(
+        of_instruction_id_write_metadata_t *src);
 
 extern of_instruction_meter_t *
     of_instruction_meter_dup(
@@ -1410,6 +1518,10 @@ extern of_uint32_t *
     of_uint32_dup(
         of_uint32_t *src);
 
+extern of_uint64_t *
+    of_uint64_dup(
+        of_uint64_t *src);
+
 extern of_uint8_t *
     of_uint8_dup(
         of_uint8_t *src);
@@ -1429,6 +1541,18 @@ extern of_list_bsn_interface_t *
 extern of_list_bsn_lacp_stats_entry_t *
     of_list_bsn_lacp_stats_entry_dup(
         of_list_bsn_lacp_stats_entry_t *src);
+
+extern of_list_bsn_port_counter_stats_entry_t *
+    of_list_bsn_port_counter_stats_entry_dup(
+        of_list_bsn_port_counter_stats_entry_t *src);
+
+extern of_list_bsn_switch_pipeline_stats_entry_t *
+    of_list_bsn_switch_pipeline_stats_entry_dup(
+        of_list_bsn_switch_pipeline_stats_entry_t *src);
+
+extern of_list_bsn_vlan_counter_stats_entry_t *
+    of_list_bsn_vlan_counter_stats_entry_dup(
+        of_list_bsn_vlan_counter_stats_entry_t *src);
 
 extern of_list_bucket_t *
     of_list_bucket_dup(
@@ -1509,6 +1633,10 @@ extern of_list_table_stats_entry_t *
 extern of_list_uint32_t *
     of_list_uint32_dup(
         of_list_uint32_t *src);
+
+extern of_list_uint64_t *
+    of_list_uint64_dup(
+        of_list_uint64_t *src);
 
 extern of_list_uint8_t *
     of_list_uint8_dup(
@@ -2262,6 +2390,14 @@ extern of_get_config_request_t *
     of_get_config_request_OF_VERSION_1_1_dup(
         of_get_config_request_t *src);
 
+extern of_group_add_t *
+    of_group_add_OF_VERSION_1_1_dup(
+        of_group_add_t *src);
+
+extern of_group_delete_t *
+    of_group_delete_OF_VERSION_1_1_dup(
+        of_group_delete_t *src);
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_OF_VERSION_1_1_dup(
         of_group_desc_stats_reply_t *src);
@@ -2277,6 +2413,10 @@ extern of_group_mod_t *
 extern of_group_mod_failed_error_msg_t *
     of_group_mod_failed_error_msg_OF_VERSION_1_1_dup(
         of_group_mod_failed_error_msg_t *src);
+
+extern of_group_modify_t *
+    of_group_modify_OF_VERSION_1_1_dup(
+        of_group_modify_t *src);
 
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_1_dup(
@@ -2898,6 +3038,14 @@ extern of_get_config_request_t *
     of_get_config_request_OF_VERSION_1_2_dup(
         of_get_config_request_t *src);
 
+extern of_group_add_t *
+    of_group_add_OF_VERSION_1_2_dup(
+        of_group_add_t *src);
+
+extern of_group_delete_t *
+    of_group_delete_OF_VERSION_1_2_dup(
+        of_group_delete_t *src);
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_OF_VERSION_1_2_dup(
         of_group_desc_stats_reply_t *src);
@@ -2921,6 +3069,10 @@ extern of_group_mod_t *
 extern of_group_mod_failed_error_msg_t *
     of_group_mod_failed_error_msg_OF_VERSION_1_2_dup(
         of_group_mod_failed_error_msg_t *src);
+
+extern of_group_modify_t *
+    of_group_modify_OF_VERSION_1_2_dup(
+        of_group_modify_t *src);
 
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_2_dup(
@@ -3754,6 +3906,14 @@ extern of_bsn_get_mirroring_request_t *
     of_bsn_get_mirroring_request_OF_VERSION_1_3_dup(
         of_bsn_get_mirroring_request_t *src);
 
+extern of_bsn_get_switch_pipeline_reply_t *
+    of_bsn_get_switch_pipeline_reply_OF_VERSION_1_3_dup(
+        of_bsn_get_switch_pipeline_reply_t *src);
+
+extern of_bsn_get_switch_pipeline_request_t *
+    of_bsn_get_switch_pipeline_request_OF_VERSION_1_3_dup(
+        of_bsn_get_switch_pipeline_request_t *src);
+
 extern of_bsn_header_t *
     of_bsn_header_OF_VERSION_1_3_dup(
         of_bsn_header_t *src);
@@ -3790,6 +3950,14 @@ extern of_bsn_pdu_tx_request_t *
     of_bsn_pdu_tx_request_OF_VERSION_1_3_dup(
         of_bsn_pdu_tx_request_t *src);
 
+extern of_bsn_port_counter_stats_reply_t *
+    of_bsn_port_counter_stats_reply_OF_VERSION_1_3_dup(
+        of_bsn_port_counter_stats_reply_t *src);
+
+extern of_bsn_port_counter_stats_request_t *
+    of_bsn_port_counter_stats_request_OF_VERSION_1_3_dup(
+        of_bsn_port_counter_stats_request_t *src);
+
 extern of_bsn_set_lacp_reply_t *
     of_bsn_set_lacp_reply_OF_VERSION_1_3_dup(
         of_bsn_set_lacp_reply_t *src);
@@ -3810,6 +3978,14 @@ extern of_bsn_set_pktin_suppression_request_t *
     of_bsn_set_pktin_suppression_request_OF_VERSION_1_3_dup(
         of_bsn_set_pktin_suppression_request_t *src);
 
+extern of_bsn_set_switch_pipeline_reply_t *
+    of_bsn_set_switch_pipeline_reply_OF_VERSION_1_3_dup(
+        of_bsn_set_switch_pipeline_reply_t *src);
+
+extern of_bsn_set_switch_pipeline_request_t *
+    of_bsn_set_switch_pipeline_request_OF_VERSION_1_3_dup(
+        of_bsn_set_switch_pipeline_request_t *src);
+
 extern of_bsn_stats_reply_t *
     of_bsn_stats_reply_OF_VERSION_1_3_dup(
         of_bsn_stats_reply_t *src);
@@ -3817,6 +3993,14 @@ extern of_bsn_stats_reply_t *
 extern of_bsn_stats_request_t *
     of_bsn_stats_request_OF_VERSION_1_3_dup(
         of_bsn_stats_request_t *src);
+
+extern of_bsn_switch_pipeline_stats_reply_t *
+    of_bsn_switch_pipeline_stats_reply_OF_VERSION_1_3_dup(
+        of_bsn_switch_pipeline_stats_reply_t *src);
+
+extern of_bsn_switch_pipeline_stats_request_t *
+    of_bsn_switch_pipeline_stats_request_OF_VERSION_1_3_dup(
+        of_bsn_switch_pipeline_stats_request_t *src);
 
 extern of_bsn_time_reply_t *
     of_bsn_time_reply_OF_VERSION_1_3_dup(
@@ -3841,6 +4025,14 @@ extern of_bsn_virtual_port_remove_reply_t *
 extern of_bsn_virtual_port_remove_request_t *
     of_bsn_virtual_port_remove_request_OF_VERSION_1_3_dup(
         of_bsn_virtual_port_remove_request_t *src);
+
+extern of_bsn_vlan_counter_stats_reply_t *
+    of_bsn_vlan_counter_stats_reply_OF_VERSION_1_3_dup(
+        of_bsn_vlan_counter_stats_reply_t *src);
+
+extern of_bsn_vlan_counter_stats_request_t *
+    of_bsn_vlan_counter_stats_request_OF_VERSION_1_3_dup(
+        of_bsn_vlan_counter_stats_request_t *src);
 
 extern of_desc_stats_reply_t *
     of_desc_stats_reply_OF_VERSION_1_3_dup(
@@ -3934,6 +4126,14 @@ extern of_get_config_request_t *
     of_get_config_request_OF_VERSION_1_3_dup(
         of_get_config_request_t *src);
 
+extern of_group_add_t *
+    of_group_add_OF_VERSION_1_3_dup(
+        of_group_add_t *src);
+
+extern of_group_delete_t *
+    of_group_delete_OF_VERSION_1_3_dup(
+        of_group_delete_t *src);
+
 extern of_group_desc_stats_reply_t *
     of_group_desc_stats_reply_OF_VERSION_1_3_dup(
         of_group_desc_stats_reply_t *src);
@@ -3957,6 +4157,10 @@ extern of_group_mod_t *
 extern of_group_mod_failed_error_msg_t *
     of_group_mod_failed_error_msg_OF_VERSION_1_3_dup(
         of_group_mod_failed_error_msg_t *src);
+
+extern of_group_modify_t *
+    of_group_modify_OF_VERSION_1_3_dup(
+        of_group_modify_t *src);
 
 extern of_group_stats_reply_t *
     of_group_stats_reply_OF_VERSION_1_3_dup(
@@ -4322,6 +4526,18 @@ extern of_bsn_lacp_stats_entry_t *
     of_bsn_lacp_stats_entry_OF_VERSION_1_3_dup(
         of_bsn_lacp_stats_entry_t *src);
 
+extern of_bsn_port_counter_stats_entry_t *
+    of_bsn_port_counter_stats_entry_OF_VERSION_1_3_dup(
+        of_bsn_port_counter_stats_entry_t *src);
+
+extern of_bsn_switch_pipeline_stats_entry_t *
+    of_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_dup(
+        of_bsn_switch_pipeline_stats_entry_t *src);
+
+extern of_bsn_vlan_counter_stats_entry_t *
+    of_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_dup(
+        of_bsn_vlan_counter_stats_entry_t *src);
+
 extern of_bsn_vport_t *
     of_bsn_vport_OF_VERSION_1_3_dup(
         of_bsn_vport_t *src);
@@ -4405,6 +4621,50 @@ extern of_instruction_goto_table_t *
 extern of_instruction_header_t *
     of_instruction_header_OF_VERSION_1_3_dup(
         of_instruction_header_t *src);
+
+extern of_instruction_id_t *
+    of_instruction_id_OF_VERSION_1_3_dup(
+        of_instruction_id_t *src);
+
+extern of_instruction_id_apply_actions_t *
+    of_instruction_id_apply_actions_OF_VERSION_1_3_dup(
+        of_instruction_id_apply_actions_t *src);
+
+extern of_instruction_id_bsn_t *
+    of_instruction_id_bsn_OF_VERSION_1_3_dup(
+        of_instruction_id_bsn_t *src);
+
+extern of_instruction_id_bsn_disable_src_mac_check_t *
+    of_instruction_id_bsn_disable_src_mac_check_OF_VERSION_1_3_dup(
+        of_instruction_id_bsn_disable_src_mac_check_t *src);
+
+extern of_instruction_id_clear_actions_t *
+    of_instruction_id_clear_actions_OF_VERSION_1_3_dup(
+        of_instruction_id_clear_actions_t *src);
+
+extern of_instruction_id_experimenter_t *
+    of_instruction_id_experimenter_OF_VERSION_1_3_dup(
+        of_instruction_id_experimenter_t *src);
+
+extern of_instruction_id_goto_table_t *
+    of_instruction_id_goto_table_OF_VERSION_1_3_dup(
+        of_instruction_id_goto_table_t *src);
+
+extern of_instruction_id_header_t *
+    of_instruction_id_header_OF_VERSION_1_3_dup(
+        of_instruction_id_header_t *src);
+
+extern of_instruction_id_meter_t *
+    of_instruction_id_meter_OF_VERSION_1_3_dup(
+        of_instruction_id_meter_t *src);
+
+extern of_instruction_id_write_actions_t *
+    of_instruction_id_write_actions_OF_VERSION_1_3_dup(
+        of_instruction_id_write_actions_t *src);
+
+extern of_instruction_id_write_metadata_t *
+    of_instruction_id_write_metadata_OF_VERSION_1_3_dup(
+        of_instruction_id_write_metadata_t *src);
 
 extern of_instruction_meter_t *
     of_instruction_meter_OF_VERSION_1_3_dup(
@@ -4926,6 +5186,10 @@ extern of_uint32_t *
     of_uint32_OF_VERSION_1_3_dup(
         of_uint32_t *src);
 
+extern of_uint64_t *
+    of_uint64_OF_VERSION_1_3_dup(
+        of_uint64_t *src);
+
 extern of_uint8_t *
     of_uint8_OF_VERSION_1_3_dup(
         of_uint8_t *src);
@@ -4945,6 +5209,18 @@ extern of_list_bsn_interface_t *
 extern of_list_bsn_lacp_stats_entry_t *
     of_list_bsn_lacp_stats_entry_OF_VERSION_1_3_dup(
         of_list_bsn_lacp_stats_entry_t *src);
+
+extern of_list_bsn_port_counter_stats_entry_t *
+    of_list_bsn_port_counter_stats_entry_OF_VERSION_1_3_dup(
+        of_list_bsn_port_counter_stats_entry_t *src);
+
+extern of_list_bsn_switch_pipeline_stats_entry_t *
+    of_list_bsn_switch_pipeline_stats_entry_OF_VERSION_1_3_dup(
+        of_list_bsn_switch_pipeline_stats_entry_t *src);
+
+extern of_list_bsn_vlan_counter_stats_entry_t *
+    of_list_bsn_vlan_counter_stats_entry_OF_VERSION_1_3_dup(
+        of_list_bsn_vlan_counter_stats_entry_t *src);
 
 extern of_list_bucket_t *
     of_list_bucket_OF_VERSION_1_3_dup(
@@ -5025,6 +5301,10 @@ extern of_list_table_stats_entry_t *
 extern of_list_uint32_t *
     of_list_uint32_OF_VERSION_1_3_dup(
         of_list_uint32_t *src);
+
+extern of_list_uint64_t *
+    of_list_uint64_OF_VERSION_1_3_dup(
+        of_list_uint64_t *src);
 
 extern of_list_uint8_t *
     of_list_uint8_OF_VERSION_1_3_dup(

@@ -119,7 +119,13 @@ extern void ind_core_bsn_sw_pipeline_stats_request_handler(
     indigo_cxn_id_t cxn_id);
 
 /* group_handlers.c */
-void ind_core_group_mod_handler(
+void ind_core_group_add_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_group_modify_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_group_delete_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 void ind_core_group_stats_request_handler(

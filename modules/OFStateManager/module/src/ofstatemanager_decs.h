@@ -41,4 +41,6 @@ extern ft_instance_t ind_core_ft;
 extern void ind_core_flow_entry_delete(ft_entry_t *entry,
                                        indigo_fi_flow_removed_t reason);
 
+void ind_core_group_init(void);
+
 #endif /* OFSTATEMANAGER_DECS_H */
