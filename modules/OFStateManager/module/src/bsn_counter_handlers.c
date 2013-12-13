@@ -109,10 +109,9 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
                 }
             }
 
-            /* HACK unable to truncate existing object */
-            of_object_delete(entry);
-            entry = of_bsn_vlan_counter_stats_entry_new(entries.version);
-            AIM_TRUE_OR_DIE(entry != NULL);
+            /* Truncate entry */
+            of_bsn_vlan_counter_stats_entry_init(entry, entry->version, -1, 0);
+            entry->wire_object.wbuf->current_bytes = entry->length;
         }
     } else {
         ind_core_bsn_vlan_counter_stats_entry_populate(entry, vlan_vid);
@@ -214,10 +213,9 @@ ind_core_bsn_port_counter_stats_request_handler(of_object_t *_obj,
                 }
             }
 
-            /* HACK unable to truncate existing object */
-            of_object_delete(entry);
-            entry = of_bsn_port_counter_stats_entry_new(entries.version);
-            AIM_TRUE_OR_DIE(entry != NULL);
+            /* Truncate entry */
+            of_bsn_port_counter_stats_entry_init(entry, entry->version, -1, 0);
+            entry->wire_object.wbuf->current_bytes = entry->length;
         }
 
         indigo_port_interface_list_destroy(port_list);
