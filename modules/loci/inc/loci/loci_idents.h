@@ -2613,40 +2613,40 @@
  *****************************************************************/
 
 /*
- * Defines for OF_GROUP_ADD
+ * Defines for OF_GROUP_MOD_COMMAND_ADD
  * Original name OFPGC_ADD
  */
-#define OF_GROUP_ADD_SUPPORTED(version)      \
+#define OF_GROUP_MOD_COMMAND_ADD_SUPPORTED(version)      \
     (((version) == OF_VERSION_1_1) || \
      ((version) == OF_VERSION_1_2) || \
      ((version) == OF_VERSION_1_3))
-#define OF_GROUP_ADD (0x0)
-#define OF_GROUP_ADD_BY_VERSION(version) (0x0)
-#define OF_GROUP_ADD_GENERIC 219
+#define OF_GROUP_MOD_COMMAND_ADD (0x0)
+#define OF_GROUP_MOD_COMMAND_ADD_BY_VERSION(version) (0x0)
+#define OF_GROUP_MOD_COMMAND_ADD_GENERIC 219
 
 /*
- * Defines for OF_GROUP_DELETE
+ * Defines for OF_GROUP_MOD_COMMAND_DELETE
  * Original name OFPGC_DELETE
  */
-#define OF_GROUP_DELETE_SUPPORTED(version)      \
+#define OF_GROUP_MOD_COMMAND_DELETE_SUPPORTED(version)      \
     (((version) == OF_VERSION_1_1) || \
      ((version) == OF_VERSION_1_2) || \
      ((version) == OF_VERSION_1_3))
-#define OF_GROUP_DELETE (0x2)
-#define OF_GROUP_DELETE_BY_VERSION(version) (0x2)
-#define OF_GROUP_DELETE_GENERIC 220
+#define OF_GROUP_MOD_COMMAND_DELETE (0x2)
+#define OF_GROUP_MOD_COMMAND_DELETE_BY_VERSION(version) (0x2)
+#define OF_GROUP_MOD_COMMAND_DELETE_GENERIC 220
 
 /*
- * Defines for OF_GROUP_MODIFY
+ * Defines for OF_GROUP_MOD_COMMAND_MODIFY
  * Original name OFPGC_MODIFY
  */
-#define OF_GROUP_MODIFY_SUPPORTED(version)      \
+#define OF_GROUP_MOD_COMMAND_MODIFY_SUPPORTED(version)      \
     (((version) == OF_VERSION_1_1) || \
      ((version) == OF_VERSION_1_2) || \
      ((version) == OF_VERSION_1_3))
-#define OF_GROUP_MODIFY (0x1)
-#define OF_GROUP_MODIFY_BY_VERSION(version) (0x1)
-#define OF_GROUP_MODIFY_GENERIC 221
+#define OF_GROUP_MOD_COMMAND_MODIFY (0x1)
+#define OF_GROUP_MOD_COMMAND_MODIFY_BY_VERSION(version) (0x1)
+#define OF_GROUP_MOD_COMMAND_MODIFY_GENERIC 221
 
 /****************************************************************
  * Identifiers from ofp_group_mod_failed_code
