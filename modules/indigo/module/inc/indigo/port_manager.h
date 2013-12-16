@@ -179,6 +179,9 @@ extern indigo_error_t indigo_port_stats_get(
  * @param [out] port_stats Statistics for the port
  *
  * Only supported counters need to be set. The rest will default to -1.
+ *
+ * If the port number is invalid or no stats are available, don't set any
+ * of the counters.
  */
 
 void indigo_port_extended_stats_get(

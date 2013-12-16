@@ -145,6 +145,9 @@ extern indigo_error_t indigo_fwd_table_stats_get(
  * @param [out] vlan_stats Statistics for the VLAN
  *
  * Only supported counters need to be set. The rest will default to -1.
+ *
+ * If the VLAN is invalid or no stats are available, don't set any of the
+ * counters.
  */
 
 void indigo_fwd_vlan_stats_get(
