@@ -140,6 +140,21 @@ extern indigo_error_t indigo_fwd_table_stats_get(
     of_table_stats_reply_t **table_stats_reply);
 
 /**
+ * @brief VLAN stats
+ * @param vlan_vid The ID of the VLAN whose stats are to be retrieved
+ * @param [out] vlan_stats Statistics for the VLAN
+ *
+ * Only supported counters need to be set. The rest will default to -1.
+ *
+ * If the VLAN is invalid or no stats are available, don't set any of the
+ * counters.
+ */
+
+void indigo_fwd_vlan_stats_get(
+    uint16_t vlan_vid,
+    indigo_fi_vlan_stats_t *vlan_stats);
+
+/**
  * @brief Packet out operation
  * @param packet_out The LOXI packet out message
  *
