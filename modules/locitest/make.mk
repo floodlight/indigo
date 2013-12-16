@@ -24,6 +24,12 @@
 #  locitest public includes are defined here
 #
 ###############################################################################
-locitest_INCLUDES := -I $(dir $(lastword $(MAKEFILE_LIST)))inc
-locitest_INTERNAL_INCLUDES := -I $(dir $(lastword $(MAKEFILE_LIST)))src
+LOCITEST := $(SUBMODULE_LOXIGEN_ARTIFACTS)/locitest
+LOCI := $(SUBMODULE_LOXIGEN_ARTIFACTS)/loci
 
+locitest_INCLUDES := -I $(LOCITEST)/inc -I $(LOCI)/src
+locitest_INTERNAL_INCLUDES := -I $(LOCITEST)/src
+
+LIBRARY := locitest
+locitest_SUBDIR := $(LOCITEST)/src
+include $(BUILDER)/lib.mk
