@@ -1,17 +1,1 @@
 loci.mk
-module/inc/loci/loci.h
-module/inc/loci/loci_base.h
-module/inc/loci/loci_doc.h
-module/inc/loci/loci_validator.h
-module/inc/loci/loci_idents.h
-module/inc/loci/of_match.h
-module/inc/loci/loci_obj_dump.h
-module/inc/loci/loci_obj_show.h
-module/src/loci.c
-module/src/loci_obj_dump.c
-module/src/loci_obj_show.c
-module/src/loci_validator.c
-module/src/of_match.c
-module/src/of_type_data.c
-
-
