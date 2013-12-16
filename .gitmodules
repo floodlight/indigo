@@ -4,3 +4,6 @@
 [submodule "submodules/bigcode"]
 	path = submodules/bigcode
 	url = git@github.com:floodlight/bigcode
+[submodule "submodules/loxigen-artifacts"]
+	path = submodules/loxigen-artifacts
+	url = git@github.com:floodlight/loxigen-artifacts.git
