@@ -138,4 +138,12 @@ void ind_core_group_features_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 
+/* bsn_counter_handlers.c */
+void ind_core_bsn_vlan_counter_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_port_counter_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+
 #endif /* _OF_STATE_HANDLERS_H_ */

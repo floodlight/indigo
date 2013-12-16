@@ -32,6 +32,7 @@
 #include <indigo/of_connection_manager.h>
 #include <indigo/of_state_manager.h>
 #include <indigo/forwarding.h>
+#include <indigo/port_manager.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -265,6 +266,17 @@ indigo_fwd_experimenter(of_experimenter_t *experimenter,
     return INDIGO_ERROR_NONE;
 }
 
+indigo_error_t
+indigo_port_interface_list(indigo_port_info_t **list)
+{
+    *list = NULL;
+    return INDIGO_ERROR_NONE;
+}
+
+void
+indigo_port_interface_list_destroy(indigo_port_info_t *list)
+{
+}
 
 /**
  * Notify forwarding of changes in expiration processing behavior
