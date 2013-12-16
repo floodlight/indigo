@@ -43,6 +43,18 @@ append_uint64(of_list_uint64_t *list, uint64_t value)
     of_uint64_value_set(&elem, value);
 }
 
+/*
+ * Truncate the object to its initial length.
+ *
+ * This is called by the stats handlers to reuse a single allocated entry.
+ */
+static void
+truncate_of_object(of_object_t *obj)
+{
+    of_object_init_map[obj->object_id](obj, obj->version, -1, 0);
+    obj->wire_object.wbuf->current_bytes = obj->length;
+}
+
 static void
 ind_core_bsn_vlan_counter_stats_entry_populate(of_bsn_vlan_counter_stats_entry_t *entry,
                                                uint16_t vlan_vid)
@@ -118,9 +130,7 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
                 }
             }
 
-            /* Truncate entry */
-            of_bsn_vlan_counter_stats_entry_init(entry, entry->version, -1, 0);
-            entry->wire_object.wbuf->current_bytes = entry->length;
+            truncate_of_object(entry);
         }
     } else {
         ind_core_bsn_vlan_counter_stats_entry_populate(entry, vlan_vid);
@@ -223,9 +233,7 @@ ind_core_bsn_port_counter_stats_request_handler(of_object_t *_obj,
                 }
             }
 
-            /* Truncate entry */
-            of_bsn_port_counter_stats_entry_init(entry, entry->version, -1, 0);
-            entry->wire_object.wbuf->current_bytes = entry->length;
+            truncate_of_object(entry);
         }
 
         indigo_port_interface_list_destroy(port_list);
