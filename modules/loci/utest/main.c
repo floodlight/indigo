@@ -24,7 +24,6 @@
  *  loci Unit Testing
  *
  *****************************************************************************/
-#include <loci/loci_config.h>
 #include <loci/loci.h>
 #include <stdio.h>
 #include <stdlib.h>
