@@ -185,8 +185,9 @@ ind_core_bsn_port_counter_stats_request_handler(of_object_t *_obj,
         if (indigo_port_interface_list(&port_list) < 0) {
             of_object_delete(reply);
             of_object_delete(entry);
-            /* XXX no defined error code */
-            indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+            indigo_cxn_send_error_reply(cxn_id, obj,
+                                        OF_ERROR_TYPE_BAD_REQUEST,
+                                        OF_REQUEST_FAILED_EPERM);
             return;
         }
 
