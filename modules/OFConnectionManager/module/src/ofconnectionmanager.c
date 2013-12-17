@@ -739,7 +739,10 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
         uint32_t role;
 
         of_bsn_controller_connection_init(&entry, list->version, -1, 1);
-        of_list_bsn_controller_connection_append_bind(list, &entry);
+        if (of_list_bsn_controller_connection_append_bind(list, &entry) < 0) {
+            LOG_ERROR("Failed to append controller connection to list");
+            break;
+        }
 
         if (CXN_HANDSHAKE_COMPLETE(cxn)) {
             of_bsn_controller_connection_state_set(&entry, 1);
