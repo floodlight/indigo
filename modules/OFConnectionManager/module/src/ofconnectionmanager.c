@@ -678,6 +678,32 @@ indigo_cxn_connection_status_get(
 }
 
 /**
+ * Send a role status message
+ *
+ * These are sent when a controller's role changes for any reason
+ * other than it directly sending a role request message.
+ */
+void
+ind_cxn_send_role_status(connection_t *cxn, int reason)
+{
+    /* Need to make translate_to_openflow_role public */
+    /* Master -> slave is currently the only possible case */
+    INDIGO_ASSERT(cxn->status.role == INDIGO_CXN_R_SLAVE);
+
+    if (cxn->status.negotiated_version == OF_VERSION_1_3) {
+        of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
+        if (msg == NULL) {
+            LOG_INFO("Failed to allocate role status message");
+            return;
+        }
+        of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
+        of_bsn_role_status_reason_set(msg, reason);
+        of_bsn_role_status_generation_id_set(msg, ind_cxn_generation_id);
+        indigo_cxn_send_controller_message(cxn->cxn_id, msg);
+    }
+}
+
+/**
  * Change the master connection
  *
  * @param master_id The connection id of the new master
@@ -696,7 +722,62 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
         } else if (cxn->status.role == INDIGO_CXN_R_MASTER) {
             LOG_INFO("Downgrading cxn %s to slave", cxn_id_ip_string(cxn_id));
             cxn->status.role = INDIGO_CXN_R_SLAVE;
+            ind_cxn_send_role_status(
+                cxn, OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
         }
+    }
+}
+
+void
+ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
+        of_bsn_controller_connection_t entry;
+        of_desc_str_t uri;
+        uint32_t role;
+
+        of_bsn_controller_connection_init(&entry, list->version, -1, 1);
+        if (of_list_bsn_controller_connection_append_bind(list, &entry) < 0) {
+            LOG_ERROR("Failed to append controller connection to list");
+            break;
+        }
+
+        if (CXN_HANDSHAKE_COMPLETE(cxn)) {
+            of_bsn_controller_connection_state_set(&entry, 1);
+        } else {
+            of_bsn_controller_connection_state_set(&entry, 0);
+        }
+
+        switch (cxn->status.role) {
+        case INDIGO_CXN_R_MASTER:
+            role = OF_CONTROLLER_ROLE_MASTER;
+            break;
+        case INDIGO_CXN_R_SLAVE:
+            role = OF_CONTROLLER_ROLE_SLAVE;
+            break;
+        case INDIGO_CXN_R_EQUAL:
+            role = OF_CONTROLLER_ROLE_EQUAL;
+            break;
+        default:
+            ASSERT(0);
+            role = -1;
+            break;
+        }
+
+        of_bsn_controller_connection_role_set(&entry, role);
+
+        memset(uri, 0, sizeof(uri));
+
+        if (cxn->protocol_params.header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
+            indigo_cxn_params_tcp_over_ipv4_t *proto =
+                &cxn->protocol_params.tcp_over_ipv4;
+            snprintf(uri, sizeof(uri), "tcp://%s:%d",
+                proto->controller_ip, proto->controller_port);
+        }
+
+        of_bsn_controller_connection_uri_set(&entry, uri);
     }
 }
 

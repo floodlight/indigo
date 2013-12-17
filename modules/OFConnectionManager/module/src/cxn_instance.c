@@ -833,6 +833,38 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
 }
 
 /**
+ * Handle a BSN controller connections request
+ */
+
+static void
+bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_bsn_controller_connections_request_t *request = _obj;
+    of_bsn_controller_connections_reply_t *reply;
+    uint32_t xid;
+
+    of_bsn_controller_connections_request_xid_get(request, &xid);
+
+    reply = of_bsn_controller_connections_reply_new(request->version);
+    if (reply == NULL) {
+        LOG_ERROR(cxn, "Failed to allocate of_bsn_controller_connections_reply");
+        of_object_delete(request);
+        return;
+    }
+
+    of_bsn_controller_connections_reply_xid_set(reply, xid);
+
+    of_object_delete(request);
+
+    of_list_bsn_controller_connection_t list;
+    of_bsn_controller_connections_reply_connections_bind(reply, &list);
+
+    ind_cxn_populate_connection_list(&list);
+
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+}
+
+/**
  * Callback routine for message object delete
  *
  * @param obj The object about to be deleted
@@ -937,6 +969,10 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 
     case OF_BSN_TIME_REQUEST:
         bsn_time_request_handle(cxn, obj);
+        return;
+
+    case OF_BSN_CONTROLLER_CONNECTIONS_REQUEST:
+        bsn_controller_connections_request_handle(cxn, obj);
         return;
 
     /* Check permissions and fall through */
