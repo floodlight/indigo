@@ -728,6 +728,56 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
     }
 }
 
+void
+ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
+{
+    indigo_cxn_id_t cxn_id;
+    connection_t *cxn;
+    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
+        of_bsn_controller_connection_t entry;
+        of_desc_str_t uri;
+        uint32_t role;
+
+        of_bsn_controller_connection_init(&entry, list->version, -1, 1);
+        of_list_bsn_controller_connection_append_bind(list, &entry);
+
+        if (CXN_HANDSHAKE_COMPLETE(cxn)) {
+            of_bsn_controller_connection_state_set(&entry, 1);
+        } else {
+            of_bsn_controller_connection_state_set(&entry, 0);
+        }
+
+        switch (cxn->status.role) {
+        case INDIGO_CXN_R_MASTER:
+            role = OF_CONTROLLER_ROLE_MASTER;
+            break;
+        case INDIGO_CXN_R_SLAVE:
+            role = OF_CONTROLLER_ROLE_SLAVE;
+            break;
+        case INDIGO_CXN_R_EQUAL:
+            role = OF_CONTROLLER_ROLE_EQUAL;
+            break;
+        default:
+            ASSERT(0);
+            role = -1;
+            break;
+        }
+
+        of_bsn_controller_connection_role_set(&entry, role);
+
+        memset(uri, 0, sizeof(uri));
+
+        if (cxn->protocol_params.header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
+            indigo_cxn_params_tcp_over_ipv4_t *proto =
+                &cxn->protocol_params.tcp_over_ipv4;
+            snprintf(uri, sizeof(uri), "tcp://%s:%d",
+                proto->controller_ip, proto->controller_port);
+        }
+
+        of_bsn_controller_connection_uri_set(&entry, uri);
+    }
+}
+
 /**
  * Is the given LOCI object actually a message object?
  */
