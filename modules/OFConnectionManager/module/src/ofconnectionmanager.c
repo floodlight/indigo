@@ -678,6 +678,32 @@ indigo_cxn_connection_status_get(
 }
 
 /**
+ * Send a role status message
+ *
+ * These are sent when a controller's role changes for any reason
+ * other than it directly sending a role request message.
+ */
+void
+ind_cxn_send_role_status(connection_t *cxn, int reason)
+{
+    /* Need to make translate_to_openflow_role public */
+    /* Master -> slave is currently the only possible case */
+    INDIGO_ASSERT(cxn->status.role == INDIGO_CXN_R_SLAVE);
+
+    if (cxn->status.negotiated_version == OF_VERSION_1_3) {
+        of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
+        if (msg == NULL) {
+            LOG_INFO("Failed to allocate role status message");
+            return;
+        }
+        of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
+        of_bsn_role_status_reason_set(msg, reason);
+        of_bsn_role_status_generation_id_set(msg, ind_cxn_generation_id);
+        indigo_cxn_send_controller_message(cxn->cxn_id, msg);
+    }
+}
+
+/**
  * Change the master connection
  *
  * @param master_id The connection id of the new master
@@ -696,6 +722,8 @@ ind_cxn_change_master(indigo_cxn_id_t master_id)
         } else if (cxn->status.role == INDIGO_CXN_R_MASTER) {
             LOG_INFO("Downgrading cxn %s to slave", cxn_id_ip_string(cxn_id));
             cxn->status.role = INDIGO_CXN_R_SLAVE;
+            ind_cxn_send_role_status(
+                cxn, OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
         }
     }
 }
