@@ -390,19 +390,6 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         break;
 
     case INDIGO_CXN_S_CLOSING:
-#if defined(OF_OBJECT_TRACKING)
-#define VERBOSE_LOG_ENABLED 1    /* @FIXME Check log level */
-        if ((cxn->outstanding_ops) && VERBOSE_LOG_ENABLED) {
-            biglist_t *elt;
-            of_object_t *obj;
-
-            LOG_VERBOSE(cxn, "Closing connnection with outstanding ops");
-            BIGLIST_FOREACH_DATA(elt, cxn->outstanding_ops,
-                                 of_object_t *, obj) {
-                of_object_track_output(obj, (loci_writer_f)aim_printf, AIM_LOG_STRUCT_POINTER->pvs);
-            }
-        }
-#endif
         ind_soc_timer_event_unregister(periodic_keepalive, (void *)cxn);
         ind_soc_timer_event_register_with_priority(
             cxn_closing_timeout, (void *)cxn,
@@ -888,12 +875,6 @@ cxn_object_delete_cb(of_object_t *obj)
 
     INDIGO_ASSERT(cxn->outstanding_op_cnt > 0);
     cxn->outstanding_op_cnt -= 1;
-#if defined(OF_OBJECT_TRACKING)
-    /* Delete from list; consider optimizing this */
-    cxn->outstanding_ops = biglist_remove(cxn->outstanding_ops, (void *)obj);
-    INDIGO_ASSERT(cxn->outstanding_op_cnt ==
-                  biglist_length(cxn->outstanding_ops));
-#endif
 
     LOG_TRACE(cxn, "Op count %d", cxn->outstanding_op_cnt);
 
@@ -928,9 +909,6 @@ cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
     obj->track_info.delete_cb = cxn_object_delete_cb;
     obj->track_info.delete_cookie = cxn_to_cookie(cxn);
     cxn->outstanding_op_cnt++;
-#if defined(OF_OBJECT_TRACKING)
-    cxn->outstanding_ops = biglist_prepend(cxn->outstanding_ops, (void *)obj);
-#endif
 }
 
 
