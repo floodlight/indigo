@@ -93,7 +93,6 @@ typedef struct connection_s {
 
     uint64_t packet_ins;
 
-    biglist_t *outstanding_ops; /* Used only if OF_OBJECT_TRACKING is on */
     int outstanding_op_cnt; /* Number of outstanding operations */
     struct {
         unsigned char pendingf;           /* Barrier reply pending flag */
