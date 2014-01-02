@@ -46,6 +46,9 @@
 
 #include "ofstatemanager_decs.h"
 
+/* Defined in gentable_test.c */
+int test_gentable(void);
+
 /* Must be an even number */
 #define TEST_FLOW_COUNT 1000
 
@@ -1448,6 +1451,8 @@ aim_main(int argc, char* argv[])
     RUN_TEST(packet_in_listeners);
     RUN_TEST(port_status_listeners);
     RUN_TEST(message_listeners);
+
+    RUN_TEST(gentable);
 
     /* Kill logging for OFStateManager as next tests gen errors */
     aim_log_pvs_set(aim_log_find("ofstatemanager"), NULL);
