@@ -346,6 +346,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_gentable_entry_add_handler(obj, cxn);
         break;
 
+    case OF_BSN_GENTABLE_ENTRY_DELETE:
+        ind_core_bsn_gentable_entry_delete_handler(obj, cxn);
+        break;
+
     /****************************************************************
      * Extension messages
      ****************************************************************/

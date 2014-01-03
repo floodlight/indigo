@@ -42,6 +42,7 @@
 #define NUM_ENTRIES 10
 
 static void do_add(uint16_t table_id, uint32_t port, of_mac_addr_t mac);
+static void do_delete(uint16_t table_id, uint32_t port);
 static void parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port);
 
 struct test_entry {
@@ -93,12 +94,12 @@ test_gentable_entry_add(void)
     of_mac_addr_t mac2 = { { 0xa, 0xb, 0xc, 0xd, 0xe, 0xf } };
 
     memset(tables, 0, sizeof(tables));
-
     indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
 
+    memset(tables, 0, sizeof(tables));
     do_add(0, 1, mac1);
     do_add(0, 2, mac2);
-
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_add == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[2].count_add == 1);
@@ -107,9 +108,7 @@ test_gentable_entry_add(void)
     AIM_TRUE_OR_DIE(tables[0].count_op == 2);
 
     memset(tables, 0, sizeof(tables));
-
     indigo_core_gentable_unregister(gentable);
-
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_delete == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[2].count_delete == 1);
@@ -120,11 +119,55 @@ test_gentable_entry_add(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_entry_delete(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+    of_mac_addr_t mac1 = { { 1, 2, 3, 4, 5, 6 } };
+    of_mac_addr_t mac2 = { { 0xa, 0xb, 0xc, 0xd, 0xe, 0xf } };
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
+
+    memset(tables, 0, sizeof(tables));
+    do_add(0, 1, mac1);
+    do_add(0, 2, mac2);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_add == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_add == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_add == 2);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 2);
+
+    memset(tables, 0, sizeof(tables));
+    do_delete(0, 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 1);
+
+    memset(tables, 0, sizeof(tables));
+    do_delete(0, 2);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 1);
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_unregister(gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
     RUN_TEST(gentable_register);
     RUN_TEST(gentable_entry_add);
+    RUN_TEST(gentable_entry_delete);
     return TEST_PASS;
 }
 
@@ -161,6 +204,27 @@ do_add(uint16_t table_id, uint32_t port, of_mac_addr_t mac)
             of_object_delete(tlv);
         }
         AIM_TRUE_OR_DIE(of_bsn_gentable_entry_add_value_set(obj, list) == 0);
+        of_object_delete(list);
+    }
+
+    indigo_core_receive_controller_message(0, obj);
+}
+
+static void
+do_delete(uint16_t table_id, uint32_t port)
+{
+    of_object_t *obj = of_bsn_gentable_entry_delete_new(OF_VERSION_1_3);
+    of_bsn_gentable_entry_delete_xid_set(obj, 0x12345678);
+    of_bsn_gentable_entry_delete_table_id_set(obj, table_id);
+    {
+        of_object_t *list = of_list_bsn_tlv_new(OF_VERSION_1_3);;
+        {
+            of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+            of_bsn_tlv_port_value_set(tlv, port);
+            of_list_append(list, tlv);
+            of_object_delete(tlv);
+        }
+        AIM_TRUE_OR_DIE(of_bsn_gentable_entry_delete_key_set(obj, list) == 0);
         of_object_delete(list);
     }
 

@@ -46,6 +46,8 @@ static void update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src
 static uint32_t hash_key(of_list_bsn_tlv_t *key);
 static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash);
 static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
+static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
+static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
 
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
@@ -221,6 +223,41 @@ ind_core_bsn_gentable_entry_add_handler(
     of_object_delete(obj);
 }
 
+void
+ind_core_bsn_gentable_entry_delete_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    of_list_bsn_tlv_t key;
+    struct ind_core_gentable_entry *entry;
+    indigo_error_t rv;
+
+    of_bsn_gentable_entry_delete_table_id_get(obj, &table_id);
+    of_bsn_gentable_entry_delete_key_bind(obj, &key);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable id %d", table_id);
+    }
+
+    entry = find_entry_by_key(gentable, &key);
+    if (entry == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable entry");
+    }
+
+    rv = delete_entry(gentable, entry);
+    if (rv < 0) {
+        /* TODO error */
+        AIM_DIE("Failed to delete entry");
+    }
+
+    of_object_delete(obj);
+}
+
 
 /* Utility functions */
 
@@ -301,15 +338,54 @@ static indigo_error_t
 delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry)
 {
     indigo_error_t rv;
+    struct ind_core_gentable_checksum_bucket *checksum_bucket;
 
     rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
     if (rv < 0) {
         return rv;
     }
 
+    list_remove(&entry->key_links);
+    list_remove(&entry->checksum_links);
+
+    checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
+
+    update_checksum(&checksum_bucket->checksum, &entry->checksum);
+    update_checksum(&gentable->checksum, &entry->checksum);
+
     of_object_delete(entry->key);
     of_object_delete(entry->value);
     aim_free(entry);
 
     return INDIGO_ERROR_NONE;
+}
+
+static struct ind_core_gentable_entry *
+find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key)
+{
+    list_links_t *cur, *next;
+
+    uint32_t hash = hash_key(key);
+    list_head_t *bucket = find_key_bucket(gentable, hash);
+
+    LIST_FOREACH_SAFE(bucket, cur, next) {
+        struct ind_core_gentable_entry *entry =
+            container_of(cur, key_links, struct ind_core_gentable_entry);
+        if (entry->key_hash == hash && key_equality(key, entry->key)) {
+            return entry;
+        }
+    }
+
+    return NULL;
+}
+
+static bool
+key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b)
+{
+    if (a->length != b->length) {
+        return false;
+    }
+
+    return memcmp(OF_OBJECT_BUFFER_INDEX(a, 0),
+                  OF_OBJECT_BUFFER_INDEX(b, 0), a->length) == 0;
 }
