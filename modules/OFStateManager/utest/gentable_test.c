@@ -162,12 +162,43 @@ test_gentable_entry_delete(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_entry_modify(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+    of_mac_addr_t mac1 = { { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 } };
+    of_mac_addr_t mac2 = { { 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f } };
+    of_mac_addr_t mac3 = { { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f } };
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
+
+    do_add(0, 1, mac1);
+    do_add(0, 2, mac2);
+
+    memset(tables, 0, sizeof(tables));
+    do_add(0, 1, mac3);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_modify == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_modify == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 1);
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_unregister(gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 2);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
     RUN_TEST(gentable_register);
     RUN_TEST(gentable_entry_add);
     RUN_TEST(gentable_entry_delete);
+    RUN_TEST(gentable_entry_modify);
     return TEST_PASS;
 }
 
@@ -278,6 +309,22 @@ test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *v
 static indigo_error_t
 test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value)
 {
+    struct test_table *table = table_priv;
+
+    of_port_no_t port;
+    parse_key(key, &port);
+
+    AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
+
+    struct test_entry *entry = &table->entries[port];
+    AIM_TRUE_OR_DIE(entry == entry_priv);
+
+    table->count_op++;
+    table->count_modify++;
+
+    entry->count_op++;
+    entry->count_modify++;
+
     return INDIGO_ERROR_NONE;
 }
 

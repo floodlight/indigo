@@ -178,6 +178,7 @@ ind_core_bsn_gentable_entry_add_handler(
     void *priv = NULL;
     indigo_error_t rv;
     struct ind_core_gentable_checksum_bucket *checksum_bucket;
+    struct ind_core_gentable_entry *entry;
 
     of_bsn_gentable_entry_add_table_id_get(obj, &table_id);
     of_bsn_gentable_entry_add_key_bind(obj, &key);
@@ -189,35 +190,60 @@ ind_core_bsn_gentable_entry_add_handler(
         AIM_DIE("Nonexistent gentable id %d", table_id);
     }
 
-    /* TODO lookup on key to see if this is a modify */
+    entry = find_entry_by_key(gentable, &key);
 
-    rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
-    if (rv != INDIGO_ERROR_NONE) {
-        /* TODO error */
-        AIM_LOG_ERROR("%s gentable add failed: %s",
-                      gentable->name, indigo_strerror(rv));
-        AIM_DIE("NYI");
-        of_object_delete(obj);
+    if (entry == NULL) {
+        /* Adding a new entry */
+        rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
+        if (rv != INDIGO_ERROR_NONE) {
+            /* TODO error */
+            AIM_LOG_ERROR("%s gentable add failed: %s",
+                        gentable->name, indigo_strerror(rv));
+            AIM_DIE("NYI");
+            of_object_delete(obj);
+        }
+
+        /* Allocate new entry */
+        entry = aim_zmalloc(sizeof(*entry));
+        entry->key = of_object_dup(&key);
+
+        entry->key_hash = hash_key(&key);
+        entry->priv = priv;
+
+        /* Insert into key bucket */
+        list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
+    } else {
+        /* Modifying an existing entry */
+        rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
+        if (rv != INDIGO_ERROR_NONE) {
+            /* TODO error */
+            AIM_LOG_ERROR("%s gentable modify failed: %s",
+                        gentable->name, indigo_strerror(rv));
+            AIM_DIE("NYI");
+            of_object_delete(obj);
+        }
+
+        of_object_delete(entry->value);
+
+        /* Remove from old checksum bucket */
+        checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
+        list_remove(&entry->checksum_links);
+        update_checksum(&checksum_bucket->checksum, &entry->checksum);
+
+        /* Remove from table checksum */
+        update_checksum(&gentable->checksum, &entry->checksum);
     }
 
-    /* Allocate new entry */
-    struct ind_core_gentable_entry *entry = aim_zmalloc(sizeof(*entry));
-    entry->key = of_object_dup(&key);
+    /* Update value and checksum */
     entry->value = of_object_dup(&value);
     of_bsn_gentable_entry_add_checksum_get(obj, &entry->checksum);
-
-    entry->key_hash = hash_key(&key);
-    entry->priv = priv;
-
-    /* Insert into key bucket */
-    list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
 
     /* Insert into checksum bucket */
     checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
     list_push(&checksum_bucket->entries, &entry->checksum_links);
     update_checksum(&checksum_bucket->checksum, &entry->checksum);
 
-    /* Update table checksum */
+    /* Add to table checksum */
     update_checksum(&gentable->checksum, &entry->checksum);
 
     of_object_delete(obj);
