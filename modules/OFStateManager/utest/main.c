@@ -1452,7 +1452,9 @@ aim_main(int argc, char* argv[])
     RUN_TEST(port_status_listeners);
     RUN_TEST(message_listeners);
 
-    RUN_TEST(gentable);
+    if (test_gentable() != TEST_PASS) {
+        return 1;
+    }
 
     /* Kill logging for OFStateManager as next tests gen errors */
     aim_log_pvs_set(aim_log_find("ofstatemanager"), NULL);
