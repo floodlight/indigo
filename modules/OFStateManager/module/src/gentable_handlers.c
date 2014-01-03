@@ -36,6 +36,8 @@
 
 #define MAX_GENTABLES 16
 
+struct ind_core_gentable_entry;
+
 static indigo_core_gentable_t *find_gentable_by_id(uint32_t table_id);
 static uint16_t alloc_table_id(void);
 static uint8_t calc_checksum_buckets_shift(uint32_t checksum_buckets_size);
@@ -43,6 +45,7 @@ static struct ind_core_gentable_checksum_bucket *find_checksum_bucket(indigo_cor
 static void update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
 static uint32_t hash_key(of_list_bsn_tlv_t *key);
 static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash);
+static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
@@ -134,9 +137,23 @@ indigo_core_gentable_register(
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
 {
+    indigo_error_t rv;
+    int i;
+
     AIM_TRUE_OR_DIE(gentables[gentable->table_id] == gentable);
 
-    /* TODO clear table */
+    /* Delete all entries */
+    for (i = 0; i < gentable->key_buckets_size; i++) {
+        list_links_t *cur, *next;
+        LIST_FOREACH_SAFE(&gentable->key_buckets[i], cur, next) {
+            struct ind_core_gentable_entry *entry =
+                container_of(cur, key_links, struct ind_core_gentable_entry);
+            rv = delete_entry(gentable, entry);
+            if (rv < 0) {
+                AIM_LOG_ERROR("failed to delete %s gentable entry during unregister, leaking", gentable->name);
+            }
+        }
+    }
 
     gentables[gentable->table_id] = NULL;
 
@@ -188,6 +205,7 @@ ind_core_bsn_gentable_entry_add_handler(
     of_bsn_gentable_entry_add_checksum_get(obj, &entry->checksum);
 
     entry->key_hash = hash_key(&key);
+    entry->priv = priv;
 
     /* Insert into key bucket */
     list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
@@ -277,4 +295,21 @@ static list_head_t *
 find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash)
 {
     return &gentable->key_buckets[key_hash & (gentable->key_buckets_size - 1)];
+}
+
+static indigo_error_t
+delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry)
+{
+    indigo_error_t rv;
+
+    rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    if (rv < 0) {
+        return rv;
+    }
+
+    of_object_delete(entry->key);
+    of_object_delete(entry->value);
+    aim_free(entry);
+
+    return INDIGO_ERROR_NONE;
 }

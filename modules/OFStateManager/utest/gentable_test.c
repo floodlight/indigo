@@ -49,6 +49,7 @@ struct test_entry {
     int count_add;
     int count_modify;
     int count_delete;
+    int count_stats;
 };
 
 struct test_table {
@@ -56,6 +57,7 @@ struct test_table {
     int count_add;
     int count_modify;
     int count_delete;
+    int count_stats;
     struct test_entry entries[NUM_ENTRIES];
 };
 
@@ -104,7 +106,16 @@ test_gentable_entry_add(void)
     AIM_TRUE_OR_DIE(tables[0].count_add == 2);
     AIM_TRUE_OR_DIE(tables[0].count_op == 2);
 
+    memset(tables, 0, sizeof(tables));
+
     indigo_core_gentable_unregister(gentable);
+
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_delete == 2);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 2);
 
     return TEST_PASS;
 }
@@ -209,6 +220,22 @@ test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
 static indigo_error_t
 test_gentable_delete(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key)
 {
+    struct test_table *table = table_priv;
+
+    of_port_no_t port;
+    parse_key(key, &port);
+
+    AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
+
+    struct test_entry *entry = &table->entries[port];
+    AIM_TRUE_OR_DIE(entry == entry_priv);
+
+    table->count_op++;
+    table->count_delete++;
+
+    entry->count_op++;
+    entry->count_delete++;
+
     return INDIGO_ERROR_NONE;
 }
 
