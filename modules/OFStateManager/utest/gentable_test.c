@@ -43,6 +43,7 @@
 
 static void do_add(uint16_t table_id, uint32_t port, of_mac_addr_t mac);
 static void do_delete(uint16_t table_id, uint32_t port);
+static void do_clear(uint16_t table_id);
 static void parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port);
 
 struct test_entry {
@@ -187,6 +188,35 @@ test_gentable_entry_modify(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_clear(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
+
+    do_add(0, 1, mac1);
+    do_add(0, 2, mac2);
+
+    memset(tables, 0, sizeof(tables));
+    do_clear(0);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_delete == 1);
+    AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
+    AIM_TRUE_OR_DIE(tables[0].count_delete == 2);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 2);
+
+    memset(tables, 0, sizeof(tables));
+    indigo_core_gentable_unregister(gentable);
+    AIM_TRUE_OR_DIE(tables[0].count_op == 0);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -194,6 +224,7 @@ test_gentable(void)
     RUN_TEST(gentable_entry_add);
     RUN_TEST(gentable_entry_delete);
     RUN_TEST(gentable_entry_modify);
+    RUN_TEST(gentable_clear);
     return TEST_PASS;
 }
 
@@ -252,6 +283,21 @@ do_delete(uint16_t table_id, uint32_t port)
         }
         AIM_TRUE_OR_DIE(of_bsn_gentable_entry_delete_key_set(obj, list) == 0);
         of_object_delete(list);
+    }
+
+    indigo_core_receive_controller_message(0, obj);
+}
+
+static void
+do_clear(uint16_t table_id)
+{
+    of_object_t *obj = of_bsn_gentable_clear_request_new(OF_VERSION_1_3);
+    of_bsn_gentable_clear_request_xid_set(obj, 0x12345678);
+    of_bsn_gentable_clear_request_table_id_set(obj, table_id);
+    {
+        of_checksum_128_t checksum = { 0x0, 0x0 };
+        of_bsn_gentable_clear_request_checksum_set(obj, checksum);
+        of_bsn_gentable_clear_request_checksum_mask_set(obj, checksum);
     }
 
     indigo_core_receive_controller_message(0, obj);

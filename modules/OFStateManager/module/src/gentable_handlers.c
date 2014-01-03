@@ -284,6 +284,55 @@ ind_core_bsn_gentable_entry_delete_handler(
     of_object_delete(obj);
 }
 
+void
+ind_core_bsn_gentable_clear_request_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    indigo_error_t rv;
+    uint32_t error_count = 0;
+    uint32_t deleted_count = 0;
+    uint32_t xid;
+    of_bsn_gentable_clear_reply_t *reply;
+    int i;
+
+    of_bsn_gentable_clear_request_xid_get(obj, &xid);
+    of_bsn_gentable_clear_request_table_id_get(obj, &table_id);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable id %d", table_id);
+    }
+
+    /* TODO respect checksum/mask */
+    /* TODO convert to a long running task */
+
+    for (i = 0; i < gentable->key_buckets_size; i++) {
+        list_links_t *cur, *next;
+        LIST_FOREACH_SAFE(&gentable->key_buckets[i], cur, next) {
+            struct ind_core_gentable_entry *entry =
+                container_of(cur, key_links, struct ind_core_gentable_entry);
+            rv = delete_entry(gentable, entry);
+            if (rv < 0) {
+                error_count++;
+            } else {
+                deleted_count++;
+            }
+        }
+    }
+
+    reply = of_bsn_gentable_clear_reply_new(obj->version);
+    of_bsn_gentable_clear_reply_xid_set(reply, xid);
+    of_bsn_gentable_clear_reply_deleted_count_set(reply, deleted_count);
+    of_bsn_gentable_clear_reply_error_count_set(reply, error_count);
+    indigo_cxn_send_controller_message(cxn_id, reply);
+
+    of_object_delete(obj);
+}
+
 
 /* Utility functions */
 
