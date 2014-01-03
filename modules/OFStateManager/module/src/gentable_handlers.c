@@ -333,6 +333,60 @@ ind_core_bsn_gentable_clear_request_handler(
     of_object_delete(obj);
 }
 
+void
+ind_core_bsn_gentable_entry_stats_request_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    uint32_t xid;
+    of_bsn_gentable_entry_stats_reply_t *reply;
+    int i;
+    of_list_bsn_gentable_entry_stats_entry_t stats_entries;
+    of_bsn_gentable_entry_stats_entry_t *stats_entry;
+    of_list_bsn_tlv_t stats;
+
+    of_bsn_gentable_entry_stats_request_xid_get(obj, &xid);
+    of_bsn_gentable_entry_stats_request_table_id_get(obj, &table_id);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable id %d", table_id);
+    }
+
+    reply = of_bsn_gentable_entry_stats_reply_new(obj->version);
+    of_bsn_gentable_entry_stats_reply_xid_set(reply, xid);
+    of_bsn_gentable_entry_stats_reply_entries_bind(reply, &stats_entries);
+
+    /* TODO respect checksum/mask */
+    /* TODO convert to a long running task */
+    /* TODO reuse entry */
+    /* TODO fragment */
+
+    for (i = 0; i < gentable->key_buckets_size; i++) {
+        list_links_t *cur;
+        LIST_FOREACH(&gentable->key_buckets[i], cur) {
+            struct ind_core_gentable_entry *entry =
+                container_of(cur, key_links, struct ind_core_gentable_entry);
+
+            stats_entry = of_bsn_gentable_entry_stats_entry_new(OF_VERSION_1_3);
+            AIM_TRUE_OR_DIE(of_bsn_gentable_entry_stats_entry_key_set(stats_entry, entry->key) == 0);
+            of_bsn_gentable_entry_stats_entry_stats_bind(stats_entry, &stats);
+
+            gentable->ops->get_stats(gentable->priv, entry->priv, entry->key, &stats);
+
+            of_list_append(&stats_entries, stats_entry);
+            of_object_delete(stats_entry);
+        }
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+
+    of_object_delete(obj);
+}
+
 
 /* Utility functions */
 
