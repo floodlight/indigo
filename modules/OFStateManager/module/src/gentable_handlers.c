@@ -36,8 +36,13 @@
 
 #define MAX_GENTABLES 16
 
+static indigo_core_gentable_t *find_gentable_by_id(uint32_t table_id);
 static uint16_t alloc_table_id(void);
 static uint8_t calc_checksum_buckets_shift(uint32_t checksum_buckets_size);
+static struct ind_core_gentable_checksum_bucket *find_checksum_bucket(indigo_core_gentable_t *gentable, of_checksum_128_t *checksum);
+static void update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
+static uint32_t hash_key(of_list_bsn_tlv_t *key);
+static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash);
 
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
@@ -141,7 +146,75 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
 }
 
 
+/* OpenFlow message handlers */
+
+void
+ind_core_bsn_gentable_entry_add_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    of_list_bsn_tlv_t key, value;
+    void *priv = NULL;
+    indigo_error_t rv;
+    struct ind_core_gentable_checksum_bucket *checksum_bucket;
+
+    of_bsn_gentable_entry_add_table_id_get(obj, &table_id);
+    of_bsn_gentable_entry_add_key_bind(obj, &key);
+    of_bsn_gentable_entry_add_value_bind(obj, &value);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable id %d", table_id);
+    }
+
+    /* TODO lookup on key to see if this is a modify */
+
+    rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
+    if (rv != INDIGO_ERROR_NONE) {
+        /* TODO error */
+        AIM_LOG_ERROR("%s gentable add failed: %s",
+                      gentable->name, indigo_strerror(rv));
+        AIM_DIE("NYI");
+        of_object_delete(obj);
+    }
+
+    /* Allocate new entry */
+    struct ind_core_gentable_entry *entry = aim_zmalloc(sizeof(*entry));
+    entry->key = of_object_dup(&key);
+    entry->value = of_object_dup(&value);
+    of_bsn_gentable_entry_add_checksum_get(obj, &entry->checksum);
+
+    entry->key_hash = hash_key(&key);
+
+    /* Insert into key bucket */
+    list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
+
+    /* Insert into checksum bucket */
+    checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
+    list_push(&checksum_bucket->entries, &entry->checksum_links);
+    update_checksum(&checksum_bucket->checksum, &entry->checksum);
+
+    /* Update table checksum */
+    update_checksum(&gentable->checksum, &entry->checksum);
+
+    of_object_delete(obj);
+}
+
+
 /* Utility functions */
+
+static __attribute__((unused)) indigo_core_gentable_t *
+find_gentable_by_id(uint32_t table_id)
+{
+    if (table_id >= MAX_GENTABLES) {
+        return NULL;
+    }
+
+    return gentables[table_id];
+}
 
 static uint16_t
 alloc_table_id()
@@ -178,4 +251,30 @@ calc_checksum_buckets_shift(uint32_t checksum_buckets_size)
         checksum_buckets_size >>= 1;
     }
     return 64 - i + 1;
+}
+
+static struct ind_core_gentable_checksum_bucket *
+find_checksum_bucket(indigo_core_gentable_t *gentable, of_checksum_128_t *checksum)
+{
+    uint32_t idx = checksum->hi >> gentable->checksum_buckets_shift;
+    return &gentable->checksum_buckets[idx];
+}
+
+static void
+update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src)
+{
+    dst->lo ^= src->lo;
+    dst->hi ^= src->hi;
+}
+
+static uint32_t
+hash_key(of_list_bsn_tlv_t *key)
+{
+    return murmur_hash(OF_OBJECT_BUFFER_INDEX(key, 0), key->length, 0);
+}
+
+static list_head_t *
+find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash)
+{
+    return &gentable->key_buckets[key_hash & (gentable->key_buckets_size - 1)];
 }

@@ -42,6 +42,39 @@
 
 extern indigo_core_gentable_ops_t test_ops;
 
+static of_bsn_gentable_entry_add_t *
+make_add(uint16_t table_id, uint32_t port, of_mac_addr_t mac)
+{
+    of_object_t *obj = of_bsn_gentable_entry_add_new(OF_VERSION_1_3);
+    of_bsn_gentable_entry_add_xid_set(obj, 0x12345678);
+    of_bsn_gentable_entry_add_table_id_set(obj, table_id);
+    {
+        of_checksum_128_t checksum = { 0xFEDCBA9876543210L, 0xFFEECCBBAA998877L };
+        of_bsn_gentable_entry_add_checksum_set(obj, checksum);
+    }
+    {
+        of_object_t list;
+        of_bsn_gentable_entry_add_key_bind(obj, &list);
+        {
+            of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+            of_bsn_tlv_port_value_set(tlv, port);
+            of_list_append(&list, tlv);
+            of_object_delete(tlv);
+        }
+    }
+    {
+        of_object_t list;
+        of_bsn_gentable_entry_add_value_bind(obj, &list);
+        {
+            of_object_t *tlv = of_bsn_tlv_mac_new(OF_VERSION_1_3);
+            of_bsn_tlv_mac_value_set(tlv, mac);
+            of_list_append(&list, tlv);
+            of_object_delete(tlv);
+        }
+    }
+    return obj;
+}
+
 int
 test_gentable(void)
 {
@@ -52,6 +85,11 @@ test_gentable(void)
         of_table_name_t name;
         snprintf(name, sizeof(name), "gentable %d", i);
         indigo_core_gentable_register(name, &test_ops, INDIGO_COOKIE_TO_POINTER(i), 10, 8, &gentables[i]);
+    }
+
+    {
+        of_bsn_gentable_entry_add_t *obj = make_add(0, 1, (of_mac_addr_t) { { 1, 2, 3, 4, 5, 6 } });
+        indigo_core_receive_controller_message(0, obj);
     }
 
     for (i = 0; i < NUM_TABLES; i++) {

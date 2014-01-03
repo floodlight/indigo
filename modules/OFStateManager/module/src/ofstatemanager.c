@@ -339,6 +339,14 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         break;
 
     /****************************************************************
+     * Gentable messages
+     ****************************************************************/
+
+    case OF_BSN_GENTABLE_ENTRY_ADD:
+        ind_core_bsn_gentable_entry_add_handler(obj, cxn);
+        break;
+
+    /****************************************************************
      * Extension messages
      ****************************************************************/
 
