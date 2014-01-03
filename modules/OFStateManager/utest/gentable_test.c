@@ -46,6 +46,7 @@ static void do_delete(uint16_t table_id, uint32_t port);
 static void parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port);
 
 struct test_entry {
+    of_mac_addr_t mac;
     int count_op;
     int count_add;
     int count_modify;
@@ -65,6 +66,10 @@ struct test_table {
 static struct test_table tables[NUM_TABLES];
 
 static indigo_core_gentable_ops_t test_ops;
+
+static const of_mac_addr_t mac1 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x01 } };
+static const of_mac_addr_t mac2 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x02 } };
+static const of_mac_addr_t mac3 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x03 } };
 
 static int
 test_gentable_register(void)
@@ -90,8 +95,6 @@ test_gentable_entry_add(void)
 {
     indigo_core_gentable_t *gentable;
     of_table_name_t name = "gentable 0";
-    of_mac_addr_t mac1 = { { 1, 2, 3, 4, 5, 6 } };
-    of_mac_addr_t mac2 = { { 0xa, 0xb, 0xc, 0xd, 0xe, 0xf } };
 
     memset(tables, 0, sizeof(tables));
     indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
@@ -100,8 +103,10 @@ test_gentable_entry_add(void)
     memset(tables, 0, sizeof(tables));
     do_add(0, 1, mac1);
     do_add(0, 2, mac2);
+    AIM_TRUE_OR_DIE(!memcmp(&tables[0].entries[1].mac, &mac1, sizeof(of_mac_addr_t)));
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_add == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(!memcmp(&tables[0].entries[2].mac, &mac2, sizeof(of_mac_addr_t)));
     AIM_TRUE_OR_DIE(tables[0].entries[2].count_add == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
     AIM_TRUE_OR_DIE(tables[0].count_add == 2);
@@ -124,8 +129,6 @@ test_gentable_entry_delete(void)
 {
     indigo_core_gentable_t *gentable;
     of_table_name_t name = "gentable 0";
-    of_mac_addr_t mac1 = { { 1, 2, 3, 4, 5, 6 } };
-    of_mac_addr_t mac2 = { { 0xa, 0xb, 0xc, 0xd, 0xe, 0xf } };
 
     memset(tables, 0, sizeof(tables));
     indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
@@ -134,12 +137,6 @@ test_gentable_entry_delete(void)
     memset(tables, 0, sizeof(tables));
     do_add(0, 1, mac1);
     do_add(0, 2, mac2);
-    AIM_TRUE_OR_DIE(tables[0].entries[1].count_add == 1);
-    AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
-    AIM_TRUE_OR_DIE(tables[0].entries[2].count_add == 1);
-    AIM_TRUE_OR_DIE(tables[0].entries[2].count_op == 1);
-    AIM_TRUE_OR_DIE(tables[0].count_add == 2);
-    AIM_TRUE_OR_DIE(tables[0].count_op == 2);
 
     memset(tables, 0, sizeof(tables));
     do_delete(0, 1);
@@ -167,9 +164,6 @@ test_gentable_entry_modify(void)
 {
     indigo_core_gentable_t *gentable;
     of_table_name_t name = "gentable 0";
-    of_mac_addr_t mac1 = { { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06 } };
-    of_mac_addr_t mac2 = { { 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f } };
-    of_mac_addr_t mac3 = { { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f } };
 
     memset(tables, 0, sizeof(tables));
     indigo_core_gentable_register(name, &test_ops, &tables[0], 10, 8, &gentable);
@@ -180,6 +174,7 @@ test_gentable_entry_modify(void)
 
     memset(tables, 0, sizeof(tables));
     do_add(0, 1, mac3);
+    AIM_TRUE_OR_DIE(!memcmp(&tables[0].entries[1].mac, &mac3, sizeof(of_mac_addr_t)));
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_modify == 1);
     AIM_TRUE_OR_DIE(tables[0].entries[1].count_op == 1);
     AIM_TRUE_OR_DIE(tables[0].count_modify == 1);
@@ -284,6 +279,25 @@ parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port)
     AIM_TRUE_OR_DIE(count == 1);
 }
 
+static void
+parse_value(of_list_bsn_tlv_t *value, of_mac_addr_t *mac)
+{
+    of_bsn_tlv_t tlv;
+    int loop_rv = 0;
+    int count = 0;
+
+    OF_LIST_BSN_TLV_ITER(value, &tlv, loop_rv) {
+        count++;
+        if (tlv.header.object_id == OF_BSN_TLV_MAC) {
+            of_bsn_tlv_mac_value_get(&tlv.mac, mac);
+        } else {
+            AIM_DIE("unexpected TLV");
+        }
+    }
+
+    AIM_TRUE_OR_DIE(count == 1);
+}
+
 static indigo_error_t
 test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv)
 {
@@ -295,6 +309,8 @@ test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *v
     AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
 
     struct test_entry *entry = &table->entries[port];
+
+    parse_value(value, &entry->mac);
 
     table->count_op++;
     table->count_add++;
@@ -318,6 +334,8 @@ test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
 
     struct test_entry *entry = &table->entries[port];
     AIM_TRUE_OR_DIE(entry == entry_priv);
+
+    parse_value(value, &entry->mac);
 
     table->count_op++;
     table->count_modify++;
