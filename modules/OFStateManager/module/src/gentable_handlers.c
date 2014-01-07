@@ -212,6 +212,8 @@ ind_core_bsn_gentable_entry_add_handler(
 
         /* Insert into key bucket */
         list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
+
+        gentable->num_entries++;
     } else {
         /* Modifying an existing entry */
         rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
@@ -620,6 +622,8 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
     of_object_delete(entry->key);
     of_object_delete(entry->value);
     aim_free(entry);
+
+    gentable->num_entries--;
 
     return INDIGO_ERROR_NONE;
 }
