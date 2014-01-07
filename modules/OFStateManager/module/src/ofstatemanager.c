@@ -370,6 +370,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_gentable_stats_request_handler(obj, cxn);
         break;
 
+    case OF_BSN_GENTABLE_BUCKET_STATS_REQUEST:
+        ind_core_bsn_gentable_bucket_stats_request_handler(obj, cxn);
+        break;
+
     /****************************************************************
      * Extension messages
      ****************************************************************/
