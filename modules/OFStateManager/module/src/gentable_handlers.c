@@ -439,6 +439,89 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     of_object_delete(obj);
 }
 
+void
+ind_core_bsn_gentable_desc_stats_request_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    indigo_core_gentable_t *gentable;
+    uint32_t xid;
+    of_bsn_gentable_desc_stats_reply_t *reply;
+    int i;
+    of_list_bsn_gentable_desc_stats_entry_t stats_entries;
+    of_bsn_gentable_desc_stats_entry_t *stats_entry;
+
+    of_bsn_gentable_desc_stats_request_xid_get(obj, &xid);
+
+    reply = of_bsn_gentable_desc_stats_reply_new(obj->version);
+    of_bsn_gentable_desc_stats_reply_xid_set(reply, xid);
+    of_bsn_gentable_desc_stats_reply_entries_bind(reply, &stats_entries);
+
+    /* TODO reuse entry */
+    /* TODO fragment */
+
+    for (i = 0; i < MAX_GENTABLES; i++) {
+        gentable = gentables[i];
+        if (gentable == NULL) {
+            continue;
+        }
+
+        stats_entry = of_bsn_gentable_desc_stats_entry_new(OF_VERSION_1_3);
+        of_bsn_gentable_desc_stats_entry_table_id_set(stats_entry, gentable->table_id);
+        of_bsn_gentable_desc_stats_entry_name_set(stats_entry, gentable->name);
+        of_bsn_gentable_desc_stats_entry_buckets_size_set(stats_entry, gentable->checksum_buckets_size);
+        of_bsn_gentable_desc_stats_entry_max_entries_set(stats_entry, gentable->max_entries);
+
+        of_list_append(&stats_entries, stats_entry);
+        of_object_delete(stats_entry);
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+
+    of_object_delete(obj);
+}
+
+void
+ind_core_bsn_gentable_stats_request_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    indigo_core_gentable_t *gentable;
+    uint32_t xid;
+    of_bsn_gentable_stats_reply_t *reply;
+    int i;
+    of_list_bsn_gentable_stats_entry_t stats_entries;
+    of_bsn_gentable_stats_entry_t *stats_entry;
+
+    of_bsn_gentable_stats_request_xid_get(obj, &xid);
+
+    reply = of_bsn_gentable_stats_reply_new(obj->version);
+    of_bsn_gentable_stats_reply_xid_set(reply, xid);
+    of_bsn_gentable_stats_reply_entries_bind(reply, &stats_entries);
+
+    /* TODO reuse entry */
+    /* TODO fragment */
+
+    for (i = 0; i < MAX_GENTABLES; i++) {
+        gentable = gentables[i];
+        if (gentable == NULL) {
+            continue;
+        }
+
+        stats_entry = of_bsn_gentable_stats_entry_new(OF_VERSION_1_3);
+        of_bsn_gentable_stats_entry_table_id_set(stats_entry, gentable->table_id);
+        of_bsn_gentable_stats_entry_entry_count_set(stats_entry, gentable->num_entries);
+        of_bsn_gentable_stats_entry_checksum_set(stats_entry, gentable->checksum);
+
+        of_list_append(&stats_entries, stats_entry);
+        of_object_delete(stats_entry);
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+
+    of_object_delete(obj);
+}
+
 
 /* Utility functions */
 

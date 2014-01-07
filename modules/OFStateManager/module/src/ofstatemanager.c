@@ -362,6 +362,14 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_gentable_entry_desc_stats_request_handler(obj, cxn);
         break;
 
+    case OF_BSN_GENTABLE_DESC_STATS_REQUEST:
+        ind_core_bsn_gentable_desc_stats_request_handler(obj, cxn);
+        break;
+
+    case OF_BSN_GENTABLE_STATS_REQUEST:
+        ind_core_bsn_gentable_stats_request_handler(obj, cxn);
+        break;
+
     /****************************************************************
      * Extension messages
      ****************************************************************/
