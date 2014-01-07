@@ -566,7 +566,6 @@ ind_core_bsn_gentable_stats_request_handler(
     of_bsn_gentable_stats_reply_t *reply;
     int i;
     of_list_bsn_gentable_stats_entry_t stats_entries;
-    of_bsn_gentable_stats_entry_t *stats_entry;
 
     of_bsn_gentable_stats_request_xid_get(obj, &xid);
 
@@ -574,22 +573,22 @@ ind_core_bsn_gentable_stats_request_handler(
     of_bsn_gentable_stats_reply_xid_set(reply, xid);
     of_bsn_gentable_stats_reply_entries_bind(reply, &stats_entries);
 
-    /* TODO reuse entry */
-    /* TODO fragment */
-
     for (i = 0; i < MAX_GENTABLES; i++) {
         gentable = gentables[i];
         if (gentable == NULL) {
             continue;
         }
 
-        stats_entry = of_bsn_gentable_stats_entry_new(OF_VERSION_1_3);
-        of_bsn_gentable_stats_entry_table_id_set(stats_entry, gentable->table_id);
-        of_bsn_gentable_stats_entry_entry_count_set(stats_entry, gentable->num_entries);
-        of_bsn_gentable_stats_entry_checksum_set(stats_entry, gentable->checksum);
+        of_bsn_gentable_stats_entry_t stats_entry;
+        of_bsn_gentable_stats_entry_init(&stats_entry, reply->version, -1, 1);
+        if (of_list_bsn_gentable_stats_entry_append_bind(&stats_entries, &stats_entry)) {
+            /* TODO fragment */
+            break;
+        }
 
-        of_list_append(&stats_entries, stats_entry);
-        of_object_delete(stats_entry);
+        of_bsn_gentable_stats_entry_table_id_set(&stats_entry, gentable->table_id);
+        of_bsn_gentable_stats_entry_entry_count_set(&stats_entry, gentable->num_entries);
+        of_bsn_gentable_stats_entry_checksum_set(&stats_entry, gentable->checksum);
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
@@ -608,7 +607,6 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
     of_bsn_gentable_bucket_stats_reply_t *reply;
     int i;
     of_list_bsn_gentable_bucket_stats_entry_t stats_entries;
-    of_bsn_gentable_bucket_stats_entry_t *stats_entry;
 
     of_bsn_gentable_bucket_stats_request_xid_get(obj, &xid);
     of_bsn_gentable_bucket_stats_request_table_id_get(obj, &table_id);
@@ -623,18 +621,18 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
         AIM_DIE("Nonexistent gentable id %d", table_id);
     }
 
-    /* TODO reuse entry */
-    /* TODO fragment */
-
     for (i = 0; i < gentable->checksum_buckets_size; i++) {
         struct ind_core_gentable_checksum_bucket *bucket =
             &gentable->checksum_buckets[i];
 
-        stats_entry = of_bsn_gentable_bucket_stats_entry_new(OF_VERSION_1_3);
-        of_bsn_gentable_bucket_stats_entry_checksum_set(stats_entry, bucket->checksum);
+        of_bsn_gentable_bucket_stats_entry_t stats_entry;
+        of_bsn_gentable_bucket_stats_entry_init(&stats_entry, reply->version, -1, 1);
+        if (of_list_bsn_gentable_bucket_stats_entry_append_bind(&stats_entries, &stats_entry)) {
+            /* TODO fragment */
+            break;
+        }
 
-        of_list_append(&stats_entries, stats_entry);
-        of_object_delete(stats_entry);
+        of_bsn_gentable_bucket_stats_entry_checksum_set(&stats_entry, bucket->checksum);
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
