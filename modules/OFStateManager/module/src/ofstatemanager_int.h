@@ -118,6 +118,9 @@ calc_duration(indigo_time_t current_time, indigo_time_t entry_time,
 
 extern const struct ind_cfg_ops ind_core_cfg_ops;
 
+void ind_core_test_gentable_init(void);
+void ind_core_test_gentable_finish(void);
+
 #include <OFStateManager/ofstatemanager.h>
 
 #endif /* __OFSTATEMANAGER_INT_H__ */

@@ -535,6 +535,8 @@ ind_core_init(ind_core_config_t *config)
 
     ind_core_group_init();
 
+    ind_core_test_gentable_init();
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -683,6 +685,8 @@ ind_core_finish(void)
     }
 
     ft_destroy(ind_core_ft);
+
+    ind_core_test_gentable_finish();
 
     ind_core_init_done = 0;
 
