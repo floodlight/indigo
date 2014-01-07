@@ -336,6 +336,79 @@ ind_core_bsn_gentable_clear_request_handler(
 }
 
 void
+ind_core_bsn_gentable_set_buckets_size_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    uint32_t xid;
+    uint32_t new_buckets_size;
+    uint32_t old_buckets_size;
+    struct ind_core_gentable_checksum_bucket *old_buckets;
+    int i;
+
+    of_bsn_gentable_set_buckets_size_xid_get(obj, &xid);
+    of_bsn_gentable_set_buckets_size_table_id_get(obj, &table_id);
+    of_bsn_gentable_set_buckets_size_buckets_size_get(obj, &new_buckets_size);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* TODO error */
+        AIM_DIE("Nonexistent gentable id %d", table_id);
+    }
+
+    if ((new_buckets_size & (new_buckets_size - 1)) != 0) {
+        /* TODO error */
+        AIM_DIE("Non power of 2 buckets size");
+    }
+
+    if (new_buckets_size == gentable->checksum_buckets_size) {
+        of_object_delete(obj);
+        return;
+    }
+
+    old_buckets_size = gentable->checksum_buckets_size;
+    old_buckets = gentable->checksum_buckets;
+
+    gentable->checksum_buckets_size = new_buckets_size;
+    gentable->checksum_buckets = aim_malloc(sizeof(*gentable->checksum_buckets) *
+                                            gentable->checksum_buckets_size);
+
+    gentable->checksum_buckets_shift =
+        calc_checksum_buckets_shift(gentable->checksum_buckets_size);
+
+    for (i = 0; i < gentable->checksum_buckets_size; i++) {
+        struct ind_core_gentable_checksum_bucket *bucket =
+            &gentable->checksum_buckets[i];
+        bucket->checksum.lo = 0;
+        bucket->checksum.hi = 0;
+        list_init(&bucket->entries);
+    }
+
+    for (i = 0; i < old_buckets_size; i++) {
+        list_links_t *cur, *next;
+        LIST_FOREACH_SAFE(&old_buckets[i].entries, cur, next) {
+            struct ind_core_gentable_entry *entry =
+                container_of(cur, checksum_links, struct ind_core_gentable_entry);
+
+            /* Remove from old bucket */
+            list_remove(&entry->checksum_links);
+
+            /* Insert into new bucket */
+            struct ind_core_gentable_checksum_bucket *new_bucket;
+            new_bucket = find_checksum_bucket(gentable, &entry->checksum);
+            list_push(&new_bucket->entries, &entry->checksum_links);
+            update_checksum(&new_bucket->checksum, &entry->checksum);
+        }
+    }
+
+    aim_free(old_buckets);
+
+    of_object_delete(obj);
+}
+
+void
 ind_core_bsn_gentable_entry_stats_request_handler(
     of_object_t *obj,
     indigo_cxn_id_t cxn_id)

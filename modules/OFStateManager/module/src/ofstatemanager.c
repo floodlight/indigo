@@ -354,6 +354,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_gentable_clear_request_handler(obj, cxn);
         break;
 
+    case OF_BSN_GENTABLE_SET_BUCKETS_SIZE:
+        ind_core_bsn_gentable_set_buckets_size_handler(obj, cxn);
+        break;
+
     case OF_BSN_GENTABLE_ENTRY_STATS_REQUEST:
         ind_core_bsn_gentable_entry_stats_request_handler(obj, cxn);
         break;
