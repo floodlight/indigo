@@ -41,6 +41,9 @@
 #define TABLE_ID 1
 #define NUM_ENTRIES 10
 
+extern void handle_message(of_object_t *obj);
+extern int do_barrier(void);
+
 static void do_add(uint32_t port, of_mac_addr_t mac);
 static void do_delete(uint32_t port);
 static void do_clear(void);
@@ -275,7 +278,8 @@ do_add(uint32_t port, of_mac_addr_t mac)
         of_object_delete(list);
     }
 
-    indigo_core_receive_controller_message(0, obj);
+    handle_message(obj);
+    do_barrier();
 }
 
 static void
@@ -296,7 +300,8 @@ do_delete(uint32_t port)
         of_object_delete(list);
     }
 
-    indigo_core_receive_controller_message(0, obj);
+    handle_message(obj);
+    do_barrier();
 }
 
 static void
@@ -311,7 +316,8 @@ do_clear()
         of_bsn_gentable_clear_request_checksum_mask_set(obj, checksum);
     }
 
-    indigo_core_receive_controller_message(0, obj);
+    handle_message(obj);
+    do_barrier();
 }
 
 static void
@@ -326,7 +332,8 @@ do_entry_stats()
         of_bsn_gentable_entry_stats_request_checksum_mask_set(obj, checksum);
     }
 
-    indigo_core_receive_controller_message(0, obj);
+    handle_message(obj);
+    do_barrier();
 }
 
 

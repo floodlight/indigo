@@ -462,7 +462,7 @@ message_deleted(of_object_t *obj)
     outstanding_op_cnt--;
 }
 
-static void
+void
 handle_message(of_object_t *obj)
 {
     assert(outstanding_op_cnt >= 0);
@@ -472,7 +472,7 @@ handle_message(of_object_t *obj)
     indigo_core_receive_controller_message(0, obj);
 }
 
-static int
+int
 do_barrier(void)
 {
     int count = 0;

@@ -38,6 +38,9 @@
 
 struct ind_core_gentable_entry;
 
+typedef void (*ind_core_gentable_iter_task_callback_f)(
+    void *cookie, indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
+
 static indigo_core_gentable_t *find_gentable_by_id(uint32_t table_id);
 static uint16_t alloc_table_id(void);
 static uint8_t calc_checksum_buckets_shift(uint32_t checksum_buckets_size);
@@ -48,6 +51,7 @@ static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t k
 static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
+static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority);
 
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
@@ -286,6 +290,42 @@ ind_core_bsn_gentable_entry_delete_handler(
     of_object_delete(obj);
 }
 
+struct ind_core_gentable_clear_state {
+    indigo_cxn_id_t cxn_id;
+    of_object_t *request;
+    uint32_t error_count;
+    uint32_t deleted_count;
+};
+
+static void
+clear_iter(void *cookie, indigo_core_gentable_t *gentable,
+           struct ind_core_gentable_entry *entry)
+{
+    struct ind_core_gentable_clear_state *state = cookie;
+
+    if (entry != NULL) {
+        indigo_error_t rv = delete_entry(gentable, entry);
+        if (rv < 0) {
+            state->error_count++;
+        } else {
+            state->deleted_count++;
+        }
+    } else {
+        uint32_t xid;
+        of_bsn_gentable_clear_request_xid_get(state->request, &xid);
+
+        of_bsn_gentable_clear_reply_t *reply =
+            of_bsn_gentable_clear_reply_new(state->request->version);
+        of_bsn_gentable_clear_reply_xid_set(reply, xid);
+        of_bsn_gentable_clear_reply_deleted_count_set(reply, state->deleted_count);
+        of_bsn_gentable_clear_reply_error_count_set(reply, state->error_count);
+        indigo_cxn_send_controller_message(state->cxn_id, reply);
+
+        of_object_delete(state->request);
+        aim_free(state);
+    }
+}
+
 void
 ind_core_bsn_gentable_clear_request_handler(
     of_object_t *obj,
@@ -294,13 +334,7 @@ ind_core_bsn_gentable_clear_request_handler(
     uint16_t table_id;
     indigo_core_gentable_t *gentable;
     indigo_error_t rv;
-    uint32_t error_count = 0;
-    uint32_t deleted_count = 0;
-    uint32_t xid;
-    of_bsn_gentable_clear_reply_t *reply;
-    int i;
 
-    of_bsn_gentable_clear_request_xid_get(obj, &xid);
     of_bsn_gentable_clear_request_table_id_get(obj, &table_id);
 
     gentable = find_gentable_by_id(table_id);
@@ -309,30 +343,18 @@ ind_core_bsn_gentable_clear_request_handler(
         AIM_DIE("Nonexistent gentable id %d", table_id);
     }
 
+    struct ind_core_gentable_clear_state *state = aim_zmalloc(sizeof(*state));
+    state->cxn_id = cxn_id;
+    state->request = obj;
+
     /* TODO respect checksum/mask */
-    /* TODO convert to a long running task */
 
-    for (i = 0; i < gentable->key_buckets_size; i++) {
-        list_links_t *cur, *next;
-        LIST_FOREACH_SAFE(&gentable->key_buckets[i], cur, next) {
-            struct ind_core_gentable_entry *entry =
-                container_of(cur, key_links, struct ind_core_gentable_entry);
-            rv = delete_entry(gentable, entry);
-            if (rv < 0) {
-                error_count++;
-            } else {
-                deleted_count++;
-            }
-        }
+    rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
+                                           IND_SOC_DEFAULT_PRIORITY);
+    if (rv < 0) {
+        /* TODO */
+        AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
     }
-
-    reply = of_bsn_gentable_clear_reply_new(obj->version);
-    of_bsn_gentable_clear_reply_xid_set(reply, xid);
-    of_bsn_gentable_clear_reply_deleted_count_set(reply, deleted_count);
-    of_bsn_gentable_clear_reply_error_count_set(reply, error_count);
-    indigo_cxn_send_controller_message(cxn_id, reply);
-
-    of_object_delete(obj);
 }
 
 void
@@ -772,4 +794,119 @@ key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b)
 
     return memcmp(OF_OBJECT_BUFFER_INDEX(a, 0),
                   OF_OBJECT_BUFFER_INDEX(b, 0), a->length) == 0;
+}
+
+
+/*
+ * Gentable iterator task
+ *
+ * Several operations follow a pattern of iterating over an entire table. Since
+ * the table can be very large we need to break up the work to allow processing
+ * higher priority events in between.
+ *
+ * These functions wrap the SocketManager task API to provide a simple method
+ * for iterating over a gentable without delaying higher priority events.
+ */
+
+struct ind_core_gentable_iter_task_state {
+    ind_core_gentable_iter_task_callback_f callback;
+    void *cookie;
+    uint16_t table_id;
+    of_checksum_128_t next_checksum;
+};
+
+static ind_soc_task_status_t
+ind_core_gentable_iter_task_callback(void *cookie)
+{
+    struct ind_core_gentable_iter_task_state *state = cookie;
+    indigo_core_gentable_t *gentable = find_gentable_by_id(state->table_id);
+
+    /* TODO */
+    if (gentable == NULL) {
+        AIM_DIE("gentable disappeared");
+    }
+
+    /*
+     * This code needs to handle resizing of the checksum buckets array between
+     * task invocations.
+     *
+     * Between invocations, the next_checksum field is the lowest possible
+     * checksum we haven't iterated over. Normally this is the lowest possible
+     * checksum in the next bucket. If the buckets were shrunk then this may be
+     * somewhere in the middle of the checksum range of a bucket, in which case
+     * we'll ignore the entries we've already seen.
+     */
+
+    do {
+        struct ind_core_gentable_checksum_bucket *bucket =
+            find_checksum_bucket(gentable, &state->next_checksum);
+
+        list_links_t *cur, *next;
+        LIST_FOREACH_SAFE(&bucket->entries, cur, next) {
+            struct ind_core_gentable_entry *entry =
+                container_of(cur, checksum_links, struct ind_core_gentable_entry);
+
+            if (entry->checksum.hi < state->next_checksum.hi) {
+                /* Buckets were shrunk */
+                continue;
+            }
+
+            state->callback(state->cookie, gentable, entry);
+        }
+
+        /* Advance to next bucket */
+        state->next_checksum.hi += (uint64_t)1 << gentable->checksum_buckets_shift;
+
+        /* Reset to the lowest checksum in the bucket */
+        state->next_checksum.hi &= ~(uint64_t)0 << gentable->checksum_buckets_shift;
+
+        if (state->next_checksum.hi == 0) {
+            /* Finished */
+            state->callback(state->cookie, gentable, NULL);
+            aim_free(state);
+            return IND_SOC_TASK_FINISHED;
+        }
+    } while (!ind_soc_should_yield());
+
+    return IND_SOC_TASK_CONTINUE;
+}
+
+/*
+ * Spawn a task that iterates over a gentable
+ *
+ * @param gentable Handle for a gentable instance
+ * @param callback Function called for each flowtable entry
+ * @param cookie Opaque value passed to callback
+ * @param priority SocketManager task priority
+ * @returns An error code
+ *
+ * This function does not guarantee a consistent view of the
+ * gentable over the course of the task.
+ *
+ * The callback function will be called with a NULL entry argument at
+ * the end of the iteration.
+ */
+
+static indigo_error_t
+ind_core_gentable_spawn_iter_task(
+    indigo_core_gentable_t *gentable,
+    ind_core_gentable_iter_task_callback_f callback,
+    void *cookie,
+    int priority)
+{
+    indigo_error_t rv;
+
+    struct ind_core_gentable_iter_task_state *state = aim_zmalloc(sizeof(*state));
+
+    state->callback = callback;
+    state->cookie = cookie;
+    state->table_id = gentable->table_id;
+
+    rv = ind_soc_task_register(ind_core_gentable_iter_task_callback, state, priority);
+    if (rv != INDIGO_ERROR_NONE) {
+        aim_free(state);
+        return rv;
+    }
+
+    return INDIGO_ERROR_NONE;
 }
