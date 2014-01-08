@@ -51,7 +51,7 @@ static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t k
 static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
-static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority);
+static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority, of_checksum_128_t checksum_prefix, of_checksum_128_t checksum_mask);
 
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
@@ -334,8 +334,11 @@ ind_core_bsn_gentable_clear_request_handler(
     uint16_t table_id;
     indigo_core_gentable_t *gentable;
     indigo_error_t rv;
+    of_checksum_128_t checksum, checksum_mask;
 
     of_bsn_gentable_clear_request_table_id_get(obj, &table_id);
+    of_bsn_gentable_clear_request_checksum_get(obj, &checksum);
+    of_bsn_gentable_clear_request_checksum_mask_get(obj, &checksum_mask);
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
@@ -347,10 +350,10 @@ ind_core_bsn_gentable_clear_request_handler(
     state->cxn_id = cxn_id;
     state->request = obj;
 
-    /* TODO respect checksum/mask */
 
     rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY);
+                                           IND_SOC_DEFAULT_PRIORITY,
+                                           checksum, checksum_mask);
     if (rv < 0) {
         /* TODO */
         AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
@@ -480,9 +483,12 @@ ind_core_bsn_gentable_entry_stats_request_handler(
     of_bsn_gentable_entry_stats_reply_t *reply;
     struct ind_core_gentable_entry_stats_state *state;
     indigo_error_t rv;
+    of_checksum_128_t checksum, checksum_mask;
 
     of_bsn_gentable_entry_stats_request_xid_get(obj, &xid);
     of_bsn_gentable_entry_stats_request_table_id_get(obj, &table_id);
+    of_bsn_gentable_entry_stats_request_checksum_get(obj, &checksum);
+    of_bsn_gentable_entry_stats_request_checksum_mask_get(obj, &checksum_mask);
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
@@ -498,10 +504,9 @@ ind_core_bsn_gentable_entry_stats_request_handler(
     state->request = obj;
     state->reply = reply;
 
-    /* TODO respect checksum/mask */
-
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_stats_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY);
+                                           IND_SOC_DEFAULT_PRIORITY,
+                                           checksum, checksum_mask);
     if (rv < 0) {
         /* TODO */
         AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
@@ -556,9 +561,12 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     of_bsn_gentable_entry_desc_stats_reply_t *reply;
     struct ind_core_gentable_entry_desc_stats_state *state;
     indigo_error_t rv;
+    of_checksum_128_t checksum, checksum_mask;
 
     of_bsn_gentable_entry_desc_stats_request_xid_get(obj, &xid);
     of_bsn_gentable_entry_desc_stats_request_table_id_get(obj, &table_id);
+    of_bsn_gentable_entry_desc_stats_request_checksum_get(obj, &checksum);
+    of_bsn_gentable_entry_desc_stats_request_checksum_mask_get(obj, &checksum_mask);
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
@@ -574,10 +582,9 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     state->request = obj;
     state->reply = reply;
 
-    /* TODO respect checksum/mask */
-
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_desc_stats_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY);
+                                           IND_SOC_DEFAULT_PRIORITY,
+                                           checksum, checksum_mask);
     if (rv < 0) {
         /* TODO */
         AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
@@ -848,9 +855,9 @@ key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b)
 /*
  * Gentable iterator task
  *
- * Several operations follow a pattern of iterating over an entire table. Since
- * the table can be very large we need to break up the work to allow processing
- * higher priority events in between.
+ * Several operations follow a pattern of iterating over a range of checksums
+ * in a table. Since the table can be very large we need to break up the work
+ * to allow processing higher priority events in between.
  *
  * These functions wrap the SocketManager task API to provide a simple method
  * for iterating over a gentable without delaying higher priority events.
@@ -861,6 +868,8 @@ struct ind_core_gentable_iter_task_state {
     void *cookie;
     uint16_t table_id;
     of_checksum_128_t next_checksum;
+    of_checksum_128_t checksum_prefix;
+    of_checksum_128_t checksum_mask;
 };
 
 static ind_soc_task_status_t
@@ -896,6 +905,14 @@ ind_core_gentable_iter_task_callback(void *cookie)
 
             if (entry->checksum.hi < state->next_checksum.hi) {
                 /* Buckets were shrunk */
+                continue;
+            }
+
+            if ((entry->checksum.hi & state->checksum_mask.hi) != state->checksum_prefix.hi) {
+                continue;
+            }
+
+            if ((entry->checksum.lo & state->checksum_mask.lo) != state->checksum_prefix.lo) {
                 continue;
             }
 
@@ -940,7 +957,9 @@ ind_core_gentable_spawn_iter_task(
     indigo_core_gentable_t *gentable,
     ind_core_gentable_iter_task_callback_f callback,
     void *cookie,
-    int priority)
+    int priority,
+    of_checksum_128_t checksum_prefix,
+    of_checksum_128_t checksum_mask)
 {
     indigo_error_t rv;
 
@@ -949,6 +968,8 @@ ind_core_gentable_spawn_iter_task(
     state->callback = callback;
     state->cookie = cookie;
     state->table_id = gentable->table_id;
+    state->checksum_prefix = checksum_prefix;
+    state->checksum_mask = checksum_mask;
 
     rv = ind_soc_task_register(ind_core_gentable_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
