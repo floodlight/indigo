@@ -190,8 +190,13 @@ ind_core_bsn_gentable_entry_add_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     entry = find_entry_by_key(gentable, &key);
@@ -276,8 +281,13 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     entry = find_entry_by_key(gentable, &key);
@@ -347,8 +357,13 @@ ind_core_bsn_gentable_clear_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     struct ind_core_gentable_clear_state *state = aim_zmalloc(sizeof(*state));
@@ -384,8 +399,13 @@ ind_core_bsn_gentable_set_buckets_size_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     if ((new_buckets_size & (new_buckets_size - 1)) != 0) {
@@ -509,8 +529,13 @@ ind_core_bsn_gentable_entry_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     reply = of_bsn_gentable_entry_stats_reply_new(obj->version);
@@ -599,8 +624,13 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     reply = of_bsn_gentable_entry_desc_stats_reply_new(obj->version);
@@ -723,8 +753,13 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(obj);
+        return;
     }
 
     for (i = 0; i < gentable->checksum_buckets_size; i++) {
