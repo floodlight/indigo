@@ -22,6 +22,11 @@
  * @brief OpenFlow message handlers for gentable messages
  *
  * See detailed documentation in the Indigo architecture headers.
+ *
+ * TODO:
+ *  - Reduce LOCI allocation overhead per entry.
+ *  - Reuse stats entry during stats tasks.
+ *  - Automatically resize key hashtable buckets.
  */
 
 #include "ofstatemanager_log.h"
@@ -495,8 +500,6 @@ entry_stats_iter(void *cookie, indigo_core_gentable_t *gentable,
 {
     struct ind_core_gentable_entry_stats_state *state = cookie;
 
-    /* TODO reuse entry */
-
     if (entry != NULL) {
         of_list_bsn_gentable_entry_stats_entry_t stats_entries;
         of_bsn_gentable_entry_stats_entry_t *stats_entry;
@@ -593,8 +596,6 @@ entry_desc_stats_iter(void *cookie, indigo_core_gentable_t *gentable,
                       struct ind_core_gentable_entry *entry)
 {
     struct ind_core_gentable_entry_desc_stats_state *state = cookie;
-
-    /* TODO reuse entry */
 
     if (entry != NULL) {
         of_list_bsn_gentable_entry_desc_stats_entry_t stats_entries;
