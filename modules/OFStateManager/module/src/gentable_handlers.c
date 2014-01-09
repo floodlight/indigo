@@ -1025,13 +1025,25 @@ ind_core_gentable_iter_task_callback(void *cookie)
             state->callback(state->cookie, gentable, entry);
         }
 
+        const uint64_t bucket_interval = (uint64_t)1 << gentable->checksum_buckets_shift;
+        const uint64_t bucket_mask = ~(uint64_t)0 << gentable->checksum_buckets_shift;
+
         /* Advance to next bucket */
-        state->next_checksum.hi += (uint64_t)1 << gentable->checksum_buckets_shift;
+        state->next_checksum.hi += bucket_interval;
 
         /* Reset to the lowest checksum in the bucket */
-        state->next_checksum.hi &= ~(uint64_t)0 << gentable->checksum_buckets_shift;
+        state->next_checksum.hi &= bucket_mask;
 
-        if (state->next_checksum.hi == 0) {
+        /*
+         * Calculate the end of our bucket range.
+         *
+         * Basically, add the length of the checksum range to the start of the
+         * range and then mask to the beginning of a bucket.
+         */
+        uint64_t end_checksum_hi =
+            (state->checksum_prefix.hi + (~state->checksum_mask.hi + 1)) & bucket_mask;
+
+        if (state->next_checksum.hi == end_checksum_hi) {
             /* Finished */
             state->callback(state->cookie, gentable, NULL);
             aim_free(state);
@@ -1077,6 +1089,7 @@ ind_core_gentable_spawn_iter_task(
     state->generation_id = gentable->generation_id;
     state->checksum_prefix = checksum_prefix;
     state->checksum_mask = checksum_mask;
+    state->next_checksum = checksum_prefix;
 
     rv = ind_soc_task_register(ind_core_gentable_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
