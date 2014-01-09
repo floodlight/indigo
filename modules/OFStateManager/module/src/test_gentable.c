@@ -39,6 +39,8 @@
  * Validation:
  *  - 0 <= vlan_vid < 4095
  *  - mac is unicast
+ *
+ * Deletion will fail the first time if idle_notification is set.
  */
 
 #include "ofstatemanager_log.h"
@@ -75,6 +77,7 @@ struct ind_core_gentable_test_entry {
     struct ind_core_gentable_test_value value;
     uint64_t rx_packets;
     uint64_t tx_packets;
+    bool fail_deletion;
 };
 
 static indigo_error_t
@@ -155,6 +158,9 @@ ind_core_test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn
         return rv;
     }
 
+    /* HACK to test deletion error path */
+    entry->fail_deletion = entry->value.idle_notification;
+
     /* TODO validate num entries */
 
     table->num_entries++;
@@ -183,6 +189,11 @@ ind_core_test_gentable_delete(void *table_priv, void *entry_priv, of_list_bsn_tl
 {
     struct ind_core_gentable_test_table *table = table_priv;
     struct ind_core_gentable_test_entry *entry = entry_priv;
+
+    if (entry->fail_deletion) {
+        entry->fail_deletion = false;
+        return INDIGO_ERROR_PARAM;
+    }
 
     aim_free(entry);
 
