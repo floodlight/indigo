@@ -303,8 +303,14 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     rv = delete_entry(gentable, entry);
     if (rv < 0) {
-        /* TODO error */
-        AIM_DIE("Failed to delete entry");
+        AIM_LOG_ERROR("%s gentable delete failed: %s",
+                      gentable->name, indigo_strerror(rv));
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_EPERM);
+        of_object_delete(obj);
+        return;
     }
 
     of_object_delete(obj);
