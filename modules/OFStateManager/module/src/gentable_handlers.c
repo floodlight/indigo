@@ -543,15 +543,27 @@ entry_desc_stats_iter(void *cookie, indigo_core_gentable_t *gentable,
         of_list_bsn_gentable_entry_desc_stats_entry_t stats_entries;
         of_bsn_gentable_entry_desc_stats_entry_t *stats_entry;
 
-        of_bsn_gentable_entry_desc_stats_reply_entries_bind(state->reply, &stats_entries);
-
         stats_entry = of_bsn_gentable_entry_desc_stats_entry_new(OF_VERSION_1_3);
         of_bsn_gentable_entry_desc_stats_entry_checksum_set(stats_entry, entry->checksum);
         AIM_TRUE_OR_DIE(of_bsn_gentable_entry_desc_stats_entry_key_set(stats_entry, entry->key) == 0);
         AIM_TRUE_OR_DIE(of_bsn_gentable_entry_desc_stats_entry_value_set(stats_entry, entry->value) == 0);
 
+        of_bsn_gentable_entry_desc_stats_reply_entries_bind(state->reply, &stats_entries);
         if (of_list_append(&stats_entries, stats_entry) < 0) {
-            /* TODO fragment */
+            of_bsn_gentable_entry_desc_stats_reply_flags_set(state->reply,
+                                                             OF_STATS_REPLY_FLAG_REPLY_MORE);
+            indigo_cxn_send_controller_message(state->cxn_id, state->reply);
+
+            state->reply = of_bsn_gentable_entry_desc_stats_reply_new(state->request->version);
+
+            uint32_t xid;
+            of_bsn_gentable_entry_desc_stats_request_xid_get(state->request, &xid);
+            of_bsn_gentable_entry_desc_stats_reply_xid_set(state->reply, xid);
+
+            of_bsn_gentable_entry_desc_stats_reply_entries_bind(state->reply, &stats_entries);
+            if (of_list_append(&stats_entries, stats_entry) < 0) {
+                AIM_DIE("unexpected failure appending to an empty stats list");
+            }
         }
 
         of_object_delete(stats_entry);
