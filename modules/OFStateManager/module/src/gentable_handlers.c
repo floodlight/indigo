@@ -393,8 +393,9 @@ ind_core_bsn_gentable_clear_request_handler(
                                            IND_SOC_DEFAULT_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        /* TODO */
-        AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        of_object_delete(state->request);
+        aim_free(state);
     }
 }
 
@@ -574,8 +575,10 @@ ind_core_bsn_gentable_entry_stats_request_handler(
                                            IND_SOC_DEFAULT_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        /* TODO */
-        AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        of_object_delete(state->reply);
+        of_object_delete(state->request);
+        aim_free(state);
     }
 }
 
@@ -669,8 +672,10 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
                                            IND_SOC_DEFAULT_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        /* TODO */
-        AIM_DIE("unexpected ind_core_gentable_spawn_iter_task failure: %s", indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        of_object_delete(state->request);
+        of_object_delete(state->reply);
+        aim_free(state);
     }
 }
 
