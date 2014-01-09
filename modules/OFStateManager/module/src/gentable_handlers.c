@@ -788,8 +788,16 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
         of_bsn_gentable_bucket_stats_entry_t stats_entry;
         of_bsn_gentable_bucket_stats_entry_init(&stats_entry, reply->version, -1, 1);
         if (of_list_bsn_gentable_bucket_stats_entry_append_bind(&stats_entries, &stats_entry)) {
-            /* TODO fragment */
-            break;
+            of_bsn_gentable_bucket_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+            indigo_cxn_send_controller_message(cxn_id, reply);
+
+            reply = of_bsn_gentable_bucket_stats_reply_new(obj->version);
+            of_bsn_gentable_bucket_stats_reply_xid_set(reply, xid);
+            of_bsn_gentable_bucket_stats_reply_entries_bind(reply, &stats_entries);
+
+            if (of_list_bsn_gentable_bucket_stats_entry_append_bind(&stats_entries, &stats_entry)) {
+                AIM_DIE("unexpected failure appending to an empty bucket stats list");
+            }
         }
 
         of_bsn_gentable_bucket_stats_entry_checksum_set(&stats_entry, bucket->checksum);
