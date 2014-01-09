@@ -37,7 +37,7 @@
  *  - tx_packets
  *
  * Validation:
- *  - 0 < vlan_vid < 4095
+ *  - 0 <= vlan_vid < 4095
  *  - mac is unicast
  */
 
@@ -99,6 +99,8 @@ parse_key(of_list_bsn_tlv_t *key, struct ind_core_gentable_test_key *out)
 
     if (count_vlan_vid != 1 || count_ipv4 != 1) {
         return INDIGO_ERROR_PARAM;
+    } else if (out->vlan_vid >= 4095) {
+        return INDIGO_ERROR_PARAM;
     } else {
         return INDIGO_ERROR_NONE;
     }
@@ -128,6 +130,9 @@ parse_value(of_list_bsn_tlv_t *value, struct ind_core_gentable_test_value *out)
 
     if (count_mac != 1 || count_idle_notification > 1) {
         return INDIGO_ERROR_PARAM;
+    } else if (out->mac.addr[0] & 1) {
+        /* non-unicast MAC */
+        return INDIGO_ERROR_PARAM;
     } else {
         return INDIGO_ERROR_NONE;
     }
@@ -136,13 +141,19 @@ parse_value(of_list_bsn_tlv_t *value, struct ind_core_gentable_test_value *out)
 static indigo_error_t
 ind_core_test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv)
 {
+    indigo_error_t rv;
     struct ind_core_gentable_test_table *table = table_priv;
     struct ind_core_gentable_test_entry *entry = aim_zmalloc(sizeof(*entry));
 
-    parse_key(key, &entry->key);
-    parse_value(value, &entry->value);
+    rv = parse_key(key, &entry->key);
+    if (rv < 0) {
+        return rv;
+    }
 
-    /* TODO validate entry */
+    rv = parse_value(value, &entry->value);
+    if (rv < 0) {
+        return rv;
+    }
 
     /* TODO validate num entries */
 
@@ -155,12 +166,14 @@ ind_core_test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn
 static indigo_error_t
 ind_core_test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value)
 {
+    indigo_error_t rv;
     //struct ind_core_gentable_test_table *table = table_priv;
     struct ind_core_gentable_test_entry *entry = entry_priv;
 
-    /* TODO validate entry */
-
-    parse_value(value, &entry->value);
+    rv = parse_value(value, &entry->value);
+    if (rv < 0) {
+        return rv;
+    }
 
     return INDIGO_ERROR_NONE;
 }

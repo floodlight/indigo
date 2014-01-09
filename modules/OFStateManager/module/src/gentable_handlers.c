@@ -200,11 +200,9 @@ ind_core_bsn_gentable_entry_add_handler(
         /* Adding a new entry */
         rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
         if (rv != INDIGO_ERROR_NONE) {
-            /* TODO error */
             AIM_LOG_ERROR("%s gentable add failed: %s",
-                        gentable->name, indigo_strerror(rv));
-            AIM_DIE("NYI");
-            of_object_delete(obj);
+                          gentable->name, indigo_strerror(rv));
+            goto error;
         }
 
         /* Allocate new entry */
@@ -222,11 +220,9 @@ ind_core_bsn_gentable_entry_add_handler(
         /* Modifying an existing entry */
         rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
         if (rv != INDIGO_ERROR_NONE) {
-            /* TODO error */
             AIM_LOG_ERROR("%s gentable modify failed: %s",
-                        gentable->name, indigo_strerror(rv));
-            AIM_DIE("NYI");
-            of_object_delete(obj);
+                          gentable->name, indigo_strerror(rv));
+            goto error;
         }
 
         of_object_delete(entry->value);
@@ -252,6 +248,15 @@ ind_core_bsn_gentable_entry_add_handler(
     /* Add to table checksum */
     update_checksum(&gentable->checksum, &entry->checksum);
 
+    of_object_delete(obj);
+    return;
+
+error:
+    /* Not a great error code but we don't have many options */
+    indigo_cxn_send_error_reply(
+        cxn_id, obj,
+        OF_ERROR_TYPE_BAD_REQUEST,
+        OF_REQUEST_FAILED_EPERM);
     of_object_delete(obj);
 }
 
