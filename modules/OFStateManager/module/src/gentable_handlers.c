@@ -292,8 +292,13 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     entry = find_entry_by_key(gentable, &key);
     if (entry == NULL) {
-        /* TODO error */
-        AIM_DIE("Nonexistent gentable entry");
+        AIM_LOG_ERROR("Nonexistent %s gentable entry", gentable->name);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_EPERM);
+        of_object_delete(obj);
+        return;
     }
 
     rv = delete_entry(gentable, entry);
