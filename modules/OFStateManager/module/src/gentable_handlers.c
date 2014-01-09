@@ -61,6 +61,7 @@ struct ind_core_gentable_checksum_bucket {
 struct indigo_core_gentable {
     const indigo_core_gentable_ops_t *ops;
     void *priv;
+    uint64_t generation_id;
     list_head_t *key_buckets;
     struct ind_core_gentable_checksum_bucket *checksum_buckets;
     uint32_t max_entries;
@@ -84,6 +85,11 @@ struct ind_core_gentable_entry {
 };
 
 static indigo_core_gentable_t *gentables[MAX_GENTABLES];
+
+/*
+ * Used to fix an ABA problem with iteration.
+ */
+static uint64_t next_generation_id = 0;
 
 
 /* Registration */
@@ -117,6 +123,7 @@ indigo_core_gentable_register(
         calc_checksum_buckets_shift(gentable->checksum_buckets_size);
 
     gentable->table_id = alloc_table_id();
+    gentable->generation_id = next_generation_id++;
 
     gentable->key_buckets = aim_malloc(sizeof(*gentable->key_buckets) *
                                        gentable->checksum_buckets_size);
@@ -958,6 +965,7 @@ struct ind_core_gentable_iter_task_state {
     ind_core_gentable_iter_task_callback_f callback;
     void *cookie;
     uint16_t table_id;
+    uint64_t generation_id;
     of_checksum_128_t next_checksum;
     of_checksum_128_t checksum_prefix;
     of_checksum_128_t checksum_mask;
@@ -969,7 +977,7 @@ ind_core_gentable_iter_task_callback(void *cookie)
     struct ind_core_gentable_iter_task_state *state = cookie;
     indigo_core_gentable_t *gentable = find_gentable_by_id(state->table_id);
 
-    if (gentable == NULL) {
+    if (gentable == NULL || gentable->generation_id != state->generation_id) {
         AIM_LOG_WARN("gentable %s disappeared during iteration");
         state->callback(state->cookie, NULL, NULL);
         aim_free(state);
@@ -1061,6 +1069,7 @@ ind_core_gentable_spawn_iter_task(
     state->callback = callback;
     state->cookie = cookie;
     state->table_id = gentable->table_id;
+    state->generation_id = gentable->generation_id;
     state->checksum_prefix = checksum_prefix;
     state->checksum_mask = checksum_mask;
 
