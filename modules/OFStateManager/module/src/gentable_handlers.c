@@ -969,9 +969,11 @@ ind_core_gentable_iter_task_callback(void *cookie)
     struct ind_core_gentable_iter_task_state *state = cookie;
     indigo_core_gentable_t *gentable = find_gentable_by_id(state->table_id);
 
-    /* TODO */
     if (gentable == NULL) {
-        AIM_DIE("gentable disappeared");
+        AIM_LOG_WARN("gentable %s disappeared during iteration");
+        state->callback(state->cookie, NULL, NULL);
+        aim_free(state);
+        return IND_SOC_TASK_FINISHED;
     }
 
     /*
