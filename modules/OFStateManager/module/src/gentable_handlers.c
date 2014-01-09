@@ -419,9 +419,15 @@ ind_core_bsn_gentable_set_buckets_size_handler(
         return;
     }
 
-    if ((new_buckets_size & (new_buckets_size - 1)) != 0) {
-        /* TODO error */
-        AIM_DIE("Non power of 2 buckets size");
+    if (new_buckets_size == 0 || (new_buckets_size & (new_buckets_size - 1)) != 0) {
+        AIM_LOG_ERROR("Attempted to set a non power of 2 buckets size (%d) for gentable %s",
+                      new_buckets_size, gentable->name);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_EPERM);
+        of_object_delete(obj);
+        return;
     }
 
     if (new_buckets_size == gentable->checksum_buckets_size) {
