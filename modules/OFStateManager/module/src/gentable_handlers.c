@@ -150,6 +150,9 @@ indigo_core_gentable_register(
 
     gentables[gentable->table_id] = gentable;
     *gentable_ptr = gentable;
+
+    AIM_LOG_INFO("Registered gentable \"%s\" with table id %d",
+                 gentable->name, gentable->table_id);
 }
 
 void
