@@ -279,7 +279,7 @@ typedef struct indigo_core_gentable_ops {
 
 void
 indigo_core_gentable_register(
-    const of_table_name_t name,
+    const char *name,
     const indigo_core_gentable_ops_t *ops,
     void *table_priv,
     uint32_t max_size,
