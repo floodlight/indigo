@@ -37,6 +37,7 @@
 #include <loci/loci.h>
 #include <locitest/unittest.h>
 #include <locitest/test_common.h>
+#include <SocketManager/socketmanager.h>
 
 #define TABLE_ID 1
 #define NUM_ENTRIES 10
@@ -48,6 +49,7 @@ static void do_add(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi);
 static void do_delete(uint32_t port);
 static void do_clear(void);
 static void do_entry_stats(void);
+static void do_set_buckets_size(uint32_t buckets_size);
 static void parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port);
 
 struct test_entry {
@@ -231,6 +233,75 @@ test_gentable_entry_stats(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_long_running_task(void)
+{
+    int i;
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_register(name, &test_ops, &table, 10, 4, &gentable);
+    AIM_TRUE_OR_DIE(table.count_op == 0);
+
+    /* Two entries per checksum bucket */
+    for (i = 0; i < 8; i++) {
+        do_add(i, mac1, i << 5);
+    }
+
+    memset(&table, 0, sizeof(table));
+
+    of_object_t *request = of_bsn_gentable_entry_stats_request_new(OF_VERSION_1_3);
+    of_bsn_gentable_entry_stats_request_xid_set(request, 0x12345678);
+    of_bsn_gentable_entry_stats_request_table_id_set(request, TABLE_ID);
+    handle_message(request);
+
+    AIM_TRUE_OR_DIE(table.count_op == 0);
+
+    /* Process first bucket normally */
+    ind_soc_select_and_run(0);
+    AIM_TRUE_OR_DIE(table.entries[0].count_op == 1);
+    AIM_TRUE_OR_DIE(table.entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(table.count_op == 2);
+
+    /* Shrink buckets, process second half of first bucket */
+    do_set_buckets_size(2);
+    ind_soc_select_and_run(0);
+    AIM_TRUE_OR_DIE(table.entries[2].count_op == 1);
+    AIM_TRUE_OR_DIE(table.entries[3].count_op == 1);
+    AIM_TRUE_OR_DIE(table.count_op == 4);
+
+    /* Expand buckets, process third bucket */
+    do_set_buckets_size(8);
+    ind_soc_select_and_run(0);
+    AIM_TRUE_OR_DIE(table.entries[4].count_op == 1);
+    AIM_TRUE_OR_DIE(table.count_op == 5);
+
+    /* Shrink buckets, process second half of third bucket */
+    do_set_buckets_size(4);
+    ind_soc_select_and_run(0);
+    AIM_TRUE_OR_DIE(table.entries[5].count_op == 1);
+    AIM_TRUE_OR_DIE(table.count_op == 6);
+
+    /* Process fourth bucket */
+    ind_soc_select_and_run(0);
+    AIM_TRUE_OR_DIE(table.entries[6].count_op == 1);
+    AIM_TRUE_OR_DIE(table.entries[7].count_op == 1);
+    AIM_TRUE_OR_DIE(table.count_op == 8);
+
+    do_barrier();
+    ind_soc_select_and_run(0);
+
+    AIM_TRUE_OR_DIE(table.count_stats == 8);
+    AIM_TRUE_OR_DIE(table.count_op == 8);
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_unregister(gentable);
+    AIM_TRUE_OR_DIE(table.count_op == 8);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -239,6 +310,7 @@ test_gentable(void)
     RUN_TEST(gentable_entry_modify);
     RUN_TEST(gentable_clear);
     RUN_TEST(gentable_entry_stats);
+    RUN_TEST(gentable_long_running_task);
     return TEST_PASS;
 }
 
@@ -334,6 +406,20 @@ do_entry_stats()
 
     handle_message(obj);
     do_barrier();
+}
+
+static void
+do_set_buckets_size(uint32_t buckets_size)
+{
+    of_object_t *obj = of_bsn_gentable_set_buckets_size_new(OF_VERSION_1_3);
+    of_bsn_gentable_set_buckets_size_xid_set(obj, 0x12345678);
+    of_bsn_gentable_set_buckets_size_table_id_set(obj, TABLE_ID);
+    of_bsn_gentable_set_buckets_size_buckets_size_set(obj, buckets_size);
+
+    handle_message(obj);
+
+    // HACK we want to send this in the middle of a long running task
+    //do_barrier();
 }
 
 
@@ -478,6 +564,11 @@ test_gentable_get_stats(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *k
 
     entry->count_op++;
     entry->count_stats++;
+
+    indigo_time_t start_time = INDIGO_CURRENT_TIME;
+    do {
+        AIM_USLEEP(10 * 1000);
+    } while (INDIGO_TIME_DIFF_ms(start_time, INDIGO_CURRENT_TIME) < 10);
 }
 
 static indigo_core_gentable_ops_t test_ops = {
