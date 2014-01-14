@@ -131,7 +131,7 @@ indigo_core_gentable_register(
     gentable->generation_id = next_generation_id++;
 
     gentable->key_buckets = aim_malloc(sizeof(*gentable->key_buckets) *
-                                       gentable->checksum_buckets_size);
+                                       gentable->key_buckets_size);
 
     for (i = 0; i < gentable->key_buckets_size; i++) {
         list_init(&gentable->key_buckets[i]);
