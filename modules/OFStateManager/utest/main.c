@@ -46,6 +46,9 @@
 
 #include "ofstatemanager_decs.h"
 
+/* Defined in gentable_test.c */
+int test_gentable(void);
+
 /* Must be an even number */
 #define TEST_FLOW_COUNT 1000
 
@@ -459,7 +462,7 @@ message_deleted(of_object_t *obj)
     outstanding_op_cnt--;
 }
 
-static void
+void
 handle_message(of_object_t *obj)
 {
     assert(outstanding_op_cnt >= 0);
@@ -469,7 +472,7 @@ handle_message(of_object_t *obj)
     indigo_core_receive_controller_message(0, obj);
 }
 
-static int
+int
 do_barrier(void)
 {
     int count = 0;
@@ -1448,6 +1451,10 @@ aim_main(int argc, char* argv[])
     RUN_TEST(packet_in_listeners);
     RUN_TEST(port_status_listeners);
     RUN_TEST(message_listeners);
+
+    if (test_gentable() != TEST_PASS) {
+        return 1;
+    }
 
     /* Kill logging for OFStateManager as next tests gen errors */
     aim_log_pvs_set(aim_log_find("ofstatemanager"), NULL);
