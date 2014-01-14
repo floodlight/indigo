@@ -44,7 +44,7 @@
 extern void handle_message(of_object_t *obj);
 extern int do_barrier(void);
 
-static void do_add(uint32_t port, of_mac_addr_t mac);
+static void do_add(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi);
 static void do_delete(uint32_t port);
 static void do_clear(void);
 static void do_entry_stats(void);
@@ -87,8 +87,8 @@ test_gentable_entry_add(void)
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     memset(&table, 0, sizeof(table));
-    do_add(1, mac1);
-    do_add(2, mac2);
+    do_add(1, mac1, 0);
+    do_add(2, mac2, 0);
     AIM_TRUE_OR_DIE(!memcmp(&table.entries[1].mac, &mac1, sizeof(of_mac_addr_t)));
     AIM_TRUE_OR_DIE(table.entries[1].count_add == 1);
     AIM_TRUE_OR_DIE(table.entries[1].count_op == 1);
@@ -121,8 +121,8 @@ test_gentable_entry_delete(void)
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     memset(&table, 0, sizeof(table));
-    do_add(1, mac1);
-    do_add(2, mac2);
+    do_add(1, mac1, 0);
+    do_add(2, mac2, 0);
 
     memset(&table, 0, sizeof(table));
     do_delete(1);
@@ -155,11 +155,11 @@ test_gentable_entry_modify(void)
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
-    do_add(1, mac1);
-    do_add(2, mac2);
+    do_add(1, mac1, 0);
+    do_add(2, mac2, 0);
 
     memset(&table, 0, sizeof(table));
-    do_add(1, mac3);
+    do_add(1, mac3, 0);
     AIM_TRUE_OR_DIE(!memcmp(&table.entries[1].mac, &mac3, sizeof(of_mac_addr_t)));
     AIM_TRUE_OR_DIE(table.entries[1].count_modify == 1);
     AIM_TRUE_OR_DIE(table.entries[1].count_op == 1);
@@ -183,8 +183,8 @@ test_gentable_clear(void)
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
-    do_add(1, mac1);
-    do_add(2, mac2);
+    do_add(1, mac1, 0);
+    do_add(2, mac2, 0);
 
     memset(&table, 0, sizeof(table));
     do_clear();
@@ -212,8 +212,8 @@ test_gentable_entry_stats(void)
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
-    do_add(1, mac1);
-    do_add(2, mac2);
+    do_add(1, mac1, 0);
+    do_add(2, mac2, 0);
 
     memset(&table, 0, sizeof(table));
     do_entry_stats();
@@ -246,13 +246,13 @@ test_gentable(void)
 /* Utility functions to send OpenFlow messages */
 
 static void
-do_add(uint32_t port, of_mac_addr_t mac)
+do_add(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi)
 {
     of_object_t *obj = of_bsn_gentable_entry_add_new(OF_VERSION_1_3);
     of_bsn_gentable_entry_add_xid_set(obj, 0x12345678);
     of_bsn_gentable_entry_add_table_id_set(obj, TABLE_ID);
     {
-        of_checksum_128_t checksum = { 0xFEDCBA9876543210L, 0xFFEECCBBAA998877L };
+        of_checksum_128_t checksum = { (uint64_t)csum_hi << 56, 0xFFEECCBBAA998877L };
         of_bsn_gentable_entry_add_checksum_set(obj, checksum);
     }
     {
