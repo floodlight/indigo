@@ -294,5 +294,44 @@ indigo_core_gentable_register(
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
+
+/**
+ * Listener interfaces
+ *
+ * These functions allow modules not defined in the Indigo architecture to
+ * react to dataplane events and controller messages. This is useful for
+ * implementing add-on switch functionality like LACP and LLDP offloads.
+ */
+
+/**
+ * If any listener returns DROP, the event will not be handled by
+ * OFStateManager. All listeners will still see the event.
+ */
+typedef enum indigo_core_listener_result {
+    INDIGO_CORE_LISTENER_RESULT_PASS = 0,
+    INDIGO_CORE_LISTENER_RESULT_DROP = 1,
+} indigo_core_listener_result_t;
+
+/**
+ * Packet-in listener registration
+ */
+typedef indigo_core_listener_result_t (*indigo_core_packet_in_listener_f)(of_packet_in_t *packet_in);
+indigo_error_t indigo_core_packet_in_listener_register(indigo_core_packet_in_listener_f fn);
+void indigo_core_packet_in_listener_unregister(indigo_core_packet_in_listener_f fn);
+
+/**
+ * Port status listener registration
+ */
+typedef indigo_core_listener_result_t (*indigo_core_port_status_listener_f)(of_port_status_t *port_status);
+indigo_error_t indigo_core_port_status_listener_register(indigo_core_port_status_listener_f fn);
+void indigo_core_port_status_listener_unregister(indigo_core_port_status_listener_f fn);
+
+/**
+ * Message listener registration
+ */
+typedef indigo_core_listener_result_t (*indigo_core_message_listener_f)(indigo_cxn_id_t cxn_id, of_object_t *msg);
+indigo_error_t indigo_core_message_listener_register(indigo_core_message_listener_f fn);
+void indigo_core_message_listener_unregister(indigo_core_message_listener_f fn);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
