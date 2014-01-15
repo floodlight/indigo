@@ -1240,26 +1240,26 @@ test_flow_stats(void)
 
 struct listener_state {
     int count;
-    ind_core_listener_result_t result;
+    indigo_core_listener_result_t result;
 };
 
 struct listener_state listener_states[3];
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 listener0(void *arg)
 {
     listener_states[0].count++;
     return listener_states[0].result;
 }
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 listener1(void *arg)
 {
     listener_states[1].count++;
     return listener_states[1].result;
 }
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 listener2(void *arg)
 {
     listener_states[2].count++;
@@ -1272,17 +1272,17 @@ test_packet_in_listeners(void)
     memset(async_message_counters, 0, sizeof(async_message_counters));
 
     /* Register 3 listeners */
-    TEST_INDIGO_OK(ind_core_packet_in_listener_register(
-        (ind_core_packet_in_listener_f)listener0));
-    TEST_INDIGO_OK(ind_core_packet_in_listener_register(
-        (ind_core_packet_in_listener_f)listener1));
-    TEST_INDIGO_OK(ind_core_packet_in_listener_register(
-        (ind_core_packet_in_listener_f)listener2));
+    TEST_INDIGO_OK(indigo_core_packet_in_listener_register(
+        (indigo_core_packet_in_listener_f)listener0));
+    TEST_INDIGO_OK(indigo_core_packet_in_listener_register(
+        (indigo_core_packet_in_listener_f)listener1));
+    TEST_INDIGO_OK(indigo_core_packet_in_listener_register(
+        (indigo_core_packet_in_listener_f)listener2));
 
     memset(listener_states, 0, sizeof(listener_states));
-    listener_states[0].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[2].result = IND_CORE_LISTENER_RESULT_PASS;
+    listener_states[0].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[2].result = INDIGO_CORE_LISTENER_RESULT_PASS;
 
     /* Pass event through listeners */
     TEST_INDIGO_OK(indigo_core_packet_in(of_packet_in_new(OF_VERSION_1_0)));
@@ -1292,7 +1292,7 @@ test_packet_in_listeners(void)
     TEST_ASSERT(async_message_counters[OF_PACKET_IN] == 1);
 
     /* Drop event in one listener */
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_DROP;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_DROP;
     TEST_INDIGO_OK(indigo_core_packet_in(of_packet_in_new(OF_VERSION_1_0)));
     TEST_ASSERT(listener_states[0].count == 2);
     TEST_ASSERT(listener_states[1].count == 2);
@@ -1300,12 +1300,12 @@ test_packet_in_listeners(void)
     TEST_ASSERT(async_message_counters[OF_PACKET_IN] == 1);
 
     /* Unregister listeners */
-    ind_core_packet_in_listener_unregister(
-        (ind_core_packet_in_listener_f)listener1);
-    ind_core_packet_in_listener_unregister(
-        (ind_core_packet_in_listener_f)listener2);
-    ind_core_packet_in_listener_unregister(
-        (ind_core_packet_in_listener_f)listener0);
+    indigo_core_packet_in_listener_unregister(
+        (indigo_core_packet_in_listener_f)listener1);
+    indigo_core_packet_in_listener_unregister(
+        (indigo_core_packet_in_listener_f)listener2);
+    indigo_core_packet_in_listener_unregister(
+        (indigo_core_packet_in_listener_f)listener0);
 
     TEST_INDIGO_OK(indigo_core_packet_in(of_packet_in_new(OF_VERSION_1_0)));
     TEST_ASSERT(listener_states[0].count == 2);
@@ -1322,17 +1322,17 @@ test_port_status_listeners(void)
     memset(async_message_counters, 0, sizeof(async_message_counters));
 
     /* Register 3 listeners */
-    TEST_INDIGO_OK(ind_core_port_status_listener_register(
-        (ind_core_port_status_listener_f)listener0));
-    TEST_INDIGO_OK(ind_core_port_status_listener_register(
-        (ind_core_port_status_listener_f)listener1));
-    TEST_INDIGO_OK(ind_core_port_status_listener_register(
-        (ind_core_port_status_listener_f)listener2));
+    TEST_INDIGO_OK(indigo_core_port_status_listener_register(
+        (indigo_core_port_status_listener_f)listener0));
+    TEST_INDIGO_OK(indigo_core_port_status_listener_register(
+        (indigo_core_port_status_listener_f)listener1));
+    TEST_INDIGO_OK(indigo_core_port_status_listener_register(
+        (indigo_core_port_status_listener_f)listener2));
 
     memset(listener_states, 0, sizeof(listener_states));
-    listener_states[0].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[2].result = IND_CORE_LISTENER_RESULT_PASS;
+    listener_states[0].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[2].result = INDIGO_CORE_LISTENER_RESULT_PASS;
 
     /* Pass event through listeners */
     indigo_core_port_status_update(of_port_status_new(OF_VERSION_1_0));
@@ -1342,7 +1342,7 @@ test_port_status_listeners(void)
     TEST_ASSERT(async_message_counters[OF_PORT_STATUS] == 1);
 
     /* Drop event in one listener */
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_DROP;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_DROP;
     indigo_core_port_status_update(of_port_status_new(OF_VERSION_1_0));
     TEST_ASSERT(listener_states[0].count == 2);
     TEST_ASSERT(listener_states[1].count == 2);
@@ -1350,12 +1350,12 @@ test_port_status_listeners(void)
     TEST_ASSERT(async_message_counters[OF_PORT_STATUS] == 1);
 
     /* Unregister listeners */
-    ind_core_port_status_listener_unregister(
-        (ind_core_port_status_listener_f)listener1);
-    ind_core_port_status_listener_unregister(
-        (ind_core_port_status_listener_f)listener2);
-    ind_core_port_status_listener_unregister(
-        (ind_core_port_status_listener_f)listener0);
+    indigo_core_port_status_listener_unregister(
+        (indigo_core_port_status_listener_f)listener1);
+    indigo_core_port_status_listener_unregister(
+        (indigo_core_port_status_listener_f)listener2);
+    indigo_core_port_status_listener_unregister(
+        (indigo_core_port_status_listener_f)listener0);
 
     indigo_core_port_status_update(of_port_status_new(OF_VERSION_1_0));
     TEST_ASSERT(listener_states[0].count == 2);
@@ -1372,17 +1372,17 @@ test_message_listeners(void)
     memset(controller_message_counters, 0, sizeof(controller_message_counters));
 
     /* Register 3 listeners */
-    TEST_INDIGO_OK(ind_core_message_listener_register(
-        (ind_core_message_listener_f)listener0));
-    TEST_INDIGO_OK(ind_core_message_listener_register(
-        (ind_core_message_listener_f)listener1));
-    TEST_INDIGO_OK(ind_core_message_listener_register(
-        (ind_core_message_listener_f)listener2));
+    TEST_INDIGO_OK(indigo_core_message_listener_register(
+        (indigo_core_message_listener_f)listener0));
+    TEST_INDIGO_OK(indigo_core_message_listener_register(
+        (indigo_core_message_listener_f)listener1));
+    TEST_INDIGO_OK(indigo_core_message_listener_register(
+        (indigo_core_message_listener_f)listener2));
 
     memset(listener_states, 0, sizeof(listener_states));
-    listener_states[0].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_PASS;
-    listener_states[2].result = IND_CORE_LISTENER_RESULT_PASS;
+    listener_states[0].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_PASS;
+    listener_states[2].result = INDIGO_CORE_LISTENER_RESULT_PASS;
 
     /* Pass event through listeners */
     handle_message(of_features_request_new(OF_VERSION_1_0));
@@ -1392,7 +1392,7 @@ test_message_listeners(void)
     TEST_ASSERT(controller_message_counters[OF_FEATURES_REPLY] == 1);
 
     /* Drop event in one listener */
-    listener_states[1].result = IND_CORE_LISTENER_RESULT_DROP;
+    listener_states[1].result = INDIGO_CORE_LISTENER_RESULT_DROP;
     handle_message(of_features_request_new(OF_VERSION_1_0));
     TEST_ASSERT(listener_states[0].count == 2);
     TEST_ASSERT(listener_states[1].count == 2);
@@ -1400,12 +1400,12 @@ test_message_listeners(void)
     TEST_ASSERT(controller_message_counters[OF_FEATURES_REPLY] == 1);
 
     /* Unregister listeners */
-    ind_core_message_listener_unregister(
-        (ind_core_message_listener_f)listener1);
-    ind_core_message_listener_unregister(
-        (ind_core_message_listener_f)listener2);
-    ind_core_message_listener_unregister(
-        (ind_core_message_listener_f)listener0);
+    indigo_core_message_listener_unregister(
+        (indigo_core_message_listener_f)listener1);
+    indigo_core_message_listener_unregister(
+        (indigo_core_message_listener_f)listener2);
+    indigo_core_message_listener_unregister(
+        (indigo_core_message_listener_f)listener0);
 
     handle_message(of_features_request_new(OF_VERSION_1_0));
     TEST_ASSERT(listener_states[0].count == 2);

@@ -37,7 +37,7 @@ static biglist_t *message_listeners;
 /* Packet in */
 
 indigo_error_t
-ind_core_packet_in_listener_register(ind_core_packet_in_listener_f fn)
+indigo_core_packet_in_listener_register(indigo_core_packet_in_listener_f fn)
 {
     if (biglist_find(packet_in_listeners, fn)) {
         return INDIGO_ERROR_EXISTS;
@@ -49,19 +49,19 @@ ind_core_packet_in_listener_register(ind_core_packet_in_listener_f fn)
 }
 
 void
-ind_core_packet_in_listener_unregister(ind_core_packet_in_listener_f fn)
+indigo_core_packet_in_listener_unregister(indigo_core_packet_in_listener_f fn)
 {
     packet_in_listeners = biglist_remove(packet_in_listeners, fn);
 }
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 ind_core_packet_in_notify(of_packet_in_t *packet_in)
 {
-    ind_core_listener_result_t result = IND_CORE_LISTENER_RESULT_PASS;
+    indigo_core_listener_result_t result = INDIGO_CORE_LISTENER_RESULT_PASS;
     biglist_t *cur;
-    ind_core_packet_in_listener_f fn;
+    indigo_core_packet_in_listener_f fn;
 
-    BIGLIST_FOREACH_DATA(cur, packet_in_listeners, ind_core_packet_in_listener_f, fn) {
+    BIGLIST_FOREACH_DATA(cur, packet_in_listeners, indigo_core_packet_in_listener_f, fn) {
         result |= fn(packet_in);
     }
 
@@ -71,7 +71,7 @@ ind_core_packet_in_notify(of_packet_in_t *packet_in)
 /* Port status */
 
 indigo_error_t
-ind_core_port_status_listener_register(ind_core_port_status_listener_f fn)
+indigo_core_port_status_listener_register(indigo_core_port_status_listener_f fn)
 {
     if (biglist_find(port_status_listeners, fn)) {
         return INDIGO_ERROR_EXISTS;
@@ -83,19 +83,19 @@ ind_core_port_status_listener_register(ind_core_port_status_listener_f fn)
 }
 
 void
-ind_core_port_status_listener_unregister(ind_core_port_status_listener_f fn)
+indigo_core_port_status_listener_unregister(indigo_core_port_status_listener_f fn)
 {
     port_status_listeners = biglist_remove(port_status_listeners, fn);
 }
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 ind_core_port_status_notify(of_port_status_t *port_status)
 {
-    ind_core_listener_result_t result = IND_CORE_LISTENER_RESULT_PASS;
+    indigo_core_listener_result_t result = INDIGO_CORE_LISTENER_RESULT_PASS;
     biglist_t *cur;
-    ind_core_port_status_listener_f fn;
+    indigo_core_port_status_listener_f fn;
 
-    BIGLIST_FOREACH_DATA(cur, port_status_listeners, ind_core_port_status_listener_f, fn) {
+    BIGLIST_FOREACH_DATA(cur, port_status_listeners, indigo_core_port_status_listener_f, fn) {
         result |= fn(port_status);
     }
 
@@ -105,7 +105,7 @@ ind_core_port_status_notify(of_port_status_t *port_status)
 /* Message from controller */
 
 indigo_error_t
-ind_core_message_listener_register(ind_core_message_listener_f fn)
+indigo_core_message_listener_register(indigo_core_message_listener_f fn)
 {
     if (biglist_find(message_listeners, fn)) {
         return INDIGO_ERROR_EXISTS;
@@ -117,19 +117,19 @@ ind_core_message_listener_register(ind_core_message_listener_f fn)
 }
 
 void
-ind_core_message_listener_unregister(ind_core_message_listener_f fn)
+indigo_core_message_listener_unregister(indigo_core_message_listener_f fn)
 {
     message_listeners = biglist_remove(message_listeners, fn);
 }
 
-ind_core_listener_result_t
+indigo_core_listener_result_t
 ind_core_message_notify(indigo_cxn_id_t cxn_id, of_object_t *message)
 {
-    ind_core_listener_result_t result = IND_CORE_LISTENER_RESULT_PASS;
+    indigo_core_listener_result_t result = INDIGO_CORE_LISTENER_RESULT_PASS;
     biglist_t *cur;
-    ind_core_message_listener_f fn;
+    indigo_core_message_listener_f fn;
 
-    BIGLIST_FOREACH_DATA(cur, message_listeners, ind_core_message_listener_f, fn) {
+    BIGLIST_FOREACH_DATA(cur, message_listeners, indigo_core_message_listener_f, fn) {
         result |= fn(cxn_id, message);
     }
 
