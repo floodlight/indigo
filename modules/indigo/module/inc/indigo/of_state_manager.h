@@ -200,5 +200,99 @@ indigo_core_stats_get(uint32_t *total_flows,
                       uint32_t *packet_ins,
                       uint32_t *packet_outs);
 
+/****************************************************************
+ * Gentable
+ *
+ * The gentable OpenFlow extension is documented fully in LOXI.
+ *
+ * The 'add' operation may optionally return a pointer-size value of private
+ * data. This value will be passed to later operations on that entry. The
+ * intended use is to store a pointer to the table implementation's allocated
+ * memory for that entry, avoiding the neeed to parse the key and do a
+ * hashtable lookup for each operation.
+ *
+ * The 'modify' operation does not exist in the wire protocol. It will be
+ * called when a gentable_entry_add message is received for a key that
+ * already exists in the table.
+ *
+ ****************************************************************/
+
+/**
+ * @brief Opaque handle to a gentable
+ */
+typedef struct indigo_core_gentable indigo_core_gentable_t;
+
+/**
+ * @brief Operations on a gentable
+ */
+typedef struct indigo_core_gentable_ops {
+    /**
+     * @brief Add an entry
+     * @param table_priv Table private data
+     * @param key Entry key
+     * @param value Entry value
+     * @param [out] entry_priv Opaque private data for the entry, passed back
+     *                         whenever another operation is made on the entry.
+     */
+    indigo_error_t (*add)(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv);
+
+    /**
+     * @brief Modify an entry
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     */
+    indigo_error_t (*modify)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value);
+
+    /**
+     * @brief Delete an entry
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     */
+    indigo_error_t (*del)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key);
+
+    /**
+     * @brief Get stats for an entry
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param stats Stats list to be filled in
+     */
+    void (*get_stats)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *stats);
+} indigo_core_gentable_ops_t;
+
+/*
+ * @brief Register a gentable
+ * @param name Table name. The controller determines the table semantics based
+ *             solely on this name.
+ * @param ops Table operations. This memory should have static lifetime.
+ * @param table_priv Opaque private data for this table, passed back
+ *                   whenever an operation is made on the table.
+ * @param max_size Maximum number of entries in the table. Not enforced by the
+ *                 Indigo framework, only used for advertising to the controller.
+ * @param buckets_size Initial size of the buckets array. May be resized by the
+ *                     controller.
+ * @param [out] gentable Handle to be passed to indigo_core_gentable_unregister.
+ */
+
+void
+indigo_core_gentable_register(
+    const char *name,
+    const indigo_core_gentable_ops_t *ops,
+    void *table_priv,
+    uint32_t max_size,
+    uint32_t buckets_size,
+    indigo_core_gentable_t **gentable);
+
+/*
+ * @brief Unregister a gentable
+ * @param gentable
+ */
+
+void
+indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */

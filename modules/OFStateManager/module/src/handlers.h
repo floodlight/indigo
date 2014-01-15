@@ -146,4 +146,33 @@ void ind_core_bsn_port_counter_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 
+/* gentable_handlers.c */
+void ind_core_bsn_gentable_entry_add_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_entry_delete_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_clear_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_set_buckets_size_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_entry_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_entry_desc_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_desc_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+void ind_core_bsn_gentable_bucket_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
+
 #endif /* _OF_STATE_HANDLERS_H_ */
