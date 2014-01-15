@@ -110,7 +110,7 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     LOG_TRACE("Packet in rcvd");
     ind_core_packet_ins++;
 
-    if (ind_core_packet_in_notify(packet_in) == IND_CORE_LISTENER_RESULT_DROP) {
+    if (ind_core_packet_in_notify(packet_in) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped packet-in");
         of_object_delete(packet_in);
         return INDIGO_ERROR_NONE;
@@ -219,7 +219,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     LOG_TRACE("Received %s message from cxn %d",
               of_object_id_str[obj->object_id], cxn);
 
-    if (ind_core_message_notify(cxn, obj) == IND_CORE_LISTENER_RESULT_DROP) {
+    if (ind_core_message_notify(cxn, obj) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped message");
         of_object_delete(obj);
         return;
@@ -940,7 +940,7 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
 
     LOG_TRACE("OF state mgr port status update");
 
-    if (ind_core_port_status_notify(of_port_status) == IND_CORE_LISTENER_RESULT_DROP) {
+    if (ind_core_port_status_notify(of_port_status) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped port status update");
         of_object_delete(of_port_status);
         return;

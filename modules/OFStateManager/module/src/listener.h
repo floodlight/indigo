@@ -30,9 +30,9 @@
 #include <indigo/indigo.h>
 
 /* Notify functions for each class of listener */
-ind_core_listener_result_t ind_core_packet_in_notify(of_packet_in_t *packet_in);
-ind_core_listener_result_t ind_core_port_status_notify(of_port_status_t *port_status);
-ind_core_listener_result_t ind_core_message_notify(indigo_cxn_id_t cxn_id, of_object_t *message);
+indigo_core_listener_result_t ind_core_packet_in_notify(of_packet_in_t *packet_in);
+indigo_core_listener_result_t ind_core_port_status_notify(of_port_status_t *port_status);
+indigo_core_listener_result_t ind_core_message_notify(indigo_cxn_id_t cxn_id, of_object_t *message);
 
 #endif /* _OFSTATEMANAGER_LISTENER_H_ */
 
