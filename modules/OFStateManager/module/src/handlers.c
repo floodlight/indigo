@@ -408,48 +408,101 @@ done:
 /**
  * Translate the error status into the correct error code for the given
  * OpenFlow version, and send the error message to the controller.
+ *
+ * WARNING: we only generate 1.0 and 1.3 errors; 
+ * 1.1 and 1.2 errors will be mapped to 1.0 errors.
+ *
  * @param indigo_err Error status
  * @param ver OpenFlow version
  * @param cxn_id Connection to send to
  * @param flow_mod Request that failed
  */
-
 static void
 flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
                       indigo_cxn_id_t cxn_id, of_flow_modify_t *flow_mod)
 {
     unsigned char errmsgf = 0;
-    unsigned code;
+    uint16_t type;
+    uint16_t code;
     uint32_t xid;
 
     of_flow_modify_xid_get(flow_mod, &xid);
 
-    switch (indigo_err) {
-    case INDIGO_ERROR_NONE:
-        break;
+    if (ver >= OF_VERSION_1_3) {
+        switch (indigo_err) {
+        case INDIGO_ERROR_NONE:
+            break;
 
-    case INDIGO_ERROR_RESOURCE:
-        code    = OF_FLOW_MOD_FAILED_ALL_TABLES_FULL_BY_VERSION(ver);
-        /* @fixme this will return the wrong code for ver >1.0 */
-        errmsgf = 1;
-        break;
+        case INDIGO_ERROR_RESOURCE:  /* fall-through */
+        case INDIGO_ERROR_TABLE_FULL:
+            type = OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver);
+            code = OF_FLOW_MOD_FAILED_TABLE_FULL_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
 
-    case INDIGO_ERROR_NOT_SUPPORTED:
-        code    = OF_FLOW_MOD_FAILED_UNSUPPORTED_BY_VERSION(ver);
-        /* @fixme this will return the wrong code for ver >1.0 */
-        errmsgf = 1;
-        break;
+        case INDIGO_ERROR_BAD_MATCH:
+            type = OF_ERROR_TYPE_BAD_MATCH_BY_VERSION(ver);
+            /* @fixme generate proper code instead of hardcoding */
+            code = OF_MATCH_FAILED_BAD_TYPE_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
 
-    default:
-        code    = OF_FLOW_MOD_FAILED_EPERM_BY_VERSION(ver);
-        /* @fixme use OF_FLOW_MOD_FAILED_UNKNOWN for ver >1.0 */
-        errmsgf = 1;
+        case INDIGO_ERROR_BAD_INSTRUCTION:
+            type = OF_ERROR_TYPE_BAD_INSTRUCTION_BY_VERSION(ver);
+            /* @fixme generate proper code instead of hardcoding */
+            code = OF_INSTRUCTION_FAILED_UNKNOWN_INST_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
+
+        case INDIGO_ERROR_BAD_ACTION:
+            type = OF_ERROR_TYPE_BAD_ACTION_BY_VERSION(ver);
+            /* @fixme generate proper code instead of hardcoding */
+            code = OF_ACTION_FAILED_BAD_TYPE_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
+
+        case INDIGO_ERROR_BAD_TABLE_ID:
+            type = OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver);
+            code = OF_FLOW_MOD_FAILED_BAD_TABLE_ID_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
+
+        case INDIGO_ERROR_NOT_SUPPORTED:  /* fall-through */
+        default:
+            type = OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver);
+            code = OF_FLOW_MOD_FAILED_UNKNOWN_BY_VERSION(ver);
+            errmsgf = 1;
+        }
+    } else {
+        /* @fixme only valid for 1.0 */
+        type = OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver);
+        switch (indigo_err) {
+        case INDIGO_ERROR_NONE:
+            break;
+ 
+        case INDIGO_ERROR_RESOURCE:  /* fall-through */
+        case INDIGO_ERROR_TABLE_FULL:
+            code = OF_FLOW_MOD_FAILED_ALL_TABLES_FULL_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
+ 
+        case INDIGO_ERROR_NOT_SUPPORTED:    /* fall-through */
+        case INDIGO_ERROR_BAD_MATCH:        /* fall-through */
+        case INDIGO_ERROR_BAD_INSTRUCTION:  /* fall-through */
+        case INDIGO_ERROR_BAD_ACTION:       /* fall-through */
+        case INDIGO_ERROR_BAD_TABLE_ID:
+            code = OF_FLOW_MOD_FAILED_UNSUPPORTED_BY_VERSION(ver);
+            errmsgf = 1;
+            break;
+ 
+        default:
+            code = OF_FLOW_MOD_FAILED_EPERM_BY_VERSION(ver);
+            errmsgf = 1;
+        }
     }
-
+ 
     if (errmsgf) {
-        indigo_cxn_send_error_reply(cxn_id, flow_mod,
-            OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
-            code);
+        indigo_cxn_send_error_reply(cxn_id, flow_mod, type, code);
     }
 }
 
