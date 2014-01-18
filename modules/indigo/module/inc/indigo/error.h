@@ -42,7 +42,12 @@
     ERROR(PROTOCOL,       -12, "Protocol error") \
     ERROR(CONNECTION,     -13, "Connection error") \
     ERROR(NOT_READY,      -14, "Agent not ready") \
-    ERROR(UNKNOWN,        -15, "Unknown error")
+    ERROR(UNKNOWN,        -15, "Unknown error") \
+    ERROR(BAD_MATCH,      -16, "Bad match") \
+    ERROR(BAD_INSTRUCTION, -17, "Bad instruction") \
+    ERROR(BAD_ACTION,     -18, "Bad action") \
+    ERROR(BAD_TABLE_ID,   -19, "Bad table id") \
+    ERROR(TABLE_FULL,     -20, "Table full") \
 
 typedef enum indigo_error_e {
 #define ERROR(name, value, description) INDIGO_ERROR_##name = value,
