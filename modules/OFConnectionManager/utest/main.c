@@ -76,7 +76,7 @@ static indigo_cxn_config_params_t config_params;
 static int
 setup_cxn(void)
 {
-    indigo_cxn_id_t id;
+    indigo_controller_id_t id;
 
     config_params.version = OF_VERSION_1_0;
 
@@ -84,7 +84,7 @@ setup_cxn(void)
     sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", CONTROLLER_IP);
     protocol_params.tcp_over_ipv4.controller_port = CONTROLLER_PORT;
 
-    OK(indigo_cxn_connection_add(&protocol_params, &config_params, &id));
+    OK(indigo_controller_add(&protocol_params, &config_params, &id));
 
     return id;
 }
@@ -139,7 +139,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn_id,
 
 int main(int argc, char* argv[])
 {
-    int cxn_id;
+    int controller_id;
     int idx;
     ind_soc_config_t config; /* Currently ignored */
 
@@ -151,20 +151,20 @@ int main(int argc, char* argv[])
     OK(indigo_cxn_status_change_register(cxn_status_change, NULL));
 
     OK(ind_cxn_enable_set(1));
-    INDIGO_ASSERT((cxn_id = setup_cxn()) >= 0);
+    INDIGO_ASSERT((controller_id = setup_cxn()) >= 0);
 
     for (idx = 1; idx < 5; idx++) {
         printf("run %d\n", idx);
         OK(ind_soc_select_and_run(2000));
     }
 
-    /* Now remove and add the cxn a few times */
+    /* Now remove and add the controller a few times */
     for (idx = 1; idx < 5; idx++) {
-        OK(indigo_cxn_connection_remove(cxn_id));
-        INDIGO_ASSERT((cxn_id = setup_cxn()) >= 0);
+        OK(indigo_controller_remove(controller_id));
+        INDIGO_ASSERT((controller_id = setup_cxn()) >= 0);
     }
 
-    OK(indigo_cxn_connection_remove(cxn_id));
+    OK(indigo_controller_remove(controller_id));
 
     OK(ind_cxn_enable_set(0));
     OK(ind_cxn_finish());

@@ -101,6 +101,8 @@ void ind_cxn_change_master(indigo_cxn_id_t master_id);
 
 void ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list);
 
+int indigo_aux_connection_add(connection_t *cxn, uint32_t num_aux);
+
 /**
  * The OF message callback vector from state manager
  */

@@ -64,6 +64,8 @@
 #define INDIGO_CXN_VALID(_id)  ((_id) >= 0)
 #define INDIGO_CXN_UNSPECIFIED(_id)  ((_id) == INDIGO_CXN_ID_UNSPECIFIED)
 
+#define INDIGO_CONTROLLER_INVALID(_id) ((_id) < 0)
+#define INDIGO_CONTROLLER_VALID(_id)  ((_id) >= 0)
 
 /****************************************************************
  *
@@ -217,7 +219,6 @@ typedef enum indigo_cxn_role_e {
 typedef struct indigo_cxn_status_s {
     /* Current status of connection */
     indigo_cxn_state_t state;
-    indigo_cxn_role_t role;
     of_version_t negotiated_version;
     uint32_t disconnect_count;
     uint32_t forced_disconnect_count;
@@ -236,25 +237,24 @@ typedef struct indigo_cxn_status_s {
  ****************************************************************/
 
 /**
- * Add a controller connection instance
+ * Add a controller instance
  * @param params Parameters specific to the connection protocol; see above
- * @param cxn_id (out) Descriptor (small integer) returned identifying the
- * connection instance
- * @param priority Used for serial connection attempts, highest first
+ * @param id (out) Descriptor (small integer) returned identifying the
+ * controller instance
  * @param config_params Configuration parameters; see above
  */
 
-extern indigo_error_t indigo_cxn_connection_add(
+extern indigo_error_t indigo_controller_add(
     indigo_cxn_protocol_params_t *protocol_params,
     indigo_cxn_config_params_t *config_params,
-    indigo_cxn_id_t *id);
+    indigo_controller_id_t *id);
 
 /**
- * Remove the connection indexed by cxn_id
- * @param cxn_id The connection descriptor returned by connection add
+ * Remove the controller indexed by id
+ * @param id The controller descriptor returned by controller add
  */
 
-extern indigo_error_t indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id);
+extern indigo_error_t indigo_controller_remove(indigo_controller_id_t id);
 
 /**
  * Return the config parameters of a specific connection
@@ -276,6 +276,17 @@ extern indigo_error_t indigo_cxn_connection_config_get(
 extern indigo_error_t indigo_cxn_connection_status_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_status_t *status);
+
+
+/**
+ * Return the role of a specific connection 
+ * @param cxn_id The descriptor of the connection to look up
+ * @param role (out) Pointer to role to be filled
+ */
+
+extern indigo_error_t indigo_cxn_connection_role_get(
+    indigo_cxn_id_t cxn_id,
+    indigo_cxn_role_t *role);
 
 /**
  * Connection status change handler callback prototype
@@ -405,6 +416,14 @@ void indigo_cxn_list_destroy(indigo_cxn_info_t* list);
  */
 extern indigo_error_t
 indigo_cxn_get_async_version(of_version_t* of_version);
+
+/**
+ * @brief Get Auxiliary id associated with the connection
+ * @param cxn_id Connection id for this connection 
+ * @param [out] auxiliary_id Auxiliary id for this connection
+ */
+extern indigo_error_t
+indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id);
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */

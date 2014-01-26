@@ -334,7 +334,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         ind_soc_timer_event_unregister(cxn_closing_timeout, (void *)cxn);
         break;
     case INDIGO_CXN_S_CONNECTING:
-        if (!CXN_LOCAL(cxn)) {
+        if (!(CXN_LOCAL(cxn))) {
             ind_soc_timer_event_unregister(cxn_connecting_timeout,
                                            (void *)cxn);
         }
@@ -440,11 +440,18 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
     } else {
         LOG_VERBOSE(cxn, "Received HELLO message (version %d)",
                     obj->version);
+        
+        indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
+        if (config_params == NULL) {
+            LOG_ERROR(cxn, "Could not get config params");
+            rv = INDIGO_ERROR_PARAM;
+        } else {
+            cxn->status.negotiated_version = aim_imin(config_params->version,
+                                                      obj->version);
 
-        cxn->status.negotiated_version = aim_imin(cxn->config_params.version,  obj->version);
-
-        LOG_VERBOSE(cxn, "Negotiated version %d",
-                    cxn->status.negotiated_version);
+            LOG_VERBOSE(cxn, "Negotiated version %d",
+                        cxn->status.negotiated_version);
+        }
     }
 
     of_object_delete(obj);
@@ -676,19 +683,21 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
         return INDIGO_ERROR_UNKNOWN;
     }
 
-    LOG_VERBOSE(cxn, "Cxn role request: %s", role_to_string(role));
-    if (role != cxn->status.role) {
+    LOG_VERBOSE(cxn, "Controller %d role request: %s", 
+                cxn->controller->controller_id, role_to_string(role));
+    if (role != cxn->controller->role) {
         if (role == INDIGO_CXN_R_MASTER) {
             ind_cxn_change_master(cxn->cxn_id);
         } else {
-            LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
-            cxn->status.role = role;
+            LOG_INFO(cxn, "Setting role for controller %d to %s", 
+                     cxn->controller->controller_id, role_to_string(role));
+            cxn->controller->role = role;
         }
     }
 
     of_nicira_controller_role_reply_xid_set(reply, xid);
     of_nicira_controller_role_reply_role_set(reply,
-        translate_to_nicira_role(cxn->status.role));
+        translate_to_nicira_role(cxn->controller->role));
 
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
     return INDIGO_ERROR_NONE;
@@ -751,8 +760,9 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
             return;
         }
 
-        LOG_VERBOSE(cxn, "Cxn role request: %s gen %"PRIu64,
-                    role_to_string(role), generation_id);
+        LOG_VERBOSE(cxn, "Controller %d role request: %s gen %"PRIu64,
+                    cxn->controller->controller_id, role_to_string(role), 
+                    generation_id);
 
         if (role == INDIGO_CXN_R_MASTER || role == INDIGO_CXN_R_SLAVE) {
             if ((int64_t)(generation_id - ind_cxn_generation_id) < 0) {
@@ -768,19 +778,19 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
             }
         }
 
-        if (role != cxn->status.role) {
+        if (role != cxn->controller->role) {
             if (role == INDIGO_CXN_R_MASTER) {
                 ind_cxn_change_master(cxn->cxn_id);
             } else {
                 LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
-                cxn->status.role = role;
+                cxn->controller->role = role;
             }
         }
     }
 
     of_role_reply_xid_set(reply, xid);
     of_role_reply_role_set(reply,
-        translate_to_openflow_role(cxn->status.role));
+        translate_to_openflow_role(cxn->controller->role));
     of_role_reply_generation_id_set(reply, ind_cxn_generation_id);
 
     of_object_delete(_obj);
@@ -848,6 +858,43 @@ bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
 
     ind_cxn_populate_connection_list(&list);
 
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
+}
+
+/**
+ * Handle a BSN auxiliary connections request
+ */
+
+static void
+aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_bsn_set_aux_cxns_request_t *request = _obj;
+    of_bsn_set_aux_cxns_reply_t *reply;
+    uint32_t xid;
+    uint32_t num_aux;
+    uint32_t status = 0;
+
+    of_bsn_set_aux_cxns_request_xid_get(request, &xid);
+
+    reply = of_bsn_set_aux_cxns_reply_new(request->version);
+    if (reply == NULL) {
+        LOG_ERROR(cxn, "Failed to allocate of_bsn_set_aux_cxns_reply");
+        of_object_delete(request);
+        return;
+    }
+
+    of_bsn_set_aux_cxns_reply_xid_set(reply, xid);
+    
+    /* get the number of aux connections to set up */
+    of_bsn_set_aux_cxns_request_num_aux_get(request, &num_aux);    
+ 
+    of_object_delete(request);
+
+    LOG_TRACE(cxn, "of_bsn_set_aux_cxns_request received to setup %d aux cxn's"
+              " for controller %d", num_aux, cxn->controller->controller_id);    
+   
+    status = indigo_aux_connection_add(cxn, num_aux);  
+    of_bsn_set_aux_cxns_reply_status_set(reply, status);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
@@ -953,6 +1000,10 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         bsn_controller_connections_request_handle(cxn, obj);
         return;
 
+    case OF_BSN_SET_AUX_CXNS_REQUEST:
+        aux_connections_request_handle(cxn, obj);
+        return;
+
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
     case OF_FLOW_DELETE:
@@ -966,7 +1017,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_BSN_SET_MIRRORING:
     case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
     case OF_GROUP_MOD:
-        if (cxn->status.role == INDIGO_CXN_R_SLAVE) {
+        if (cxn->controller->role == INDIGO_CXN_R_SLAVE) {
             uint16_t code = cxn->status.negotiated_version < OF_VERSION_1_2 ?
                 OF_REQUEST_FAILED_EPERM : OF_REQUEST_FAILED_IS_SLAVE;
             LOG_VERBOSE(cxn, "Rejecting %s from slave connection",
@@ -1481,9 +1532,17 @@ ind_cxn_send_hello(connection_t *cxn)
 {
     of_hello_t *hello;
     int rv = INDIGO_ERROR_NONE;
+    indigo_cxn_config_params_t *config_params;
 
     LOG_TRACE(cxn, "Sending hello");
-    if ((hello = of_hello_new(cxn->config_params.version)) == NULL) {
+    
+    config_params = get_connection_config(cxn);
+    if (config_params == NULL) {
+        LOG_ERROR(cxn, "Could not get config params");
+        return INDIGO_ERROR_PARAM;
+    }
+
+    if ((hello = of_hello_new(config_params->version)) == NULL) {
         LOG_ERROR(cxn, "Could not allocate hello object");
         return INDIGO_ERROR_RESOURCE;
     }
@@ -1510,6 +1569,7 @@ int
 ind_cxn_try_to_connect(connection_t *cxn)
 {
     int rv;
+    indigo_cxn_protocol_params_t *protocol_params;
     indigo_cxn_params_tcp_over_ipv4_t *params;
     struct sockaddr_in cxn_addr;
     cxn->fail_count++;
@@ -1520,7 +1580,12 @@ ind_cxn_try_to_connect(connection_t *cxn)
         return -1;
     }
 
-    params = &cxn->protocol_params.tcp_over_ipv4;
+    protocol_params = get_connection_params(cxn);
+    if (protocol_params == NULL) {
+        LOG_ERROR(cxn, "Could not get protocol paramters");
+        return -1;
+    }
+    params = &protocol_params->tcp_over_ipv4;
 
     if (cxn->sd < 0) {
         /* Attempt to create the socket */
@@ -1597,7 +1662,7 @@ void
 ind_cxn_disconnected_init(connection_t *cxn)
 {
     cxn->status.state = INDIGO_CXN_S_DISCONNECTED;
-    cxn->status.role = INDIGO_CXN_R_EQUAL;
+    cxn->controller->role = INDIGO_CXN_R_EQUAL;
     cxn->status.negotiated_version = OF_VERSION_UNKNOWN;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
     cxn->flags = 0;

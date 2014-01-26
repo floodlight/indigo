@@ -210,6 +210,12 @@ indigo_cxn_get_async_version(of_version_t *ver)
 }
 
 indigo_error_t
+indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
+{
+    return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
 ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     AIM_LOG_VERBOSE("Cxn message track cxn id %d, obj type %d\n",

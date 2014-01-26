@@ -1120,6 +1120,11 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_features_reply_n_buffers_set(reply, 0);
     _TRY_NR(indigo_fwd_forwarding_features_get(reply));
     _TRY_NR(indigo_port_features_get(reply));
+    if (obj->version >= OF_VERSION_1_3) {
+        uint8_t auxiliary_id;
+        _TRY_NR(indigo_cxn_get_auxiliary_id(cxn_id, &auxiliary_id)); 
+        of_features_reply_auxiliary_id_set(reply, auxiliary_id);
+    }
 
     of_features_request_delete(obj);
 
