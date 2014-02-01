@@ -283,7 +283,7 @@ indigo_cxn_socket_ready_callback(
         getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
         LOG_ERROR("Error seen on connection %s: %s",
                   cxn_ip_string(cxn), strerror(socket_error));
-        ind_cxn_disconnect(cxn);
+        ind_controller_disconnect(cxn->controller);
         ++ind_cxn_internal_errors;
         return;
     }
@@ -291,7 +291,7 @@ indigo_cxn_socket_ready_callback(
     if (read_ready) {
         if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
             LOG_VERBOSE("Error processing read buffer, resetting");
-            ind_cxn_disconnect(cxn);
+            ind_controller_disconnect(cxn->controller);
             return;
         }
     }
@@ -299,7 +299,7 @@ indigo_cxn_socket_ready_callback(
     if (write_ready) {
         if ((rv = ind_cxn_process_write_buffer(cxn)) < 0) {
             LOG_ERROR("Error processing write buffer, resetting");
-            ind_cxn_disconnect(cxn);
+            ind_controller_disconnect(cxn->controller);
             ++ind_cxn_internal_errors;
             return;
         }
@@ -610,14 +610,14 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 /* Add a connection instance */
 
 static indigo_error_t
-indigo_cxn_connection_add(indigo_controller_id_t controller_id, 
-                          uint8_t auxiliary_id, indigo_cxn_id_t *cxn_id) 
+ind_cxn_connection_add(indigo_controller_id_t controller_id, 
+                       uint8_t auxiliary_id, indigo_cxn_id_t *cxn_id) 
 {
     connection_t *cxn = NULL;
     indigo_error_t rv = INDIGO_ERROR_NONE;
 
-    LOG_INFO("Connection add for controller_id: %d, with aux_id: %d", 
-             controller_id, auxiliary_id);
+    LOG_INFO("Connection add: %s, with aux_id: %d", proto_ip_string( 
+             &controller[controller_id].protocol_params), auxiliary_id);
 
     if (cxn_id == NULL) {
         LOG_ERROR("Connection ID output is NULL");
@@ -650,7 +650,7 @@ indigo_cxn_connection_add(indigo_controller_id_t controller_id,
 
 /* Look for a controller connection with the given params and remove it */
 static indigo_error_t
-indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
+ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 {
     if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
         LOG_ERROR("Remove connection id %d invalid or not active", cxn_id);
@@ -675,6 +675,44 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 }
 
 /**
+ * Remove extra auxiliary connections for this controller and set the new 
+ * number of aux cxn's to num_aux
+ *
+ * If num_aux is set to zero, it would mean tear down request for all 
+ * aux cxn's associated with this controller
+ */
+
+static indigo_error_t
+ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
+{
+    int idx;   
+    indigo_error_t ret;
+    
+    if (!CONTROLLER_ACTIVE(ctrl)) return INDIGO_ERROR_UNKNOWN;
+
+    if (num_aux == ctrl->num_aux) return INDIGO_ERROR_NONE;
+ 
+    if (num_aux > ctrl->num_aux) {
+        LOG_TRACE("Requested num_aux %d is greater than current aux cxn's "
+                  "for controller %s", num_aux, proto_ip_string(
+                  &ctrl->protocol_params));        
+        return INDIGO_ERROR_PARAM;
+    }
+
+    for (idx = ctrl->num_aux; idx > num_aux; --idx) {
+        ret = ind_cxn_connection_remove(ctrl->aux_id_to_cxn_id[idx]);
+        if (ret < 0) return ret;
+        ctrl->aux_id_to_cxn_id[idx] = INVALID_ID;
+    }
+
+    LOG_INFO("Aux cxn's for controller %s, changed from %d to %d",
+             proto_ip_string(&ctrl->protocol_params), ctrl->num_aux, num_aux);
+    ctrl->num_aux = num_aux;
+    return INDIGO_ERROR_NONE;
+        
+}
+
+/**
  * Set up num_aux auxiliary connections for controller associated 
  * with this main connection
  * 
@@ -683,57 +721,54 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
  */
 
 int 
-indigo_aux_connection_add(connection_t *cxn, uint32_t num_aux)
+ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
 {
     int idx;
     indigo_cxn_id_t cxn_id;
 
     if (num_aux > MAX_AUX_CONNECTIONS) {
         LOG_ERROR("Requested aux %d is greater than supported %d",
-                  num_aux, MAX_AUX_CONNECTIONS, cxn->cxn_id);
+                  num_aux, MAX_AUX_CONNECTIONS);
         return 1;
     }
 
     /* Check to make sure this is not a local connection */
     if (CXN_LOCAL(cxn)) {
-        LOG_ERROR("of_bsn_set_aux_cxns_request received on local connection %d",
-                  cxn->cxn_id);
+        LOG_ERROR("Aux cxn request received on local connection %s",
+                  cxn_ip_string(cxn));
         return 1;
     }
 
     /* Check if this is the main connection of the attached controller */
     if (cxn->auxiliary_id != 0) {
-        LOG_ERROR("of_bsn_set_aux_cxns_request received on non main connection"
-                  " %d with aux id %d", cxn->cxn_id, cxn->auxiliary_id);
+        LOG_ERROR("Aux cxn request received on non main connection %s, "
+                  "with aux id %d", cxn_ip_string(cxn), cxn->auxiliary_id);
         return 1;
     } 
 
     if (num_aux == cxn->controller->num_aux) {
-        LOG_TRACE("Requested aux %d is equal to current aux cxn's for "
-                  "controller %d", num_aux, cxn->controller->controller_id);             
+        LOG_TRACE("Requested num_aux %d is equal to current aux cxn's for "
+                  "controller %s", num_aux, cxn_ip_string(cxn));
         return 0;
     } else if (num_aux < cxn->controller->num_aux) {
-        LOG_TRACE("Requested aux %d is less than current aux cxn's %d for "
-                  "controller %d, teardown extra aux cxn's", num_aux, 
-                  cxn->controller->num_aux, cxn->controller->controller_id);
+        LOG_TRACE("Requested num_aux %d is less than current aux cxn's %d for "
+                  "controller %s", num_aux, cxn->controller->num_aux,
+                  cxn_ip_string(cxn));  
 
-        for (idx = cxn->controller->num_aux; idx > num_aux; --idx) {
-            if (indigo_cxn_connection_remove(
-                cxn->controller->aux_id_to_cxn_id[idx]) < 0) return 1;
-            cxn->controller->aux_id_to_cxn_id[idx] = INVALID_ID;
-        }
+        if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) return 1; 
     } else {
         
         for (idx = cxn->controller->num_aux+1; idx <= num_aux; ++idx) {
-            if (indigo_cxn_connection_add(cxn->controller->controller_id, idx,
-                &cxn_id) < 0) return 1;
+            if (ind_cxn_connection_add(cxn->controller->controller_id, idx,
+                                       &cxn_id) < 0) return 1;
             cxn->controller->aux_id_to_cxn_id[idx] = cxn_id;
         }
-    }
 
-    LOG_INFO("Aux cxn's for controller %d, changed from %d to %d", 
-             cxn->controller->controller_id, cxn->controller->num_aux, num_aux);
-    cxn->controller->num_aux = num_aux; 
+        LOG_INFO("Aux cxn's for controller %s, changed from %d to %d", 
+                 cxn_ip_string(cxn), cxn->controller->num_aux, num_aux);
+        cxn->controller->num_aux = num_aux; 
+    }
+    
     return 0;
 }
 
@@ -768,9 +803,6 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_PARAM;
     }
 
-    LOG_INFO("Controller add: %s", proto_ip_string(protocol_params));
-    LOG_INFO("Version: %d", config_params->version);
-
     if (controller_id == NULL) {
         LOG_ERROR("Controller ID output is NULL");
         return INDIGO_ERROR_PARAM;
@@ -788,6 +820,9 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_RESOURCE;
     }
 
+    LOG_INFO("Controller add: %s", proto_ip_string(protocol_params));
+    LOG_INFO("Version: %d", config_params->version);
+
     ctrl = ID_TO_CONTROLLER(*controller_id);   
     
     /* Initialize controller structure */
@@ -797,7 +832,7 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                     sizeof(*config_params));
 
     /* Create the main connection with auxiliary id = 0 */
-    rv = indigo_cxn_connection_add(*controller_id, 0, &cxn_id); 
+    rv = ind_cxn_connection_add(*controller_id, 0, &cxn_id); 
     if (rv < 0) return rv; 
 
     ctrl->active = 1;
@@ -815,7 +850,6 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
 indigo_error_t 
 indigo_controller_remove(indigo_controller_id_t controller_id)
 {
-    int idx;
     indigo_error_t rv = INDIGO_ERROR_NONE;
     controller_t *ctrl = NULL;
 
@@ -827,22 +861,17 @@ indigo_controller_remove(indigo_controller_id_t controller_id)
     }
 
     ctrl = ID_TO_CONTROLLER(controller_id);
-    LOG_INFO("Controller remove: %s", proto_ip_string(
-             &ctrl->protocol_params));
+    LOG_INFO("Controller remove: %s", proto_ip_string(&ctrl->protocol_params));
 
-    /* Tear down all the aux connections first */
-    for (idx = 1; idx <= ctrl->num_aux; ++idx) {
-        rv = indigo_cxn_connection_remove(ctrl->aux_id_to_cxn_id[idx]);
-        if (rv < 0) return rv;
-        ctrl->aux_id_to_cxn_id[idx] = INVALID_ID;
-    } 
-  
+    /* Remove all the aux connections first */
+    rv = ind_aux_connection_remove(ctrl, 0);
+    if (rv < 0) return rv;   
+ 
     /* Remove the main connection */
-    rv = indigo_cxn_connection_remove(ctrl->aux_id_to_cxn_id[0]);
+    rv = ind_cxn_connection_remove(ctrl->aux_id_to_cxn_id[0]);
     if (rv < 0) return rv;
 
     ctrl->aux_id_to_cxn_id[0] = INVALID_ID; 
-    ctrl->num_aux = 0;
     ctrl->active = 0;
     return rv;
 }
@@ -1122,7 +1151,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
         INDIGO_MEM_FREE(data);
-        ind_cxn_disconnect(cxn);
+        ind_controller_disconnect(cxn->controller);
     }
 
  done:
@@ -1358,12 +1387,12 @@ ind_cxn_enable_set(int enable)
         LOG_INFO("Enabling OF connection mgr");
         module_enabled = 1;
     } else if (!enable && module_enabled) {
-        int cxn_id;
-        connection_t *cxn;
+        int id;
+        controller_t *ctrl;
         LOG_INFO("Disabling OF connection mgr");
         /* unregister state timeout handlers */
-        FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-            ind_cxn_disconnect(cxn);
+        FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
+            ind_controller_disconnect(ctrl);
         }
         module_enabled = 0;
         /* @todo Anything need to be done here? */
@@ -1603,6 +1632,7 @@ void
 ind_cxn_reset(indigo_cxn_id_t cxn_id)
 {
     connection_t *cxn;
+    controller_t *ctrl;
 
     if (!module_enabled) {
         return;
@@ -1610,9 +1640,10 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
 
     LOG_VERBOSE("Connection reset for id %d", cxn_id);
     if (cxn_id == IND_CXN_RESET_ALL) {
-        /* Iterate thru active connections */
-        FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-            ind_cxn_disconnect(cxn);
+        /* Iterate thru active controllers */
+        indigo_controller_id_t id;
+        FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
+            ind_controller_disconnect(ctrl);
         }
     } else if (!INDIGO_CXN_INVALID(cxn_id)) {
         cxn = CXN_ID_TO_CONNECTION(cxn_id);
@@ -1747,6 +1778,7 @@ indigo_cxn_get_async_version(of_version_t* of_version)
 /**
  * Get Auxiliary id associated with the connection.
  */
+
 indigo_error_t
 indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 {
@@ -1767,4 +1799,20 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 
     *auxiliary_id = cxn->auxiliary_id;
     return INDIGO_ERROR_NONE;
+}
+
+/**
+ * Remove all the auxiliary connections associated with this controller and 
+ * disconnect the main connection
+ */
+
+void 
+ind_controller_disconnect(controller_t *ctrl)
+{
+    LOG_INFO("Controller disconnect: %s", 
+             proto_ip_string(&ctrl->protocol_params));
+
+    ind_aux_connection_remove(ctrl, 0);   
+
+    ind_cxn_disconnect(CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0])); 
 }

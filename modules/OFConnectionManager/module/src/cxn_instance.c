@@ -246,7 +246,7 @@ cxn_connecting_timeout(void *cookie)
 
     LOG_WARN(cxn, "Timeout in connecting state");
 
-    ind_cxn_disconnect(cxn);
+    ind_controller_disconnect(cxn->controller);
 }
 
 /**
@@ -486,7 +486,7 @@ periodic_keepalive(void *cookie)
 
     if (cxn->keepalive.outstanding_echo_cnt > cxn->keepalive.threshold) {
         LOG_INFO(cxn, "Exceeded outstanding echo requests.  Resetting cxn");
-        ind_cxn_disconnect(cxn);
+        ind_controller_disconnect(cxn->controller);
         return;
     }
 
@@ -893,7 +893,7 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     LOG_TRACE(cxn, "of_bsn_set_aux_cxns_request received to setup %d aux cxn's"
               " for controller %d", num_aux, cxn->controller->controller_id);    
    
-    status = indigo_aux_connection_add(cxn, num_aux);  
+    status = ind_aux_connection_add(cxn, num_aux);  
     of_bsn_set_aux_cxns_reply_status_set(reply, status);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
