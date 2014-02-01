@@ -657,7 +657,8 @@ indigo_cxn_connection_remove(indigo_cxn_id_t cxn_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    LOG_INFO("Connection remove: %s", cxn_id_ip_string(cxn_id));
+    LOG_INFO("Connection remove: %s, aux_id: %d", cxn_id_ip_string(cxn_id),
+             connection[cxn_id].auxiliary_id);
 
     if (CONNECTION_STATE(&connection[cxn_id]) != INDIGO_CXN_S_DISCONNECTED) {
         connection[cxn_id].flags |= CXN_TO_BE_REMOVED;
