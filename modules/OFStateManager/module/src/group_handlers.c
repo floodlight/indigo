@@ -65,7 +65,7 @@ ind_core_group_delete_one(ind_core_group_t *group)
     indigo_fwd_group_delete(group->id);
     of_object_delete(group->buckets);
     bighash_remove(ind_core_group_hashtable, &group->hash_entry);
-    INDIGO_MEM_FREE(group);
+    aim_free(group);
 }
 
 void
@@ -104,8 +104,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    group = INDIGO_MEM_ALLOC(sizeof(*group));
-    AIM_TRUE_OR_DIE(group != NULL);
+    group = aim_malloc(sizeof(*group));
     group->id = id;
     group->type = type;
     group->buckets = of_object_dup(&buckets);
@@ -114,12 +113,10 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     group_hashtable_insert(ind_core_group_hashtable, group);
 
-    of_object_delete(obj);
     return;
 
 error:
     indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
-    of_object_delete(obj);
 }
 
 void
@@ -166,12 +163,10 @@ ind_core_group_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     group->buckets = of_object_dup(&buckets);
     AIM_TRUE_OR_DIE(group->buckets != NULL);
 
-    of_object_delete(obj);
     return;
 
 error:
     indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
-    of_object_delete(obj);
 }
 
 void
@@ -204,12 +199,10 @@ ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    of_object_delete(obj);
     return;
 
 error:
     indigo_cxn_send_error_reply(cxn_id, obj, err_type, err_code);
-    of_object_delete(obj);
 }
 
 static void
@@ -281,7 +274,6 @@ ind_core_group_stats_request_handler(of_object_t *_obj,
     }
 
     of_object_delete(entry);
-    of_object_delete(obj);
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
@@ -323,7 +315,6 @@ ind_core_group_desc_stats_request_handler(of_object_t *_obj,
     }
 
     of_object_delete(entry);
-    of_object_delete(obj);
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }

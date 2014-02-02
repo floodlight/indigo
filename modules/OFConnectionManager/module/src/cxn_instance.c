@@ -40,6 +40,7 @@
 
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
+#include <loci/loci_validator.h>
 
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -153,7 +154,7 @@ cleanup_disconnect(connection_t *cxn)
     /* Clear write queue */
     BIGLIST_FOREACH_DATA(ble, cxn->output_list, uint8_t *, data) {
         LOG_TRACE(cxn, "Freeing outgoing msg %p", data);
-        INDIGO_MEM_FREE(data);
+        aim_free(data);
     }
     biglist_free(cxn->output_list);
     cxn->output_list = NULL;
@@ -454,7 +455,6 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
         }
     }
 
-    of_object_delete(obj);
     return rv;
 }
 
@@ -536,14 +536,12 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_echo_reply_t *reply = NULL;
     of_octets_t data;
     uint32_t xid;
-    int rv = INDIGO_ERROR_NONE;
 
     of_echo_request_xid_get(echo, &xid);
     LOG_TRACE(cxn, "Responding to echo with xid %u", xid);
 
     if ((reply = of_echo_reply_new(echo->version)) == NULL) {
         LOG_TRACE(cxn, "Could not allocate echo response obj");
-        of_object_delete(_obj);
         return INDIGO_ERROR_RESOURCE;
     }
 
@@ -551,18 +549,14 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_echo_request_data_get(echo, &data);
     if (data.bytes > 0) {
         if (of_echo_reply_data_set(reply, &data) < 0) {
+            of_object_delete(reply);
             return INDIGO_ERROR_UNKNOWN;
         }
     }
-    of_object_delete(_obj);
 
-    if (rv >= 0) {
-        indigo_cxn_send_controller_message(cxn->cxn_id, reply);
-    } else {
-        of_echo_reply_delete(reply);
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 
-    return rv;
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -587,8 +581,6 @@ echo_reply_handle(connection_t *cxn, of_object_t *_obj)
                     "expected xid %u", xid, cxn->keepalive.xid);
     }
 
-    of_object_delete(_obj);
-
     return rv;
 }
 
@@ -603,8 +595,6 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
 
     of_barrier_request_xid_get(obj, &cxn->barrier.xid);
     LOG_TRACE(cxn, "Got barrier req with xid %u", cxn->barrier.xid);
-
-    of_barrier_request_delete(obj);
 
     /* No outstanding operations; send reply immediately */
     if (cxn->outstanding_op_cnt == 0)  {
@@ -628,7 +618,7 @@ role_to_string(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return "master";
     case INDIGO_CXN_R_SLAVE: return "slave";
     case INDIGO_CXN_R_EQUAL: return "equal";
-    default: ASSERT(0); return "unknown";
+    default: AIM_ASSERT(0); return "unknown";
     }
 }
 
@@ -650,7 +640,7 @@ translate_to_nicira_role(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return 1;
     case INDIGO_CXN_R_SLAVE: return 2;
     case INDIGO_CXN_R_EQUAL: return 0;
-    default: ASSERT(0); return 0;
+    default: AIM_ASSERT(0); return 0;
     }
 }
 
@@ -668,18 +658,17 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     indigo_cxn_role_t role;
 
     if ((reply = of_nicira_controller_role_reply_new(_obj->version)) == NULL) {
-        of_object_delete(_obj);
         return INDIGO_ERROR_RESOURCE;
     }
 
     request = (of_nicira_controller_role_request_t *)_obj;
     of_nicira_controller_role_request_xid_get(request, &xid);
     of_nicira_controller_role_request_role_get(request, &wire_role);
-    of_object_delete(_obj);
 
     role = translate_from_nicira_role(wire_role);
     if (role == INDIGO_CXN_R_UNKNOWN) {
         LOG_ERROR(cxn, "Invalid role in role request message");
+        of_object_delete(reply);
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -721,7 +710,7 @@ translate_to_openflow_role(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return OF_CONTROLLER_ROLE_MASTER;
     case INDIGO_CXN_R_SLAVE: return OF_CONTROLLER_ROLE_SLAVE;
     case INDIGO_CXN_R_EQUAL: return OF_CONTROLLER_ROLE_EQUAL;
-    default: ASSERT(0); return 0;
+    default: AIM_ASSERT(0); return 0;
     }
 }
 
@@ -739,7 +728,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
     uint64_t generation_id;
 
     if ((reply = of_role_reply_new(_obj->version)) == NULL) {
-        of_object_delete(_obj);
         return;
     }
 
@@ -756,7 +744,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                 cxn->cxn_id, request,
                 OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                 OF_ROLE_REQUEST_FAILED_BAD_ROLE);
-            of_object_delete(_obj);
+            of_object_delete(reply);
             return;
         }
 
@@ -771,7 +759,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                     cxn->cxn_id, request,
                     OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                     OF_ROLE_REQUEST_FAILED_STALE);
-                of_object_delete(_obj);
+                of_object_delete(reply);
                 return;
             } else {
                 ind_cxn_generation_id = generation_id;
@@ -793,8 +781,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
         translate_to_openflow_role(cxn->controller->role));
     of_role_reply_generation_id_set(reply, ind_cxn_generation_id);
 
-    of_object_delete(_obj);
-
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
@@ -815,7 +801,6 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_time_reply_new(request->version);
     if (reply == NULL) {
         LOG_ERROR(cxn, "Failed to allocate of_bsn_time_reply");
-        of_object_delete(request);
         return;
     }
 
@@ -823,8 +808,6 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
 
     of_bsn_time_reply_xid_set(reply, xid);
     of_bsn_time_reply_time_ms_set(reply, time_ms);
-
-    of_object_delete(request);
 
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
@@ -845,13 +828,10 @@ bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_controller_connections_reply_new(request->version);
     if (reply == NULL) {
         LOG_ERROR(cxn, "Failed to allocate of_bsn_controller_connections_reply");
-        of_object_delete(request);
         return;
     }
 
     of_bsn_controller_connections_reply_xid_set(reply, xid);
-
-    of_object_delete(request);
 
     of_list_bsn_controller_connection_t list;
     of_bsn_controller_connections_reply_connections_bind(reply, &list);
@@ -1021,7 +1001,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
                         of_object_id_str[obj->object_id]);
             indigo_cxn_send_error_reply(cxn->cxn_id, obj,
                                         OF_ERROR_TYPE_BAD_REQUEST, code);
-            of_object_delete(obj);
             return;
         }
 
@@ -1029,37 +1008,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         break;
     }
 
-    /* Passing the message to the state manager; register and set callback */
-    cxn_message_track_setup(cxn, obj);
-
     OF_MSG_CALLBACK(cxn, obj);
-}
-
-/**
- * Extract bytes from the read buffer
- * @param cxn The connection instance
- * @param len The number of bytes to extract from the read buffer
- *
- * Returns a pointer to a new buffer containing a copy of the initial
- * segment of the read buffer through len.  The read buffer is then
- * updated so the remainder of the buffer starts at 0.
- */
-static inline uint8_t *
-extract_read_buffer(connection_t *cxn)
-{
-    uint8_t *new_buf;
-    int len;
-
-    /* Allocate new buffer; copy data into it; remove from read buffer */
-    len = cxn->read_bytes;
-    if ((new_buf = INDIGO_MEM_ALLOC(len)) == NULL) {
-        LOG_ERROR(cxn, "Could not allocate new buffer to process read buffer");
-        return NULL;
-    }
-
-    INDIGO_MEM_COPY(new_buf, cxn->read_buffer, len);
-
-    return new_buf;
 }
 
 /**
@@ -1240,33 +1189,29 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
  * Process a message from the read buffer
  *
  * The read buffer must have a valid message in it to be processed
+ *
+ * The LOCI object is created on the stack and points directly to the read
+ * buffer, so its lifetime is limited to this stack frame. Message handlers
+ * that need to keep it around for longer must copy it with of_object_dup.
  */
 
 static inline void
 process_message(connection_t *cxn)
 {
-    uint8_t *new_buf;
     of_object_t *obj;
     int len;
     int rv;
+    of_object_storage_t obj_storage;
 
-    /* Message is ready to be processed */
-    new_buf = extract_read_buffer(cxn);
-    if (new_buf == NULL) {
-        LOG_ERROR(cxn, "Could not alloc buffer to handle message; will block");
-        return;
-    }
-
-    /* Clear read buffer for next read, even if above failed */
+    /* Clear read buffer for next read */
     len = cxn->read_bytes;
     cxn->read_bytes = 0;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
 
-    obj = of_object_new_from_message(OF_BUFFER_TO_MESSAGE(new_buf), len);
+    obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
         LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
-        send_parse_error_message(cxn, new_buf, len);
-        INDIGO_MEM_FREE(new_buf);
+        send_parse_error_message(cxn, cxn->read_buffer, len);
         return;
     }
 
@@ -1312,10 +1257,9 @@ process_message(connection_t *cxn)
         if ((rv = check_for_hello(cxn, obj)) < 0) {
             LOG_ERROR(cxn, "Failed to check for hello", indigo_strerror(rv));
             /* @fixme Should state be updated for some return codes? */
-            return;
         }
     } else {
-        /* Process received message (object); handler owns obj */
+        /* Process received message */
         of_msg_process(cxn, obj);
     }
 }
@@ -1448,8 +1392,8 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         cxn->bytes_enqueued -= bytes_out;
 
         if (bytes_out == to_write) { /* Completed this message */
-            INDIGO_MEM_FREE(BIGLIST_CAST(void *, cur_node));
-            cur_node = cxn->output_list =
+            aim_free(BIGLIST_CAST(void *, cur_node));
+            cxn->output_list =
                 biglist_remove_link_free(cxn->output_list, cur_node);
             cxn->pkts_enqueued--;
             cxn->status.messages_out++;

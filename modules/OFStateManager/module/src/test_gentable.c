@@ -150,11 +150,13 @@ ind_core_test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn
 
     rv = parse_key(key, &entry->key);
     if (rv < 0) {
+        aim_free(entry);
         return rv;
     }
 
     rv = parse_value(value, &entry->value);
     if (rv < 0) {
+        aim_free(entry);
         return rv;
     }
 

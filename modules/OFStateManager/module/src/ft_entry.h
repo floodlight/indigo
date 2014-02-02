@@ -38,6 +38,8 @@
  * @param priority The priority, from the original add
  * @param idle_timeout The idle_timeout, from the original add
  * @param hard_timeout The hard_timeout, from the original add
+ * @param flags The flags, from the original add
+ * @param priv Opaque data returned by the entry_create operation
  * @param cookie The cookie, from the original or as updated
  * @param effects The actions or instructions from the add or as updated.
  * See below.
@@ -70,6 +72,7 @@ typedef struct ft_entry_s {
     uint16_t idle_timeout;
     uint16_t hard_timeout;
     uint16_t flags;
+    void *priv;
 
     /* Modifiable thru API calls */
     uint64_t cookie;

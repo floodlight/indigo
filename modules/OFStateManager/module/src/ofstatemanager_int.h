@@ -121,6 +121,8 @@ extern const struct ind_cfg_ops ind_core_cfg_ops;
 void ind_core_test_gentable_init(void);
 void ind_core_test_gentable_finish(void);
 
+of_object_t *ind_core_dup_tracking(of_object_t *obj, indigo_cxn_id_t cxn_id);
+
 #include <OFStateManager/ofstatemanager.h>
 
 #endif /* __OFSTATEMANAGER_INT_H__ */

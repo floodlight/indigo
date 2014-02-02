@@ -127,7 +127,7 @@ parse_json_file(const char *filename)
     fseek(f, 0, SEEK_END);
     len = ftell(f);
     fseek(f, 0, SEEK_SET);
-    data = malloc(len + 1);
+    data = aim_malloc(len + 1);
     if (fread(data, 1, len, f) == 0) {
         free(data);
         fclose(f);

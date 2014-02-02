@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2014, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -17,16 +17,22 @@
  *
  ****************************************************************/
 
-/**
- * @file
- * @brief Debug assertion
- */
+#ifndef _OFSTATEMANAGER_TABLE_H_
+#define _OFSTATEMANAGER_TABLE_H_
 
-#ifndef _INDIGO_ASSERT_H_
-#define _INDIGO_ASSERT_H_
+#include <stdint.h>
+#include <loci/loci.h>
+#include <indigo/error.h>
+#include <indigo/fi.h>
+#include <indigo/of_state_manager.h>
 
-#include <AIM/aim.h>
+typedef struct ind_core_table_s {
+    char *name;
+    void *priv;
+    const indigo_core_table_ops_t *ops;
+} ind_core_table_t;
 
-#define INDIGO_ASSERT AIM_ASSERT
+ind_core_table_t *ind_core_table_get(uint8_t table_id);
 
-#endif /* _INDIGO_ASSERT_H_ */
+#endif
+

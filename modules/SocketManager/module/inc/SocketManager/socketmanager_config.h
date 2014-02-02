@@ -118,6 +118,16 @@
 #define SOCKETMANAGER_CONFIG_TIMESLICE_MS 10
 #endif
 
+/**
+ * SOCKETMANAGER_CONFIG_MAX_TIMERS
+ *
+ * Maximum number of timers supported */
+
+
+#ifndef SOCKETMANAGER_CONFIG_MAX_TIMERS
+#define SOCKETMANAGER_CONFIG_MAX_TIMERS 48
+#endif
+
 
 
 /**

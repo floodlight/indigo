@@ -67,6 +67,8 @@ static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
 
+static void ind_cxn_status_notify(void);
+
 /****************************************************************
  * Connection Manager Data shared within module
  ****************************************************************/
@@ -394,9 +396,12 @@ ind_cxn_status_change(connection_t *cxn)
                 LOG_VERBOSE("Clearing IP mask map");
                 of_ip_mask_map_init();
             }
+        } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
+            ind_cxn_status_notify();
         } else if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
             --remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
+            ind_cxn_status_notify();
             if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
                 LOG_VERBOSE("Clearing preferred connection");
                 preferred_cxn_id = -1;
@@ -405,6 +410,36 @@ ind_cxn_status_change(connection_t *cxn)
     }
 
     LOG_TRACE("Cxn status change, rmt count %d", remote_connection_count);
+}
+
+/*
+ * Send an of_bsn_controller_connections_reply to each connection
+ *
+ * HACK reusing the reply message for this async notification.
+ */
+
+static void
+ind_cxn_status_notify(void)
+{
+    of_version_t version;
+
+    if (indigo_cxn_get_async_version(&version) < 0) {
+        return;
+    }
+
+    if (version < OF_VERSION_1_3) {
+        return;
+    }
+
+    of_object_t *msg = of_bsn_controller_connections_reply_new(version);
+    AIM_TRUE_OR_DIE(msg != NULL);
+
+    of_list_bsn_controller_connection_t list;
+    of_bsn_controller_connections_reply_connections_bind(msg, &list);
+
+    ind_cxn_populate_connection_list(&list);
+
+    indigo_cxn_send_async_message(msg);
 }
 
 /****************************************************************
@@ -1029,7 +1064,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
             role = OF_CONTROLLER_ROLE_EQUAL;
             break;
         default:
-            ASSERT(0);
+            AIM_ASSERT(0);
             role = -1;
             break;
         }
@@ -1151,7 +1186,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
         INDIGO_MEM_FREE(data);
-        ind_controller_disconnect(cxn->controller);
+        ind_cxn_disconnect(cxn);
     }
 
  done:
@@ -1605,7 +1640,7 @@ indigo_cxn_list(indigo_cxn_info_t** list)
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
     FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-        indigo_cxn_info_t* entry = INDIGO_MEM_ALLOC(sizeof(*entry));
+        indigo_cxn_info_t* entry = aim_malloc(sizeof(*entry));
         entry->cxn_id = cxn_id;
         entry->cxn_status = cxn->status;
         entry->cxn_proto_params = cxn->controller->protocol_params;
@@ -1623,7 +1658,7 @@ indigo_cxn_list_destroy(indigo_cxn_info_t* list)
     indigo_cxn_info_t* e = list;
     while(e) {
         indigo_cxn_info_t* link = e->next;
-        INDIGO_MEM_FREE(e);
+        aim_free(e);
         e = link;
     }
 }

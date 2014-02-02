@@ -110,14 +110,12 @@ typedef struct timer_event_s {
     indigo_time_t last_call;
 } timer_event_t;
 
-/* Change to 48 for now */
-#define TIMER_EVENT_MAX 48
-static timer_event_t timer_event[TIMER_EVENT_MAX];
+static timer_event_t timer_event[SOCKETMANAGER_CONFIG_MAX_TIMERS];
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
 
 #define FOREACH_TIMER_EVENT(idx)                        \
-    for ((idx) = 0; (idx) < TIMER_EVENT_MAX; (idx)++)   \
+    for ((idx) = 0; (idx) < SOCKETMANAGER_CONFIG_MAX_TIMERS; (idx)++)   \
         if (TIMER_EVENT_VALID(idx))
 
 /*
@@ -156,7 +154,7 @@ timer_event_free_slot(void)
 {
     int idx;
 
-    for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
         if (timer_event[idx].callback == NULL) {
             return idx;
         }
@@ -173,7 +171,7 @@ soc_mgr_init(void)
         soc_map[idx].socket_id = INVALID_SOCKET_ID;
     }
 
-    for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
         timer_event[idx].callback = NULL;
     }
 
@@ -528,11 +526,7 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
 {
     list_links_t *cur;
 
-    ind_soc_task_t *task = INDIGO_MEM_ALLOC(sizeof(*task));
-    if (task == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
-
+    ind_soc_task_t *task = aim_malloc(sizeof(*task));
     task->callback = callback;
     task->cookie = cookie;
     task->priority = priority;
@@ -687,7 +681,7 @@ process_tasks(int priority)
         before_callback();
         if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
             list_remove(&task->links);
-            INDIGO_MEM_FREE(task);
+            aim_free(task);
         }
         after_callback();
     }

@@ -210,7 +210,6 @@ ind_core_bsn_gentable_entry_add_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
@@ -268,7 +267,6 @@ ind_core_bsn_gentable_entry_add_handler(
     /* Add to table checksum */
     update_checksum(&gentable->checksum, &entry->checksum);
 
-    of_object_delete(obj);
     return;
 
 error:
@@ -277,7 +275,6 @@ error:
         cxn_id, obj,
         OF_ERROR_TYPE_BAD_REQUEST,
         OF_REQUEST_FAILED_EPERM);
-    of_object_delete(obj);
 }
 
 void
@@ -301,18 +298,12 @@ ind_core_bsn_gentable_entry_delete_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
     entry = find_entry_by_key(gentable, &key);
     if (entry == NULL) {
-        AIM_LOG_ERROR("Nonexistent %s gentable entry", gentable->name);
-        indigo_cxn_send_error_reply(
-            cxn_id, obj,
-            OF_ERROR_TYPE_BAD_REQUEST,
-            OF_REQUEST_FAILED_EPERM);
-        of_object_delete(obj);
+        AIM_LOG_TRACE("Nonexistent %s gentable entry", gentable->name);
         return;
     }
 
@@ -324,11 +315,8 @@ ind_core_bsn_gentable_entry_delete_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_EPERM);
-        of_object_delete(obj);
         return;
     }
-
-    of_object_delete(obj);
 }
 
 struct ind_core_gentable_clear_state {
@@ -388,14 +376,12 @@ ind_core_bsn_gentable_clear_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
     struct ind_core_gentable_clear_state *state = aim_zmalloc(sizeof(*state));
     state->cxn_id = cxn_id;
-    state->request = obj;
-
+    state->request = ind_core_dup_tracking(obj, cxn_id);
 
     rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
                                            IND_SOC_DEFAULT_PRIORITY,
@@ -431,7 +417,6 @@ ind_core_bsn_gentable_set_buckets_size_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
@@ -442,12 +427,10 @@ ind_core_bsn_gentable_set_buckets_size_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_EPERM);
-        of_object_delete(obj);
         return;
     }
 
     if (new_buckets_size == gentable->checksum_buckets_size) {
-        of_object_delete(obj);
         return;
     }
 
@@ -487,8 +470,6 @@ ind_core_bsn_gentable_set_buckets_size_handler(
     }
 
     aim_free(old_buckets);
-
-    of_object_delete(obj);
 }
 
 struct ind_core_gentable_entry_stats_state {
@@ -565,7 +546,6 @@ ind_core_bsn_gentable_entry_stats_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
@@ -574,7 +554,7 @@ ind_core_bsn_gentable_entry_stats_request_handler(
 
     state = aim_zmalloc(sizeof(*state));
     state->cxn_id = cxn_id;
-    state->request = obj;
+    state->request = ind_core_dup_tracking(obj, cxn_id);
     state->reply = reply;
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_stats_iter, state,
@@ -660,7 +640,6 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
         return;
     }
 
@@ -669,7 +648,7 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
 
     state = aim_zmalloc(sizeof(*state));
     state->cxn_id = cxn_id;
-    state->request = obj;
+    state->request = ind_core_dup_tracking(obj, cxn_id);
     state->reply = reply;
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_desc_stats_iter, state,
@@ -722,8 +701,6 @@ ind_core_bsn_gentable_desc_stats_request_handler(
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
-
-    of_object_delete(obj);
 }
 
 void
@@ -763,8 +740,6 @@ ind_core_bsn_gentable_stats_request_handler(
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
-
-    of_object_delete(obj);
 }
 
 void
@@ -793,7 +768,7 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        of_object_delete(obj);
+        of_object_delete(reply);
         return;
     }
 
@@ -820,8 +795,6 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
-
-    of_object_delete(obj);
 }
 
 
