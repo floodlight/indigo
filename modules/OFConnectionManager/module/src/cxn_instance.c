@@ -879,7 +879,6 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_set_aux_cxns_reply_new(request->version);
     if (reply == NULL) {
         LOG_ERROR(cxn, "Failed to allocate of_bsn_set_aux_cxns_reply");
-        of_object_delete(request);
         return;
     }
 
@@ -888,8 +887,6 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     /* get the number of aux connections to set up */
     of_bsn_set_aux_cxns_request_num_aux_get(request, &num_aux);    
  
-    of_object_delete(request);
-
     LOG_TRACE(cxn, "of_bsn_set_aux_cxns_request received to setup %d aux cxn's"
               " for controller %d", num_aux, cxn->controller->controller_id);    
    
