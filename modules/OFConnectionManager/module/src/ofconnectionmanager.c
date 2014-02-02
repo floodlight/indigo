@@ -1186,7 +1186,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
         INDIGO_MEM_FREE(data);
-        ind_controller_disconnect(cxn);
+        ind_controller_disconnect(cxn->controller);
     }
 
  done:
