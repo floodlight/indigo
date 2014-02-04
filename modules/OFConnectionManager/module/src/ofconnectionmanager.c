@@ -175,7 +175,7 @@ static int preferred_cxn_id = -1;
 #define FOREACH_ACTIVE_CONTROLLER(id, ctrl)                             \
     for (id = 0, ctrl = &controller[0];                                 \
          id < MAX_CONTROLLERS;                                          \
-         ++id, ctrl = &controller[0])                                   \
+         ++id, ctrl = &controller[id])                                  \
         if (CONTROLLER_ACTIVE(ctrl))                                                           
 
 /**
