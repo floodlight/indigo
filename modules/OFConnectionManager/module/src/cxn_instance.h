@@ -279,7 +279,7 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
 
     port = params->tcp_over_ipv4.controller_port;
 
-    sprintf(ip_print_buf, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
+    snprintf(ip_print_buf, 64, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
 
     return ip_print_buf;
 }
@@ -288,7 +288,10 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
 static inline char *
 cxn_ip_string(connection_t *cxn)
 {
-    return proto_ip_string(get_connection_params(cxn));
+    char *cxn_print_buf = proto_ip_string(get_connection_params(cxn));
+    int len = strlen(cxn_print_buf);
+    snprintf(&cxn_print_buf[len], 64 - len, ":%d", cxn->auxiliary_id);
+    return cxn_print_buf;
 }
 
 extern int ind_cxn_process_write_buffer(connection_t *cxn);

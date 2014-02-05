@@ -225,7 +225,7 @@ connection_t* cookie_to_cxn(void* cookie)
 static inline char *
 cxn_id_ip_string(indigo_cxn_id_t cxn_id)
 {
-    return proto_ip_string(get_connection_params(CXN_ID_TO_CONNECTION(cxn_id)));
+    return cxn_ip_string(CXN_ID_TO_CONNECTION(cxn_id)); 
 }
 
 /**
