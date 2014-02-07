@@ -177,11 +177,6 @@ typedef struct connection_s {
 #define CXN_ACTIVE(cxn) ((cxn)->active)
 
 /**
- * Is a controller attached to the connection
- */
-#define CXN_CONTROLLER_ATTACHED(cxn) ((cxn)->controller)
-
-/**
  * Is connection marked local
  */
 #define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local) 

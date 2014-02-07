@@ -178,6 +178,13 @@ static int preferred_cxn_id = -1;
          ++id, ctrl = &controller[id])                                  \
         if (CONTROLLER_ACTIVE(ctrl))                                                           
 
+/* Only remote controllers */
+#define FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl)                      \
+    for (id = 0, ctrl = &controller[0];                                 \
+         id < MAX_CONTROLLERS;                                          \
+         ++id, ctrl = &controller[id])                                  \
+        if (CONTROLLER_ACTIVE(ctrl) && !(ctrl->config_params.local))
+
 /**
  * Convert controller ID to pointer to controller block
  */
@@ -273,11 +280,7 @@ indigo_cxn_socket_ready_callback(
         return;
     }
 
-    if (!(CXN_CONTROLLER_ATTACHED(cxn))) {
-        LOG_ERROR("Socket ready callback with no controller on cxn %p", cxn);
-        ++ind_cxn_internal_errors;
-        return;
-    }
+    INDIGO_ASSERT(cxn->controller != NULL);
 
     if (error_seen) {
         int socket_error = 0;
@@ -654,10 +657,7 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
     LOG_INFO("Connection add: %s, with aux_id: %d", proto_ip_string( 
              &controller[controller_id].protocol_params), auxiliary_id);
 
-    if (cxn_id == NULL) {
-        LOG_ERROR("Connection ID output is NULL");
-        return INDIGO_ERROR_PARAM;
-    }
+    INDIGO_ASSERT(cxn_id != NULL);
 
     cxn = connection_socket_setup(controller_id, cxn_id, -1);
 
@@ -820,16 +820,10 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
     indigo_cxn_id_t cxn_id;
     controller_t *ctrl;
     indigo_error_t rv = INDIGO_ERROR_NONE;
-    
-    if (protocol_params == NULL) {
-        LOG_ERROR("Protocol params is NULL on cxn add");
-        return INDIGO_ERROR_PARAM;
-    }
 
-    if (config_params == NULL) {
-        LOG_ERROR("Config params is NULL on cxn add");
-        return INDIGO_ERROR_PARAM;
-    }
+    INDIGO_ASSERT(protocol_params != NULL);
+    INDIGO_ASSERT(config_params != NULL);
+    INDIGO_ASSERT(controller_id != NULL);
 
     if (config_params->local &&
         (config_params->periodic_echo_ms ||
@@ -838,11 +832,6 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_PARAM;
     }
 
-    if (controller_id == NULL) {
-        LOG_ERROR("Controller ID output is NULL");
-        return INDIGO_ERROR_PARAM;
-    }
-    
     if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
         LOG_ERROR("Unsupported protocol for connection add: %d",
                   protocol_params->header.protocol);
@@ -925,11 +914,7 @@ indigo_cxn_connection_config_get(
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!(CXN_CONTROLLER_ATTACHED(cxn))) {
-        LOG_TRACE("Config_get failed as no controller associated with id %d",
-                  cxn_id);  
-        return INDIGO_ERROR_PARAM;
-    } 
+    INDIGO_ASSERT(cxn->controller != NULL);
 
     INDIGO_MEM_COPY(config, &cxn->controller->config_params, sizeof(*config)); 
 
@@ -966,11 +951,7 @@ indigo_cxn_connection_role_get(
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id); 
-    if (!(CXN_CONTROLLER_ATTACHED(cxn))) {
-        LOG_TRACE("Role_get failed as no controller associated with id %d",
-                  cxn_id);
-        return INDIGO_ERROR_PARAM;
-    } 
+    INDIGO_ASSERT(cxn->controller != NULL);
 
     *role = cxn->controller->role;
 
@@ -1011,21 +992,23 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
  * Downgrades the current master, if any, to a slave.
  */
 void
-ind_cxn_change_master(indigo_cxn_id_t master_id)
+ind_controller_change_master(indigo_controller_id_t master_id)
 {
-    indigo_cxn_id_t cxn_id;
-    connection_t *cxn;
-    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
-        if (cxn->cxn_id == master_id) {
+    controller_t *ctrl;
+    int id;
+
+    FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
+        if (ctrl->controller_id == master_id) {
             LOG_INFO("Upgrading controller %s to master", 
-                     cxn_id_ip_string(cxn_id));
-            cxn->controller->role = INDIGO_CXN_R_MASTER;
-        } else if (cxn->controller->role == INDIGO_CXN_R_MASTER) {
+                     proto_ip_string(&ctrl->protocol_params));
+            ctrl->role = INDIGO_CXN_R_MASTER;
+        } else if (ctrl->role == INDIGO_CXN_R_MASTER) {
             LOG_INFO("Downgrading controller %s to slave", 
-                     cxn_id_ip_string(cxn_id));
-            cxn->controller->role = INDIGO_CXN_R_SLAVE;
+                     proto_ip_string(&ctrl->protocol_params));
+            ctrl->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(
-                cxn, OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
+                CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]), 
+                OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
         }
     }
 }
@@ -1250,6 +1233,12 @@ indigo_cxn_send_async_message(of_object_t *obj)
     controller_t *ctrl;
     int id;
 
+    /*
+     * The connection that will end up sending the original 'obj',
+     * rather than a duplicate. indigo_cxn_send_controller_message
+     * consumes the LOCI object so we need to call it on the
+     * original last.
+     */
     indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
 
     FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
@@ -1566,12 +1555,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
         return;
     }
 
-    if (!(CXN_CONTROLLER_ATTACHED(listen_cxn))) {
-        LOG_ERROR("No Controller associated with local cxn %p", listen_cxn);
-        ++ind_cxn_internal_errors;
-        return;
-    }
-
+    INDIGO_ASSERT(listen_cxn->controller != NULL);
     INDIGO_ASSERT(listen_cxn->sd == socket_id);
 
     if (error_seen) {
@@ -1827,10 +1811,7 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!(CXN_CONTROLLER_ATTACHED(cxn))) {
-        LOG_ERROR("No controller attached to connection id %d", cxn_id);
-        return INDIGO_ERROR_PARAM;
-    }
+    INDIGO_ASSERT(cxn->controller != NULL);
 
     *auxiliary_id = cxn->auxiliary_id;
     return INDIGO_ERROR_NONE;

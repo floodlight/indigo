@@ -97,7 +97,7 @@ extern indigo_error_t ind_cxn_send_controller_message(indigo_cxn_id_t cxn_id,
 
 extern void cxn_message_track_setup(connection_t *cxn, of_object_t *obj);
 
-void ind_cxn_change_master(indigo_cxn_id_t master_id);
+void ind_controller_change_master(indigo_cxn_id_t master_id);
 
 void ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list);
 

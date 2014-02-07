@@ -676,7 +676,7 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
                 cxn->controller->controller_id, role_to_string(role));
     if (role != cxn->controller->role) {
         if (role == INDIGO_CXN_R_MASTER) {
-            ind_cxn_change_master(cxn->cxn_id);
+            ind_controller_change_master(cxn->controller->controller_id);
         } else {
             LOG_INFO(cxn, "Setting role for controller %d to %s", 
                      cxn->controller->controller_id, role_to_string(role));
@@ -749,7 +749,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
         }
 
         LOG_VERBOSE(cxn, "Controller %d role request: %s gen %"PRIu64,
-                    cxn->controller->controller_id, role_to_string(role), 
+                    cxn->controller->controller_id, role_to_string(role),
                     generation_id);
 
         if (role == INDIGO_CXN_R_MASTER || role == INDIGO_CXN_R_SLAVE) {
@@ -768,7 +768,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
 
         if (role != cxn->controller->role) {
             if (role == INDIGO_CXN_R_MASTER) {
-                ind_cxn_change_master(cxn->cxn_id);
+                ind_controller_change_master(cxn->controller->controller_id);
             } else {
                 LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
                 cxn->controller->role = role;
