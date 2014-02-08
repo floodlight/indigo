@@ -519,11 +519,8 @@ listen_cxn_init(connection_t *cxn)
 
     LOG_VERBOSE("Initializing listening socket");
 
-    protocol_params = get_connection_params(cxn); 
-    if (protocol_params == NULL) {
-        LOG_ERROR("Could not get protocol paramters for local cxn"); 
-        return INDIGO_ERROR_PARAM;
-    }
+    protocol_params = get_connection_params(cxn);
+    INDIGO_ASSERT(protocol_params != NULL); 
     params = &protocol_params->tcp_over_ipv4;
 
     /* complete the socket structure */
@@ -790,7 +787,9 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
                   "controller %s", num_aux, cxn->controller->num_aux,
                   cxn_ip_string(cxn));  
 
-        if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) return 1; 
+        if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) {
+            return 1;
+        } 
     } else {
         
         for (idx = cxn->controller->num_aux+1; idx <= num_aux; ++idx) {
@@ -844,8 +843,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_RESOURCE;
     }
 
-    LOG_INFO("Controller add: %s", proto_ip_string(protocol_params));
-    LOG_INFO("Version: %d", config_params->version);
+    LOG_INFO("Controller add: %s, Version: %d", 
+             proto_ip_string(protocol_params), config_params->version);
 
     ctrl = ID_TO_CONTROLLER(*controller_id);   
     
@@ -889,11 +888,15 @@ indigo_controller_remove(indigo_controller_id_t controller_id)
 
     /* Remove all the aux connections first */
     rv = ind_aux_connection_remove(ctrl, 0);
-    if (rv < 0) return rv;   
+    if (rv < 0) {
+        return rv;
+    }   
  
     /* Remove the main connection */
     rv = ind_cxn_connection_remove(ctrl->aux_id_to_cxn_id[0]);
-    if (rv < 0) return rv;
+    if (rv < 0) {
+        return rv;
+    }
 
     ctrl->aux_id_to_cxn_id[0] = INVALID_ID; 
     ctrl->active = 0;
@@ -1057,10 +1060,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
         memset(uri, 0, sizeof(uri));
 
         protocol_params = get_connection_params(cxn);
-        if (protocol_params == NULL) {
-            LOG_ERROR("Failed to get protocol params"); 
-            break;
-        } 
+        INDIGO_ASSERT(protocol_params != NULL);
 
         if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
             indigo_cxn_params_tcp_over_ipv4_t *proto =
@@ -1204,13 +1204,10 @@ int
 ind_controller_accepts_async_message(const controller_t *ctrl, 
                                      const of_object_t *obj, connection_t **cxn)
 {
-    if (controller->role == INDIGO_CXN_R_SLAVE) {
-        if ((obj->object_id == OF_PACKET_IN) ||
-            (obj->object_id == OF_FLOW_REMOVED) ||
-            (obj->object_id == OF_BSN_FLOW_IDLE) ||
-            (obj->object_id == OF_BSN_PDU_RX_TIMEOUT)) {
-            return 0;
-        }        
+    /* Only send port status async msg to the slave */
+    if (controller->role == INDIGO_CXN_R_SLAVE && 
+        obj->object_id != OF_PORT_STATUS) {
+        return 0;
     }    
 
     /* For now we are just sending on the main connection, so perform

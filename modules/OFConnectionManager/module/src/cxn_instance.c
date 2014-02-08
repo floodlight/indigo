@@ -1516,10 +1516,7 @@ ind_cxn_try_to_connect(connection_t *cxn)
     }
 
     protocol_params = get_connection_params(cxn);
-    if (protocol_params == NULL) {
-        LOG_ERROR(cxn, "Could not get protocol paramters");
-        return -1;
-    }
+    INDIGO_ASSERT(protocol_params != NULL);
     params = &protocol_params->tcp_over_ipv4;
 
     if (cxn->sd < 0) {
