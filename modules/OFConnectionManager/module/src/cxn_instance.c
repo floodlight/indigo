@@ -443,16 +443,13 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
                     obj->version);
         
         indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
-        if (config_params == NULL) {
-            LOG_ERROR(cxn, "Could not get config params");
-            rv = INDIGO_ERROR_PARAM;
-        } else {
-            cxn->status.negotiated_version = aim_imin(config_params->version,
-                                                      obj->version);
+        INDIGO_ASSERT(config_params != NULL);
+        
+        cxn->status.negotiated_version = aim_imin(config_params->version,
+                                                  obj->version);
 
-            LOG_VERBOSE(cxn, "Negotiated version %d",
-                        cxn->status.negotiated_version);
-        }
+        LOG_VERBOSE(cxn, "Negotiated version %d",
+                    cxn->status.negotiated_version);
     }
 
     return rv;
@@ -1478,10 +1475,7 @@ ind_cxn_send_hello(connection_t *cxn)
     LOG_TRACE(cxn, "Sending hello");
     
     config_params = get_connection_config(cxn);
-    if (config_params == NULL) {
-        LOG_ERROR(cxn, "Could not get config params");
-        return INDIGO_ERROR_PARAM;
-    }
+    INDIGO_ASSERT(config_params != NULL);
 
     if ((hello = of_hello_new(config_params->version)) == NULL) {
         LOG_ERROR(cxn, "Could not allocate hello object");
