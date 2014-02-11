@@ -29,6 +29,7 @@
 #include "ofstatemanager_log.h"
 #include "ofstatemanager_decs.h"
 #include "ft_entry.h"
+#include "table.h"
 
 static void send_idle_notification(ft_entry_t *entry);
 
@@ -99,7 +100,13 @@ expire_flow(ft_entry_t *entry, int reason)
         bool hit;
 
         /* Get hit status for idle timeouts */
-        rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
+        ind_core_table_t *table = ind_core_table_get(entry->table_id);
+        if (table != NULL) {
+            rv = table->ops->entry_hit_status_get(table->priv, &entry->priv, &hit);
+        } else {
+            rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
+        }
+
         if (rv != INDIGO_ERROR_NONE) {
             LOG_ERROR("Failed to get hit status for flow "
                       INDIGO_FLOW_ID_PRINTF_FORMAT": %s",

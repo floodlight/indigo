@@ -38,6 +38,7 @@
 #include "ofstatemanager_int.h"
 #include "handlers.h"
 #include "ft.h"
+#include "table.h"
 
 static void
 flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
@@ -381,7 +382,18 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto done;
     }
 
-    rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
+    table_id = 0;
+    if (obj->version >= OF_VERSION_1_1) {
+        of_flow_add_table_id_get(obj, &table_id);
+    }
+
+    ind_core_table_t *table = ind_core_table_get(table_id);
+    if (table != NULL) {
+        rv = table->ops->entry_create(table->priv, obj, flow_id, &entry->priv);
+    } else {
+        rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
+    }
+
     if (rv == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow table now has %d entries",
                   FT_STATUS(ind_core_ft)->current_count);
@@ -524,7 +536,12 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         indigo_error_t rv;
         state->num_matched++;
-        rv = indigo_fwd_flow_modify(entry->id, state->request);
+        ind_core_table_t *table = ind_core_table_get(entry->table_id);
+        if (table != NULL) {
+            rv = table->ops->entry_modify(table->priv, entry->priv, state->request);
+        } else {
+            rv = indigo_fwd_flow_modify(entry->id, state->request);
+        }
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
         } else {
@@ -618,7 +635,13 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
 
-    rv = indigo_fwd_flow_modify(entry->id, obj);
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
+    if (table != NULL) {
+        rv = table->ops->entry_modify(table->priv, entry->priv, obj);
+    } else {
+        rv = indigo_fwd_flow_modify(entry->id, obj);
+    }
+
     if (rv == INDIGO_ERROR_NONE) {
         ft_entry_modify_effects(ind_core_ft, entry, obj);
     } else {
@@ -807,7 +830,13 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         return;
     }
 
-    rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
+    if (table != NULL) {
+        rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+    } else {
+        rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+    }
+
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
                   entry->id, indigo_strerror(rv));
@@ -952,7 +981,14 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
 
     if (entry != NULL) {
         indigo_fi_flow_stats_t flow_stats;
-        rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+
+        ind_core_table_t *table = ind_core_table_get(entry->table_id);
+        if (table != NULL) {
+            rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+        } else {
+            rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
+        }
+
         if (rv != INDIGO_ERROR_NONE) {
             LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
                       entry->id, indigo_strerror(rv));

@@ -41,6 +41,7 @@
 #include "ft.h"
 #include "expiration.h"
 #include "listener.h"
+#include "table.h"
 
 static void
 process_flow_removal(ft_entry_t *entry,
@@ -582,7 +583,13 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
     LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
               INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
 
-    rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
+    if (table != NULL) {
+        rv = table->ops->entry_delete(table->priv, entry->priv, &flow_stats);
+    } else {
+        rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
+    }
+
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Error deleting flow " INDIGO_FLOW_ID_PRINTF_FORMAT ": %s",
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id), indigo_strerror(rv));

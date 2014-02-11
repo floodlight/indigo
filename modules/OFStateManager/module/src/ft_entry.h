@@ -70,6 +70,7 @@ typedef struct ft_entry_s {
     uint16_t idle_timeout;
     uint16_t hard_timeout;
     uint16_t flags;
+    void *priv;
 
     /* Modifiable thru API calls */
     uint64_t cookie;
