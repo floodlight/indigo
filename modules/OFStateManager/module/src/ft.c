@@ -76,7 +76,7 @@ ft_create(ft_config_t *config)
     int idx;
 
     /* Allocate the flow table itself */
-    ft = INDIGO_MEM_ALLOC(sizeof(*ft));
+    ft = aim_malloc(sizeof(*ft));
     if (ft == NULL) {
         LOG_ERROR("ERROR: Flow table (hash) creation failed");
         return NULL;
@@ -88,7 +88,7 @@ ft_create(ft_config_t *config)
 
     /* Allocate and init buckets for each search type */
     bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
-    ft->strict_match_buckets = INDIGO_MEM_ALLOC(bytes);
+    ft->strict_match_buckets = aim_malloc(bytes);
     if (ft->strict_match_buckets == NULL) {
         LOG_ERROR("ERROR: Flow table, strict_match bucket alloc failed");
         ft_destroy(ft);
@@ -100,7 +100,7 @@ ft_create(ft_config_t *config)
     }
 
     bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
-    ft->flow_id_buckets = INDIGO_MEM_ALLOC(bytes);
+    ft->flow_id_buckets = aim_malloc(bytes);
     if (ft->flow_id_buckets == NULL) {
         LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
         ft_destroy(ft);
@@ -112,7 +112,7 @@ ft_create(ft_config_t *config)
     }
 
     bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
-    ft->cookie_buckets = INDIGO_MEM_ALLOC(bytes);
+    ft->cookie_buckets = aim_malloc(bytes);
     if (ft->cookie_buckets == NULL) {
         LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
         ft_destroy(ft);
@@ -159,20 +159,20 @@ ft_destroy(ft_instance_t ft)
 
     if (ft->strict_match_buckets != NULL) {
         CHECK_BUCKETS(strict_match);
-        INDIGO_MEM_FREE(ft->strict_match_buckets);
+        aim_free(ft->strict_match_buckets);
         ft->strict_match_buckets = NULL;
     }
     if (ft->flow_id_buckets != NULL) {
         CHECK_BUCKETS(flow_id);
-        INDIGO_MEM_FREE(ft->flow_id_buckets);
+        aim_free(ft->flow_id_buckets);
         ft->flow_id_buckets = NULL;
     }
     if (ft->cookie_buckets != NULL) {
-        INDIGO_MEM_FREE(ft->cookie_buckets);
+        aim_free(ft->cookie_buckets);
         ft->cookie_buckets = NULL;
     }
 
-    INDIGO_MEM_FREE(ft);
+    aim_free(ft);
 }
 
 indigo_error_t
@@ -371,7 +371,7 @@ ft_iter_task_callback(void *cookie)
             /* Finished */
             state->callback(state->cookie, NULL);
             ft_iterator_cleanup(&state->iter);
-            INDIGO_MEM_FREE(state);
+            aim_free(state);
             return IND_SOC_TASK_FINISHED;
         } else {
             state->callback(state->cookie, entry);
@@ -390,7 +390,7 @@ ft_spawn_iter_task(ft_instance_t instance,
 {
     indigo_error_t rv;
 
-    struct ft_iter_task_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    struct ft_iter_task_state *state = aim_malloc(sizeof(*state));
     if (state == NULL) {
         return INDIGO_ERROR_RESOURCE;
     }
@@ -402,7 +402,7 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return rv;
     }
 
@@ -585,7 +585,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     indigo_error_t err;
     ft_entry_t *entry;
 
-    entry = INDIGO_MEM_ALLOC(sizeof(*entry));
+    entry = aim_malloc(sizeof(*entry));
     if (entry == NULL) {
         return INDIGO_ERROR_RESOURCE;
     }
@@ -594,7 +594,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     entry->id = id;
 
     if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
-        INDIGO_MEM_FREE(entry);
+        aim_free(entry);
         return INDIGO_ERROR_UNKNOWN;
     }
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -605,7 +605,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
 
     err = ft_entry_set_effects(entry, flow_add);
     if (err != INDIGO_ERROR_NONE) {
-        INDIGO_MEM_FREE(entry);
+        aim_free(entry);
         return err;
     }
 
@@ -632,7 +632,7 @@ ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
         entry->effects.actions = NULL;
     }
 
-    INDIGO_MEM_FREE(entry);
+    aim_free(entry);
 }
 
 /* Populate the output port list and effects */

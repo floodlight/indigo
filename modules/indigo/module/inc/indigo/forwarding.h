@@ -253,10 +253,10 @@ indigo_error_t indigo_fwd_pipeline_set(of_desc_str_t pipeline);
  * @param pipelines List of pipelines
  * @param num_pipelines Number of pipelines
  *
- * Forwarding should allocate memory using INDIGO_MEM_ALLOC() for the pipeline
+ * Forwarding should allocate memory using aim_malloc() for the pipeline
  * list and set num_pipelines to the number of elements.
  *
- * Caller should use INDIGO_MEM_FREE() to free memory.
+ * Caller should use aim_free() to free memory.
  */
 void indigo_fwd_pipeline_stats_get(of_desc_str_t **pipelines, int *num_pipelines);
 

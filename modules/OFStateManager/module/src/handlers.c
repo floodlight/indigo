@@ -542,7 +542,7 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
             LOG_TRACE("Finished flow modify task");
             of_object_delete(state->request);
         }
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
     }
 }
 
@@ -560,7 +560,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     int rv;
     of_meta_match_t query;
 
-    struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    struct flow_modify_state *state = aim_malloc(sizeof(*state));
     if (state == NULL) {
         LOG_ERROR("Failed to allocate memory");
         of_object_delete(_obj);
@@ -573,7 +573,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     rv = flow_mod_setup_query(obj, &query, OF_MATCH_NON_STRICT, 1);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(_obj);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 
@@ -581,7 +581,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                             IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(_obj);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 }
@@ -644,7 +644,7 @@ delete_iter_cb(void *cookie, ft_entry_t *entry)
     } else {
         LOG_TRACE("Finished flow delete task");
         of_object_delete(state->request);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
     }
 }
 
@@ -665,7 +665,7 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     flow_del = (of_flow_delete_t *)_obj;
 
-    struct flow_modify_state *state = INDIGO_MEM_ALLOC(sizeof(*state));
+    struct flow_modify_state *state = aim_malloc(sizeof(*state));
     if (state == NULL) {
         of_object_delete(_obj);
         return;
@@ -678,7 +678,7 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                               OF_MATCH_NON_STRICT, 0);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(state->request);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 
@@ -686,7 +686,7 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                             IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         of_object_delete(state->request);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 
@@ -786,7 +786,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
                 /* This is the last callback, so need to clean up
                  * before returning. */
                 of_flow_stats_request_delete(state->req);
-                INDIGO_MEM_FREE(state);
+                aim_free(state);
             }
             return;
         }
@@ -803,7 +803,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 
         /* Clean up state */
         of_flow_stats_request_delete(state->req);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 
@@ -911,7 +911,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
-    state = INDIGO_MEM_ALLOC(sizeof(*state));
+    state = aim_malloc(sizeof(*state));
     if (state == NULL) {
        LOG_ERROR("Failed to allocate flow stats state object.");
        of_object_delete(_obj);
@@ -928,7 +928,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
         of_object_delete(_obj);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
     }
 
     /* Ownership of _obj is passed to the iterator for barrier tracking */
@@ -977,7 +977,7 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
             LOG_ERROR("Failed to allocate aggregate stats reply.");
         }
         of_aggregate_stats_request_delete(state->req);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
     }
 }
 
@@ -1014,7 +1014,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     /* Non strict; do not check priority or overlap */
     query.mode = OF_MATCH_NON_STRICT;
 
-    state = INDIGO_MEM_ALLOC(sizeof(*state));
+    state = aim_malloc(sizeof(*state));
     if (state == NULL) {
        LOG_ERROR("Failed to allocate flow stats state object.");
        of_object_delete(_obj);
@@ -1032,7 +1032,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
         of_object_delete(_obj);
-        INDIGO_MEM_FREE(state);
+        aim_free(state);
         return;
     }
 
@@ -1518,7 +1518,7 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
                                                             pipelines[i]);
         }
     }
-    INDIGO_MEM_FREE(pipelines);
+    aim_free(pipelines);
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
