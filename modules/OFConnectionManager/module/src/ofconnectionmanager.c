@@ -876,7 +876,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
-        INDIGO_MEM_FREE(data);
+        aim_free(data);
         ind_cxn_disconnect(cxn);
     }
 
@@ -1309,7 +1309,7 @@ indigo_cxn_list(indigo_cxn_info_t** list)
     indigo_cxn_id_t cxn_id;
     connection_t *cxn;
     FOREACH_ACTIVE_CXN(cxn_id, cxn) {
-        indigo_cxn_info_t* entry = INDIGO_MEM_ALLOC(sizeof(*entry));
+        indigo_cxn_info_t* entry = aim_malloc(sizeof(*entry));
         entry->cxn_id = cxn_id;
         entry->cxn_status = cxn->status;
         entry->cxn_proto_params = cxn->protocol_params;
@@ -1327,7 +1327,7 @@ indigo_cxn_list_destroy(indigo_cxn_info_t* list)
     indigo_cxn_info_t* e = list;
     while(e) {
         indigo_cxn_info_t* link = e->next;
-        INDIGO_MEM_FREE(e);
+        aim_free(e);
         e = link;
     }
 }
