@@ -153,7 +153,7 @@ cleanup_disconnect(connection_t *cxn)
     /* Clear write queue */
     BIGLIST_FOREACH_DATA(ble, cxn->output_list, uint8_t *, data) {
         LOG_TRACE(cxn, "Freeing outgoing msg %p", data);
-        INDIGO_MEM_FREE(data);
+        aim_free(data);
     }
     biglist_free(cxn->output_list);
     cxn->output_list = NULL;
@@ -1004,7 +1004,7 @@ extract_read_buffer(connection_t *cxn)
 
     /* Allocate new buffer; copy data into it; remove from read buffer */
     len = cxn->read_bytes;
-    if ((new_buf = INDIGO_MEM_ALLOC(len)) == NULL) {
+    if ((new_buf = aim_malloc(len)) == NULL) {
         LOG_ERROR(cxn, "Could not allocate new buffer to process read buffer");
         return NULL;
     }
@@ -1218,7 +1218,7 @@ process_message(connection_t *cxn)
     if (obj == NULL) {
         LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
         send_parse_error_message(cxn, new_buf, len);
-        INDIGO_MEM_FREE(new_buf);
+        aim_free(new_buf);
         return;
     }
 
@@ -1400,7 +1400,7 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         cxn->bytes_enqueued -= bytes_out;
 
         if (bytes_out == to_write) { /* Completed this message */
-            INDIGO_MEM_FREE(BIGLIST_CAST(void *, cur_node));
+            aim_free(BIGLIST_CAST(void *, cur_node));
             cur_node = cxn->output_list =
                 biglist_remove_link_free(cxn->output_list, cur_node);
             cxn->pkts_enqueued--;

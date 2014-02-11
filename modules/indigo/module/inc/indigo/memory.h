@@ -40,8 +40,6 @@
 #define INDIGO_MEM_CLEAR(dest, bytes)       memset(dest, 0, bytes)
 #define INDIGO_MEM_COPY(dest, src, bytes)   memcpy(dest, src, bytes)
 #define INDIGO_MEM_COMPARE(a, b, bytes)     memcmp(a, b, bytes)
-#define INDIGO_MEM_ALLOC(bytes)             malloc(bytes)
-#define INDIGO_MEM_FREE(ptr)                free(ptr)
 
 #endif /* INDIGO_MEM_STDLIB */
 

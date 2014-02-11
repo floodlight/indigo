@@ -65,7 +65,7 @@ ind_core_group_delete_one(ind_core_group_t *group)
     indigo_fwd_group_delete(group->id);
     of_object_delete(group->buckets);
     bighash_remove(ind_core_group_hashtable, &group->hash_entry);
-    INDIGO_MEM_FREE(group);
+    aim_free(group);
 }
 
 void
@@ -104,7 +104,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    group = INDIGO_MEM_ALLOC(sizeof(*group));
+    group = aim_malloc(sizeof(*group));
     AIM_TRUE_OR_DIE(group != NULL);
     group->id = id;
     group->type = type;

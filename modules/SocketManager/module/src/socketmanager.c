@@ -528,7 +528,7 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
 {
     list_links_t *cur;
 
-    ind_soc_task_t *task = INDIGO_MEM_ALLOC(sizeof(*task));
+    ind_soc_task_t *task = aim_malloc(sizeof(*task));
     if (task == NULL) {
         return INDIGO_ERROR_RESOURCE;
     }
@@ -687,7 +687,7 @@ process_tasks(int priority)
         before_callback();
         if (task->callback(task->cookie) == IND_SOC_TASK_FINISHED) {
             list_remove(&task->links);
-            INDIGO_MEM_FREE(task);
+            aim_free(task);
         }
         after_callback();
     }
