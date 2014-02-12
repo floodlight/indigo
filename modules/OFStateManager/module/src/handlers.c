@@ -795,7 +795,6 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 {
     struct ind_core_flow_stats_state *state = cookie;
     uint32_t secs, nsecs;
-    indigo_fi_flow_stats_t flow_stats;
     indigo_error_t rv;
 
     /* Allocate a reply if we don't already have one. */
@@ -829,6 +828,13 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         INDIGO_MEM_FREE(state);
         return;
     }
+
+    indigo_fi_flow_stats_t flow_stats = {
+        .flow_id = entry->id,
+        .duration_ns = 0,
+        .packets = -1,
+        .bytes = -1,
+    };
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
@@ -980,7 +986,12 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
     indigo_error_t rv;
 
     if (entry != NULL) {
-        indigo_fi_flow_stats_t flow_stats;
+        indigo_fi_flow_stats_t flow_stats = {
+            .flow_id = entry->id,
+            .duration_ns = 0,
+            .packets = -1,
+            .bytes = -1,
+        };
 
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
