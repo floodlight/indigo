@@ -105,7 +105,6 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     group = aim_malloc(sizeof(*group));
-    AIM_TRUE_OR_DIE(group != NULL);
     group->id = id;
     group->type = type;
     group->buckets = of_object_dup(&buckets);
