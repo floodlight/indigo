@@ -561,11 +561,6 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
 
     struct flow_modify_state *state = aim_malloc(sizeof(*state));
-    if (state == NULL) {
-        LOG_ERROR("Failed to allocate memory");
-        of_object_delete(_obj);
-        return;
-    }
     state->request = obj;
     state->num_matched = 0;
     state->cxn_id = cxn_id;
@@ -666,10 +661,6 @@ ind_core_flow_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     flow_del = (of_flow_delete_t *)_obj;
 
     struct flow_modify_state *state = aim_malloc(sizeof(*state));
-    if (state == NULL) {
-        of_object_delete(_obj);
-        return;
-    }
     state->request = _obj;
     state->num_matched = 0;
     state->cxn_id = cxn_id;
@@ -912,12 +903,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     query.mode = OF_MATCH_NON_STRICT;
 
     state = aim_malloc(sizeof(*state));
-    if (state == NULL) {
-       LOG_ERROR("Failed to allocate flow stats state object.");
-       of_object_delete(_obj);
-       return;
-    }
-
     state->req = obj; /* ownership transferred */
     state->cxn_id = cxn_id;
     state->current_time = INDIGO_CURRENT_TIME;
@@ -1015,12 +1000,6 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     query.mode = OF_MATCH_NON_STRICT;
 
     state = aim_malloc(sizeof(*state));
-    if (state == NULL) {
-       LOG_ERROR("Failed to allocate flow stats state object.");
-       of_object_delete(_obj);
-       return;
-    }
-
     state->cxn_id = cxn_id;
     state->req = obj; /* ownership transferred */
     state->packets = 0;
