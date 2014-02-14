@@ -76,49 +76,26 @@ ft_create(ft_config_t *config)
     int idx;
 
     /* Allocate the flow table itself */
-    ft = aim_malloc(sizeof(*ft));
-    if (ft == NULL) {
-        LOG_ERROR("ERROR: Flow table (hash) creation failed");
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft, 0, sizeof(*ft));
+    ft = aim_zmalloc(sizeof(*ft));
     INDIGO_MEM_COPY(&ft->config,  config, sizeof(ft_config_t));
 
     list_init(&ft->all_list);
 
     /* Allocate and init buckets for each search type */
     bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
-    ft->strict_match_buckets = aim_malloc(bytes);
-    if (ft->strict_match_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, strict_match bucket alloc failed");
-        ft_destroy(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->strict_match_buckets, 0, bytes);
+    ft->strict_match_buckets = aim_zmalloc(bytes);
     for (idx = 0; idx < config->strict_match_bucket_count; idx++) {
         list_init(&ft->strict_match_buckets[idx]);
     }
 
     bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
-    ft->flow_id_buckets = aim_malloc(bytes);
-    if (ft->flow_id_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
-        ft_destroy(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->flow_id_buckets, 0, bytes);
+    ft->flow_id_buckets = aim_zmalloc(bytes);
     for (idx = 0; idx < config->flow_id_bucket_count; idx++) {
         list_init(&ft->flow_id_buckets[idx]);
     }
 
     bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
-    ft->cookie_buckets = aim_malloc(bytes);
-    if (ft->cookie_buckets == NULL) {
-        LOG_ERROR("ERROR: Flow table, flow id bucket alloc failed");
-        ft_destroy(ft);
-        return NULL;
-    }
-    INDIGO_MEM_SET(ft->cookie_buckets, 0, bytes);
+    ft->cookie_buckets = aim_zmalloc(bytes);
     for (idx = 0; idx < (1 << FT_COOKIE_PREFIX_LEN); idx++) {
         list_init(&ft->cookie_buckets[idx]);
     }
@@ -391,9 +368,6 @@ ft_spawn_iter_task(ft_instance_t instance,
     indigo_error_t rv;
 
     struct ft_iter_task_state *state = aim_malloc(sizeof(*state));
-    if (state == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
 
     state->callback = callback;
     state->cookie = cookie;
@@ -585,11 +559,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     indigo_error_t err;
     ft_entry_t *entry;
 
-    entry = aim_malloc(sizeof(*entry));
-    if (entry == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
-    INDIGO_MEM_SET(entry, 0, sizeof(*entry));
+    entry = aim_zmalloc(sizeof(*entry));
 
     entry->id = id;
 

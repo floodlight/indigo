@@ -529,10 +529,6 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
     list_links_t *cur;
 
     ind_soc_task_t *task = aim_malloc(sizeof(*task));
-    if (task == NULL) {
-        return INDIGO_ERROR_RESOURCE;
-    }
-
     task->callback = callback;
     task->cookie = cookie;
     task->priority = priority;

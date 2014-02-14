@@ -988,33 +988,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 }
 
 /**
- * Extract bytes from the read buffer
- * @param cxn The connection instance
- * @param len The number of bytes to extract from the read buffer
- *
- * Returns a pointer to a new buffer containing a copy of the initial
- * segment of the read buffer through len.  The read buffer is then
- * updated so the remainder of the buffer starts at 0.
- */
-static inline uint8_t *
-extract_read_buffer(connection_t *cxn)
-{
-    uint8_t *new_buf;
-    int len;
-
-    /* Allocate new buffer; copy data into it; remove from read buffer */
-    len = cxn->read_bytes;
-    if ((new_buf = aim_malloc(len)) == NULL) {
-        LOG_ERROR(cxn, "Could not allocate new buffer to process read buffer");
-        return NULL;
-    }
-
-    INDIGO_MEM_COPY(new_buf, cxn->read_buffer, len);
-
-    return new_buf;
-}
-
-/**
  * Is object a message?  Should be if we're sending it
  */
 #define IS_MSG_OBJ(obj) \
@@ -1203,11 +1176,7 @@ process_message(connection_t *cxn)
     int rv;
 
     /* Message is ready to be processed */
-    new_buf = extract_read_buffer(cxn);
-    if (new_buf == NULL) {
-        LOG_ERROR(cxn, "Could not alloc buffer to handle message; will block");
-        return;
-    }
+    new_buf = aim_memdup(cxn->read_buffer, cxn->read_bytes);
 
     /* Clear read buffer for next read, even if above failed */
     len = cxn->read_bytes;
