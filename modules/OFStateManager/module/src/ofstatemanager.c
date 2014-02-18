@@ -487,7 +487,7 @@ indigo_error_t
 indigo_core_dpid_set(of_dpid_t dpid)
 {
     if (ind_core_dpid != dpid) {
-        LOG_INFO("Changing switch DPID");
+        LOG_INFO("Changing switch DPID to %016x", dpid);
         INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
         ind_cxn_reset(IND_CXN_RESET_ALL);
     } else {
