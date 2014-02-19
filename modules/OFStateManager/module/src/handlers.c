@@ -355,7 +355,6 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                 cxn_id, obj,
                 OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
                 OF_FLOW_MOD_FAILED_BAD_EMERG_TIMEOUT_BY_VERSION(ver));
-        rv = INDIGO_ERROR_PARAM;
         goto done;
     }
 
