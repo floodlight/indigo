@@ -352,8 +352,8 @@ void indigo_core_message_listener_unregister(indigo_core_message_listener_f fn);
  *
  * This is intended to be used in conjunction with the Indigo
  * forwarding pipeline interface. When indigo_fwd_pipeline_set is
- * called all tables should first be unregistered, then the tables
- * of the new pipeline should be registered. In case the new pipeline
+ * called all tables must first be unregistered, then the tables
+ * of the new pipeline must be registered. In case the new pipeline
  * is the same as the old one this will have the intended effect
  * of clearing all flows.
  *
@@ -412,7 +412,7 @@ typedef struct indigo_core_table_ops_s {
 /**
  * Register a flowtable
  *
- * The table ID and name must be unique. The ops should be valid at least until
+ * The table ID and name must be unique. The ops must be valid at least until
  * the table is unregistered. 'table_priv' will be passed to every operation on
  * the table.
  *
