@@ -333,5 +333,99 @@ typedef indigo_core_listener_result_t (*indigo_core_message_listener_f)(indigo_c
 indigo_error_t indigo_core_message_listener_register(indigo_core_message_listener_f fn);
 void indigo_core_message_listener_unregister(indigo_core_message_listener_f fn);
 
+
+/****************************************************************
+ *
+ * Flowtable registration
+ *
+ * Instead of implementing indigo_flow_*, the Forwarding module can
+ * use this interface to register individual tables. The advantage
+ * is that the Forwarding module doesn't need to do the dispatch
+ * to the table implementation itself. In the future, indigo_flow_*
+ * will be removed. At that point indigo_fwd_table_stats_get and
+ * the (currently unimplemented) table features stats will be
+ * replaced with additional per-table methods.
+ *
+ * If Forwarding uses this interface exclusively then it does not
+ * need to maintain a hashtable keyed on flow ID. The only API that
+ * still uses the flow ID is indigo_core_flow_removed.
+ *
+ * This is intended to be used in conjunction with the Indigo
+ * forwarding pipeline interface. When indigo_fwd_pipeline_set is
+ * called all tables must first be unregistered, then the tables
+ * of the new pipeline must be registered. In case the new pipeline
+ * is the same as the old one this will have the intended effect
+ * of clearing all flows.
+ *
+ ****************************************************************/
+
+/**
+ * Table operations
+ */
+
+typedef struct indigo_core_table_ops_s {
+    /**
+     * Add an entry to the table
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param obj Flow-add message
+     * @param flow_id Flow ID (only for use with indigo_core_flow_removed)
+     * @param [out] entry_priv Private data for this flow
+     */
+    indigo_error_t (*entry_create)(void *table_priv, of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv);
+
+    /**
+     * Modify an entry in the table
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param obj Flow-modify message
+     */
+    indigo_error_t (*entry_modify)(void *table_priv, void *entry_priv, of_flow_modify_strict_t *obj);
+
+    /**
+     * Delete an entry from the table
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param [out] flow_stats Final stats
+     *
+     * No further operations will be called with entry_priv, so the
+     * implementation should deallocate it.
+     */
+    indigo_error_t (*entry_delete)(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats);
+
+    /**
+     * Retrieve stats for an entry
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param [out] flow_stats Current stats
+     */
+    indigo_error_t (*entry_stats_get)(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats);
+
+    /**
+     * Retrieve and reset hit status for an entry
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param [out] hit_status True if entry hit since last time API was called
+     */
+    indigo_error_t (*entry_hit_status_get)(void *table_priv, void *entry_priv, bool *hit_status);
+} indigo_core_table_ops_t;
+
+/**
+ * Register a flowtable
+ *
+ * The table ID and name must be unique. The ops must be valid at least until
+ * the table is unregistered. 'table_priv' will be passed to every operation on
+ * the table.
+ *
+ * Existing flows with the same table ID will be deleted.
+ */
+void indigo_core_table_register(uint8_t table_id, const char *name, const indigo_core_table_ops_t *ops, void *table_priv);
+
+/**
+ * Unregister a flowtable
+ *
+ * Existing entries will be deleted.
+ */
+void indigo_core_table_unregister(uint8_t table_id);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
