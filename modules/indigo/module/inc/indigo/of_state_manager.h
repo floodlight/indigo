@@ -350,7 +350,7 @@ void indigo_core_message_listener_unregister(indigo_core_message_listener_f fn);
  * need to maintain a hashtable keyed on flow ID. The only API that
  * still uses the flow ID is indigo_core_flow_removed.
  *
- * This is intended to be used in conjuction with the Indigo
+ * This is intended to be used in conjunction with the Indigo
  * forwarding pipeline interface. When indigo_fwd_pipeline_set is
  * called all tables should first be unregistered, then the tables
  * of the new pipeline should be registered. In case the new pipeline
@@ -387,7 +387,7 @@ typedef struct indigo_core_table_ops_s {
      * @param entry_priv Private data returned by the entry_create operation
      * @param [out] flow_stats Final stats
      *
-     * No futher operations will be called with entry_priv, so the
+     * No further operations will be called with entry_priv, so the
      * implementation should deallocate it.
      */
     indigo_error_t (*entry_delete)(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats);
@@ -416,7 +416,7 @@ typedef struct indigo_core_table_ops_s {
  * the table is unregistered. 'table_priv' will be passed to every operation on
  * the table.
  *
- * Existing flows with the same table ID willl be deleted.
+ * Existing flows with the same table ID will be deleted.
  */
 void indigo_core_table_register(uint8_t table_id, const char *name, const indigo_core_table_ops_t *ops, void *table_priv);
 
