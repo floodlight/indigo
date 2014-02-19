@@ -1370,7 +1370,7 @@ ind_cxn_process_write_buffer(connection_t *cxn)
 
         if (bytes_out == to_write) { /* Completed this message */
             aim_free(BIGLIST_CAST(void *, cur_node));
-            cur_node = cxn->output_list =
+            cxn->output_list =
                 biglist_remove_link_free(cxn->output_list, cur_node);
             cxn->pkts_enqueued--;
             cxn->status.messages_out++;

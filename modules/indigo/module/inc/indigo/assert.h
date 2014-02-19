@@ -20,34 +20,13 @@
 /**
  * @file
  * @brief Debug assertion
- *
- * The macro INDIGO_ASSERT(cond) may be defined by the target.
- * If it is not defined before the inclusion of this
- * file, it will default to a no-op.
- *
- * If INDIGO_FAULT_ON_ASSERT is defined,
- * force a segmentation fault if an assert fails.  This is useful if
- * using a debugger.
- *
- * This requires local modules AIM logging to be included before referenced
  */
 
 #ifndef _INDIGO_ASSERT_H_
 #define _INDIGO_ASSERT_H_
 
-#if defined(INDIGO_FAULT_ON_ASSERT)
+#include <AIM/aim.h>
 
-#define INDIGO_ASSERT(cond) do if (!(cond)) {                           \
-            AIM_LOG_ERROR("%s.%d: Assert %s failed\n",                  \
-                          __FILE__, __LINE__, #cond);                   \
-            *((volatile int *)0) = 1;                                   \
-        } while (0)
-
-#elif !defined(INDIGO_ASSERT)
-
-/* No op if not defined otherwise */
-#define INDIGO_ASSERT(cond)
-
-#endif
+#define INDIGO_ASSERT AIM_ASSERT
 
 #endif /* _INDIGO_ASSERT_H_ */
