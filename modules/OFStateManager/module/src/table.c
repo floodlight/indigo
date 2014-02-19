@@ -35,6 +35,8 @@ ind_core_table_get(uint8_t table_id)
 void indigo_core_table_register(uint8_t table_id, const char *name,
                                 const indigo_core_table_ops_t *ops, void *priv)
 {
+    AIM_TRUE_OR_DIE(strlen(name) <= OF_MAX_TABLE_NAME_LEN);
+
     list_links_t *cur, *next;
     ft_entry_t *entry;
     FT_ITER(ind_core_ft, entry, cur, next) {
