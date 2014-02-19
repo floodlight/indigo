@@ -49,6 +49,9 @@
 /* Defined in gentable_test.c */
 int test_gentable(void);
 
+/* Defined in table_test.c */
+int test_table(void);
+
 /* Must be an even number */
 #define TEST_FLOW_COUNT 1000
 
@@ -1453,6 +1456,10 @@ aim_main(int argc, char* argv[])
     RUN_TEST(message_listeners);
 
     if (test_gentable() != TEST_PASS) {
+        return 1;
+    }
+
+    if (test_table() != TEST_PASS) {
         return 1;
     }
 
