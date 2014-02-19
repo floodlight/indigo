@@ -48,6 +48,9 @@ cdefs: &cdefs
 - SOCKETMANAGER_CONFIG_TIMESLICE_MS:
     doc: "Milliseconds before ind_soc_should_yield() returns true."
     default: 10
+- SOCKETMANAGER_CONFIG_MAX_TIMERS:
+    doc: "Maximum number of timers supported"
+    default: 48
 
 
 definitions:

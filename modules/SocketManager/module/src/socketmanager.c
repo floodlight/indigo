@@ -110,14 +110,12 @@ typedef struct timer_event_s {
     indigo_time_t last_call;
 } timer_event_t;
 
-/* Change to 48 for now */
-#define TIMER_EVENT_MAX 48
-static timer_event_t timer_event[TIMER_EVENT_MAX];
+static timer_event_t timer_event[SOCKETMANAGER_CONFIG_MAX_TIMERS];
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
 
 #define FOREACH_TIMER_EVENT(idx)                        \
-    for ((idx) = 0; (idx) < TIMER_EVENT_MAX; (idx)++)   \
+    for ((idx) = 0; (idx) < SOCKETMANAGER_CONFIG_MAX_TIMERS; (idx)++)   \
         if (TIMER_EVENT_VALID(idx))
 
 /*
@@ -156,7 +154,7 @@ timer_event_free_slot(void)
 {
     int idx;
 
-    for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
         if (timer_event[idx].callback == NULL) {
             return idx;
         }
@@ -173,7 +171,7 @@ soc_mgr_init(void)
         soc_map[idx].socket_id = INVALID_SOCKET_ID;
     }
 
-    for (idx = 0; idx < TIMER_EVENT_MAX; idx++) {
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
         timer_event[idx].callback = NULL;
     }
 
