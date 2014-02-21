@@ -761,7 +761,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
             role = OF_CONTROLLER_ROLE_EQUAL;
             break;
         default:
-            ASSERT(0);
+            AIM_ASSERT(0);
             role = -1;
             break;
         }
