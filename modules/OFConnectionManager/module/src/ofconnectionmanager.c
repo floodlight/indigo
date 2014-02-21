@@ -67,6 +67,8 @@ static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
 
+static void ind_cxn_status_notify(void);
+
 /****************************************************************
  * Connection Manager Data shared within module
  ****************************************************************/
@@ -364,9 +366,12 @@ ind_cxn_status_change(connection_t *cxn)
                 LOG_VERBOSE("Clearing IP mask map");
                 of_ip_mask_map_init();
             }
+        } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
+            ind_cxn_status_notify();
         } else if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
             --remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
+            ind_cxn_status_notify();
             if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
                 LOG_VERBOSE("Clearing preferred connection");
                 preferred_cxn_id = -1;
@@ -375,6 +380,36 @@ ind_cxn_status_change(connection_t *cxn)
     }
 
     LOG_TRACE("Cxn status change, rmt count %d", remote_connection_count);
+}
+
+/*
+ * Send an of_bsn_controller_connections_reply to each connection
+ *
+ * HACK reusing the reply message for this async notification.
+ */
+
+static void
+ind_cxn_status_notify(void)
+{
+    of_version_t version;
+
+    if (indigo_cxn_get_async_version(&version) < 0) {
+        return;
+    }
+
+    if (version < OF_VERSION_1_3) {
+        return;
+    }
+
+    of_object_t *msg = of_bsn_controller_connections_reply_new(version);
+    AIM_TRUE_OR_DIE(msg != NULL);
+
+    of_list_bsn_controller_connection_t list;
+    of_bsn_controller_connections_reply_connections_bind(msg, &list);
+
+    ind_cxn_populate_connection_list(&list);
+
+    indigo_cxn_send_async_message(msg);
 }
 
 /****************************************************************
