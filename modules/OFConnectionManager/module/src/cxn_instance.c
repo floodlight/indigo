@@ -621,7 +621,7 @@ role_to_string(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return "master";
     case INDIGO_CXN_R_SLAVE: return "slave";
     case INDIGO_CXN_R_EQUAL: return "equal";
-    default: ASSERT(0); return "unknown";
+    default: AIM_ASSERT(0); return "unknown";
     }
 }
 
@@ -643,7 +643,7 @@ translate_to_nicira_role(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return 1;
     case INDIGO_CXN_R_SLAVE: return 2;
     case INDIGO_CXN_R_EQUAL: return 0;
-    default: ASSERT(0); return 0;
+    default: AIM_ASSERT(0); return 0;
     }
 }
 
@@ -712,7 +712,7 @@ translate_to_openflow_role(indigo_cxn_role_t role)
     case INDIGO_CXN_R_MASTER: return OF_CONTROLLER_ROLE_MASTER;
     case INDIGO_CXN_R_SLAVE: return OF_CONTROLLER_ROLE_SLAVE;
     case INDIGO_CXN_R_EQUAL: return OF_CONTROLLER_ROLE_EQUAL;
-    default: ASSERT(0); return 0;
+    default: AIM_ASSERT(0); return 0;
     }
 }
 
