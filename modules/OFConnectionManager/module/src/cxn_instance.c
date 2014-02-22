@@ -447,7 +447,6 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
                     cxn->status.negotiated_version);
     }
 
-    of_object_delete(obj);
     return rv;
 }
 
@@ -536,7 +535,6 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
 
     if ((reply = of_echo_reply_new(echo->version)) == NULL) {
         LOG_TRACE(cxn, "Could not allocate echo response obj");
-        of_object_delete(_obj);
         return INDIGO_ERROR_RESOURCE;
     }
 
@@ -547,7 +545,6 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
             return INDIGO_ERROR_UNKNOWN;
         }
     }
-    of_object_delete(_obj);
 
     if (rv >= 0) {
         indigo_cxn_send_controller_message(cxn->cxn_id, reply);
@@ -580,8 +577,6 @@ echo_reply_handle(connection_t *cxn, of_object_t *_obj)
                     "expected xid %u", xid, cxn->keepalive.xid);
     }
 
-    of_object_delete(_obj);
-
     return rv;
 }
 
@@ -596,8 +591,6 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
 
     of_barrier_request_xid_get(obj, &cxn->barrier.xid);
     LOG_TRACE(cxn, "Got barrier req with xid %u", cxn->barrier.xid);
-
-    of_barrier_request_delete(obj);
 
     /* No outstanding operations; send reply immediately */
     if (cxn->outstanding_op_cnt == 0)  {
@@ -661,14 +654,12 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     indigo_cxn_role_t role;
 
     if ((reply = of_nicira_controller_role_reply_new(_obj->version)) == NULL) {
-        of_object_delete(_obj);
         return INDIGO_ERROR_RESOURCE;
     }
 
     request = (of_nicira_controller_role_request_t *)_obj;
     of_nicira_controller_role_request_xid_get(request, &xid);
     of_nicira_controller_role_request_role_get(request, &wire_role);
-    of_object_delete(_obj);
 
     role = translate_from_nicira_role(wire_role);
     if (role == INDIGO_CXN_R_UNKNOWN) {
@@ -730,7 +721,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
     uint64_t generation_id;
 
     if ((reply = of_role_reply_new(_obj->version)) == NULL) {
-        of_object_delete(_obj);
         return;
     }
 
@@ -747,7 +737,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                 cxn->cxn_id, request,
                 OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                 OF_ROLE_REQUEST_FAILED_BAD_ROLE);
-            of_object_delete(_obj);
             return;
         }
 
@@ -761,7 +750,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                     cxn->cxn_id, request,
                     OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                     OF_ROLE_REQUEST_FAILED_STALE);
-                of_object_delete(_obj);
                 return;
             } else {
                 ind_cxn_generation_id = generation_id;
@@ -783,8 +771,6 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
         translate_to_openflow_role(cxn->status.role));
     of_role_reply_generation_id_set(reply, ind_cxn_generation_id);
 
-    of_object_delete(_obj);
-
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
@@ -805,7 +791,6 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_time_reply_new(request->version);
     if (reply == NULL) {
         LOG_ERROR(cxn, "Failed to allocate of_bsn_time_reply");
-        of_object_delete(request);
         return;
     }
 
@@ -813,8 +798,6 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
 
     of_bsn_time_reply_xid_set(reply, xid);
     of_bsn_time_reply_time_ms_set(reply, time_ms);
-
-    of_object_delete(request);
 
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
@@ -835,13 +818,10 @@ bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_controller_connections_reply_new(request->version);
     if (reply == NULL) {
         LOG_ERROR(cxn, "Failed to allocate of_bsn_controller_connections_reply");
-        of_object_delete(request);
         return;
     }
 
     of_bsn_controller_connections_reply_xid_set(reply, xid);
-
-    of_object_delete(request);
 
     of_list_bsn_controller_connection_t list;
     of_bsn_controller_connections_reply_connections_bind(reply, &list);
@@ -973,7 +953,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
                         of_object_id_str[obj->object_id]);
             indigo_cxn_send_error_reply(cxn->cxn_id, obj,
                                         OF_ERROR_TYPE_BAD_REQUEST, code);
-            of_object_delete(obj);
             return;
         }
 
@@ -1233,12 +1212,13 @@ process_message(connection_t *cxn)
         if ((rv = check_for_hello(cxn, obj)) < 0) {
             LOG_ERROR(cxn, "Failed to check for hello", indigo_strerror(rv));
             /* @fixme Should state be updated for some return codes? */
-            return;
         }
     } else {
-        /* Process received message (object); handler owns obj */
+        /* Process received message */
         of_msg_process(cxn, obj);
     }
+
+    of_object_delete(obj);
 }
 
 /**

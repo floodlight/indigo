@@ -473,6 +473,7 @@ handle_message(of_object_t *obj)
     obj->track_info.delete_cb = message_deleted;
     obj->track_info.delete_cookie = NULL;
     indigo_core_receive_controller_message(0, obj);
+    of_object_delete(obj);
 }
 
 int
@@ -964,6 +965,7 @@ test_hello(void)
 
     hello = of_hello_new(OF_VERSION_1_0);
     indigo_core_receive_controller_message(0, hello);
+    of_object_delete(hello);
 
     return TEST_PASS;
 }
@@ -976,6 +978,7 @@ test_packet_out(void)
     pkt_out = of_packet_out_new(OF_VERSION_1_0);
     /* Could add params, but core doesn't do anything with them */
     indigo_core_receive_controller_message(0, pkt_out);
+    of_object_delete(pkt_out);
 
     return TEST_PASS;
 }
@@ -1000,6 +1003,7 @@ test_experimenter(void)
     exp = of_experimenter_new(OF_VERSION_1_0);
     /* Could add params, but core doesn't do anything with them */
     indigo_core_receive_controller_message(0, exp);
+    of_object_delete(exp);
 
     return TEST_PASS;
 }
