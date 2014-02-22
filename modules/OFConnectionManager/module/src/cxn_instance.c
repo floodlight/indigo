@@ -40,6 +40,7 @@
 
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
+#include <loci/loci_validator.h>
 
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -960,9 +961,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         break;
     }
 
-    /* Passing the message to the state manager; register and set callback */
-    cxn_message_track_setup(cxn, obj);
-
     OF_MSG_CALLBACK(cxn, obj);
 }
 
@@ -1144,29 +1142,29 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
  * Process a message from the read buffer
  *
  * The read buffer must have a valid message in it to be processed
+ *
+ * The LOCI object is created on the stack and points directly to the read
+ * buffer, so its lifetime is limited to this stack frame. Message handlers
+ * that need to keep it around for longer must copy it with of_object_dup.
  */
 
 static inline void
 process_message(connection_t *cxn)
 {
-    uint8_t *new_buf;
     of_object_t *obj;
     int len;
     int rv;
+    of_object_storage_t obj_storage;
 
-    /* Message is ready to be processed */
-    new_buf = aim_memdup(cxn->read_buffer, cxn->read_bytes);
-
-    /* Clear read buffer for next read, even if above failed */
+    /* Clear read buffer for next read */
     len = cxn->read_bytes;
     cxn->read_bytes = 0;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
 
-    obj = of_object_new_from_message(OF_BUFFER_TO_MESSAGE(new_buf), len);
+    obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
         LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
-        send_parse_error_message(cxn, new_buf, len);
-        aim_free(new_buf);
+        send_parse_error_message(cxn, cxn->read_buffer, len);
         return;
     }
 
@@ -1217,8 +1215,6 @@ process_message(connection_t *cxn)
         /* Process received message */
         of_msg_process(cxn, obj);
     }
-
-    of_object_delete(obj);
 }
 
 /**

@@ -80,6 +80,12 @@ int test_table(void);
 #define TEST_ETH_TYPE(idx) ((idx) + 1)
 #define TEST_KEY(idx) (2 * ((idx) + 1))
 
+/*
+ * Track messages in flight like OFConnectionManager does, for barriers
+ */
+static int outstanding_op_cnt;
+static void message_deleted(of_object_t *obj);
+
 /****************************************************************
  * Stubs
  ****************************************************************/
@@ -217,6 +223,10 @@ ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
 {
     AIM_LOG_VERBOSE("Cxn message track cxn id %d, obj type %d\n",
                          cxn_id, obj->object_id);
+    assert(outstanding_op_cnt >= 0);
+    outstanding_op_cnt++;
+    obj->track_info.delete_cb = message_deleted;
+    obj->track_info.delete_cookie = NULL;
     return INDIGO_ERROR_NONE;
 }
 
@@ -453,11 +463,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
     return 0;
 }
 
-/*
- * Track messages in flight like OFConnectionManager does, for barriers
- */
-static int outstanding_op_cnt;
-
 static void
 message_deleted(of_object_t *obj)
 {
@@ -468,10 +473,6 @@ message_deleted(of_object_t *obj)
 void
 handle_message(of_object_t *obj)
 {
-    assert(outstanding_op_cnt >= 0);
-    outstanding_op_cnt++;
-    obj->track_info.delete_cb = message_deleted;
-    obj->track_info.delete_cookie = NULL;
     indigo_core_receive_controller_message(0, obj);
     of_object_delete(obj);
 }
