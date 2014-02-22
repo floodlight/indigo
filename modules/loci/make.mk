@@ -28,7 +28,9 @@ LOCI := $(SUBMODULE_LOXIGEN_ARTIFACTS)/loci
 
 loci_INCLUDES := -I $(LOCI)/inc
 loci_INTERNAL_INCLUDES := -I $(LOCI)/src
+ifndef DEBUG
 loci_CFLAGS := -Os
+endif
 
 LIBRARY := loci
 loci_SUBDIR := $(LOCI)/src
