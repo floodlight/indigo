@@ -294,6 +294,9 @@ void ind_cxn_unregister_debug_counters(connection_t *cxn);
 extern int ind_cxn_process_write_buffer(connection_t *cxn);
 extern int ind_cxn_process_read_buffer(connection_t *cxn);
 
+void ind_cxn_block_barrier(connection_t *cxn);
+void ind_cxn_unblock_barrier(connection_t *cxn);
+
 #if 0 /* TBD */
 /**
  * Flags for a connection instance
