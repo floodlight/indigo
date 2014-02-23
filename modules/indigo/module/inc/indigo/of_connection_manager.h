@@ -475,5 +475,45 @@ void indigo_cxn_async_channel_selector_register(
 void indigo_cxn_async_channel_selector_unregister(
                                     indigo_cxn_async_channel_selector_f fn);
 
+/*
+ * Barrier blocking
+ *
+ * Requests from the controller that aren't handled synchronously need to
+ * delay later barriers until completion. Examples are non-strict flow
+ * deletion and flow stats.
+ *
+ * When a barrier blocker is created with indigo_cxn_block_barrier a
+ * reference count is incremented on the connection. When the barrier
+ * blocker is destroyed with indigo_cxn_unblock_barrier, the reference
+ * count is decremented.
+ *
+ * On debug builds, an extra allocation is performed so that we can use
+ * Valgrind to debug reference counting errors. A missing unblock will
+ * result in a memory leak and a double unblock will result in a double
+ * free, both of which will be caught by Valgrind.
+ *
+ * This struct should be treated as opaque.
+ */
+
+typedef struct indigo_cxn_barrier_blocker_s {
+    void *cookie;
+#ifndef NDEBUG
+    void *tracker;
+#endif
+} indigo_cxn_barrier_blocker_t;
+
+/**
+ * @brief Create a barrier blocker
+ * @param cxn_id Connection ID
+ * @param [out] blocker Uninitialized indigo_cxn_barrier_blocker_t
+ */
+void indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *blocker);
+
+/**
+ * @brief Destroy a barrier blocker
+ * @param blocker Previously created by indigo_cxn_block_barrier
+ */
+void indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker);
+
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */

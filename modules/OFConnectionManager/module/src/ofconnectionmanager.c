@@ -1903,3 +1903,41 @@ indigo_cxn_async_channel_selector_unregister(indigo_cxn_async_channel_selector_f
 
     ind_cxn_async_channel_selector_handler = NULL;
 }
+
+/* Barrier blockers */
+
+void
+indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *blocker)
+{
+    if (CXN_ID_VALID(cxn_id)) {
+        connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+        ind_cxn_block_barrier(cxn);
+        blocker->cookie = cxn_to_cookie(cxn);
+        INDIGO_ASSERT(blocker->cookie != NULL);
+    } else {
+        blocker->cookie = NULL;
+    }
+
+#ifndef NDEBUG
+    blocker->tracker = aim_malloc(1);
+#endif
+}
+
+void
+indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
+{
+    if (blocker->cookie != NULL) {
+        connection_t *cxn = cookie_to_cxn(blocker->cookie);
+        if (cxn != NULL) {
+            ind_cxn_unblock_barrier(cxn);
+        }
+        blocker->cookie = NULL;
+    }
+
+#ifndef NDEBUG
+    aim_free(blocker->tracker);
+
+    /* Deliberately leave blocker->tracker as is to let valgrind catch double
+     * frees */
+#endif
+}
