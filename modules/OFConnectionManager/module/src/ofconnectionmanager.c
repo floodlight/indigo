@@ -1351,34 +1351,6 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
  ****************************************************************/
 
 
-/**
- * Track objects for outstanding op count
- *
- * @param cxn The connection requesting the op
- * @param obj The object associated with the request
- *
- * This function is exposed to allow other agents to register duplicates
- * of messages that are generated to process complex operations
- */
-
-indigo_error_t
-ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
-{
-    connection_t *cxn;
-
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_TCP_CONNECTED(cxn_id)) {
-        return INDIGO_ERROR_PARAM;
-    }
-
-    cxn = CXN_ID_TO_CONNECTION(cxn_id);
-
-    cxn_message_track_setup(cxn, obj);
-
-    return INDIGO_ERROR_NONE;
-}
-
-
-
 /*
  * Configure the connection manager
  * @param core The functions provided by core
