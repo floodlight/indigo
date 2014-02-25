@@ -529,7 +529,6 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_echo_reply_t *reply = NULL;
     of_octets_t data;
     uint32_t xid;
-    int rv = INDIGO_ERROR_NONE;
 
     of_echo_request_xid_get(echo, &xid);
     LOG_TRACE(cxn, "Responding to echo with xid %u", xid);
@@ -543,17 +542,14 @@ echo_request_handle(connection_t *cxn, of_object_t *_obj)
     of_echo_request_data_get(echo, &data);
     if (data.bytes > 0) {
         if (of_echo_reply_data_set(reply, &data) < 0) {
+            of_object_delete(reply);
             return INDIGO_ERROR_UNKNOWN;
         }
     }
 
-    if (rv >= 0) {
-        indigo_cxn_send_controller_message(cxn->cxn_id, reply);
-    } else {
-        of_echo_reply_delete(reply);
-    }
+    indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 
-    return rv;
+    return INDIGO_ERROR_NONE;
 }
 
 /**
@@ -665,6 +661,7 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
     role = translate_from_nicira_role(wire_role);
     if (role == INDIGO_CXN_R_UNKNOWN) {
         LOG_ERROR(cxn, "Invalid role in role request message");
+        of_object_delete(reply);
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -738,6 +735,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                 cxn->cxn_id, request,
                 OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                 OF_ROLE_REQUEST_FAILED_BAD_ROLE);
+            of_object_delete(reply);
             return;
         }
 
@@ -751,6 +749,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                     cxn->cxn_id, request,
                     OF_ERROR_TYPE_ROLE_REQUEST_FAILED,
                     OF_ROLE_REQUEST_FAILED_STALE);
+                of_object_delete(reply);
                 return;
             } else {
                 ind_cxn_generation_id = generation_id;

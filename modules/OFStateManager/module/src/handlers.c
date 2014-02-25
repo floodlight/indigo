@@ -1313,6 +1313,7 @@ ind_core_bsn_get_ip_mask_request_handler(of_object_t *_obj,
         LOG_ERROR("Bad index for get ip_mask: %d", index);
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        of_object_delete(reply);
         return;
     }
     of_bsn_get_ip_mask_reply_mask_set(reply, val32);

@@ -768,6 +768,7 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
+        of_object_delete(reply);
         return;
     }
 
