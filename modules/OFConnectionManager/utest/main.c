@@ -122,7 +122,6 @@ cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
  done:
-    of_object_delete(obj);
     got_cxn_msg = 1;
 }
 

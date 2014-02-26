@@ -222,7 +222,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 
     if (ind_core_message_notify(cxn, obj) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped message");
-        of_object_delete(obj);
         return;
     }
 
@@ -1070,4 +1069,24 @@ indigo_core_stats_get(uint32_t *total_flows,
     ind_core_flow_mods = 0;
     ind_core_packet_ins = 0;
     ind_core_packet_outs = 0;
+}
+
+
+/**
+ * Duplicate a LOXI object and set up tracking
+ *
+ * Assumes the connection ID is valid, which it will be if called from a
+ * message handler.
+ *
+ * This function does not return NULL.
+ */
+
+of_object_t *
+ind_core_dup_tracking(of_object_t *obj, indigo_cxn_id_t cxn_id)
+{
+    of_object_t *new_obj = of_object_dup(obj);
+    AIM_TRUE_OR_DIE(new_obj != NULL);
+    indigo_error_t rv = ind_cxn_message_track_setup(cxn_id, new_obj);
+    AIM_TRUE_OR_DIE(rv == INDIGO_ERROR_NONE);
+    return new_obj;
 }

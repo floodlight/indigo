@@ -94,7 +94,6 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
         indigo_cxn_send_error_reply(cxn_id, obj,
                                     OF_ERROR_TYPE_BAD_REQUEST,
                                     OF_REQUEST_FAILED_EPERM);
-        of_object_delete(obj);
         return;
     }
 
@@ -141,7 +140,6 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
     }
 
     of_object_delete(entry);
-    of_object_delete(obj);
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
@@ -246,7 +244,6 @@ ind_core_bsn_port_counter_stats_request_handler(of_object_t *_obj,
     }
 
     of_object_delete(entry);
-    of_object_delete(obj);
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
