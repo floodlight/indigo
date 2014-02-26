@@ -313,8 +313,6 @@ extern indigo_error_t indigo_cxn_status_change_register(
 extern indigo_error_t indigo_cxn_status_change_unregister(
     indigo_cxn_status_change_f handler, void *cookie);
 
-extern void indigo_cxn_outstanding_op_incr(indigo_cxn_id_t cxn_id, int incr);
-
 /****************************************************************
  *
  * The OF Connection to OF State Manager Interface

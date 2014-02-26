@@ -87,7 +87,7 @@ extern indigo_error_t indigo_core_packet_in(of_packet_in_t *packet_in);
  *
  * Provided by state manager, required by connection manager
  *
- * State Manager takes responsibility for the object
+ * Ownership of the message is not transferred.
  */
 
 extern void indigo_core_receive_controller_message(
