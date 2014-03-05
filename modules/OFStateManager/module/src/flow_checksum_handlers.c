@@ -142,3 +142,25 @@ ind_core_bsn_table_checksum_stats_request_handler(of_object_t *_obj,
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
+
+void
+ind_core_bsn_table_set_buckets_size_handler(of_object_t *_obj,
+                                            indigo_cxn_id_t cxn_id)
+{
+    of_bsn_table_set_buckets_size_t *obj = _obj;
+    uint16_t table_id;
+    uint32_t buckets_size;
+    indigo_error_t rv;
+
+    of_bsn_table_set_buckets_size_table_id_get(obj, &table_id);
+    of_bsn_table_set_buckets_size_buckets_size_get(obj, &buckets_size);
+
+    rv = ft_set_checksum_buckets_size(ind_core_ft, table_id, buckets_size);
+    if (rv < 0) {
+        AIM_LOG_WARN("Failed to set table %d checksum buckets size to %d: %s",
+                     table_id, buckets_size, indigo_strerror(rv));
+        indigo_cxn_send_error_reply(cxn_id, obj,
+                                    OF_ERROR_TYPE_BAD_REQUEST,
+                                    OF_REQUEST_FAILED_EPERM);
+    }
+}
