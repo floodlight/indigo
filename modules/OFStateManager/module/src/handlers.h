@@ -179,5 +179,8 @@ void ind_core_bsn_gentable_bucket_stats_request_handler(
 void ind_core_bsn_flow_checksum_bucket_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
+void ind_core_bsn_table_checksum_stats_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn_id);
 
 #endif /* _OF_STATE_HANDLERS_H_ */
