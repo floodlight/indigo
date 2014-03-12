@@ -865,13 +865,6 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
 
-    if (obj->object_id == OF_FEATURES_REPLY) {
-        if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
-            ++successful_handshakes;
-            ind_cxn_state_set(cxn, INDIGO_CXN_S_HANDSHAKE_COMPLETE);
-        }
-    }
-
     if (!CXN_HANDSHAKE_COMPLETE(cxn)) {
         if (IS_ASYNC_MSG(obj)) {
             LOG_TRACE("Handshake not complete; drop async msg %s",
@@ -913,6 +906,13 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         LOG_ERROR("Could not enqueue message data, disconnecting");
         aim_free(data);
         ind_cxn_disconnect(cxn);
+    }
+
+    if (obj->object_id == OF_FEATURES_REPLY) {
+        if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
+            ++successful_handshakes;
+            ind_cxn_state_set(cxn, INDIGO_CXN_S_HANDSHAKE_COMPLETE);
+        }
     }
 
  done:
