@@ -115,12 +115,10 @@ ofconnectionmanager_config_show(struct aim_pvs_s* pvs)
 
 /* <auto.end.cdefs(OFCONNECTIONMANAGER_CONFIG_HEADER).source> */
 
-#define MAX_CONTROLLERS 16
-
 struct controller {
     indigo_cxn_protocol_params_t proto;
     indigo_cxn_config_params_t config;
-    indigo_cxn_id_t cxn_id;
+    indigo_controller_id_t controller_id;
 };
 
 static struct config {
@@ -343,23 +341,23 @@ ind_cxn_cfg_commit(void)
 
         /* Keep existing connections to the same controller. */
         if ((old_controller = find_controller(&current_config, &c->proto))) {
-            c->cxn_id = old_controller->cxn_id;
+            c->controller_id = old_controller->controller_id;
             /* TODO apply keepalive_period to existing connection. */
             continue;
         }
 
-        rv = indigo_cxn_connection_add(&c->proto, &c->config, &c->cxn_id);
+        rv = indigo_controller_add(&c->proto, &c->config, &c->controller_id);
         if (rv != 0) {
             AIM_LOG_ERROR("failed to add controller connection %d: %s:%u",
                           i, proto->controller_ip, proto->controller_port);
         }
     }
 
-    /* Remove connections that don't exist in the new configuration. */
+    /* Remove controller's that don't exist in the new configuration. */
     for (i = 0; i < current_config.num_controllers; i++) {
         const struct controller *c = &current_config.controllers[i];
         if (!find_controller(&staged_config, &c->proto)) {
-            (void) indigo_cxn_connection_remove(c->cxn_id);
+            (void) indigo_controller_remove(c->controller_id);
         }
     }
 

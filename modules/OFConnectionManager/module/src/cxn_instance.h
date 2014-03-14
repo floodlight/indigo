@@ -54,10 +54,35 @@
  */
 #define CXN_TO_BE_REMOVED 0x1
 
-/* Connection control block */
-typedef struct connection_s {
+#define MAX_CONTROLLERS 16
+
+/**
+ * Maximum connections including remote and local across all controllers
+ */
+#define MAX_CONTROLLER_CONNECTIONS 32
+
+/**
+ * Maximum auxiliary connections possible per controller 
+ */
+#define MAX_AUX_CONNECTIONS 8       
+
+/* Controller control block */
+typedef struct controller_s {
     indigo_cxn_protocol_params_t protocol_params;
     indigo_cxn_config_params_t config_params;
+    indigo_cxn_role_t role;
+
+    int active; /* Has this Controller instance been configured? */
+    indigo_controller_id_t controller_id;
+
+    uint32_t num_aux; /* Auxillary connections for this controller */
+
+    /* Connection id's for all controller connections*/
+    indigo_cxn_id_t aux_id_to_cxn_id[MAX_AUX_CONNECTIONS+1];
+} controller_t;
+
+/* Connection control block */
+typedef struct connection_s {
     indigo_cxn_status_t status;
     uint32_t flags;
 
@@ -116,12 +141,15 @@ typedef struct connection_s {
 
     /* Used by the bsn_time_request message handler */
     indigo_time_t hello_time;
+
+    /* Zero for main connection and non-zero for other connections */
+    uint8_t auxiliary_id;
+
+    /* Pointer to the Controller clock to which this connection belongs */
+    controller_t *controller;
 } connection_t;
 
-
-
-/**
- * Should a packet in be dropped based on connection state?
+/* Should a packet in be dropped based on connection state?
  * @TODO This may need tuning
  */
 #define PACKET_IN_DROP_QUEUE_MAX 64
@@ -151,12 +179,17 @@ typedef struct connection_s {
 /**
  * Is connection marked local
  */
-#define CXN_LOCAL(cxn) ((cxn)->config_params.local)
+#define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local) 
 
 /**
  * Is connection marked listen
  */
-#define CXN_LISTEN(cxn) ((cxn)->config_params.listen)
+#define CXN_LISTEN(cxn) ((cxn)->controller->config_params.listen) 
+
+/**
+ * Is a controller active 
+ */
+#define CONTROLLER_ACTIVE(controller) ((controller)->active)
 
 /**
  * The connection state of connection
@@ -207,6 +240,25 @@ extern void ind_cxn_disconnected_init(connection_t *cxn);
 
 extern void ind_cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state);
 
+static inline indigo_cxn_config_params_t*
+get_connection_config(connection_t *cxn)
+{
+    if (cxn && cxn->controller) {
+        return (&cxn->controller->config_params);
+    } else {
+        return NULL;
+    }
+} 
+
+static inline indigo_cxn_protocol_params_t*
+get_connection_params(connection_t *cxn)
+{
+    if (cxn && cxn->controller) {
+        return (&cxn->controller->protocol_params);
+    } else {
+        return NULL;
+    }
+}
 
 /****************************************************************
  * Debug and logging routines
@@ -222,7 +274,7 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
 
     port = params->tcp_over_ipv4.controller_port;
 
-    sprintf(ip_print_buf, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
+    snprintf(ip_print_buf, 64, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
 
     return ip_print_buf;
 }
@@ -231,7 +283,10 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
 static inline char *
 cxn_ip_string(connection_t *cxn)
 {
-    return proto_ip_string(&cxn->protocol_params);
+    char *cxn_print_buf = proto_ip_string(get_connection_params(cxn));
+    int len = strlen(cxn_print_buf);
+    snprintf(&cxn_print_buf[len], 64 - len, ":%d", cxn->auxiliary_id);
+    return cxn_print_buf;
 }
 
 extern int ind_cxn_process_write_buffer(connection_t *cxn);
