@@ -940,27 +940,6 @@ indigo_cxn_connection_status_get(
     return INDIGO_ERROR_NONE;
 }
 
-/* Return the role of a specific connection */
-indigo_error_t
-indigo_cxn_connection_role_get(
-    indigo_cxn_id_t cxn_id,
-    indigo_cxn_role_t *role)
-{
-    connection_t *cxn;    
-
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
-        LOG_TRACE("Role_get id %d invalid or not active", cxn_id);
-        return INDIGO_ERROR_PARAM;
-    }
-
-    cxn = CXN_ID_TO_CONNECTION(cxn_id); 
-    INDIGO_ASSERT(cxn->controller != NULL);
-
-    *role = cxn->controller->role;
-
-    return INDIGO_ERROR_NONE;
-}
-
 /**
  * Send a role status message
  *
@@ -1612,6 +1591,38 @@ ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs)
         }
     }
     return INDIGO_ERROR_NONE;
+}
+
+void
+indigo_controller_list(indigo_controller_info_t** list)
+{
+    indigo_controller_info_t* head = NULL;
+    indigo_controller_id_t id;
+    controller_t *ctrl;
+    FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
+        indigo_controller_info_t* entry = aim_malloc(sizeof(*entry));
+        AIM_TRUE_OR_DIE(entry != NULL); 
+        entry->controller_id = id;
+        entry->role = ctrl->role;
+        entry->protocol_params = ctrl->protocol_params;
+        entry->config_params = ctrl->config_params; 
+        entry->num_aux = ctrl->num_aux;
+        entry->main_cxn_id = ctrl->aux_id_to_cxn_id[0]; 
+        entry->next = head;
+        head = entry;
+    }
+    *list = head;
+}
+
+void
+indigo_controller_list_destroy(indigo_controller_info_t* list)
+{
+    indigo_controller_info_t* e = list;
+    while(e) {
+        indigo_controller_info_t* link = e->next;
+        aim_free(e);
+        e = link;
+    }
 }
 
 indigo_error_t
