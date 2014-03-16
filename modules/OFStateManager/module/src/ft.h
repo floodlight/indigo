@@ -56,6 +56,8 @@
 
 #include "ft_entry.h"
 
+#define FT_MAX_TABLES 32
+
 /**
  * Length of the prefix used for bucketing flows by cookie.
  */
@@ -119,6 +121,22 @@ typedef struct ft_status_s {
 } ft_status_t;
 
 /**
+ * Per-table bookkeeping
+ *
+ * The checksum buckets are used for the bsn_flow_checksum extension. Flows are
+ * bucketed by checksum prefix and their cookies XORed into the bucket. The
+ * per-table checksum field is the XOR of the cookies of every flow in the
+ * table.
+ */
+
+typedef struct ft_table_s {
+    uint64_t checksum;
+    int checksum_buckets_size;
+    int checksum_shift;
+    uint64_t *checksum_buckets;
+} ft_table_t;
+
+/**
  * The public view of the instance for easier dereference
  *
  * This should be treated as read-only outside of the
@@ -133,6 +151,8 @@ struct ft_public_s {
     list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
     list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
+
+    ft_table_t tables[FT_MAX_TABLES];
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
@@ -239,6 +259,12 @@ indigo_error_t ft_strict_match(ft_instance_t instance,
 
 ft_entry_t *
 ft_lookup(ft_instance_t ft, indigo_flow_id_t id);
+
+/**
+ * Resize the checksum buckets array for a table
+ */
+indigo_error_t
+ft_set_checksum_buckets_size(ft_instance_t ft, uint8_t table_id, uint32_t buckets_size);
 
 /**
  * Modify the effects of a flow entry in the table
