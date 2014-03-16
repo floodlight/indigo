@@ -36,8 +36,10 @@ static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
 static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
+static void ft_checksum_update(ft_instance_t ft, ft_entry_t *entry);
 
 #define FT_HASH_SEED 0
+#define FT_MAX_CHECKSUM_BUCKETS 65536
 
 /**
  * @fixme Consider using something other than murmur for small data
@@ -100,6 +102,13 @@ ft_create(ft_config_t *config)
         list_init(&ft->cookie_buckets[idx]);
     }
 
+    for (idx = 0; idx < FT_MAX_TABLES; idx++) {
+        ft_table_t *table = &ft->tables[idx];
+        table->checksum_buckets_size = 128;
+        table->checksum_shift = 64 - aim_log2_u32(table->checksum_buckets_size);
+        table->checksum_buckets = aim_zmalloc(table->checksum_buckets_size * sizeof(uint64_t));
+    }
+
     return ft;
 }
 
@@ -124,6 +133,7 @@ ft_destroy(ft_instance_t ft)
 {
     ft_entry_t *entry;
     list_links_t *cur, *next;
+    int i;
 
     if (ft == NULL) {
         return;
@@ -147,6 +157,10 @@ ft_destroy(ft_instance_t ft)
     if (ft->cookie_buckets != NULL) {
         aim_free(ft->cookie_buckets);
         ft->cookie_buckets = NULL;
+    }
+
+    for (i = 0; i < FT_MAX_TABLES; i++) {
+        aim_free(ft->tables[i].checksum_buckets);
     }
 
     aim_free(ft);
@@ -174,6 +188,8 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     ft->status.adds += 1;
     ft->status.current_count += 1;
 
+    ft_checksum_update(ft, entry);
+
     if (entry_p != NULL) {
         *entry_p = entry;
     }
@@ -186,6 +202,7 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
     LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
 
+    ft_checksum_update(ft, entry);
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
 
@@ -233,6 +250,42 @@ ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
     }
 
     return NULL;
+}
+
+indigo_error_t
+ft_set_checksum_buckets_size(ft_instance_t ft, uint8_t table_id, uint32_t buckets_size)
+{
+    if (table_id >= FT_MAX_TABLES) {
+        return INDIGO_ERROR_NOT_FOUND;
+    }
+
+    if (buckets_size > FT_MAX_CHECKSUM_BUCKETS) {
+        return INDIGO_ERROR_PARAM;
+    }
+
+    if (!aim_is_pow2_u32(buckets_size)) {
+        return INDIGO_ERROR_PARAM;
+    }
+
+    ft_table_t *table = &ft->tables[table_id];
+
+    if (table->checksum_buckets_size == buckets_size) {
+        return INDIGO_ERROR_NONE;
+    }
+
+    aim_free(table->checksum_buckets);
+    table->checksum = 0;
+    table->checksum_buckets_size = buckets_size;
+    table->checksum_shift = 64 - aim_log2_u32(buckets_size);
+    table->checksum_buckets = aim_zmalloc(sizeof(uint64_t) * buckets_size);
+
+    list_links_t *cur;
+    LIST_FOREACH(&ft->all_list, cur) {
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, table);
+        ft_checksum_update(ft, entry);
+    }
+
+    return INDIGO_ERROR_NONE;
 }
 
 int
@@ -689,4 +742,17 @@ ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
     }
 
     return 0;
+}
+
+static void
+ft_checksum_update(ft_instance_t ft, ft_entry_t *entry)
+{
+    if (entry->table_id >= FT_MAX_TABLES) {
+        return;
+    }
+
+    ft_table_t *table = &ft->tables[entry->table_id];
+    table->checksum ^= entry->cookie;
+    int bucket = table->checksum_shift < 64 ? entry->cookie >> table->checksum_shift : 0;
+    table->checksum_buckets[bucket] ^= entry->cookie;
 }
