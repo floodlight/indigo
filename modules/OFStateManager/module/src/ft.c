@@ -255,7 +255,7 @@ ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 indigo_error_t
 ft_set_checksum_buckets_size(ft_instance_t ft, uint8_t table_id, uint32_t buckets_size)
 {
-    if (table_id > FT_MAX_TABLES) {
+    if (table_id >= FT_MAX_TABLES) {
         return INDIGO_ERROR_NOT_FOUND;
     }
 
