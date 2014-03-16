@@ -981,11 +981,11 @@ ind_controller_change_master(indigo_controller_id_t master_id)
 
     FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
         if (ctrl->controller_id == master_id) {
-            LOG_INFO("Upgrading controller %s to master", 
+            LOG_INFO("Upgrading controller %s role to master", 
                      proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_MASTER;
         } else if (ctrl->role == INDIGO_CXN_R_MASTER) {
-            LOG_INFO("Downgrading controller %s to slave", 
+            LOG_INFO("Downgrading controller %s role to slave", 
                      proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(
