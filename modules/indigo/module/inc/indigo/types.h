@@ -89,6 +89,14 @@ typedef uint64_t indigo_cookie_t;
 
 typedef int indigo_cxn_id_t;
 
+/**
+ * Controller instances are identified by integers. 
+ * Each Controller instances will have a main connection identified
+ * by a auxillary_id of 0 and variable auxillary connections with 
+ * non-zero auxillary_id. 
+ * Each connection instance will still be identified by a indigo_cxn_id_t
+ */
+typedef int indigo_controller_id_t; 
 
 /* Indexing type for a flow */
 typedef indigo_cookie_t indigo_flow_id_t;
