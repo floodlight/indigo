@@ -853,6 +853,7 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                     sizeof(*protocol_params));
     INDIGO_MEM_COPY(&ctrl->config_params, config_params,
                     sizeof(*config_params));
+    ctrl->ephemeral = 0;
 
     /* Create the main connection with auxiliary id = 0 */
     rv = ind_cxn_connection_add(*controller_id, 0, &cxn_id); 
@@ -1600,6 +1601,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                     sizeof(ctrl->protocol_params));
     INDIGO_MEM_COPY(&ctrl->config_params, &listen_cxn->controller->config_params,
                     sizeof(ctrl->config_params));
+    ctrl->ephemeral = 1;
 
     /* Okay, add the new connection with the socket */
     cxn = connection_socket_setup(ctrl->controller_id, &cxn_id, new_sd);
@@ -1848,7 +1850,7 @@ ind_controller_disconnect(controller_t *ctrl)
 
     ind_cxn_disconnect(CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0])); 
 
-    if (ctrl->config_params.listen) {
+    if (ctrl->ephemeral) {
         ctrl->active = 0;
     }
 }
