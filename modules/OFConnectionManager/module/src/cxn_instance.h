@@ -73,6 +73,7 @@ typedef struct controller_s {
     indigo_cxn_role_t role;
 
     int active; /* Has this Controller instance been configured? */
+    int ephemeral; /* Should this controller be removed on disconnect? */
     indigo_controller_id_t controller_id;
 
     uint32_t num_aux; /* Auxillary connections for this controller */
