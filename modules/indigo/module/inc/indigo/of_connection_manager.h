@@ -277,17 +277,6 @@ extern indigo_error_t indigo_cxn_connection_status_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_status_t *status);
 
-
-/**
- * Return the role of a specific connection 
- * @param cxn_id The descriptor of the connection to look up
- * @param role (out) Pointer to role to be filled
- */
-
-extern indigo_error_t indigo_cxn_connection_role_get(
-    indigo_cxn_id_t cxn_id,
-    indigo_cxn_role_t *role);
-
 /**
  * Connection status change handler callback prototype
  * @param cxn_id The descriptor of the connection that has changed
@@ -395,6 +384,46 @@ typedef struct indigo_cxn_info_s {
     indigo_cxn_config_params_t cxn_config_params;
 
 } indigo_cxn_info_t;
+
+/**
+ * Controller information structure.
+ */
+typedef struct indigo_controller_info_s {
+    struct indigo_controller_info_s* next;
+
+    /** The id for this controller . */
+    indigo_controller_id_t controller_id;
+
+    /** Controller Role */
+    indigo_cxn_role_t role;
+
+    /** The protocol parameters for this controller. */
+    indigo_cxn_protocol_params_t protocol_params;
+
+    /** The configuration parameters for this controller. */
+    indigo_cxn_config_params_t config_params;
+
+    /** The auxillary connections for this controller */
+    uint32_t num_aux;
+
+    /** The connection id for this controller's main connection */
+    indigo_cxn_id_t main_cxn_id;
+    
+} indigo_controller_info_t;
+
+/**
+ * @brief Get a list of all current controllers.
+ * @param [out] Receives the controller list.
+ */
+extern void 
+indigo_controller_list(indigo_controller_info_t** list);
+
+/**
+ * @brief Destroy a list returned by indigo_controller_list()
+ * @param list The list.
+ */
+extern void 
+indigo_controller_list_destroy(indigo_controller_info_t* list);
 
 /**
  * @brief Get a list of all current connections.
