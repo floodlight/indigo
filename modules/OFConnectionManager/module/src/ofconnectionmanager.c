@@ -1534,6 +1534,8 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
     struct sockaddr_in cxn_addr;
     int new_sd;
     connection_t *cxn;
+    indigo_controller_id_t controller_id;
+    controller_t *ctrl;
 
     listen_cxn = (connection_t *)cookie;
 
@@ -1585,17 +1587,34 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
     }
     LOG_VERBOSE("New cxn instance, port %d", ntohs(cxn_addr.sin_port));
 
+    controller_id = find_free_controller();
+    if (INDIGO_CONTROLLER_INVALID(controller_id)) {
+        LOG_ERROR("Could not allocate space for controller");
+        return;
+    }
+
+    ctrl = ID_TO_CONTROLLER(controller_id);
+
+    /* Initialize controller structure */
+    INDIGO_MEM_COPY(&ctrl->protocol_params, &listen_cxn->controller->protocol_params,
+                    sizeof(ctrl->protocol_params));
+    INDIGO_MEM_COPY(&ctrl->config_params, &listen_cxn->controller->config_params,
+                    sizeof(ctrl->config_params));
+
     /* Okay, add the new connection with the socket */
-    cxn = connection_socket_setup(listen_cxn->controller->controller_id, 
-                                  &cxn_id, new_sd);
+    cxn = connection_socket_setup(ctrl->controller_id, &cxn_id, new_sd);
 
     if (cxn == NULL) {
         LOG_ERROR("Could not set up accepted connection");
         /* @fixme clean up? */
-    } else {
-        /* Inherit the tracer - move to config_params? */
-        cxn->trace_pvs = listen_cxn->trace_pvs;
+        return;
     }
+
+    /* Inherit the tracer - move to config_params? */
+    cxn->trace_pvs = listen_cxn->trace_pvs;
+
+    ctrl->active = 1;
+    ctrl->aux_id_to_cxn_id[0] = cxn_id;
 }
 
 indigo_error_t
@@ -1828,4 +1847,8 @@ ind_controller_disconnect(controller_t *ctrl)
     ind_aux_connection_remove(ctrl, 0);   
 
     ind_cxn_disconnect(CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0])); 
+
+    if (ctrl->config_params.listen) {
+        ctrl->active = 0;
+    }
 }
