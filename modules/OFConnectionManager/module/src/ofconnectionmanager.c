@@ -1820,7 +1820,10 @@ indigo_cxn_get_async_version(of_version_t* of_version)
         return INDIGO_ERROR_NONE;
     }
 
-    return INDIGO_ERROR_NOT_FOUND;
+    /* If there's no controller we still need to send the packet-in through the
+     * agents */
+    *of_version = IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION;
+    return INDIGO_ERROR_NONE;
 }
 
 /**
