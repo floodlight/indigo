@@ -53,6 +53,11 @@
     } while (0)
 
 /**
+ * Version used for async messages when no controller is connected.
+ */
+#define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION OF_VERSION_1_3
+
+/**
  * Does the connection manager have a local connection?
  */
 extern int have_local_connection;
