@@ -1200,6 +1200,8 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
                                                   &auxiliary_id); 
     }
 
+    INDIGO_ASSERT(auxiliary_id <= ctrl->num_aux);
+
     /* If there is no selector for this application, then we should just try 
        to send on the main controller connection */
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);

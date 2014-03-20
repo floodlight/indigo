@@ -453,7 +453,11 @@ extern indigo_error_t
 indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id);
 
 /**
- * Async msg channel selector registration
+ * @brief Async msg channel selector handler
+ * @param obj The LOCI object representing the message 
+ * @param num_aux Number of aux cxn's available to the controller
+ * @param auxiliary_id Auxiliary id of the cxn to send the msg on, 
+ * should be <= num_aux
  */
 typedef void (*indigo_cxn_async_channel_selector_f)(const of_object_t *obj, 
                                                     uint32_t num_aux,
