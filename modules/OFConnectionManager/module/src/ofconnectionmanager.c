@@ -94,7 +94,7 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
 /**
  * Controller control blocks, indexed by controller index
  */
-static controller_t controller[MAX_CONTROLLERS];
+static controller_t controllers[MAX_CONTROLLERS];
 
 #define CXN_ID_ACTIVE(cxn_id) CXN_ACTIVE(&connection[cxn_id])
 #define CXN_ID_TCP_CONNECTED(cxn_id) CXN_TCP_CONNECTED(&connection[cxn_id])
@@ -170,26 +170,26 @@ static int preferred_cxn_id = -1;
     (((id) >= 0) && ((id) < MAX_CONTROLLERS))
 
 #define CONTROLLER_ID_ACTIVE(id)                                        \
-    CONTROLLER_ACTIVE(&controller[controller_id])
+    CONTROLLER_ACTIVE(&controllers[controller_id])
 
 #define FOREACH_ACTIVE_CONTROLLER(id, ctrl)                             \
-    for (id = 0, ctrl = &controller[0];                                 \
+    for (id = 0, ctrl = &controllers[0];                                 \
          id < MAX_CONTROLLERS;                                          \
-         ++id, ctrl = &controller[id])                                  \
+         ++id, ctrl = &controllers[id])                                  \
         if (CONTROLLER_ACTIVE(ctrl))                                                           
 
 /* Only remote controllers */
 #define FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl)                      \
-    for (id = 0, ctrl = &controller[0];                                 \
+    for (id = 0, ctrl = &controllers[0];                                 \
          id < MAX_CONTROLLERS;                                          \
-         ++id, ctrl = &controller[id])                                  \
+         ++id, ctrl = &controllers[id])                                  \
         if (CONTROLLER_ACTIVE(ctrl) && !(ctrl->config_params.local))
 
 /**
  * Convert controller ID to pointer to controller block
  */
 
-#define ID_TO_CONTROLLER(id) (&controller[id])
+#define ID_TO_CONTROLLER(id) (&controllers[id])
 
 #define GEN_ID_SHIFT 16
 #define GEN_ID_MASK 0xffff
@@ -460,11 +460,11 @@ module_init(void)
 {
     int idx;
 
-    INDIGO_MEM_CLEAR(controller, sizeof(controller));
+    INDIGO_MEM_CLEAR(controllers, sizeof(controllers));
     INDIGO_MEM_CLEAR(connection, sizeof(connection));
     INDIGO_MEM_CLEAR(status_change, sizeof(status_change));
     for (idx = 0; idx < MAX_CONTROLLERS; ++idx) {
-        controller[idx].controller_id = (indigo_controller_id_t)idx;
+        controllers[idx].controller_id = (indigo_controller_id_t)idx;
     }
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
         connection[idx].cxn_id = (indigo_cxn_id_t)idx;
@@ -495,7 +495,7 @@ static indigo_controller_id_t
 find_free_controller(void) {
     int idx;
     for (idx = 0; idx < MAX_CONTROLLERS; ++idx) {
-        if (!controller[idx].active) {
+        if (!controllers[idx].active) {
             return (indigo_controller_id_t)idx;
         }
     }
@@ -589,8 +589,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     cxn->controller = ctrl;
 
     if (!CXN_LOCAL(cxn)) {
-        cxn->keepalive.period_ms = controller->config_params.periodic_echo_ms;
-        cxn->keepalive.threshold = controller->config_params.reset_echo_count;
+        cxn->keepalive.period_ms = ctrl->config_params.periodic_echo_ms;
+        cxn->keepalive.threshold = ctrl->config_params.reset_echo_count;
     } else {
         cxn->keepalive.period_ms = 0;
         cxn->keepalive.threshold = 0;
@@ -652,7 +652,7 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
     indigo_error_t rv = INDIGO_ERROR_NONE;
 
     LOG_INFO("Connection add: %s, with aux_id: %d", proto_ip_string( 
-             &controller[controller_id].protocol_params), auxiliary_id);
+             &controllers[controller_id].protocol_params), auxiliary_id);
 
     INDIGO_ASSERT(cxn_id != NULL);
 
@@ -1185,7 +1185,7 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
                                      const of_object_t *obj, connection_t **cxn)
 {
     /* Only send port status async msg to the slave */
-    if (controller->role == INDIGO_CXN_R_SLAVE && 
+    if (ctrl->role == INDIGO_CXN_R_SLAVE && 
         obj->object_id != OF_PORT_STATUS) {
         return 0;
     }    
@@ -1735,6 +1735,11 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    cxn->controller->controller_id);
         aim_printf(pvs, "    State: %s.\n", CXN_HANDSHAKE_COMPLETE(cxn) ?
                    "Connected" : "Not connected");
+        aim_printf(pvs, "    Keepalive timeout: %d ms.\n", 
+                   cxn->keepalive.period_ms);
+        aim_printf(pvs, "    Threshold: %d.\n", cxn->keepalive.threshold);
+        aim_printf(pvs, "    Outstanding Echo Count: %d.\n", 
+                   cxn->keepalive.outstanding_echo_cnt);
         aim_printf(pvs, "    Packet ins: %"PRIu64"\n",
                    cxn->packet_ins);
         aim_printf(pvs, "    Packet in drops: %"PRIu64"\n",
