@@ -59,7 +59,7 @@
 static int init_done = 0;
 static int module_enabled = 0;
 
-static indigo_async_channel_selector_f ind_async_channel_selector_handler;
+static indigo_cxn_async_channel_selector_f ind_cxn_async_channel_selector_handler;
 
 /****************************************************************
  * Forward declarations
@@ -1195,9 +1195,9 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         return 0;
     }    
 
-    if (ind_async_channel_selector_handler != NULL) {
-        (*ind_async_channel_selector_handler)(obj, ctrl->num_aux, 
-                                              &auxiliary_id); 
+    if (ind_cxn_async_channel_selector_handler != NULL) {
+        (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux, 
+                                                  &auxiliary_id); 
     }
 
     /* If there is no selector for this application, then we should just try 
@@ -1207,8 +1207,8 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         return 0;
     }
 
-    LOG_INFO("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
-             cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
+    LOG_TRACE("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
+              cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
  
     return 1; 
 }
@@ -1382,7 +1382,7 @@ ind_cxn_init(ind_cxn_config_t *config)
 
     init_done = 1;
 
-    ind_async_channel_selector_handler = NULL;   
+    ind_cxn_async_channel_selector_handler = NULL;   
 
     return INDIGO_ERROR_NONE;
 }
@@ -1442,7 +1442,7 @@ ind_cxn_finish(void)
 {
     LOG_TRACE("Indigo connection manager finish");
     ind_cxn_enable_set(0);
-    ind_async_channel_selector_handler = NULL;
+    ind_cxn_async_channel_selector_handler = NULL;
     return INDIGO_ERROR_NONE;
 }
 
@@ -1888,17 +1888,17 @@ ind_controller_disconnect(controller_t *ctrl)
 }
 
 void
-indigo_async_channel_selector_register(indigo_async_channel_selector_f fn) 
+indigo_cxn_async_channel_selector_register(indigo_cxn_async_channel_selector_f fn) 
 {
-    ind_async_channel_selector_handler = fn; 
+    ind_cxn_async_channel_selector_handler = fn; 
 }
   
 void
-indigo_async_channel_selector_unregister(indigo_async_channel_selector_f fn)
+indigo_cxn_async_channel_selector_unregister(indigo_cxn_async_channel_selector_f fn)
 {
-    if (ind_async_channel_selector_handler != fn) {
+    if (ind_cxn_async_channel_selector_handler != fn) {
         return;
     }
 
-    ind_async_channel_selector_handler = NULL;
+    ind_cxn_async_channel_selector_handler = NULL;
 }
