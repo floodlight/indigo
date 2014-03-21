@@ -59,6 +59,8 @@
 static int init_done = 0;
 static int module_enabled = 0;
 
+static indigo_cxn_async_channel_selector_f ind_cxn_async_channel_selector_handler;
+
 /****************************************************************
  * Forward declarations
  ****************************************************************/
@@ -853,7 +855,6 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                     sizeof(*protocol_params));
     INDIGO_MEM_COPY(&ctrl->config_params, config_params,
                     sizeof(*config_params));
-    ctrl->ephemeral = 0;
 
     /* Create the main connection with auxiliary id = 0 */
     rv = ind_cxn_connection_add(*controller_id, 0, &cxn_id); 
@@ -861,6 +862,7 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
 
     ctrl->active = 1;
     ctrl->aux_id_to_cxn_id[0] = cxn_id;
+    ctrl->ephemeral = 0;
  
     return rv;
 }
@@ -1182,21 +1184,34 @@ ind_cxn_accepts_async_message(const connection_t *cxn)
  */
 int
 ind_controller_accepts_async_message(const controller_t *ctrl, 
-                                     const of_object_t *obj, connection_t **cxn)
+                                     const of_object_t *obj, 
+                                     connection_t **cxn)
 {
+    uint8_t auxiliary_id = 0;
+
     /* Only send port status async msg to the slave */
     if (ctrl->role == INDIGO_CXN_R_SLAVE && 
         obj->object_id != OF_PORT_STATUS) {
         return 0;
     }    
 
-    /* For now we are just sending on the main connection, so perform
-       a check on the main connection */
-    *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]);
+    if (ind_cxn_async_channel_selector_handler != NULL) {
+        (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux, 
+                                                  &auxiliary_id); 
+    }
+
+    INDIGO_ASSERT(auxiliary_id <= ctrl->num_aux);
+
+    /* If there is no selector for this application, then we should just try 
+       to send on the main controller connection */
+    *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
         return 0;
     }
-   
+
+    LOG_TRACE("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
+              cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
+ 
     return 1; 
 }
 
@@ -1218,7 +1233,7 @@ indigo_cxn_send_async_message(of_object_t *obj)
      */
     indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
 
-    FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
+    FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
         if (ind_controller_accepts_async_message(ctrl, obj, &cxn) && 
             (cxn->status.negotiated_version == obj->version)) {  
             if (first_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
@@ -1369,6 +1384,8 @@ ind_cxn_init(ind_cxn_config_t *config)
 
     init_done = 1;
 
+    ind_cxn_async_channel_selector_handler = NULL;   
+
     return INDIGO_ERROR_NONE;
 }
 
@@ -1425,8 +1442,9 @@ ind_cxn_enable_get(int *enable)
 indigo_error_t
 ind_cxn_finish(void)
 {
-    LOG_TRACE("Indigo connection manager fini");
+    LOG_TRACE("Indigo connection manager finish");
     ind_cxn_enable_set(0);
+    ind_cxn_async_channel_selector_handler = NULL;
     return INDIGO_ERROR_NONE;
 }
 
@@ -1580,7 +1598,6 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                     sizeof(ctrl->protocol_params));
     INDIGO_MEM_COPY(&ctrl->config_params, &listen_cxn->controller->config_params,
                     sizeof(ctrl->config_params));
-    ctrl->ephemeral = 1;
 
     /* Okay, add the new connection with the socket */
     cxn = connection_socket_setup(ctrl->controller_id, &cxn_id, new_sd);
@@ -1596,6 +1613,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     ctrl->active = 1;
     ctrl->aux_id_to_cxn_id[0] = cxn_id;
+    ctrl->ephemeral = 1;
 }
 
 indigo_error_t
@@ -1872,4 +1890,20 @@ ind_controller_disconnect(controller_t *ctrl)
     if (ctrl->ephemeral) {
         ctrl->active = 0;
     }
+}
+
+void
+indigo_cxn_async_channel_selector_register(indigo_cxn_async_channel_selector_f fn) 
+{
+    ind_cxn_async_channel_selector_handler = fn; 
+}
+  
+void
+indigo_cxn_async_channel_selector_unregister(indigo_cxn_async_channel_selector_f fn)
+{
+    if (ind_cxn_async_channel_selector_handler != fn) {
+        return;
+    }
+
+    ind_cxn_async_channel_selector_handler = NULL;
 }

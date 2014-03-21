@@ -452,5 +452,28 @@ indigo_cxn_get_async_version(of_version_t* of_version);
 extern indigo_error_t
 indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id);
 
+/**
+ * @brief Async msg channel selector handler
+ * @param obj The LOCI object representing the message 
+ * @param num_aux Number of aux cxn's available to the controller
+ * @param auxiliary_id Auxiliary id of the cxn to send the msg on, 
+ * should be <= num_aux
+ */
+typedef void (*indigo_cxn_async_channel_selector_f)(const of_object_t *obj, 
+                                                    uint32_t num_aux,
+                                                    uint8_t *auxiliary_id);
+/**
+ * @brief Register application specific auxiliary channel selector for asyc msgs
+ * @param fn Application specific function for channel selector
+ */
+void indigo_cxn_async_channel_selector_register(
+                                    indigo_cxn_async_channel_selector_f fn);
+/**
+ * @brief Deregister application specific auxiliary channel selector for asyc msgs
+ * @param fn Application specific function for channel selector
+ */
+void indigo_cxn_async_channel_selector_unregister(
+                                    indigo_cxn_async_channel_selector_f fn);
+
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */
