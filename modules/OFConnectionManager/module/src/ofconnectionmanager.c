@@ -719,7 +719,8 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 static indigo_error_t
 ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
 {
-    int idx;   
+    int idx;  
+    uint32_t num_aux_current; 
     indigo_error_t ret;
     
     if (!CONTROLLER_ACTIVE(ctrl)) return INDIGO_ERROR_UNKNOWN;
@@ -733,15 +734,17 @@ ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
         return INDIGO_ERROR_PARAM;
     }
 
-    for (idx = ctrl->num_aux; idx > num_aux; --idx) {
+    LOG_INFO("Aux cxn's for controller %s, changed from %d to %d",
+             proto_ip_string(&ctrl->protocol_params), ctrl->num_aux, num_aux);
+    num_aux_current = ctrl->num_aux;
+    ctrl->num_aux = num_aux;
+
+    for (idx = num_aux_current; idx > num_aux; --idx) {
         ret = ind_cxn_connection_remove(ctrl->aux_id_to_cxn_id[idx]);
         if (ret < 0) return ret;
         ctrl->aux_id_to_cxn_id[idx] = INVALID_ID;
     }
 
-    LOG_INFO("Aux cxn's for controller %s, changed from %d to %d",
-             proto_ip_string(&ctrl->protocol_params), ctrl->num_aux, num_aux);
-    ctrl->num_aux = num_aux;
     return INDIGO_ERROR_NONE;
         
 }
