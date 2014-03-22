@@ -58,6 +58,11 @@
 #define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION OF_VERSION_1_3
 
 /**
+ * Default value for the aux connections echo period in milliseconds
+ */
+#define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
+
+/**
  * Does the connection manager have a local connection?
  */
 extern int have_local_connection;

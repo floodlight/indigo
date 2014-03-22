@@ -675,6 +675,11 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
             cxn->auxiliary_id = auxiliary_id;
             LOG_INFO("Added remote connection: %s with aux id: %d", 
                      cxn_ip_string(cxn), auxiliary_id);
+
+            /* Aux connections have a default echo frequency of 15 seconds */
+            if (auxiliary_id != 0) {
+                cxn->keepalive.period_ms = IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT;            
+            }
         }
     }
 

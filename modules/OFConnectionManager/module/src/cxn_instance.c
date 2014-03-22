@@ -459,11 +459,14 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
  * Timer handler to send an echo request on a given connection and
  * to check if too many echo requests have been lost.
  *
- * Note that we rely on getting the echo replies before the next
- * echo request goes out due to XID tracking.
- *
- * Any time a message is received from the controller, the timer for
- * this function should be reset and the outstanding count set to 0.
+ * Main connection: Aggressive Echo/Timeout frequency of 2/6 sec
+ * On timeout: Disconnect
+ * 
+ * Aux connections: Echo frequency/timeout of 15/45 sec 
+ * On timeout: Log an error but do not disconnect
+ * 
+ * Any time a message is received from the controller, 
+ * the outstanding count set to 0.
  */
 
 static void
@@ -482,8 +485,12 @@ periodic_keepalive(void *cookie)
     }
 
     if (cxn->keepalive.outstanding_echo_cnt > cxn->keepalive.threshold) {
-        LOG_INFO(cxn, "Exceeded outstanding echo requests.  Resetting cxn");
-        ind_controller_disconnect(cxn->controller);
+        if (cxn->auxiliary_id == 0) {
+            LOG_INFO(cxn, "Exceeded outstanding echo requests. Resetting cxn");
+            ind_controller_disconnect(cxn->controller);
+        } else {
+            LOG_ERROR(cxn, "Exceeded outstanding echo requests.");
+        } 
         return;
     }
 
