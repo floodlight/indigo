@@ -461,11 +461,11 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
  *
  * Main connection: Aggressive Echo/Timeout frequency of 2/6 sec
  * On timeout: Disconnect
- * Echo frequency duration derived from a #define in switchlight
+ * Echo frequency duration is set external to this module
  * 
  * Aux connections: Echo frequency/timeout of 15/45 sec 
  * On timeout: Log an error but do not disconnect
- * Echo frequency derived from a local #define
+ * Echo frequency duration is set locally
  * 
  * Any time a message is received from the controller, 
  * the outstanding count set to 0.
