@@ -497,7 +497,6 @@ periodic_keepalive(void *cookie)
     indigo_cxn_send_controller_message(cxn->cxn_id, echo);
 
     LOG_VERBOSE(cxn, "Sending echo request xid %u", xid);
-    cxn->keepalive.xid = xid;
     cxn->keepalive.outstanding_echo_cnt++;
 }
 
@@ -569,14 +568,7 @@ echo_reply_handle(connection_t *cxn, of_object_t *_obj)
 
     of_echo_reply_xid_get(reply, &xid);
 
-    if (xid == cxn->keepalive.xid) {
-        LOG_VERBOSE(cxn, "Received expected echo reply with xid %u", xid);
-        /* This is actually redundant with the reset in process_message */
-        cxn->keepalive.outstanding_echo_cnt = 0;
-    } else {
-        LOG_VERBOSE(cxn, "Received unexpected echo reply with xid %u, "
-                    "expected xid %u", xid, cxn->keepalive.xid);
-    }
+    LOG_VERBOSE(cxn, "Received echo reply with xid %u", xid);
 
     return rv;
 }
