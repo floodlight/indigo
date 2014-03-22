@@ -461,9 +461,11 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
  *
  * Main connection: Aggressive Echo/Timeout frequency of 2/6 sec
  * On timeout: Disconnect
+ * Echo frequency duration derived from a #define in switchlight
  * 
  * Aux connections: Echo frequency/timeout of 15/45 sec 
  * On timeout: Log an error but do not disconnect
+ * Echo frequency derived from a local #define
  * 
  * Any time a message is received from the controller, 
  * the outstanding count set to 0.
@@ -489,7 +491,7 @@ periodic_keepalive(void *cookie)
             LOG_INFO(cxn, "Exceeded outstanding echo requests. Resetting cxn");
             ind_controller_disconnect(cxn->controller);
         } else {
-            LOG_ERROR(cxn, "Exceeded outstanding echo requests.");
+            LOG_WARN(cxn, "Exceeded outstanding echo requests.");
         } 
         return;
     }
