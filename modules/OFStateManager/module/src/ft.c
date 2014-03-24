@@ -185,8 +185,9 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     }
 
     ft_entry_link(ft, entry);
-    ft->status.adds += 1;
-    ft->status.current_count += 1;
+    ft->current_count++;
+    debug_counter_inc(&ft_add_counter);
+    debug_counter_inc(&ft_flow_counter);
 
     ft_checksum_update(ft, entry);
 
@@ -206,8 +207,9 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
 
-    ft->status.current_count -= 1;
-    ft->status.deletes += 1;
+    ft->current_count--;
+    debug_counter_add(&ft_flow_counter, -1);
+    debug_counter_inc(&ft_delete_counter);
 }
 
 indigo_error_t
@@ -367,7 +369,7 @@ ft_entry_modify_effects(ft_instance_t instance,
 
     err = ft_entry_set_effects(entry, flow_mod);
     if (err == INDIGO_ERROR_NONE) {
-        instance->status.updates += 1;
+        debug_counter_inc(&ft_modify_counter);
     }
 
     return err;

@@ -53,6 +53,7 @@
 #include <BigList/biglist.h>
 #include <AIM/aim_list.h>
 #include <stdbool.h>
+#include <debug_counter/debug_counter.h>
 
 #include "ft_entry.h"
 
@@ -93,34 +94,6 @@ typedef struct ft_config_s {
 } ft_config_t;
 
 /**
- * Flow table status structure
- * @param current_count Current number of entries in the table not
- * in the init state (including pending deletes)
- * @param pending_deletes Number of entries in the table in the process of
- * being deleted (in the DELETE_MARKED or DELETING state).  DEBUG ONLY.
- * @param deletes Number of delete operation called
- * @param hard_expires Number of hard timeouts
- * @param idle_expires Number of idle timeouts
- * @param updates Number of calls that modified a flow entry, e.g.
- * effects_modify.
- * @param table_full_errors Number of adds that failed due to no space
- * in the table.
- * @param forwarding_add_errors Number of adds that failed due to a
- * failure in the forwarding layer.
- */
-
-typedef struct ft_status_s {
-    int current_count;
-    uint64_t adds;
-    uint64_t deletes;
-    uint64_t hard_expires;
-    uint64_t idle_expires;
-    uint64_t updates;
-    uint64_t table_full_errors;
-    uint64_t forwarding_add_errors;
-} ft_status_t;
-
-/**
  * Per-table bookkeeping
  *
  * The checksum buckets are used for the bsn_flow_checksum extension. Flows are
@@ -144,7 +117,8 @@ typedef struct ft_table_s {
  */
 struct ft_public_s {
     ft_config_t config;
-    ft_status_t status;
+
+    int current_count;             /* Number of flows in the flowtable */
 
     list_head_t all_list;          /* Single list of all current entries */
 
@@ -156,7 +130,6 @@ struct ft_public_s {
 };
 
 #define FT_CONFIG(_ft) (&(_ft)->config)
-#define FT_STATUS(_ft) (&(_ft)->status)
 
 /**
  * Safe iterator for the flowtable
@@ -335,5 +308,13 @@ ft_iterator_next(ft_iterator_t *iter);
  */
 void
 ft_iterator_cleanup(ft_iterator_t *iter);
+
+
+/* Debug counters */
+extern debug_counter_t ft_flow_counter;
+extern debug_counter_t ft_add_counter;
+extern debug_counter_t ft_delete_counter;
+extern debug_counter_t ft_modify_counter;
+extern debug_counter_t ft_forwarding_add_error_counter;
 
 #endif /* _OFSTATEMANAGER_FT_H_ */

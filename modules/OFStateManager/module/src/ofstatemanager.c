@@ -74,6 +74,11 @@ int ind_core_module_enabled = 0;
 static debug_counter_t ind_core_flow_mod_counter;
 static debug_counter_t ind_core_packet_in_counter;
 static debug_counter_t ind_core_packet_out_counter;
+debug_counter_t ft_flow_counter;
+debug_counter_t ft_add_counter;
+debug_counter_t ft_delete_counter;
+debug_counter_t ft_modify_counter;
+debug_counter_t ft_forwarding_add_error_counter;
 
 
 /**
@@ -593,6 +598,31 @@ ind_core_init(ind_core_config_t *config)
         "ofstatemanager.packet_outs",
         "Number of packet-out messages received");
 
+    debug_counter_register(
+        &ft_flow_counter,
+        "ofstatemanager.flows",
+        "Number of flows in the flowtable");
+
+    debug_counter_register(
+        &ft_add_counter,
+        "ofstatemanager.flow_adds",
+        "Number of adds to the flowtable");
+
+    debug_counter_register(
+        &ft_delete_counter,
+        "ofstatemanager.flow_deletes",
+        "Number of deletes to the flowtable");
+
+    debug_counter_register(
+        &ft_modify_counter,
+        "ofstatemanager.flow_modifys",
+        "Number of modifys to the flowtable");
+
+    debug_counter_register(
+        &ft_forwarding_add_error_counter,
+        "ofstatemanager.flow_forwarding_add_errors",
+        "Number of errors encountered adding flows to the flowtable");
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -658,7 +688,7 @@ process_flow_removal(ft_entry_t *entry,
     ft_delete(ind_core_ft, entry);
 
     LOG_TRACE("Flow table now has %d entries",
-              FT_STATUS(ind_core_ft)->current_count);
+              ind_core_ft->current_count);
 }
 
 /**
@@ -1072,16 +1102,11 @@ ind_core_ft_stats(aim_pvs_t *pvs)
 
     ft = ind_core_ft;
     aim_printf(pvs, "Flow table stats:\n");
-    aim_printf(pvs, "  Current count:  %d\n", ft->status.current_count);
-    aim_printf(pvs, "  Adds:           %d\n", (int)ft->status.adds);
-    aim_printf(pvs, "  Deletes:        %d\n", (int)ft->status.deletes);
-    aim_printf(pvs, "  Hard Exp:       %d\n", (int)ft->status.hard_expires);
-    aim_printf(pvs, "  Idle Exp:       %d\n", (int)ft->status.idle_expires);
-    aim_printf(pvs, "  Updates:        %d\n", (int)ft->status.updates);
-    aim_printf(pvs, "  Full Errors:    %d\n",
-               (int)ft->status.table_full_errors);
-    aim_printf(pvs, "  Fwd Add Errors: %d\n",
-               (int)ft->status.forwarding_add_errors);
+    aim_printf(pvs, "  Current count:  %"PRIu64"\n", ft->current_count);
+    aim_printf(pvs, "  Adds:           %"PRIu64"\n", debug_counter_get(&ft_add_counter));
+    aim_printf(pvs, "  Deletes:        %"PRIu64"\n", debug_counter_get(&ft_delete_counter));
+    aim_printf(pvs, "  Modified:       %"PRIu64"\n", debug_counter_get(&ft_modify_counter));
+    aim_printf(pvs, "  Fwd Add Errors: %"PRIu64"\n", debug_counter_get(&ft_forwarding_add_error_counter));
 }
 
 
@@ -1097,7 +1122,7 @@ indigo_core_stats_get(uint32_t *total_flows,
                       uint32_t *packet_ins,
                       uint32_t *packet_outs)
 {
-    *total_flows = ind_core_ft->status.current_count;
+    *total_flows = ind_core_ft->current_count;
     *flow_mods = debug_counter_get(&ind_core_flow_mod_counter);
     *packet_ins = debug_counter_get(&ind_core_packet_in_counter);
     *packet_outs = debug_counter_get(&ind_core_packet_out_counter);
