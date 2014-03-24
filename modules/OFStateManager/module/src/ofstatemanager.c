@@ -34,6 +34,7 @@
 #include <indigo/of_state_manager.h>
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
+#include <debug_counter/debug_counter.h>
 #include "ofstatemanager_int.h"
 #include "ofstatemanager_log.h"
 #include "ofstatemanager_decs.h"
@@ -70,9 +71,9 @@ int ind_core_module_enabled = 0;
 /**
  * @brief Statistics for debugging
  */
-static uint32_t ind_core_flow_mods = 0;
-static uint32_t ind_core_packet_ins = 0;
-static uint32_t ind_core_packet_outs = 0;
+static debug_counter_t ind_core_flow_mod_counter;
+static debug_counter_t ind_core_packet_in_counter;
+static debug_counter_t ind_core_packet_out_counter;
 
 
 /**
@@ -109,7 +110,7 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     }
 
     LOG_TRACE("Packet in rcvd");
-    ind_core_packet_ins++;
+    debug_counter_inc(&ind_core_packet_in_counter);
 
     if (ind_core_packet_in_notify(packet_in) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped packet-in");
@@ -229,32 +230,32 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     switch (obj->object_id) {
 
     case OF_PACKET_OUT:
-        ind_core_packet_outs++;
+        debug_counter_inc(&ind_core_packet_out_counter);
         ind_core_packet_out_handler(obj, cxn);
         break;
 
     case OF_FLOW_ADD:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_add_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_modify_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY_STRICT:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_modify_strict_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_delete_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE_STRICT:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_delete_strict_handler(obj, cxn);
         break;
 
@@ -576,6 +577,21 @@ ind_core_init(ind_core_config_t *config)
     ind_core_group_init();
 
     ind_core_test_gentable_init();
+
+    debug_counter_register(
+        &ind_core_flow_mod_counter,
+        "ofstatemanager.flow_mods",
+        "Number of flow-mod (add, modify, or delete) messages received");
+
+    debug_counter_register(
+        &ind_core_packet_in_counter,
+        "ofstatemanager.packet_ins",
+        "Number of packet-in messages sent");
+
+    debug_counter_register(
+        &ind_core_packet_out_counter,
+        "ofstatemanager.packet_outs",
+        "Number of packet-out messages received");
 
     ind_core_init_done = 1;
 
@@ -1082,13 +1098,13 @@ indigo_core_stats_get(uint32_t *total_flows,
                       uint32_t *packet_outs)
 {
     *total_flows = ind_core_ft->status.current_count;
-    *flow_mods = ind_core_flow_mods;
-    *packet_ins = ind_core_packet_ins;
-    *packet_outs = ind_core_packet_outs;
+    *flow_mods = debug_counter_get(&ind_core_flow_mod_counter);
+    *packet_ins = debug_counter_get(&ind_core_packet_in_counter);
+    *packet_outs = debug_counter_get(&ind_core_packet_out_counter);
 
-    ind_core_flow_mods = 0;
-    ind_core_packet_ins = 0;
-    ind_core_packet_outs = 0;
+    debug_counter_reset(&ind_core_flow_mod_counter);
+    debug_counter_reset(&ind_core_packet_in_counter);
+    debug_counter_reset(&ind_core_packet_out_counter);
 }
 
 
