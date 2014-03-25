@@ -99,9 +99,9 @@ indigo_fwd_flow_modify(indigo_cookie_t flow_id,
 
 indigo_error_t create_error = INDIGO_ERROR_NONE;
 
-#define CHECK_FLOW_COUNT(status, count) \
+#define CHECK_FLOW_COUNT(ft, count) \
    if (create_error == INDIGO_ERROR_NONE) \
-       TEST_ASSERT((status)->current_count == (count))
+       TEST_ASSERT((ft)->current_count == (count))
 
 indigo_error_t
 indigo_fwd_flow_create(indigo_cookie_t flow_id,
@@ -377,7 +377,7 @@ check_table_entry_states(ft_instance_t ft)
         counted += 1;
     }
 
-    TEST_ASSERT(counted == ft->status.current_count);
+    TEST_ASSERT(counted == ft->current_count);
 
     return 0;
 }
@@ -411,7 +411,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
 
-    CHECK_FLOW_COUNT(&ft->status, TEST_FLOW_COUNT);
+    CHECK_FLOW_COUNT(ft, TEST_FLOW_COUNT);
     of_flow_add_delete(flow_add_base);
 
     return 0;
@@ -427,7 +427,7 @@ depopulate_table(ft_instance_t ft)
     ft_entry_t *entry;
     int count;
 
-    count = ft->status.current_count;
+    count = ft->current_count;
     for (idx = 0; idx < count; ++idx) {
         entry = ft_lookup(ft, TEST_KEY(idx));
         TEST_ASSERT(entry != NULL);
@@ -566,7 +566,7 @@ test_ft_hash(void)
     TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
     TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID + 1, flow_add, &entry));
 
-    TEST_ASSERT(ft->status.current_count == 2);
+    TEST_ASSERT(ft->current_count == 2);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
     entry = ft_lookup(ft, TEST_ENT_ID);
     ft_destroy(ft);
@@ -584,7 +584,7 @@ test_ft_hash(void)
     of_flow_add_cookie_get(flow_add, &orig_cookie);
 
     TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
-    TEST_ASSERT(ft->status.current_count == 1);
+    TEST_ASSERT(ft->current_count == 1);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
     entry = ft_lookup(ft, TEST_ENT_ID);
 
@@ -950,13 +950,13 @@ test_ft_iter_task(void)
     ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_DEFAULT_PRIORITY);
     TEST_ASSERT(state.finished == -1);
     TEST_ASSERT(state.entries_seen == 0);
-    TEST_ASSERT(ft->status.current_count == 2);
+    TEST_ASSERT(ft->current_count == 2);
     while (state.finished != 1) {
         ind_soc_select_and_run(0);
     }
     TEST_ASSERT(state.finished == 1);
     TEST_ASSERT(state.entries_seen == 2);
-    TEST_ASSERT(ft->status.current_count == 0);
+    TEST_ASSERT(ft->current_count == 0);
 
     ft_destroy(ft);
     of_object_delete(flow_add1);
@@ -1087,10 +1087,8 @@ int
 test_simple_add_del(void)
 {
     of_flow_add_t *flow_add;
-    ft_status_t *status;
     int idx;
 
-    status = FT_STATUS(ind_core_ft);
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
@@ -1098,11 +1096,11 @@ test_simple_add_del(void)
         of_flow_add_flags_set(flow_add, 0);
         handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, idx + 1);
+        CHECK_FLOW_COUNT(ind_core_ft, idx + 1);
     }
 
     TEST_ASSERT(delete_all_entries(ind_core_ft) == TEST_PASS);
-    TEST_ASSERT(status->current_count == 0);
+    TEST_ASSERT(ind_core_ft->current_count == 0);
 
     return TEST_PASS;
 }
@@ -1114,12 +1112,10 @@ test_exact_add_del(void)
     of_flow_add_t *flow_add_keep[TEST_FLOW_COUNT];
     of_flow_add_t *flow_add;
     of_flow_delete_t *flow_del;
-    ft_status_t *status;
     int idx;
     of_match_t match;
     uint16_t prio;
 
-    status = FT_STATUS(ind_core_ft);
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
@@ -1128,7 +1124,7 @@ test_exact_add_del(void)
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, idx + 1);
+        CHECK_FLOW_COUNT(ind_core_ft, idx + 1);
     }
 
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
@@ -1143,10 +1139,10 @@ test_exact_add_del(void)
         TEST_OK(of_flow_delete_strict_match_set(flow_del, &match));
         handle_message(flow_del);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT - (idx + 1));
+        CHECK_FLOW_COUNT(ind_core_ft, TEST_FLOW_COUNT - (idx + 1));
         of_flow_add_delete(flow_add_keep[idx]);
     }
-    TEST_ASSERT(status->current_count == 0);
+    TEST_ASSERT(ind_core_ft->current_count == 0);
 
     return TEST_PASS;
 }
@@ -1158,12 +1154,10 @@ test_modify(void)
     of_flow_add_t *flow_add_keep[TEST_FLOW_COUNT];
     of_flow_add_t *flow_add;
     of_flow_modify_t *flow_mod;
-    ft_status_t *status;
     int idx;
     of_match_t match;
     uint16_t prio;
 
-    status = FT_STATUS(ind_core_ft);
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
@@ -1172,7 +1166,7 @@ test_modify(void)
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, idx + 1);
+        CHECK_FLOW_COUNT(ind_core_ft, idx + 1);
     }
 
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
@@ -1187,13 +1181,13 @@ test_modify(void)
         TEST_OK(of_flow_modify_match_set(flow_mod, &match));
         handle_message(flow_mod);
         TEST_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
+        CHECK_FLOW_COUNT(ind_core_ft, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);
     }
-    CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
+    CHECK_FLOW_COUNT(ind_core_ft, TEST_FLOW_COUNT);
     /* Delete all the entries */
     TEST_ASSERT(delete_all_entries(ind_core_ft) == TEST_PASS);
-    TEST_ASSERT(status->current_count == 0);
+    TEST_ASSERT(ind_core_ft->current_count == 0);
 
     return TEST_PASS;
 }
@@ -1205,12 +1199,10 @@ test_modify_strict(void)
     of_flow_add_t *flow_add_keep[TEST_FLOW_COUNT];
     of_flow_add_t *flow_add;
     of_flow_modify_strict_t *flow_mod;
-    ft_status_t *status;
     int idx;
     of_match_t match;
     uint16_t prio;
 
-    status = FT_STATUS(ind_core_ft);
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
@@ -1219,7 +1211,7 @@ test_modify_strict(void)
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, idx + 1);
+        CHECK_FLOW_COUNT(ind_core_ft, idx + 1);
     }
 
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
@@ -1234,13 +1226,13 @@ test_modify_strict(void)
         TEST_OK(of_flow_modify_strict_match_set(flow_mod, &match));
         handle_message(flow_mod);
         TEST_INDIGO_OK(do_barrier());
-        CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
+        CHECK_FLOW_COUNT(ind_core_ft, TEST_FLOW_COUNT);
         of_flow_add_delete(flow_add_keep[idx]);
     }
-    CHECK_FLOW_COUNT(status, TEST_FLOW_COUNT);
+    CHECK_FLOW_COUNT(ind_core_ft, TEST_FLOW_COUNT);
 
     TEST_ASSERT(delete_all_entries(ind_core_ft) == TEST_PASS);
-    TEST_ASSERT(status->current_count == 0);
+    TEST_ASSERT(ind_core_ft->current_count == 0);
 
     return TEST_PASS;
 }

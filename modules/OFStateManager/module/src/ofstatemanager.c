@@ -34,6 +34,7 @@
 #include <indigo/of_state_manager.h>
 #include <loci/loci_dump.h>
 #include <loci/loci_show.h>
+#include <debug_counter/debug_counter.h>
 #include "ofstatemanager_int.h"
 #include "ofstatemanager_log.h"
 #include "ofstatemanager_decs.h"
@@ -70,9 +71,14 @@ int ind_core_module_enabled = 0;
 /**
  * @brief Statistics for debugging
  */
-static uint32_t ind_core_flow_mods = 0;
-static uint32_t ind_core_packet_ins = 0;
-static uint32_t ind_core_packet_outs = 0;
+static debug_counter_t ind_core_flow_mod_counter;
+static debug_counter_t ind_core_packet_in_counter;
+static debug_counter_t ind_core_packet_out_counter;
+debug_counter_t ft_flow_counter;
+debug_counter_t ft_add_counter;
+debug_counter_t ft_delete_counter;
+debug_counter_t ft_modify_counter;
+debug_counter_t ft_forwarding_add_error_counter;
 
 
 /**
@@ -109,7 +115,7 @@ indigo_core_packet_in(of_packet_in_t *packet_in)
     }
 
     LOG_TRACE("Packet in rcvd");
-    ind_core_packet_ins++;
+    debug_counter_inc(&ind_core_packet_in_counter);
 
     if (ind_core_packet_in_notify(packet_in) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         LOG_TRACE("Listener dropped packet-in");
@@ -229,32 +235,32 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     switch (obj->object_id) {
 
     case OF_PACKET_OUT:
-        ind_core_packet_outs++;
+        debug_counter_inc(&ind_core_packet_out_counter);
         ind_core_packet_out_handler(obj, cxn);
         break;
 
     case OF_FLOW_ADD:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_add_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_modify_handler(obj, cxn);
         break;
 
     case OF_FLOW_MODIFY_STRICT:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_modify_strict_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_delete_handler(obj, cxn);
         break;
 
     case OF_FLOW_DELETE_STRICT:
-        ind_core_flow_mods++;
+        debug_counter_inc(&ind_core_flow_mod_counter);
         ind_core_flow_delete_strict_handler(obj, cxn);
         break;
 
@@ -426,6 +432,14 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_table_set_buckets_size_handler(obj, cxn);
         break;
 
+    case OF_BSN_DEBUG_COUNTER_DESC_STATS_REQUEST:
+        ind_core_bsn_debug_counter_desc_stats_request_handler(obj, cxn);
+        break;
+
+    case OF_BSN_DEBUG_COUNTER_STATS_REQUEST:
+        ind_core_bsn_debug_counter_stats_request_handler(obj, cxn);
+        break;
+
     /* These all use the experimenter handler */
     case OF_BSN_GET_MIRRORING_REQUEST:
     case OF_BSN_SET_MIRRORING:
@@ -569,6 +583,46 @@ ind_core_init(ind_core_config_t *config)
 
     ind_core_test_gentable_init();
 
+    debug_counter_register(
+        &ind_core_flow_mod_counter,
+        "ofstatemanager.flow_mod",
+        "Flow-mod (add, modify, or delete) message received");
+
+    debug_counter_register(
+        &ind_core_packet_in_counter,
+        "ofstatemanager.packet_in",
+        "Packet-in message sent");
+
+    debug_counter_register(
+        &ind_core_packet_out_counter,
+        "ofstatemanager.packet_out",
+        "Packet-out message received");
+
+    debug_counter_register(
+        &ft_flow_counter,
+        "ofstatemanager.flows",
+        "Number of flows in the flowtable");
+
+    debug_counter_register(
+        &ft_add_counter,
+        "ofstatemanager.flow_add",
+        "Add to the OpenFlow flowtable");
+
+    debug_counter_register(
+        &ft_delete_counter,
+        "ofstatemanager.flow_delete",
+        "Delete from the OpenFlow flowtable");
+
+    debug_counter_register(
+        &ft_modify_counter,
+        "ofstatemanager.flow_modify",
+        "Modify to the OpenFlow flowtable");
+
+    debug_counter_register(
+        &ft_forwarding_add_error_counter,
+        "ofstatemanager.forwarding_add_failure",
+        "Forwarding driver failed to insert flow");
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -634,7 +688,7 @@ process_flow_removal(ft_entry_t *entry,
     ft_delete(ind_core_ft, entry);
 
     LOG_TRACE("Flow table now has %d entries",
-              FT_STATUS(ind_core_ft)->current_count);
+              ind_core_ft->current_count);
 }
 
 /**
@@ -1048,16 +1102,11 @@ ind_core_ft_stats(aim_pvs_t *pvs)
 
     ft = ind_core_ft;
     aim_printf(pvs, "Flow table stats:\n");
-    aim_printf(pvs, "  Current count:  %d\n", ft->status.current_count);
-    aim_printf(pvs, "  Adds:           %d\n", (int)ft->status.adds);
-    aim_printf(pvs, "  Deletes:        %d\n", (int)ft->status.deletes);
-    aim_printf(pvs, "  Hard Exp:       %d\n", (int)ft->status.hard_expires);
-    aim_printf(pvs, "  Idle Exp:       %d\n", (int)ft->status.idle_expires);
-    aim_printf(pvs, "  Updates:        %d\n", (int)ft->status.updates);
-    aim_printf(pvs, "  Full Errors:    %d\n",
-               (int)ft->status.table_full_errors);
-    aim_printf(pvs, "  Fwd Add Errors: %d\n",
-               (int)ft->status.forwarding_add_errors);
+    aim_printf(pvs, "  Current count:  %d\n", ft->current_count);
+    aim_printf(pvs, "  Adds:           %"PRIu64"\n", debug_counter_get(&ft_add_counter));
+    aim_printf(pvs, "  Deletes:        %"PRIu64"\n", debug_counter_get(&ft_delete_counter));
+    aim_printf(pvs, "  Modified:       %"PRIu64"\n", debug_counter_get(&ft_modify_counter));
+    aim_printf(pvs, "  Fwd Add Errors: %"PRIu64"\n", debug_counter_get(&ft_forwarding_add_error_counter));
 }
 
 
@@ -1073,14 +1122,14 @@ indigo_core_stats_get(uint32_t *total_flows,
                       uint32_t *packet_ins,
                       uint32_t *packet_outs)
 {
-    *total_flows = ind_core_ft->status.current_count;
-    *flow_mods = ind_core_flow_mods;
-    *packet_ins = ind_core_packet_ins;
-    *packet_outs = ind_core_packet_outs;
+    *total_flows = ind_core_ft->current_count;
+    *flow_mods = debug_counter_get(&ind_core_flow_mod_counter);
+    *packet_ins = debug_counter_get(&ind_core_packet_in_counter);
+    *packet_outs = debug_counter_get(&ind_core_packet_out_counter);
 
-    ind_core_flow_mods = 0;
-    ind_core_packet_ins = 0;
-    ind_core_packet_outs = 0;
+    debug_counter_reset(&ind_core_flow_mod_counter);
+    debug_counter_reset(&ind_core_packet_in_counter);
+    debug_counter_reset(&ind_core_packet_out_counter);
 }
 
 
