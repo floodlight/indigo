@@ -386,14 +386,14 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     if (rv == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow table now has %d entries",
-                  FT_STATUS(ind_core_ft)->current_count);
+                  ind_core_ft->current_count);
         entry->table_id = table_id;
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
        LOG_ERROR("Error from Forwarding while inserting flow: %s",
                  indigo_strerror(rv));
-       ind_core_ft->status.forwarding_add_errors += 1;
+       debug_counter_inc(&ft_forwarding_add_error_counter);
 
        of_flow_add_xid_get(obj, &xid);
        flow_mod_err_msg_send(rv, obj->version, cxn_id,
