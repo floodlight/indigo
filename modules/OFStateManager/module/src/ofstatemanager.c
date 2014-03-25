@@ -585,18 +585,18 @@ ind_core_init(ind_core_config_t *config)
 
     debug_counter_register(
         &ind_core_flow_mod_counter,
-        "ofstatemanager.flow_mods",
-        "Number of flow-mod (add, modify, or delete) messages received");
+        "ofstatemanager.flow_mod",
+        "Flow-mod (add, modify, or delete) message received");
 
     debug_counter_register(
         &ind_core_packet_in_counter,
-        "ofstatemanager.packet_ins",
-        "Number of packet-in messages sent");
+        "ofstatemanager.packet_in",
+        "Packet-in message sent");
 
     debug_counter_register(
         &ind_core_packet_out_counter,
-        "ofstatemanager.packet_outs",
-        "Number of packet-out messages received");
+        "ofstatemanager.packet_out",
+        "Packet-out message received");
 
     debug_counter_register(
         &ft_flow_counter,
@@ -605,23 +605,23 @@ ind_core_init(ind_core_config_t *config)
 
     debug_counter_register(
         &ft_add_counter,
-        "ofstatemanager.flow_adds",
-        "Number of adds to the flowtable");
+        "ofstatemanager.flow_add",
+        "Add to the OpenFlow flowtable");
 
     debug_counter_register(
         &ft_delete_counter,
-        "ofstatemanager.flow_deletes",
-        "Number of deletes to the flowtable");
+        "ofstatemanager.flow_delete",
+        "Delete from the OpenFlow flowtable");
 
     debug_counter_register(
         &ft_modify_counter,
-        "ofstatemanager.flow_modifys",
-        "Number of modifys to the flowtable");
+        "ofstatemanager.flow_modify",
+        "Modify to the OpenFlow flowtable");
 
     debug_counter_register(
         &ft_forwarding_add_error_counter,
-        "ofstatemanager.flow_forwarding_add_errors",
-        "Number of errors encountered adding flows to the flowtable");
+        "ofstatemanager.forwarding_add_failure",
+        "Forwarding driver failed to insert flow");
 
     ind_core_init_done = 1;
 
