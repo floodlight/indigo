@@ -1102,7 +1102,7 @@ ind_core_ft_stats(aim_pvs_t *pvs)
 
     ft = ind_core_ft;
     aim_printf(pvs, "Flow table stats:\n");
-    aim_printf(pvs, "  Current count:  %"PRIu64"\n", ft->current_count);
+    aim_printf(pvs, "  Current count:  %d\n", ft->current_count);
     aim_printf(pvs, "  Adds:           %"PRIu64"\n", debug_counter_get(&ft_add_counter));
     aim_printf(pvs, "  Deletes:        %"PRIu64"\n", debug_counter_get(&ft_delete_counter));
     aim_printf(pvs, "  Modified:       %"PRIu64"\n", debug_counter_get(&ft_modify_counter));
