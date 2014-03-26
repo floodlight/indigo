@@ -356,7 +356,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Delete existing flow if any */
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
     }
 
     /* No match found, add as normal */
@@ -379,7 +379,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     ind_core_table_t *table = ind_core_table_get(table_id);
     if (table != NULL) {
-        rv = table->ops->entry_create(table->priv, obj, flow_id, &entry->priv);
+        rv = table->ops->entry_create(table->priv, cxn_id,
+                                      obj, flow_id, &entry->priv);
     } else {
         rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
     }
@@ -526,7 +527,8 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         state->num_matched++;
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
-            rv = table->ops->entry_modify(table->priv, entry->priv, state->request);
+            rv = table->ops->entry_modify(table->priv, state->cxn_id,
+                                          entry->priv, state->request);
         } else {
             rv = indigo_fwd_flow_modify(entry->id, state->request);
         }
@@ -625,7 +627,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_modify(table->priv, entry->priv, obj);
+        rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
     } else {
         rv = indigo_fwd_flow_modify(entry->id, obj);
     }
@@ -654,7 +656,7 @@ delete_iter_cb(void *cookie, ft_entry_t *entry)
     struct flow_delete_state *state = cookie;
 
     if (entry != NULL) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, state->cxn_id);
     } else {
         LOG_TRACE("Finished flow delete task");
         indigo_cxn_unblock_barrier(&state->blocker);
@@ -718,7 +720,7 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, cxn_id);
     }
 }
 
@@ -812,7 +814,8 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+        rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                         entry->priv, &flow_stats);
     } else {
         rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
     }
@@ -964,7 +967,8 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
 
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
-            rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+            rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                             entry->priv, &flow_stats);
         } else {
             rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
         }

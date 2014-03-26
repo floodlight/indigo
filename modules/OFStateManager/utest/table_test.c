@@ -324,7 +324,8 @@ do_entry_stats()
 /* Table operations */
 
 static indigo_error_t
-op_entry_create(void *table_priv, of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv)
+op_entry_create(void *table_priv, indigo_cxn_id_t cxn_id,
+                of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv)
 {
     struct test_table *table = table_priv;
     AIM_TRUE_OR_DIE(table->magic == TABLE_MAGIC);
@@ -363,7 +364,8 @@ op_entry_create(void *table_priv, of_flow_add_t *obj, indigo_cookie_t flow_id, v
 }
 
 static indigo_error_t
-op_entry_modify(void *table_priv, void *entry_priv, of_flow_modify_t *obj)
+op_entry_modify(void *table_priv, indigo_cxn_id_t cxn_id,
+                void *entry_priv, of_flow_modify_t *obj)
 {
     struct test_table *table = table_priv;
     AIM_TRUE_OR_DIE(table->magic == TABLE_MAGIC);
@@ -392,7 +394,8 @@ op_entry_modify(void *table_priv, void *entry_priv, of_flow_modify_t *obj)
 }
 
 static indigo_error_t
-op_entry_delete(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
+op_entry_delete(void *table_priv, indigo_cxn_id_t cxn_id,
+                void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
 {
     struct test_table *table = table_priv;
     AIM_TRUE_OR_DIE(table->magic == TABLE_MAGIC);
@@ -409,7 +412,8 @@ op_entry_delete(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow
 }
 
 static indigo_error_t
-op_entry_stats_get(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
+op_entry_stats_get(void *table_priv, indigo_cxn_id_t cxn_id,
+                   void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
 {
     struct test_table *table = table_priv;
     AIM_TRUE_OR_DIE(table->magic == TABLE_MAGIC);
@@ -429,7 +433,8 @@ op_entry_stats_get(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *f
 }
 
 static indigo_error_t
-op_entry_hit_status_get(void *table_priv, void *entry_priv, bool *hit_status)
+op_entry_hit_status_get(void *table_priv, indigo_cxn_id_t cxn_id,
+                        void *entry_priv, bool *hit_status)
 {
     struct test_table *table = table_priv;
     AIM_TRUE_OR_DIE(table->magic == TABLE_MAGIC);

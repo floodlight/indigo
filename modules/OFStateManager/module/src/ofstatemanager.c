@@ -640,7 +640,8 @@ ind_core_init(ind_core_config_t *config)
  */
 
 void
-ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
+ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
+                           indigo_cxn_id_t cxn_id)
 {
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats = {
@@ -655,7 +656,7 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_delete(table->priv, entry->priv, &flow_stats);
+        rv = table->ops->entry_delete(table->priv, cxn_id, entry->priv, &flow_stats);
     } else {
         rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
     }
