@@ -117,6 +117,10 @@ ind_core_bsn_debug_counter_stats_request_handler(of_object_t *_obj,
     LIST_FOREACH(counters, cur) {
         debug_counter_t *counter = container_of(cur, links, debug_counter_t);
 
+        if (debug_counter_get(counter) == 0) {
+            continue;
+        }
+
         of_bsn_debug_counter_stats_entry_counter_id_set(entry, counter->counter_id);
         of_bsn_debug_counter_stats_entry_value_set(entry, debug_counter_get(counter));
 
