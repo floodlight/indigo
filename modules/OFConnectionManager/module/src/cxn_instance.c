@@ -371,6 +371,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
                 ind_cxn_connection_retry_timer, cxn,
                 IND_SOC_TIMER_IMMEDIATE, IND_CXN_EVENT_PRIORITY);
         }
+        ind_cxn_unregister_debug_counters(cxn);
         ind_cxn_disconnected_init(cxn);
         break;
 
@@ -379,6 +380,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         ind_soc_socket_register_with_priority(
             cxn->sd, indigo_cxn_socket_ready_callback,
             cxn, IND_CXN_EVENT_PRIORITY);
+        ind_cxn_register_debug_counters(cxn);
         ind_cxn_send_hello(cxn);
         if (CXN_LOCAL(cxn)) {
             /* Recursive call; transition to connected */
@@ -1241,12 +1243,8 @@ process_message(connection_t *cxn)
                     of_object_id_str[obj->object_id], xid);
         LOG_OBJECT(obj);
 
-        if (IS_MSG_OBJ(obj)) {
-            cxn->messages_in_by_type[obj->object_id]++;
-        } else {
-            LOG_ERROR(cxn, "Received unknown msg obj id: %d", obj->object_id);
-            cxn->messages_in_unknown++;
-        }
+        AIM_ASSERT(IS_MSG_OBJ(obj));
+        debug_counter_inc(&cxn->rx_counters[obj->object_id]);
         cxn->status.messages_in++;
     }
 
@@ -1644,5 +1642,48 @@ ind_cxn_connection_retry_timer(void *cookie)
         ind_soc_timer_event_register_with_priority(
             ind_cxn_connection_retry_timer, cxn,
             connection_retry_ms(cxn), IND_CXN_EVENT_PRIORITY);
+    }
+}
+
+void
+ind_cxn_register_debug_counters(connection_t *cxn)
+{
+    int i;
+    const int skip = 3; /* "of_" prefix */
+
+    for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
+        char name[DEBUG_COUNTER_NAME_SIZE];
+        aim_snprintf(name, sizeof(name), "cxn.%s.rx.%s", cxn_ip_string(cxn), of_object_id_str[i]+skip);
+        name[sizeof(name)-1] = '\0';
+        char *description = "Message received by the switch";
+        debug_counter_register(&cxn->rx_counters[i], aim_strdup(name), description);
+    }
+
+    for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
+        char name[DEBUG_COUNTER_NAME_SIZE];
+        aim_snprintf(name, sizeof(name), "cxn.%s.tx.%s", cxn_ip_string(cxn), of_object_id_str[i]+skip);
+        name[sizeof(name)-1] = '\0';
+        char *description = "Message sent from the switch";
+        debug_counter_register(&cxn->tx_counters[i], aim_strdup(name), description);
+    }
+}
+
+void
+ind_cxn_unregister_debug_counters(connection_t *cxn)
+{
+    int i;
+
+    for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
+        debug_counter_t *counter = &cxn->rx_counters[i];
+        char *name = (char *) counter->name;
+        debug_counter_unregister(counter);
+        aim_free(name);
+    }
+
+    for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
+        debug_counter_t *counter = &cxn->tx_counters[i];
+        char *name = (char *) counter->name;
+        debug_counter_unregister(counter);
+        aim_free(name);
     }
 }

@@ -1142,12 +1142,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     of_object_wire_buffer_steal((of_object_t *)obj, &data);
     len = obj->length;
 
-    if (IS_MSG_OBJ(obj)) {
-        cxn->messages_out_by_type[obj->object_id]++;
-    } else {
-        LOG_ERROR("Enqueue unknown msg obj id: %d", obj->object_id);
-        cxn->messages_out_unknown++;
-    }
+    AIM_ASSERT(IS_MSG_OBJ(obj));
+    debug_counter_inc(&cxn->tx_counters[obj->object_id]);
 
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
         LOG_ERROR("Could not enqueue message data, disconnecting");
@@ -1775,42 +1771,34 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    cxn->status.messages_in);
         counter = 0;
         for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
-            counter += cxn->messages_in_by_type[idx];
+            counter += debug_counter_get(&cxn->rx_counters[idx]);
         }
         aim_printf(pvs, "    Cumulative messages in: %"PRIu64"\n", counter);
         if (details) {
             for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
-                if (cxn->messages_in_by_type[idx]) {
+                if (debug_counter_get(&cxn->rx_counters[idx]) > 0) {
                     aim_printf(pvs, "        %s: %"PRIu64"\n",
                                of_object_id_str[idx],
-                               cxn->messages_in_by_type[idx]);
+                               debug_counter_get(&cxn->rx_counters[idx]));
                 }
             }
-        }
-        if (cxn->messages_in_unknown) {
-            aim_printf(pvs, "        Unknown type: %"PRIu64"\n",
-                       cxn->messages_in_unknown);
         }
 
         aim_printf(pvs, "    Messages out, current connection: %"PRIu64"\n",
                    cxn->status.messages_out);
         counter = 0;
         for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
-            counter += cxn->messages_out_by_type[idx];
+            counter += debug_counter_get(&cxn->tx_counters[idx]);
         }
         aim_printf(pvs, "    Cumulative messages out: %"PRIu64"\n", counter);
         if (details) {
             for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
-                if (cxn->messages_out_by_type[idx]) {
+                if (debug_counter_get(&cxn->tx_counters[idx]) > 0) {
                     aim_printf(pvs, "        %s: %"PRIu64"\n",
                                of_object_id_str[idx],
-                               cxn->messages_out_by_type[idx]);
+                               debug_counter_get(&cxn->tx_counters[idx]));
                 }
             }
-        }
-        if (cxn->messages_out_unknown) {
-            aim_printf(pvs, "        Unknown type: %"PRIu64"\n",
-                       cxn->messages_out_unknown);
         }
     }
     if (!cxn_count) {
