@@ -31,6 +31,7 @@
 #include <loci/loci.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
 #include <BigList/biglist.h>
+#include <debug_counter/debug_counter.h>
 
 #define READ_BUFFER_SIZE (64 * 1024)
 
@@ -112,10 +113,8 @@ typedef struct connection_s {
     int pkts_enqueued;      /* Total pkts queued */
 
     /* Additional debug info */
-    uint64_t messages_in_by_type[OF_MESSAGE_OBJECT_COUNT];
-    uint64_t messages_out_by_type[OF_MESSAGE_OBJECT_COUNT];
-    uint64_t messages_in_unknown;
-    uint64_t messages_out_unknown;
+    debug_counter_t rx_counters[OF_MESSAGE_OBJECT_COUNT];
+    debug_counter_t tx_counters[OF_MESSAGE_OBJECT_COUNT];
 
     uint64_t packet_ins;
 
@@ -288,6 +287,9 @@ cxn_ip_string(connection_t *cxn)
     snprintf(&cxn_print_buf[len], 64 - len, ":%d", cxn->auxiliary_id);
     return cxn_print_buf;
 }
+
+void ind_cxn_register_debug_counters(connection_t *cxn);
+void ind_cxn_unregister_debug_counters(connection_t *cxn);
 
 extern int ind_cxn_process_write_buffer(connection_t *cxn);
 extern int ind_cxn_process_read_buffer(connection_t *cxn);
