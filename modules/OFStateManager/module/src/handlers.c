@@ -354,9 +354,30 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
 
-    /* Delete existing flow if any */
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
+        if (obj->version == OF_VERSION_1_0) {
+            /* Delete existing flow */
+            ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
+        } else {
+            /* Overwrite existing flow */
+            LOG_TRACE("Overwriting existing flow");
+            ind_core_table_t *table = ind_core_table_get(entry->table_id);
+            if (table != NULL) {
+                rv = table->ops->entry_modify(table->priv, entry->priv, obj);
+            } else {
+                rv = indigo_fwd_flow_modify(entry->id, obj);
+            }
+
+            if (rv == INDIGO_ERROR_NONE) {
+                ft_overwrite(ind_core_ft, entry, obj);
+            } else {
+                LOG_ERROR("Error from Forwarding while modifying flow: %d",
+                          indigo_strerror(rv));
+                flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
+            }
+
+            return;
+        }
     }
 
     /* No match found, add as normal */
