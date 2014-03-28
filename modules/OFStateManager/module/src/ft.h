@@ -212,6 +212,17 @@ indigo_error_t ft_add(ft_instance_t ft,
 void ft_delete(ft_instance_t ft, ft_entry_t *entry);
 
 /**
+ * Overwrite an existing flow entry in the table
+ * @param ft The flow table handle
+ * @param entry Pointer to the entry to be overwritten
+ * @param flow_add The LOCI flow mod object resulting in the overwrite
+ *
+ * This function updates the cookie, flags, timeouts, instructions, and
+ * creation time, as specified in OpenFlow 1.3.3 section 6.4.
+ */
+void ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add);
+
+/**
  * Query the flow table (strict match) and return the first match if found
  * @param ft Handle for a flow table instance
  * @param query The meta-match data for the query
