@@ -212,6 +212,27 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
     debug_counter_inc(&ft_delete_counter);
 }
 
+void
+ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
+{
+    ft_checksum_update(ft, entry);
+    ft_entry_unlink(ft, entry);
+
+    of_flow_add_cookie_get(flow_add, &entry->cookie);
+    of_flow_add_flags_get(flow_add, &entry->flags);
+    of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
+    of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
+
+    indigo_error_t err = ft_entry_set_effects(entry, flow_add);
+    AIM_ASSERT(err == INDIGO_ERROR_NONE);
+
+    entry->insert_time = INDIGO_CURRENT_TIME;
+    entry->last_counter_change = entry->insert_time;
+
+    ft_entry_link(ft, entry);
+    ft_checksum_update(ft, entry);
+}
+
 indigo_error_t
 ft_strict_match(ft_instance_t instance,
                of_meta_match_t *query,
