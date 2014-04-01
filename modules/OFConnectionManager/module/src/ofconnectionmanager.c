@@ -230,13 +230,6 @@ connection_t* cookie_to_cxn(void* cookie)
 }
 
 
-/* Generate IP string from a connection ID */
-static inline char *
-cxn_id_ip_string(indigo_cxn_id_t cxn_id)
-{
-    return cxn_ip_string(CXN_ID_TO_CONNECTION(cxn_id)); 
-}
-
 /**
  * @brief Callback to process "socket ready"
  *
@@ -288,8 +281,8 @@ indigo_cxn_socket_ready_callback(
         int socket_error = 0;
         socklen_t len = sizeof(socket_error);
         getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
-        LOG_ERROR("Error seen on connection %s: %s",
-                  cxn_ip_string(cxn), strerror(socket_error));
+        LOG_ERROR("Error seen on connection " CXN_FMT ": %s",
+                  CXN_FMT_ARGS(cxn), strerror(socket_error));
         ind_controller_disconnect(cxn->controller);
         ++ind_cxn_internal_errors;
         return;
@@ -395,8 +388,8 @@ ind_cxn_status_change(connection_t *cxn)
             ++remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
             if (preferred_cxn_id == -1) {
-                LOG_VERBOSE("Setting preferred cxn to %s",
-                            cxn_ip_string(cxn));
+                LOG_VERBOSE("Setting preferred cxn to " CXN_FMT,
+                            CXN_FMT_ARGS(cxn));
                 preferred_cxn_id = cxn->cxn_id;
                 LOG_VERBOSE("Clearing IP mask map");
                 of_ip_mask_map_init();
@@ -557,7 +550,7 @@ listen_cxn_init(connection_t *cxn)
 
     /* Register with the scoket manager */
 
-    LOG_INFO("Added local connection: %s", cxn_ip_string(cxn));
+    LOG_INFO("Added local connection: " CXN_FMT, CXN_FMT_ARGS(cxn));
     return INDIGO_ERROR_NONE;
 }
 
@@ -626,8 +619,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
                           (char *) &flag, sizeof(int));
     }
 
-    LOG_VERBOSE("Created non-blocking socket %d for %s",
-                cxn->sd, cxn_id_ip_string(*cxn_id));
+    LOG_VERBOSE("Created non-blocking socket %d for " CXN_FMT,
+                cxn->sd, CXN_FMT_ARGS(cxn));
 
     cxn->active = 1;
     if (sd >= 0) { /* Assume connection is good to go */
@@ -653,7 +646,7 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
     connection_t *cxn = NULL;
     indigo_error_t rv = INDIGO_ERROR_NONE;
 
-    LOG_INFO("Connection add: %s, with aux_id: %d", proto_ip_string( 
+    LOG_INFO("Connection add: %s:%d, with aux_id: %d", proto_ip_string( 
              &controllers[controller_id].protocol_params), auxiliary_id);
 
     INDIGO_ASSERT(cxn_id != NULL);
@@ -673,8 +666,8 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
         } else {
             /* Aux id is only relevant for remote connections */
             cxn->auxiliary_id = auxiliary_id;
-            LOG_INFO("Added remote connection: %s with aux id: %d", 
-                     cxn_ip_string(cxn), auxiliary_id);
+            LOG_INFO("Added remote connection: " CXN_FMT " with aux id: %d", 
+                     CXN_FMT_ARGS(cxn), auxiliary_id);
 
             /* Aux cxns have a different echo frequency than main connection */
             if (auxiliary_id != 0) {
@@ -696,8 +689,7 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
         return INDIGO_ERROR_PARAM;
     }
 
-    LOG_INFO("Connection remove: %s, aux_id: %d", cxn_id_ip_string(cxn_id),
-             connection[cxn_id].auxiliary_id);
+    LOG_INFO("Connection remove: " CXN_FMT, CXN_FMT_ARGS(CXN_ID_TO_CONNECTION(cxn_id)));
 
     if (CONNECTION_STATE(&connection[cxn_id]) != INDIGO_CXN_S_DISCONNECTED) {
         connection[cxn_id].flags |= CXN_TO_BE_REMOVED;
@@ -776,26 +768,26 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
 
     /* Check to make sure this is not a local connection */
     if (CXN_LOCAL(cxn)) {
-        LOG_ERROR("Aux cxn request received on local connection %s",
-                  cxn_ip_string(cxn));
+        LOG_ERROR("Aux cxn request received on local connection " CXN_FMT,
+                  CXN_FMT_ARGS(cxn));
         return 1;
     }
 
     /* Check if this is the main connection of the attached controller */
     if (cxn->auxiliary_id != 0) {
-        LOG_ERROR("Aux cxn request received on non main connection %s, "
-                  "with aux id %d", cxn_ip_string(cxn), cxn->auxiliary_id);
+        LOG_ERROR("Aux cxn request received on non main connection " CXN_FMT ", "
+                  "with aux id %d", CXN_FMT_ARGS(cxn), cxn->auxiliary_id);
         return 1;
     } 
 
     if (num_aux == cxn->controller->num_aux) {
         LOG_TRACE("Requested num_aux %d is equal to current aux cxn's for "
-                  "controller %s", num_aux, cxn_ip_string(cxn));
+                  "controller " CXN_FMT, num_aux, CXN_FMT_ARGS(cxn));
         return 0;
     } else if (num_aux < cxn->controller->num_aux) {
         LOG_TRACE("Requested num_aux %d is less than current aux cxn's %d for "
-                  "controller %s", num_aux, cxn->controller->num_aux,
-                  cxn_ip_string(cxn));  
+                  "controller " CXN_FMT, num_aux, cxn->controller->num_aux,
+                  CXN_FMT_ARGS(cxn));  
 
         if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) {
             return 1;
@@ -808,8 +800,8 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
             cxn->controller->aux_id_to_cxn_id[idx] = cxn_id;
         }
 
-        LOG_INFO("Aux cxn's for controller %s, changed from %d to %d", 
-                 cxn_ip_string(cxn), cxn->controller->num_aux, num_aux);
+        LOG_INFO("Aux cxn's for controller " CXN_FMT ", changed from %d to %d", 
+                 CXN_FMT_ARGS(cxn), cxn->controller->num_aux, num_aux);
         cxn->controller->num_aux = num_aux; 
     }
     
@@ -1102,8 +1094,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(OF_OBJECT_BUFFER_INDEX(obj, 0)));
 
-    LOG_VERBOSE("cxn %s: Sending %s message xid %u",
-                cxn_ip_string(cxn), of_object_id_str[obj->object_id], xid);
+    LOG_VERBOSE("cxn " CXN_FMT ": Sending %s message xid %u",
+                CXN_FMT_ARGS(cxn), of_object_id_str[obj->object_id], xid);
 
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: send to cxn=%d\n", cxn->cxn_id);
@@ -1213,8 +1205,8 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         return 0;
     }
 
-    LOG_TRACE("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
-              cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
+    LOG_TRACE("Selected aux_id: %d, cxn: " CXN_FMT " for async %s message", auxiliary_id,
+              CXN_FMT_ARGS(*cxn), of_object_id_str[obj->object_id]);
  
     return 1; 
 }
@@ -1483,8 +1475,8 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
 
     xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
 
-    LOG_TRACE("Sending error msg to %s. type %d. code %d.",
-              cxn_id_ip_string(cxn_id), type, code);
+    LOG_TRACE("Sending error msg to " CXN_FMT ". type %d. code %d.",
+              CXN_FMT_ARGS(CXN_ID_TO_CONNECTION(cxn_id)), type, code);
 
     if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
         LOG_ERROR("Could not allocate error message");
@@ -1560,7 +1552,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
     INDIGO_ASSERT(listen_cxn->sd == socket_id);
 
     if (error_seen) {
-        LOG_ERROR("Error seen on connection %s", cxn_ip_string(listen_cxn));
+        LOG_ERROR("Error seen on connection " CXN_FMT, CXN_FMT_ARGS(listen_cxn));
         /* @todo What to do on socket error */
         ++ind_cxn_internal_errors;
         /* Close the socket? */
@@ -1569,8 +1561,8 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     /* Ready for an accept */
     if (!read_ready) {
-        LOG_ERROR("Error: read not ready for connection %s",
-                  cxn_ip_string(listen_cxn));
+        LOG_ERROR("Error: read not ready for connection " CXN_FMT,
+                  CXN_FMT_ARGS(listen_cxn));
         /* @todo What to do on socket error */
         ++ind_cxn_internal_errors;
         /* Close the socket? */
@@ -1747,10 +1739,10 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
 
     FOREACH_ACTIVE_CXN(cxn_id, cxn) {
         cxn_count++;
-        aim_printf(pvs, "Stats for%s%s connection %s:\n",
+        aim_printf(pvs, "Stats for%s%s connection " CXN_FMT ":\n",
                    CXN_LOCAL(cxn) ? " local" : "",
                    CXN_LISTEN(cxn) ? " listening" : "",
-                   cxn_ip_string(cxn));
+                   CXN_FMT_ARGS(cxn));
         aim_printf(pvs, "    Id: %d.\n", cxn_id);
         aim_printf(pvs, "    Auxiliary Id: %d.\n", cxn->auxiliary_id);
         aim_printf(pvs, "    Controller Id: %d.\n", 

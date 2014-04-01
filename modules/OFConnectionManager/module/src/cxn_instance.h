@@ -191,6 +191,15 @@ typedef struct connection_s {
 #define CONTROLLER_ACTIVE(controller) ((controller)->active)
 
 /**
+ * Printf format and arguments macros
+ */
+#define CXN_FMT "%s:%d:%d"
+#define CXN_FMT_ARGS(cxn) \
+    get_connection_params(cxn)->tcp_over_ipv4.controller_ip, \
+    get_connection_params(cxn)->tcp_over_ipv4.controller_port, \
+    (cxn)->auxiliary_id
+
+/**
  * The connection state of connection
  *
  * @fixme Expose timeout for connecting and closing states
@@ -276,16 +285,6 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
     snprintf(ip_print_buf, 64, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
 
     return ip_print_buf;
-}
-
-/* As above, but based on a connection ID */
-static inline char *
-cxn_ip_string(connection_t *cxn)
-{
-    char *cxn_print_buf = proto_ip_string(get_connection_params(cxn));
-    int len = strlen(cxn_print_buf);
-    snprintf(&cxn_print_buf[len], 64 - len, ":%d", cxn->auxiliary_id);
-    return cxn_print_buf;
 }
 
 void ind_cxn_register_debug_counters(connection_t *cxn);

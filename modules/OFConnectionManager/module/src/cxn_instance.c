@@ -50,15 +50,15 @@
 
 /* Short hand logging macros */
 #define LOG_ERROR(cxn, fmt, ...)                                        \
-    AIM_LOG_ERROR("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+    AIM_LOG_ERROR("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_WARN(cxn, fmt, ...)                                        \
-    AIM_LOG_WARN("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+    AIM_LOG_WARN("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_INFO(cxn, fmt, ...)                                         \
-    AIM_LOG_INFO("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+    AIM_LOG_INFO("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_VERBOSE(cxn, fmt, ...)                                      \
-    AIM_LOG_VERBOSE("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+    AIM_LOG_VERBOSE("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_TRACE(cxn, fmt, ...)                                        \
-    AIM_LOG_TRACE("cxn %s: " fmt, cxn_ip_string(cxn), ##__VA_ARGS__)
+    AIM_LOG_TRACE("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 
 #define NO_CXN_LOG_VERBOSE(fmt, ...)                                    \
     AIM_LOG_VERBOSE(fmt, ##__VA_ARGS__)
@@ -1216,8 +1216,8 @@ process_message(connection_t *cxn)
     }
 
     if(cxn->trace_pvs) {
-        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn %s\n",
-                   cxn_ip_string(cxn));
+        aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn " CXN_FMT "\n",
+                   CXN_FMT_ARGS(cxn));
         of_object_dump((loci_writer_f)aim_printf, cxn->trace_pvs, obj);
         aim_printf(cxn->trace_pvs, "**\n\n");
     }
@@ -1653,7 +1653,7 @@ ind_cxn_register_debug_counters(connection_t *cxn)
 
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         char name[DEBUG_COUNTER_NAME_SIZE];
-        aim_snprintf(name, sizeof(name), "cxn.%s.rx.%s", cxn_ip_string(cxn), of_object_id_str[i]+skip);
+        aim_snprintf(name, sizeof(name), "cxn." CXN_FMT ".rx.%s", CXN_FMT_ARGS(cxn), of_object_id_str[i]+skip);
         name[sizeof(name)-1] = '\0';
         char *description = "Message received by the switch";
         debug_counter_register(&cxn->rx_counters[i], aim_strdup(name), description);
@@ -1661,7 +1661,7 @@ ind_cxn_register_debug_counters(connection_t *cxn)
 
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         char name[DEBUG_COUNTER_NAME_SIZE];
-        aim_snprintf(name, sizeof(name), "cxn.%s.tx.%s", cxn_ip_string(cxn), of_object_id_str[i]+skip);
+        aim_snprintf(name, sizeof(name), "cxn." CXN_FMT ".tx.%s", CXN_FMT_ARGS(cxn), of_object_id_str[i]+skip);
         name[sizeof(name)-1] = '\0';
         char *description = "Message sent from the switch";
         debug_counter_register(&cxn->tx_counters[i], aim_strdup(name), description);
