@@ -485,7 +485,8 @@ void indigo_cxn_async_channel_selector_unregister(
  * When a barrier blocker is created with indigo_cxn_block_barrier a
  * reference count is incremented on the connection. When the barrier
  * blocker is destroyed with indigo_cxn_unblock_barrier, the reference
- * count is decremented.
+ * count is decremented. No barrier reply will be sent in response to
+ * a barrier request until the reference count is zero.
  *
  * On debug builds, an extra allocation is performed so that we can use
  * Valgrind to debug reference counting errors. A missing unblock will
