@@ -1208,7 +1208,6 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         for (idx = 0; idx <= ctrl->num_aux; ++idx) {
             cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[idx]);
             cxn_state[idx] = CONNECTION_STATE(cxn);
-            LOG_INFO("Aux: %d, state: %s", idx, CXN_STATE_NAME(cxn_state[idx])); 
         }
  
         (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux, 
@@ -1224,8 +1223,8 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         return 0;
     }
 
-    LOG_INFO("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
-             cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
+    LOG_TRACE("Selected aux_id: %d, cxn: %s for async %s message", auxiliary_id,  
+              cxn_ip_string(*cxn), of_object_id_str[obj->object_id]);  
  
     return 1; 
 }
