@@ -550,7 +550,6 @@ listen_cxn_init(connection_t *cxn)
 
     /* Register with the scoket manager */
 
-    LOG_INFO("Added local connection: " CXN_FMT, CXN_FMT_ARGS(cxn));
     return INDIGO_ERROR_NONE;
 }
 
@@ -645,9 +644,11 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
 {
     connection_t *cxn = NULL;
     indigo_error_t rv = INDIGO_ERROR_NONE;
+    controller_t *ctrl = ID_TO_CONTROLLER(controller_id);
 
-    LOG_INFO("Connection add: %s:%d, with aux_id: %d", proto_ip_string( 
-             &controllers[controller_id].protocol_params), auxiliary_id);
+    LOG_INFO("Connection add: %s:%d",
+             proto_ip_string(&ctrl->protocol_params),
+             auxiliary_id);
 
     INDIGO_ASSERT(cxn_id != NULL);
 
@@ -666,8 +667,6 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
         } else {
             /* Aux id is only relevant for remote connections */
             cxn->auxiliary_id = auxiliary_id;
-            LOG_INFO("Added remote connection: " CXN_FMT " with aux id: %d", 
-                     CXN_FMT_ARGS(cxn), auxiliary_id);
 
             /* Aux cxns have a different echo frequency than main connection */
             if (auxiliary_id != 0) {
@@ -845,8 +844,9 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_RESOURCE;
     }
 
-    LOG_INFO("Controller add: %s, Version: %d", 
-             proto_ip_string(protocol_params), config_params->version);
+    LOG_INFO("Controller add: %s (%s)",
+             proto_ip_string(protocol_params),
+             config_params->listen ? "listen" : "remote");
 
     ctrl = ID_TO_CONTROLLER(*controller_id);   
     
