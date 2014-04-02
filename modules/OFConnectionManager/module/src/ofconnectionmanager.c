@@ -219,7 +219,7 @@ void *cxn_to_cookie(connection_t *cxn)
         cookie = (void *)
             ((uintptr_t)
              (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
-              (cxn->cxn_id & CXN_ID_MASK)) + 1);
+              (cxn->cxn_id & CXN_ID_MASK)) + 1 /* Ensure no NULLs */);
     } else {
         cookie = NULL;
     }
@@ -228,7 +228,7 @@ void *cxn_to_cookie(connection_t *cxn)
 
 connection_t* cookie_to_cxn(void* cookie)
 {
-    uintptr_t val = (uintptr_t) cookie - 1;
+    uintptr_t val = (uintptr_t) cookie - 1 /* Reverse "ensure no NULLs" */;
     uint32_t gen_id = (val >> GEN_ID_SHIFT) & GEN_ID_MASK;
     indigo_cxn_id_t cxn_id = val & CXN_ID_MASK;
 
