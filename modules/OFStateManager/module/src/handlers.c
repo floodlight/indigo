@@ -604,7 +604,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, modify_iter_cb, state,
-                            IND_SOC_DEFAULT_PRIORITY);
+                            IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         indigo_cxn_unblock_barrier(&state->blocker);
         of_object_delete(state->request);
@@ -711,7 +711,7 @@ ind_core_flow_delete_handler(of_object_t *obj, indigo_cxn_id_t cxn_id)
     indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, delete_iter_cb, state,
-                            IND_SOC_DEFAULT_PRIORITY);
+                            IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
@@ -952,7 +952,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter,
-                            state, IND_SOC_DEFAULT_PRIORITY);
+                            state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
         indigo_cxn_unblock_barrier(&state->blocker);
@@ -1062,7 +1062,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
-                            state, IND_SOC_DEFAULT_PRIORITY);
+                            state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
         indigo_cxn_unblock_barrier(&state->blocker);

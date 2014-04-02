@@ -83,7 +83,7 @@ static int module_enabled = 0;
 typedef struct soc_map_s {
     short socket_id;
     uint16_t pollfd_index;
-    int priority;
+    ind_soc_priority_t priority;
     ind_soc_socket_ready_callback_f callback;
     void *cookie;
 } soc_map_t;
@@ -115,7 +115,7 @@ typedef struct timer_event_s {
     ind_soc_timer_callback_f callback;
     void *cookie;
     int repeat_time_ms;
-    int priority;
+    ind_soc_priority_t priority;
 } timer_event_t;
 
 static timer_event_t timer_event[SOCKETMANAGER_CONFIG_MAX_TIMERS];
@@ -135,7 +135,7 @@ typedef struct ind_soc_task_s {
     list_links_t links; /* global tasks */
     ind_soc_task_callback_f callback;
     void *cookie;
-    int priority;
+    ind_soc_priority_t priority;
 } ind_soc_task_t;
 
 /* Sorted in descending priority order */
@@ -194,9 +194,12 @@ indigo_error_t
 ind_soc_socket_register_with_priority(int socket_id,
                                       ind_soc_socket_ready_callback_f callback,
                                       void *cookie,
-                                      int priority)
+                                      ind_soc_priority_t priority)
 {
     struct pollfd *pfd;
+
+    AIM_ASSERT(priority >= IND_SOC_LOWEST_PRIORITY &&
+               priority <= IND_SOC_HIGHEST_PRIORITY);
 
     LOG_VERBOSE("Register socket %d", socket_id);
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
@@ -236,7 +239,7 @@ ind_soc_socket_register(int socket_id,
                         void *cookie)
 {
     return ind_soc_socket_register_with_priority(
-        socket_id, callback, cookie, IND_SOC_DEFAULT_PRIORITY);
+        socket_id, callback, cookie, IND_SOC_NORMAL_PRIORITY);
 }
 
 indigo_error_t
@@ -401,7 +404,7 @@ find_ready_timers(indigo_time_t now)
  * Run callbacks for timer events.
  */
 static void
-process_timers(int priority)
+process_timers(ind_soc_priority_t priority)
 {
     indigo_time_t now;
     ind_soc_timer_callback_f callback;
@@ -461,9 +464,12 @@ timer_is_ready(timer_event_t *timer)
 indigo_error_t
 ind_soc_timer_event_register_with_priority(
     ind_soc_timer_callback_f callback, void *cookie,
-    int repeat_time_ms, int priority)
+    int repeat_time_ms, ind_soc_priority_t priority)
 {
     int idx;
+
+    AIM_ASSERT(priority >= IND_SOC_LOWEST_PRIORITY &&
+               priority <= IND_SOC_HIGHEST_PRIORITY);
 
     if (callback == NULL) {
         LOG_ERROR("Null callback for timer register");
@@ -507,7 +513,7 @@ ind_soc_timer_event_register(
     int repeat_time_ms)
 {
     return ind_soc_timer_event_register_with_priority(
-        callback, cookie, repeat_time_ms, IND_SOC_DEFAULT_PRIORITY);
+        callback, cookie, repeat_time_ms, IND_SOC_NORMAL_PRIORITY);
 }
 
 indigo_error_t
@@ -576,9 +582,12 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
 
 indigo_error_t
 ind_soc_task_register(ind_soc_task_callback_f callback,
-                      void *cookie, int priority)
+                      void *cookie, ind_soc_priority_t priority)
 {
     list_links_t *cur;
+
+    AIM_ASSERT(priority >= IND_SOC_LOWEST_PRIORITY &&
+               priority <= IND_SOC_HIGHEST_PRIORITY);
 
     ind_soc_task_t *task = aim_malloc(sizeof(*task));
     task->callback = callback;
@@ -700,7 +709,7 @@ ind_soc_should_yield(void)
  * Run callbacks for each ready socket.
  */
 static void
-process_sockets(int priority)
+process_sockets(ind_soc_priority_t priority)
 {
     int i;
     for (i = 0; i < num_pollfds; i++) {
@@ -731,7 +740,7 @@ process_sockets(int priority)
  * Run callbacks for each task.
  */
 static void
-process_tasks(int priority)
+process_tasks(ind_soc_priority_t priority)
 {
     struct list_links *cur, *next;
     LIST_FOREACH_SAFE(&tasks, cur, next) {
@@ -757,7 +766,7 @@ static int
 find_highest_ready_priority(void)
 {
     int idx;
-    int priority = INT_MIN;
+    ind_soc_priority_t priority = IND_SOC_LOWEST_PRIORITY;
     list_links_t *cur;
 
     for (idx = 0; idx < num_pollfds; idx++) {
@@ -796,7 +805,7 @@ ind_soc_select_and_run(int run_for_ms)
     indigo_time_t start, current;
     int elapsed;
     int next_timer_ms, timeout_ms;
-    int priority;
+    ind_soc_priority_t priority;
 
     ind_soc_run_status_set(IND_SOC_RUN_STATUS_OK);
 

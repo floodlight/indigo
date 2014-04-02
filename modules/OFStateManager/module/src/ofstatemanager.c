@@ -740,7 +740,7 @@ ind_core_enable_set(int enable)
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_register_with_priority(
                 ind_core_expiration_timer, NULL,
-                ind_core_config.stats_check_ms, -10);
+                ind_core_config.stats_check_ms, IND_SOC_LOW_PRIORITY);
         }
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {

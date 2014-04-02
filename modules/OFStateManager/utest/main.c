@@ -942,7 +942,7 @@ test_ft_iter_task(void)
     TEST_INDIGO_OK(ft_add(ft, 2, flow_add2, &entry2));
 
     state = (struct iter_task_state) { .ft = ft, .finished = -1, .entries_seen = 0 };
-    ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_DEFAULT_PRIORITY);
+    ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_NORMAL_PRIORITY);
     TEST_ASSERT(state.finished == -1);
     TEST_ASSERT(state.entries_seen == 0);
     TEST_ASSERT(ft->current_count == 2);
