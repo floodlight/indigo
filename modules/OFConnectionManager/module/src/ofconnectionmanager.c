@@ -844,9 +844,10 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_RESOURCE;
     }
 
-    LOG_INFO("Controller add: %s (%s)",
+    LOG_INFO("Controller add: %s (%s, v%d)",
              proto_ip_string(protocol_params),
-             config_params->listen ? "listen" : "remote");
+             config_params->listen ? "listen" : "remote",
+             config_params->version);
 
     ctrl = ID_TO_CONTROLLER(*controller_id);   
     
