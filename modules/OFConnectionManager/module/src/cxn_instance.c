@@ -897,23 +897,7 @@ cxn_object_delete_cb(of_object_t *obj)
     LOG_TRACE(cxn, "Delete message object %p of type %s",
               obj, of_object_id_str[obj->object_id]);
 
-    INDIGO_ASSERT(cxn->outstanding_op_cnt > 0);
-    cxn->outstanding_op_cnt -= 1;
-
-    LOG_TRACE(cxn, "Op count %d", cxn->outstanding_op_cnt);
-
-    /* Check if outstanding ops is now 0 and clean up if needed */
-    if (cxn->outstanding_op_cnt == 0) {
-        if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
-            LOG_TRACE(cxn, "Op count 0, disconnecting");
-            cxn_state_set(cxn, INDIGO_CXN_S_DISCONNECTED);
-        } else if (cxn->barrier.pendingf) {
-            LOG_TRACE(cxn, "Op count 0, sending barrier reply");
-            send_barrier_reply(cxn);
-            cxn->barrier.pendingf = 0;
-            (void)ind_soc_data_in_resume(cxn->sd);
-        }
-    }
+    ind_cxn_unblock_barrier(cxn);
 }
 
 
@@ -932,7 +916,46 @@ cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
 {
     obj->track_info.delete_cb = cxn_object_delete_cb;
     obj->track_info.delete_cookie = cxn_to_cookie(cxn);
+    ind_cxn_block_barrier(cxn);
+}
+
+
+/**
+ * Increment the outstanding op count
+ * @param cxn
+ */
+
+void
+ind_cxn_block_barrier(connection_t *cxn)
+{
     cxn->outstanding_op_cnt++;
+}
+
+/**
+ * Decrement the outstanding op count and possibly send a barrier reply
+ * @param cxn
+ */
+
+void
+ind_cxn_unblock_barrier(connection_t *cxn)
+{
+    INDIGO_ASSERT(cxn->outstanding_op_cnt > 0);
+    cxn->outstanding_op_cnt -= 1;
+
+    LOG_TRACE(cxn, "Op count %d", cxn->outstanding_op_cnt);
+
+    /* Check if outstanding ops is now 0 and clean up if needed */
+    if (cxn->outstanding_op_cnt == 0) {
+        if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
+            LOG_TRACE(cxn, "Op count 0, disconnecting");
+            cxn_state_set(cxn, INDIGO_CXN_S_DISCONNECTED);
+        } else if (cxn->barrier.pendingf) {
+            LOG_TRACE(cxn, "Op count 0, sending barrier reply");
+            send_barrier_reply(cxn);
+            cxn->barrier.pendingf = 0;
+            (void)ind_soc_data_in_resume(cxn->sd);
+        }
+    }
 }
 
 

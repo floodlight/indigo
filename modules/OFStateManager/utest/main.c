@@ -84,7 +84,6 @@ int test_table(void);
  * Track messages in flight like OFConnectionManager does, for barriers
  */
 static int outstanding_op_cnt;
-static void message_deleted(of_object_t *obj);
 
 /****************************************************************
  * Stubs
@@ -224,16 +223,19 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
-ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj)
+void
+indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id,
+		         indigo_cxn_barrier_blocker_t *blocker)
 {
-    AIM_LOG_VERBOSE("Cxn message track cxn id %d, obj type %d\n",
-                         cxn_id, obj->object_id);
     assert(outstanding_op_cnt >= 0);
     outstanding_op_cnt++;
-    obj->track_info.delete_cb = message_deleted;
-    obj->track_info.delete_cookie = NULL;
-    return INDIGO_ERROR_NONE;
+}
+
+void
+indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
+{
+    assert(outstanding_op_cnt > 0);
+    outstanding_op_cnt--;
 }
 
 indigo_error_t
@@ -467,13 +469,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
     TEST_ASSERT(count == expected);
 
     return 0;
-}
-
-static void
-message_deleted(of_object_t *obj)
-{
-    assert(outstanding_op_cnt > 0);
-    outstanding_op_cnt--;
 }
 
 void

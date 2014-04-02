@@ -234,7 +234,9 @@ typedef struct indigo_core_gentable_ops {
      * @param [out] entry_priv Opaque private data for the entry, passed back
      *                         whenever another operation is made on the entry.
      */
-    indigo_error_t (*add)(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv);
+    indigo_error_t (*add)(
+        void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
+        void **entry_priv);
 
     /**
      * @brief Modify an entry
@@ -243,7 +245,9 @@ typedef struct indigo_core_gentable_ops {
      * @param key Entry key (identical to key from add)
      * @param value New entry value
      */
-    indigo_error_t (*modify)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value);
+    indigo_error_t (*modify)(
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_list_bsn_tlv_t *value);
 
     /**
      * @brief Delete an entry
@@ -251,7 +255,8 @@ typedef struct indigo_core_gentable_ops {
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
      */
-    indigo_error_t (*del)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key);
+    indigo_error_t (*del)(
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key);
 
     /**
      * @brief Get stats for an entry
@@ -260,7 +265,9 @@ typedef struct indigo_core_gentable_ops {
      * @param key Entry key (identical to key from add)
      * @param stats Stats list to be filled in
      */
-    void (*get_stats)(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *stats);
+    void (*get_stats)(
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_list_bsn_tlv_t *stats);
 } indigo_core_gentable_ops_t;
 
 /*
@@ -367,46 +374,61 @@ typedef struct indigo_core_table_ops_s {
     /**
      * Add an entry to the table
      * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
      * @param obj Flow-add message
      * @param flow_id Flow ID (only for use with indigo_core_flow_removed)
      * @param [out] entry_priv Private data for this flow
      */
-    indigo_error_t (*entry_create)(void *table_priv, of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv);
+    indigo_error_t (*entry_create)(
+        void *table_priv, indigo_cxn_id_t cxn_id, of_flow_add_t *obj,
+        indigo_cookie_t flow_id, void **entry_priv);
 
     /**
      * Modify an entry in the table
      * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
      * @param entry_priv Private data returned by the entry_create operation
      * @param obj Flow-modify message
      */
-    indigo_error_t (*entry_modify)(void *table_priv, void *entry_priv, of_flow_modify_strict_t *obj);
+    indigo_error_t (*entry_modify)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
+        of_flow_modify_strict_t *obj);
 
     /**
      * Delete an entry from the table
      * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
      * @param entry_priv Private data returned by the entry_create operation
      * @param [out] flow_stats Final stats
      *
      * No further operations will be called with entry_priv, so the
      * implementation should deallocate it.
      */
-    indigo_error_t (*entry_delete)(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats);
+    indigo_error_t (*entry_delete)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
+        indigo_fi_flow_stats_t *flow_stats);
 
     /**
      * Retrieve stats for an entry
      * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
      * @param entry_priv Private data returned by the entry_create operation
      * @param [out] flow_stats Current stats
      */
-    indigo_error_t (*entry_stats_get)(void *table_priv, void *entry_priv, indigo_fi_flow_stats_t *flow_stats);
+    indigo_error_t (*entry_stats_get)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
+        indigo_fi_flow_stats_t *flow_stats);
 
     /**
      * Retrieve and reset hit status for an entry
      * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
      * @param entry_priv Private data returned by the entry_create operation
      * @param [out] hit_status True if entry hit since last time API was called
      */
-    indigo_error_t (*entry_hit_status_get)(void *table_priv, void *entry_priv, bool *hit_status);
+    indigo_error_t (*entry_hit_status_get)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
+        bool *hit_status);
 } indigo_core_table_ops_t;
 
 /**

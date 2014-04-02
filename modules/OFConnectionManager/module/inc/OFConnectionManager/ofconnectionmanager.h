@@ -89,20 +89,6 @@ extern indigo_error_t ind_cxn_finish(void);
 
 
 /**
- * Track objects for outstanding op count
- *
- * @param cxn The connection requesting the op
- * @param obj The object associated with the request
- *
- * This function is exposed to allow other agents to register duplicates
- * of messages that are generated to process complex operations.
- * It is mostly used for tracking objects as required for barrier processing.
- */
-
-extern indigo_error_t
-ind_cxn_message_track_setup(indigo_cxn_id_t cxn_id, of_object_t *obj);
-
-/**
  * Set the pvs (I/O mgmt structure) to the given value
  *
  * @param cxn_id The Connection ID to set.
