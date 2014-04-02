@@ -357,13 +357,13 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         if (obj->version == OF_VERSION_1_0) {
             /* Delete existing flow */
-            ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE);
+            ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
         } else {
             /* Overwrite existing flow */
             LOG_TRACE("Overwriting existing flow");
             ind_core_table_t *table = ind_core_table_get(entry->table_id);
             if (table != NULL) {
-                rv = table->ops->entry_modify(table->priv, entry->priv, obj);
+                rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
             } else {
                 rv = indigo_fwd_flow_modify(entry->id, obj);
             }
@@ -400,7 +400,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     ind_core_table_t *table = ind_core_table_get(table_id);
     if (table != NULL) {
-        rv = table->ops->entry_create(table->priv, obj, flow_id, &entry->priv);
+        rv = table->ops->entry_create(table->priv, cxn_id,
+                                      obj, flow_id, &entry->priv);
     } else {
         rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
     }
@@ -532,6 +533,7 @@ flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
 struct flow_modify_state {
     of_flow_modify_t *request;
     indigo_cxn_id_t cxn_id;
+    indigo_cxn_barrier_blocker_t blocker;
     int num_matched;
 };
 
@@ -546,7 +548,8 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         state->num_matched++;
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
-            rv = table->ops->entry_modify(table->priv, entry->priv, state->request);
+            rv = table->ops->entry_modify(table->priv, state->cxn_id,
+                                          entry->priv, state->request);
         } else {
             rv = indigo_fwd_flow_modify(entry->id, state->request);
         }
@@ -566,6 +569,7 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         } else {
             LOG_TRACE("Finished flow modify task");
         }
+        indigo_cxn_unblock_barrier(&state->blocker);
         of_object_delete(state->request);
         aim_free(state);
     }
@@ -586,7 +590,7 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
 
     struct flow_modify_state *state = aim_malloc(sizeof(*state));
-    state->request = ind_core_dup_tracking(obj, cxn_id);
+    state->request = of_object_dup(obj);
     state->num_matched = 0;
     state->cxn_id = cxn_id;
 
@@ -597,9 +601,12 @@ ind_core_flow_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
 
+    indigo_cxn_block_barrier(cxn_id, &state->blocker);
+
     rv = ft_spawn_iter_task(ind_core_ft, &query, modify_iter_cb, state,
                             IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
+        indigo_cxn_unblock_barrier(&state->blocker);
         of_object_delete(state->request);
         aim_free(state);
         return;
@@ -641,7 +648,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_modify(table->priv, entry->priv, obj);
+        rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
     } else {
         rv = indigo_fwd_flow_modify(entry->id, obj);
     }
@@ -657,17 +664,23 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
 /****************************************************************/
 
+/* State for non-strict flow-delete iteration */
+struct flow_delete_state {
+    indigo_cxn_id_t cxn_id;
+    indigo_cxn_barrier_blocker_t blocker;
+};
+
 /* Flowtable iterator for ind_core_flow_delete_handler */
 static void
 delete_iter_cb(void *cookie, ft_entry_t *entry)
 {
-    struct flow_modify_state *state = cookie;
+    struct flow_delete_state *state = cookie;
 
     if (entry != NULL) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, state->cxn_id);
     } else {
         LOG_TRACE("Finished flow delete task");
-        of_object_delete(state->request);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
     }
 }
@@ -686,22 +699,21 @@ ind_core_flow_delete_handler(of_object_t *obj, indigo_cxn_id_t cxn_id)
     of_meta_match_t query;
     indigo_error_t rv;
 
-    struct flow_modify_state *state = aim_malloc(sizeof(*state));
-    state->request = ind_core_dup_tracking(obj, cxn_id);
-    state->num_matched = 0;
-    state->cxn_id = cxn_id;
+    struct flow_delete_state *state = aim_malloc(sizeof(*state));
 
     rv = flow_mod_setup_query(obj, &query, OF_MATCH_NON_STRICT, 0);
     if (rv != INDIGO_ERROR_NONE) {
-        of_object_delete(state->request);
         aim_free(state);
         return;
     }
 
+    state->cxn_id = cxn_id;
+    indigo_cxn_block_barrier(cxn_id, &state->blocker);
+
     rv = ft_spawn_iter_task(ind_core_ft, &query, delete_iter_cb, state,
                             IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        of_object_delete(state->request);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
         return;
     }
@@ -729,7 +741,7 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
-        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE);
+        ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, cxn_id);
     }
 }
 
@@ -771,7 +783,9 @@ ind_core_get_config_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
 struct ind_core_flow_stats_state {
     indigo_cxn_id_t cxn_id;
-    of_flow_stats_request_t *req;
+    of_version_t version;
+    uint32_t xid;
+    indigo_cxn_barrier_blocker_t blocker;
     indigo_time_t current_time;
     of_flow_stats_reply_t *reply;
 };
@@ -785,22 +799,19 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 
     /* Allocate a reply if we don't already have one. */
     if (state->reply == NULL) {
-        uint32_t xid;
-
-        state->reply = of_flow_stats_reply_new(state->req->version);
+        state->reply = of_flow_stats_reply_new(state->version);
         if (state->reply == NULL) {
             LOG_ERROR("Failed to allocate of_flow_stats_reply.");
             if (entry == NULL) {
                 /* This is the last callback, so need to clean up
                  * before returning. */
-                of_flow_stats_request_delete(state->req);
+                indigo_cxn_unblock_barrier(&state->blocker);
                 aim_free(state);
             }
             return;
         }
 
-        of_flow_stats_request_xid_get(state->req, &xid);
-        of_flow_stats_reply_xid_set(state->reply, xid);
+        of_flow_stats_reply_xid_set(state->reply, state->xid);
         of_flow_stats_reply_flags_set(state->reply, 1);
     }
 
@@ -810,7 +821,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         indigo_cxn_send_controller_message(state->cxn_id, state->reply);
 
         /* Clean up state */
-        of_flow_stats_request_delete(state->req);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
         return;
     }
@@ -824,7 +835,8 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+        rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                         entry->priv, &flow_stats);
     } else {
         rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
     }
@@ -836,10 +848,10 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     }
 
     /* Skip entry if stats request version is not equal to entry version */
-    if (state->req->version != entry->effects.actions->version) {
+    if (state->version != entry->effects.actions->version) {
         LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
                   "Entry is skipped.",
-                  state->req->version, entry->effects.actions->version);
+                  state->version, entry->effects.actions->version);
         return;
     }
 
@@ -932,16 +944,18 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     query.mode = OF_MATCH_NON_STRICT;
 
     state = aim_malloc(sizeof(*state));
-    state->req = ind_core_dup_tracking(obj, cxn_id);
     state->cxn_id = cxn_id;
+    state->version = obj->version;
+    of_flow_stats_request_xid_get(obj, &state->xid);
     state->current_time = INDIGO_CURRENT_TIME;
     state->reply = NULL;
+    indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter,
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
-        of_object_delete(state->req);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
     }
 }
@@ -949,11 +963,13 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 /****************************************************************/
 
 struct ind_core_aggregate_stats_state {
+    indigo_cxn_id_t cxn_id;
+    of_version_t version;
+    uint32_t xid;
+    indigo_cxn_barrier_blocker_t blocker;
     uint64_t packets;
     uint64_t bytes;
     uint32_t flows;
-    indigo_cxn_id_t cxn_id;
-    of_aggregate_stats_request_t *req;
 };
 
 static void
@@ -972,7 +988,8 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
 
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
-            rv = table->ops->entry_stats_get(table->priv, entry->priv, &flow_stats);
+            rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                             entry->priv, &flow_stats);
         } else {
             rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
         }
@@ -987,12 +1004,10 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
         state->packets += flow_stats.packets;
         state->flows += 1;
     } else {
-        uint32_t xid;
         of_aggregate_stats_reply_t* reply;
-        of_aggregate_stats_request_xid_get(state->req, &xid);
-        reply = of_aggregate_stats_reply_new(state->req->version);
+        reply = of_aggregate_stats_reply_new(state->version);
         if (reply != NULL) {
-            of_aggregate_stats_reply_xid_set(reply, xid);
+            of_aggregate_stats_reply_xid_set(reply, state->xid);
             of_aggregate_stats_reply_byte_count_set(reply, state->bytes);
             of_aggregate_stats_reply_packet_count_set(reply, state->packets);
             of_aggregate_stats_reply_flow_count_set(reply, state->flows);
@@ -1000,7 +1015,7 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
         } else {
             LOG_ERROR("Failed to allocate aggregate stats reply.");
         }
-        of_aggregate_stats_request_delete(state->req);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
     }
 }
@@ -1039,16 +1054,18 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
 
     state = aim_malloc(sizeof(*state));
     state->cxn_id = cxn_id;
-    state->req = ind_core_dup_tracking(obj, cxn_id);
+    state->version = obj->version;
+    of_aggregate_stats_request_xid_get(obj, &state->xid);
     state->packets = 0;
     state->bytes = 0;
     state->flows = 0;
+    indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
                             state, IND_SOC_DEFAULT_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
-        of_object_delete(state->req);
+        indigo_cxn_unblock_barrier(&state->blocker);
         aim_free(state);
         return;
     }

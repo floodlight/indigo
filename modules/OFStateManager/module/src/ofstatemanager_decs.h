@@ -39,7 +39,8 @@ extern ind_core_of_config_t ind_core_of_config;
 extern ft_instance_t ind_core_ft;
 
 extern void ind_core_flow_entry_delete(ft_entry_t *entry,
-                                       indigo_fi_flow_removed_t reason);
+                                       indigo_fi_flow_removed_t reason,
+                                       indigo_cxn_id_t cxn_id);
 
 void ind_core_group_init(void);
 

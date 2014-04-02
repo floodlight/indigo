@@ -41,7 +41,8 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     ft_entry_t *entry;
     FT_ITER(ind_core_ft, entry, cur, next) {
         if (entry->table_id == table_id) {
-            ind_core_flow_entry_delete(entry, OF_FLOW_REMOVED_REASON_DELETE);
+            ind_core_flow_entry_delete(entry, OF_FLOW_REMOVED_REASON_DELETE,
+                                       INDIGO_CXN_ID_UNSPECIFIED);
         }
     }
 
@@ -65,7 +66,8 @@ void indigo_core_table_unregister(uint8_t table_id)
     ft_entry_t *entry;
     FT_ITER(ind_core_ft, entry, cur, next) {
         if (entry->table_id == table_id) {
-            ind_core_flow_entry_delete(entry, OF_FLOW_REMOVED_REASON_DELETE);
+            ind_core_flow_entry_delete(entry, OF_FLOW_REMOVED_REASON_DELETE,
+                                       INDIGO_CXN_ID_UNSPECIFIED);
         }
     }
 

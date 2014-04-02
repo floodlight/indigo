@@ -94,7 +94,7 @@ expire_flow(ft_entry_t *entry, int reason)
         LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                   entry->hard_timeout,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-        ind_core_flow_entry_delete(entry, reason);
+        ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
     } else if (reason == OF_FLOW_REMOVED_REASON_IDLE_TIMEOUT) {
         int rv;
         bool hit;
@@ -102,7 +102,8 @@ expire_flow(ft_entry_t *entry, int reason)
         /* Get hit status for idle timeouts */
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
         if (table != NULL) {
-            rv = table->ops->entry_hit_status_get(table->priv, entry->priv, &hit);
+            rv = table->ops->entry_hit_status_get(table->priv, INDIGO_CXN_ID_UNSPECIFIED,
+                                                  entry->priv, &hit);
         } else {
             rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
         }
@@ -128,7 +129,7 @@ expire_flow(ft_entry_t *entry, int reason)
                 LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
                           entry->idle_timeout,
                           INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
-                ind_core_flow_entry_delete(entry, reason);
+                ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
             }
         }
     }

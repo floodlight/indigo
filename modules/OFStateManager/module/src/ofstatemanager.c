@@ -640,7 +640,8 @@ ind_core_init(ind_core_config_t *config)
  */
 
 void
-ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
+ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
+                           indigo_cxn_id_t cxn_id)
 {
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats = {
@@ -655,7 +656,7 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason)
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
-        rv = table->ops->entry_delete(table->priv, entry->priv, &flow_stats);
+        rv = table->ops->entry_delete(table->priv, cxn_id, entry->priv, &flow_stats);
     } else {
         rv = indigo_fwd_flow_delete(entry->id, &flow_stats);
     }
@@ -1130,24 +1131,4 @@ indigo_core_stats_get(uint32_t *total_flows,
     debug_counter_reset(&ind_core_flow_mod_counter);
     debug_counter_reset(&ind_core_packet_in_counter);
     debug_counter_reset(&ind_core_packet_out_counter);
-}
-
-
-/**
- * Duplicate a LOXI object and set up tracking
- *
- * Assumes the connection ID is valid, which it will be if called from a
- * message handler.
- *
- * This function does not return NULL.
- */
-
-of_object_t *
-ind_core_dup_tracking(of_object_t *obj, indigo_cxn_id_t cxn_id)
-{
-    of_object_t *new_obj = of_object_dup(obj);
-    AIM_TRUE_OR_DIE(new_obj != NULL);
-    indigo_error_t rv = ind_cxn_message_track_setup(cxn_id, new_obj);
-    AIM_TRUE_OR_DIE(rv == INDIGO_ERROR_NONE);
-    return new_obj;
 }
