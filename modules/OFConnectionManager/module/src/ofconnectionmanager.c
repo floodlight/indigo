@@ -1214,12 +1214,24 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
 
     INDIGO_ASSERT(auxiliary_id <= ctrl->num_aux);
 
-    /* If there is no selector for this application, then we should just try 
+    /* If there is no selector for this application or the selected 
+       channel is not ready for communication, then we should just try 
        to send on the main controller connection */
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
-        return 0;
-    }
+        if (auxiliary_id != 0) {
+            LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
+                      CXN_FMT_ARGS(*cxn), 
+                      CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
+            auxiliary_id = 0;
+            *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
+            if (ind_cxn_accepts_async_message(*cxn) == 0) {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+    } 
 
     LOG_TRACE("Selected aux_id: %d, cxn: " CXN_FMT " for async %s message", auxiliary_id,
               CXN_FMT_ARGS(*cxn), of_object_id_str[obj->object_id]);
