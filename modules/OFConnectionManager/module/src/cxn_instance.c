@@ -875,50 +875,6 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
-/**
- * Callback routine for message object delete
- *
- * @param obj The object about to be deleted
- */
-
-static void
-cxn_object_delete_cb(of_object_t *obj)
-{
-    connection_t *cxn;
-
-    cxn = cookie_to_cxn(obj->track_info.delete_cookie);
-    if (cxn == NULL) {
-        NO_CXN_LOG_VERBOSE("Connection invalid, "
-                           "delete message object %p of type %s",
-                           obj, of_object_id_str[obj->object_id]);
-        return;
-    }
-
-    LOG_TRACE(cxn, "Delete message object %p of type %s",
-              obj, of_object_id_str[obj->object_id]);
-
-    ind_cxn_unblock_barrier(cxn);
-}
-
-
-/**
- * Track objects for outstanding op count
- *
- * @param cxn The connection requesting the op
- * @param obj The object associated with the request
- *
- * This function is exposed to allow other agents to register duplicates
- * of messages that are generated to process complex operations
- */
-
-void
-cxn_message_track_setup(connection_t *cxn, of_object_t *obj)
-{
-    obj->track_info.delete_cb = cxn_object_delete_cb;
-    obj->track_info.delete_cookie = cxn_to_cookie(cxn);
-    ind_cxn_block_barrier(cxn);
-}
-
 
 /**
  * Increment the outstanding op count
