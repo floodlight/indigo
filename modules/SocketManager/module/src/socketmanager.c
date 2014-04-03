@@ -55,6 +55,7 @@
 #include <indigo/time.h>
 #include <indigo/memory.h>
 #include <AIM/aim_list.h>
+#include <timer_wheel/timer_wheel.h>
 
 #include <poll.h>
 #include <unistd.h>
@@ -103,14 +104,23 @@ static int num_pollfds = 0;
  * Lookup is (callback, cookie)
  */
 typedef struct timer_event_s {
+    /*
+     * The timer can either be waiting in the timer wheel, or
+     * ready in the ready list, but not at the same time.
+     */
+    union {
+        timer_wheel_entry_t timer_wheel_entry;
+        list_links_t ready_links;
+    };
     ind_soc_timer_callback_f callback;
     void *cookie;
     int repeat_time_ms;
     int priority;
-    indigo_time_t last_call;
 } timer_event_t;
 
 static timer_event_t timer_event[SOCKETMANAGER_CONFIG_MAX_TIMERS];
+static timer_wheel_t *timer_wheel;
+static list_head_t ready_timers; /* contains timer_event_t through ready_links */
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
 
@@ -176,6 +186,7 @@ soc_mgr_init(void)
     }
 
     list_init(&tasks);
+    list_init(&ready_timers);
 }
 
 
@@ -361,16 +372,29 @@ ind_soc_run_status_set(ind_soc_run_status_t s)
 static int
 find_next_timer_expiration(indigo_time_t now)
 {
-    int idx;
-    int next_ms = -1, elapsed, tmp_ms;
-    FOREACH_TIMER_EVENT(idx) {
-        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
-        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
-        if (next_ms == -1 || tmp_ms < next_ms) {
-            next_ms = tmp_ms > 0 ? tmp_ms : 0;
-        }
+    if (!list_empty(&ready_timers)) {
+        return 0;
     }
-    return next_ms;
+
+    timer_wheel_entry_t *entry =
+        timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
+    if (entry) {
+        return entry->deadline - now;
+    }
+
+    return -1;
+}
+
+/* Pull expired timers off the timer wheel and add them to the ready list */
+static void
+find_ready_timers(indigo_time_t now)
+{
+   timer_wheel_entry_t *entry;
+
+   while ((entry = timer_wheel_next(timer_wheel, now)) != NULL) {
+       timer_event_t *timer = container_of(entry, timer_wheel_entry, timer_event_t);
+       list_push(&ready_timers, &timer->ready_links);
+   }
 }
 
 /*
@@ -379,42 +403,59 @@ find_next_timer_expiration(indigo_time_t now)
 static void
 process_timers(int priority)
 {
-    int idx;
     indigo_time_t now;
-    int elapsed, tmp_ms;
     ind_soc_timer_callback_f callback;
+    list_links_t *cur, *next;
 
     now = INDIGO_CURRENT_TIME;
 
-    FOREACH_TIMER_EVENT(idx) {
+    LIST_FOREACH_SAFE(&ready_timers, cur, next) {
+        timer_event_t *timer = container_of(cur, ready_links, timer_event_t);
+
         if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
             break;
         }
 
-        if (timer_event[idx].priority != priority) {
+        if (timer->priority != priority) {
             continue;
         }
 
-        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
-        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
-        if (tmp_ms <= 0) {
-            timer_event[idx].last_call = now;
+        list_remove(&timer->ready_links);
 
-            /* The callback may change its registration, so need to track
-             * current value if this is one-shot.
-             */
+        /* The callback may change its registration, so need to track
+         * current value if this is one-shot.
+         */
 
-            callback = timer_event[idx].callback;
-            if (timer_event[idx].repeat_time_ms == IND_SOC_TIMER_IMMEDIATE) {
-                /* De-register one-shot immediate timers */
-                timer_event[idx].callback = NULL;
-            }
+        callback = timer->callback;
+        if (timer->repeat_time_ms == IND_SOC_TIMER_IMMEDIATE) {
+            /* De-register one-shot immediate timers */
+            timer->callback = NULL;
+        } else {
+            timer_wheel_insert(timer_wheel, &timer->timer_wheel_entry,
+                               now + timer->repeat_time_ms);
+        }
 
-            before_callback();
-            callback(timer_event[idx].cookie);
-            after_callback();
+        before_callback();
+        callback(timer->cookie);
+        after_callback();
+    }
+}
+
+/*
+ * Check whether a timer is in the ready list
+ */
+static bool
+timer_is_ready(timer_event_t *timer)
+{
+    list_links_t *cur;
+
+    LIST_FOREACH(&ready_timers, cur) {
+        if (cur == &timer->ready_links) {
+            return true;
         }
     }
+
+    return false;
 }
 
 indigo_error_t
@@ -435,8 +476,14 @@ ind_soc_timer_event_register_with_priority(
     /* Allow re-registering which resets the timer */
     if ((idx = timer_event_find(callback, cookie)) >= 0) {
         LOG_TRACE("Resetting event timer for %p to %d", callback, repeat_time_ms);
+        if (timer_is_ready(&timer_event[idx])) {
+            list_remove(&timer_event[idx].ready_links);
+        } else {
+            timer_wheel_remove(timer_wheel, &timer_event[idx].timer_wheel_entry);
+        }
         timer_event[idx].repeat_time_ms = repeat_time_ms;
-        timer_event[idx].last_call = INDIGO_CURRENT_TIME;
+        timer_wheel_insert(timer_wheel, &timer_event[idx].timer_wheel_entry,
+                           INDIGO_CURRENT_TIME + repeat_time_ms);
         return INDIGO_ERROR_NONE;
     }
     if ((idx = timer_event_free_slot()) < 0) {
@@ -447,8 +494,9 @@ ind_soc_timer_event_register_with_priority(
     timer_event[idx].repeat_time_ms = repeat_time_ms;
     timer_event[idx].callback = callback;
     timer_event[idx].cookie = cookie;
-    timer_event[idx].last_call = INDIGO_CURRENT_TIME;
     timer_event[idx].priority = priority;
+    timer_wheel_insert(timer_wheel, &timer_event[idx].timer_wheel_entry,
+                       INDIGO_CURRENT_TIME + repeat_time_ms);
 
     return INDIGO_ERROR_NONE;
 }
@@ -471,6 +519,12 @@ ind_soc_timer_event_unregister(ind_soc_timer_callback_f callback, void *cookie)
         LOG_TRACE("Timer event %p, %p not found for unregister",
                   callback, cookie);
         return INDIGO_ERROR_NOT_FOUND;
+    }
+
+    if (timer_is_ready(&timer_event[idx])) {
+        list_remove(&timer_event[idx].ready_links);
+    } else {
+        timer_wheel_remove(timer_wheel, &timer_event[idx].timer_wheel_entry);
     }
 
     timer_event[idx].callback = NULL;
@@ -558,6 +612,11 @@ ind_soc_init(ind_soc_config_t *config)
     ind_cfg_register(&ind_soc_cfg_ops);
 
     soc_mgr_init();
+
+    timer_wheel = timer_wheel_create(SOCKETMANAGER_CONFIG_MAX_TIMERS,
+                                     SOCKETMANAGER_CONFIG_TIMER_GRANULARITY_MS,
+                                     INDIGO_CURRENT_TIME);
+
     init_done = 1;
     (void)config;
 
@@ -602,6 +661,8 @@ ind_soc_finish(void)
 {
     LOG_INFO("Shutting down socket manager");
     soc_mgr_init();
+    timer_wheel_destroy(timer_wheel);
+    timer_wheel = NULL;
     init_done = 0;
 
     return INDIGO_ERROR_NONE;
@@ -696,11 +757,8 @@ static int
 find_highest_ready_priority(void)
 {
     int idx;
-    indigo_time_t now;
-    int elapsed, tmp_ms;
     int priority = INT_MIN;
-
-    now = INDIGO_CURRENT_TIME;
+    list_links_t *cur;
 
     for (idx = 0; idx < num_pollfds; idx++) {
         struct pollfd *pfd = &pollfds[idx];
@@ -712,16 +770,9 @@ find_highest_ready_priority(void)
         priority = aim_imax(priority, soc_map[pfd->fd].priority);
     }
 
-    FOREACH_TIMER_EVENT(idx) {
-        if (timer_event[idx].priority <= priority) {
-            continue;
-        }
-
-        elapsed = INDIGO_TIME_DIFF_ms(timer_event[idx].last_call, now);
-        tmp_ms = timer_event[idx].repeat_time_ms - elapsed; /* Time to next */
-        if (tmp_ms <= 0) {
-            priority = timer_event[idx].priority;
-        }
+    LIST_FOREACH(&ready_timers, cur) {
+        timer_event_t *timer = container_of(cur, ready_links, timer_event_t);
+        priority = aim_imax(priority, timer->priority);
     }
 
     if (!list_empty(&tasks)) {
@@ -752,6 +803,8 @@ ind_soc_select_and_run(int run_for_ms)
     current = start = INDIGO_CURRENT_TIME;
 
     do {
+        find_ready_timers(current);
+
         if (list_empty(&tasks)) {
             next_timer_ms = find_next_timer_expiration(current);
         } else {
