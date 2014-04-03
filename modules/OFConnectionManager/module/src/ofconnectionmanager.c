@@ -1208,8 +1208,18 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
     }    
 
     if (ind_cxn_async_channel_selector_handler != NULL) {
+                
+        /* Also indicate the state of each connection to the selector */
+        int idx;
+        connection_t *cxn;
+        indigo_cxn_state_t cxn_state[ctrl->num_aux+1];
+        for (idx = 0; idx <= ctrl->num_aux; ++idx) {
+            cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[idx]);
+            cxn_state[idx] = CONNECTION_STATE(cxn);
+        }
+ 
         (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux, 
-                                                  &auxiliary_id); 
+                                                  cxn_state, &auxiliary_id); 
     }
 
     INDIGO_ASSERT(auxiliary_id <= ctrl->num_aux);
