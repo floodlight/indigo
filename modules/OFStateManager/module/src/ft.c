@@ -223,7 +223,10 @@ ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
-    indigo_error_t err = ft_entry_set_effects(entry, flow_add);
+#ifndef NDEBUG
+    indigo_error_t err =
+#endif
+        ft_entry_set_effects(entry, flow_add);
     AIM_ASSERT(err == INDIGO_ERROR_NONE);
 
     entry->insert_time = INDIGO_CURRENT_TIME;
