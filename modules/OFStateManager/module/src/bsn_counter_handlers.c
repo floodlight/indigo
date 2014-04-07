@@ -52,7 +52,7 @@ static void
 truncate_of_object(of_object_t *obj)
 {
     of_object_init_map[obj->object_id](obj, obj->version, -1, 0);
-    obj->wire_object.wbuf->current_bytes = obj->length;
+    obj->wbuf->current_bytes = obj->length;
 }
 
 static void
