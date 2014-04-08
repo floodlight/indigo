@@ -44,12 +44,18 @@
  * Socket register functions
  ****************************************************************/
 
-/*
- * Priorities are signed integers. Higher priority events are handled first.
+/**
+ * Priority
+ *
+ * Higher priority events are handled first.
  */
-#define IND_SOC_DEFAULT_PRIORITY 0
-#define IND_SOC_HIGHEST_PRIORITY INT_MAX
-#define IND_SOC_LOWEST_PRIORITY  INT_MIN
+typedef enum ind_soc_priority_e {
+    IND_SOC_LOWEST_PRIORITY,
+    IND_SOC_LOW_PRIORITY,
+    IND_SOC_NORMAL_PRIORITY,
+    IND_SOC_HIGH_PRIORITY,
+    IND_SOC_HIGHEST_PRIORITY,
+} ind_soc_priority_t;
 
 /**
  * Run status.
@@ -101,7 +107,7 @@ indigo_error_t ind_soc_socket_register_with_priority(
     int socket_id,
     ind_soc_socket_ready_callback_f callback,
     void *cookie,
-    int priority);
+    ind_soc_priority_t priority);
 
 /**
  * Register a socket for processing by the socket manager
@@ -111,7 +117,7 @@ indigo_error_t ind_soc_socket_register_with_priority(
  * @param cookie Data to pass to the callback
  *
  * This is a wrapper around ind_soc_socket_register_with_priority which
- * passes IND_SOC_DEFAULT_PRIORITY for the priority.
+ * passes IND_SOC_NORMAL_PRIORITY for the priority.
  *
  * Provided by socket manager, required by various
  */
@@ -221,7 +227,7 @@ indigo_error_t ind_soc_timer_event_register_with_priority(
     ind_soc_timer_callback_f callback,
     void *cookie,
     int repeat_time_ms,
-    int priority);
+    ind_soc_priority_t priority);
 
 /**
  * Register a timer event
@@ -232,7 +238,7 @@ indigo_error_t ind_soc_timer_event_register_with_priority(
  *                       or IND_SOC_TIMER_IMMEDIATE
  *
  * This function is a wrapper around ind_soc_timer_event_register which passes
- * IND_SOC_DEFAULT_PRIORITY for the priority.
+ * IND_SOC_NORMAL_PRIORITY for the priority.
  */
 
 indigo_error_t ind_soc_timer_event_register(
@@ -282,7 +288,7 @@ typedef ind_soc_task_status_t (*ind_soc_task_callback_f)(void *cookie);
 
 indigo_error_t ind_soc_task_register(
     ind_soc_task_callback_f callback,
-    void *cookie, int priority);
+    void *cookie, ind_soc_priority_t priority);
 
 
 typedef struct ind_soc_config_s {

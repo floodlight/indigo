@@ -86,7 +86,7 @@ connection_t* cookie_to_cxn(void* cookie);
 /*
  * Priority for sockets and timers registered with SocketManager.
  */
-#define IND_CXN_EVENT_PRIORITY 10
+#define IND_CXN_EVENT_PRIORITY IND_SOC_HIGH_PRIORITY
 
 extern void indigo_cxn_socket_ready_callback(int socket_id,
                                              void *cookie,
