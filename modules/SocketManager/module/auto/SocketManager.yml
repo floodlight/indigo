@@ -50,7 +50,13 @@ cdefs: &cdefs
     default: 10
 - SOCKETMANAGER_CONFIG_MAX_TIMERS:
     doc: "Maximum number of timers supported"
-    default: 48
+    default: 64
+- SOCKETMANAGER_CONFIG_TIMER_GRANULARITY_MS:
+    doc: "Granularity of the timer wheel (milliseconds)"
+    default: 128
+- SOCKETMANAGER_CONFIG_TIMER_PEEK_MS:
+    doc: "Milliseconds to look ahead for the next timer"
+    default: 1024
 
 
 definitions:
