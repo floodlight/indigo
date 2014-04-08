@@ -51,6 +51,9 @@ cdefs: &cdefs
 - OFCONNECTIONMANAGER_CONFIG_OF_VERSION:
     doc: "OpenFlow version to be advertised in HELLO message"
     default: OF_VERSION_1_0
+- OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK:
+    doc: "Maximum number of OpenFlow messages to process per socket in one tick of the event loop."
+    default: 10
 
 definitions:
   cdefs:

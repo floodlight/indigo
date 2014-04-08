@@ -129,6 +129,16 @@
 #define OFCONNECTIONMANAGER_CONFIG_OF_VERSION OF_VERSION_1_0
 #endif
 
+/**
+ * OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK
+ *
+ * Maximum number of OpenFlow messages to process per socket in one tick of the event loop. */
+
+
+#ifndef OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK
+#define OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK 10
+#endif
+
 
 
 /**
