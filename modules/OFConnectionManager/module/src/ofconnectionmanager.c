@@ -1037,6 +1037,8 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
             of_bsn_controller_connection_state_set(&entry, 0);
         }
 
+        of_bsn_controller_connection_auxiliary_id_set(&entry, cxn->auxiliary_id);
+
         switch (cxn->controller->role) {
         case INDIGO_CXN_R_MASTER:
             role = OF_CONTROLLER_ROLE_MASTER;
