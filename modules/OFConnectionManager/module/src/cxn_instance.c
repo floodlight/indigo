@@ -1070,6 +1070,11 @@ read_message(connection_t *cxn)
     int msg_bytes;
     int rv = INDIGO_ERROR_NONE;
 
+    /* Break out of message processing loop after a barrier */
+    if (cxn->barrier.pendingf) {
+        return INDIGO_ERROR_PENDING;
+    }
+
     /* No bytes needed; must be stuck. */
     if (cxn->bytes_needed == 0) {
         LOG_TRACE(cxn, "Processing appears to be blocked");
@@ -1250,9 +1255,14 @@ int
 ind_cxn_process_read_buffer(connection_t *cxn)
 {
     int rv = INDIGO_ERROR_NONE;
+    int i = 0;
 
-    if ((rv = read_message(cxn)) == INDIGO_ERROR_NONE) {
+    while ((rv = read_message(cxn)) == INDIGO_ERROR_NONE) {
         process_message(cxn);
+        if (++i >= OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK ||
+                ind_soc_should_yield()) {
+            break;
+        }
     }
 
     return rv;
