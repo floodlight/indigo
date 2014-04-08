@@ -384,7 +384,7 @@ ind_core_bsn_gentable_clear_request_handler(
     indigo_cxn_block_barrier(cxn_id, &state->blocker);
 
     rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY,
+                                           IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
@@ -560,7 +560,7 @@ ind_core_bsn_gentable_entry_stats_request_handler(
     state->reply = reply;
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_stats_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY,
+                                           IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
@@ -656,7 +656,7 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     state->reply = reply;
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_desc_stats_iter, state,
-                                           IND_SOC_DEFAULT_PRIORITY,
+                                           IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));

@@ -59,5 +59,5 @@ ind_cfg_install_sighup_handler(void)
     (void) signal(SIGHUP, sighup);
 
     return ind_soc_socket_register_with_priority(
-        pipefd[0], sighup_callback, NULL, 20);
+        pipefd[0], sighup_callback, NULL, IND_SOC_HIGHEST_PRIORITY);
 }

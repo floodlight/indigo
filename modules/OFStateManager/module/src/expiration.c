@@ -171,7 +171,7 @@ ind_core_expiration_timer(void *cookie)
     }
 
     if ((rv = ind_soc_task_register(expiration_task, NULL,
-                                    IND_SOC_DEFAULT_PRIORITY)) < 0) {
+                                    IND_SOC_NORMAL_PRIORITY)) < 0) {
         AIM_LOG_ERROR("Failed to start flow expiration task: %s",
                       indigo_strerror(rv));
     } else {

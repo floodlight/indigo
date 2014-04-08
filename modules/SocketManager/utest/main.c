@@ -527,33 +527,33 @@ test_priority(void)
 
     /* High priority */
     INDIGO_ASSERT(ind_soc_socket_register_with_priority(
-        read_fds[0], socket_callback, &counters[0], 1) == 0);
+        read_fds[0], socket_callback, &counters[0], IND_SOC_HIGH_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
-        timer_callback, &timer_counters[0], IND_SOC_TIMER_IMMEDIATE, 1) == 0);
+        timer_callback, &timer_counters[0], IND_SOC_TIMER_IMMEDIATE, IND_SOC_HIGH_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_task_register(
-        task_callback, &task_counters[0], 1) == 0);
+        task_callback, &task_counters[0], IND_SOC_HIGH_PRIORITY) == 0);
 
     /* Medium priority */
     INDIGO_ASSERT(ind_soc_socket_register_with_priority(
-        read_fds[1], socket_callback, &counters[1], 0) == 0);
+        read_fds[1], socket_callback, &counters[1], IND_SOC_NORMAL_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
-        timer_callback, &timer_counters[1], IND_SOC_TIMER_IMMEDIATE, 0) == 0);
+        timer_callback, &timer_counters[1], IND_SOC_TIMER_IMMEDIATE, IND_SOC_NORMAL_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_task_register(
-        task_callback, &task_counters[1], 0) == 0);
+        task_callback, &task_counters[1], IND_SOC_NORMAL_PRIORITY) == 0);
 
     /* Low priority */
     INDIGO_ASSERT(ind_soc_socket_register_with_priority(
-        read_fds[2], socket_callback, &counters[2], -1) == 0);
+        read_fds[2], socket_callback, &counters[2], IND_SOC_LOW_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_timer_event_register_with_priority(
-        timer_callback, &timer_counters[2], IND_SOC_TIMER_IMMEDIATE, -1) == 0);
+        timer_callback, &timer_counters[2], IND_SOC_TIMER_IMMEDIATE, IND_SOC_LOW_PRIORITY) == 0);
 
     INDIGO_ASSERT(ind_soc_task_register(
-        task_callback, &task_counters[2], -1) == 0);
+        task_callback, &task_counters[2], IND_SOC_LOW_PRIORITY) == 0);
 
     /* Make all sockets ready */
     for (i = 0; i < 3; i++) {
@@ -593,7 +593,7 @@ test_priority(void)
     /* New high priority events should run next */
     write(write_fds[0], "x", 1);
     INDIGO_ASSERT(ind_soc_task_register(
-        task_callback, &task_counters[0], 1) == 0);
+        task_callback, &task_counters[0], IND_SOC_HIGH_PRIORITY) == 0);
     memset(counters, 0, sizeof(counters));
     memset(timer_counters, 0, sizeof(timer_counters));
     memset(task_counters, 0, sizeof(task_counters));
