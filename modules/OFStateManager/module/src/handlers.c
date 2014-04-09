@@ -179,10 +179,8 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
 
         indigo_cxn_send_controller_message(cxn_id, reply);
     } else {
-        uint32_t queue_id;
-        of_queue_stats_request_queue_id_get(obj, &queue_id);
-        LOG_ERROR("Failed to get config for queue %u on port %u: %s",
-                  queue_id, port, indigo_strerror(rv));
+        LOG_ERROR("Failed to get queue config on port %u: %s",
+                  port, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
