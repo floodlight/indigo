@@ -1066,7 +1066,7 @@ read_from_cxn(connection_t *cxn)
 static inline int
 read_message(connection_t *cxn)
 {
-    of_message_t msg = NULL;
+    uint8_t *msg = NULL;
     int msg_bytes;
     int rv = INDIGO_ERROR_NONE;
 
@@ -1094,7 +1094,7 @@ read_message(connection_t *cxn)
             return INDIGO_ERROR_PENDING;
         }
 
-        msg = (of_message_t)(cxn->read_buffer);
+        msg = cxn->read_buffer;
         msg_bytes = of_message_length_get(msg);
         if (msg_bytes < OF_MESSAGE_HEADER_LENGTH) {
             LOG_TRACE(cxn, "Illegal msg length %d. Framing error?", msg_bytes);
@@ -1431,7 +1431,7 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     }
 
     /* Verify that the length is what is reported by the OF msg */
-    msg_len = of_message_length_get((of_message_t) data);
+    msg_len = of_message_length_get(data);
     if (len != msg_len) {
         LOG_ERROR(cxn, "Error in message length: %d != %d, discarding",
                   len, msg_len);
