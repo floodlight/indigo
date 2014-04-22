@@ -65,6 +65,15 @@ ind_core_packet_in_notify(of_packet_in_t *packet_in)
         result |= fn(packet_in);
     }
 
+    /* Override DROP result if this packet-in must go to the controller */
+    if (result == INDIGO_CORE_LISTENER_RESULT_DROP) {
+        uint8_t reason;
+        of_packet_in_reason_get(packet_in, &reason);
+        if (reason == OF_PACKET_IN_REASON_ACTION) {
+            result = INDIGO_CORE_LISTENER_RESULT_PASS;
+        }
+    }
+
     return result;
 }
 
