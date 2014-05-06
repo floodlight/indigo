@@ -406,8 +406,6 @@ ind_cxn_status_change(connection_t *cxn)
                 LOG_VERBOSE("Setting preferred cxn to " CXN_FMT,
                             CXN_FMT_ARGS(cxn));
                 preferred_cxn_id = cxn->cxn_id;
-                LOG_VERBOSE("Clearing IP mask map");
-                of_ip_mask_map_init();
             }
         } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
             ind_cxn_status_notify();
