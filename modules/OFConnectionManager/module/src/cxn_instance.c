@@ -969,7 +969,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_PACKET_OUT:
     case OF_PORT_MOD:
     case OF_SET_CONFIG:
-    case OF_BSN_SET_IP_MASK:
     case OF_BSN_SET_MIRRORING:
     case OF_BSN_SET_PKTIN_SUPPRESSION_REQUEST:
     case OF_GROUP_MOD:
