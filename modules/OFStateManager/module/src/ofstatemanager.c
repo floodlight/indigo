@@ -445,6 +445,7 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_BSN_BW_CLEAR_DATA_REQUEST:
     case OF_BSN_BW_ENABLE_GET_REQUEST:
     case OF_BSN_BW_ENABLE_SET_REQUEST:
+    case OF_BSN_IMAGE_DESC_STATS_REQUEST:
         ind_core_experimenter_handler(obj, cxn);
         break;
 
