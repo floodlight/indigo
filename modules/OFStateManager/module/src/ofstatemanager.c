@@ -388,14 +388,6 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
      * Extension messages
      ****************************************************************/
 
-    case OF_BSN_SET_IP_MASK:
-        ind_core_bsn_set_ip_mask_handler(obj, cxn);
-        break;
-
-    case OF_BSN_GET_IP_MASK_REQUEST:
-        ind_core_bsn_get_ip_mask_request_handler(obj, cxn);
-        break;
-
     case OF_BSN_HYBRID_GET_REQUEST:
         ind_core_bsn_hybrid_get_request_handler(obj, cxn);
         break;
