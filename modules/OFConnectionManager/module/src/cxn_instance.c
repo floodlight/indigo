@@ -974,6 +974,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_GROUP_ADD:
     case OF_GROUP_MODIFY:
     case OF_GROUP_DELETE:
+    case OF_BSN_SET_SWITCH_PIPELINE_REQUEST:
         if (cxn->controller->role == INDIGO_CXN_R_SLAVE) {
             uint16_t code = cxn->status.negotiated_version < OF_VERSION_1_2 ?
                 OF_REQUEST_FAILED_EPERM : OF_REQUEST_FAILED_IS_SLAVE;
