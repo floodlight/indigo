@@ -99,18 +99,25 @@ static int num_pollfds = 0;
 #define IS_LEGAL_SOCKET_ID(_id) (((_id) >= 0) && ((_id) < SOCKET_COUNT_MAX))
 #define POLLFD_INDEX(_id) soc_map[(_id)].pollfd_index
 
+enum timer_state {
+    TIMER_STATE_FREE,
+    TIMER_STATE_WAITING,
+    TIMER_STATE_READY,
+};
+
 /*
  * Timer event structure
  * Lookup is (callback, cookie)
  */
 typedef struct timer_event_s {
+    enum timer_state state;
     /*
      * The timer can either be waiting in the timer wheel, or
      * ready in the ready list, but not at the same time.
      */
     union {
-        timer_wheel_entry_t timer_wheel_entry;
-        list_links_t ready_links;
+        timer_wheel_entry_t timer_wheel_entry; /* valid when state == WAITING */
+        list_links_t ready_links; /* valid when state == READY */
     };
     ind_soc_timer_callback_f callback;
     void *cookie;
@@ -149,7 +156,8 @@ timer_event_find(ind_soc_timer_callback_f callback, void *cookie)
     int idx;
 
     FOREACH_TIMER_EVENT(idx) {
-        if ((timer_event[idx].callback == callback) &&
+        if ((timer_event[idx].state != TIMER_STATE_FREE) &&
+                (timer_event[idx].callback == callback) &&
                 (timer_event[idx].cookie == cookie)) {
             return idx;
         }
@@ -165,7 +173,7 @@ timer_event_free_slot(void)
     int idx;
 
     for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
-        if (timer_event[idx].callback == NULL) {
+        if (timer_event[idx].state == TIMER_STATE_FREE) {
             return idx;
         }
     }
@@ -182,7 +190,7 @@ soc_mgr_init(void)
     }
 
     for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_TIMERS; idx++) {
-        timer_event[idx].callback = NULL;
+        timer_event[idx].state = TIMER_STATE_FREE;
     }
 
     list_init(&tasks);
@@ -397,6 +405,7 @@ find_ready_timers(indigo_time_t now)
    while ((entry = timer_wheel_next(timer_wheel, now)) != NULL) {
        timer_event_t *timer = container_of(entry, timer_wheel_entry, timer_event_t);
        list_push(&ready_timers, &timer->ready_links);
+       timer->state = TIMER_STATE_READY;
    }
 }
 
@@ -408,57 +417,44 @@ process_timers(ind_soc_priority_t priority)
 {
     indigo_time_t now;
     ind_soc_timer_callback_f callback;
-    list_links_t *cur, *next;
+    void *cookie;
+    list_head_t tmp_list;
 
+    list_move(&ready_timers, &tmp_list);
     now = INDIGO_CURRENT_TIME;
 
-    LIST_FOREACH_SAFE(&ready_timers, cur, next) {
-        timer_event_t *timer = container_of(cur, ready_links, timer_event_t);
-
-        if(ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
-            break;
-        }
-
-        if (timer->priority != priority) {
-            continue;
-        }
+    while (!list_empty(&tmp_list)) {
+        timer_event_t *timer = container_of(list_shift(&tmp_list), ready_links, timer_event_t);
+        AIM_ASSERT(timer->state == TIMER_STATE_READY);
 
         list_remove(&timer->ready_links);
+
+        if (timer->priority != priority) {
+            /* Not processing this priority, add it back to the ready list */
+            list_push(&ready_timers, &timer->ready_links);
+            continue;
+        }
 
         /* The callback may change its registration, so need to track
          * current value if this is one-shot.
          */
 
         callback = timer->callback;
+        cookie = timer->cookie;
         if (timer->repeat_time_ms == IND_SOC_TIMER_IMMEDIATE) {
             /* De-register one-shot immediate timers */
-            timer->callback = NULL;
+            timer->state = TIMER_STATE_FREE;
         } else {
             timer_wheel_insert(timer_wheel, &timer->timer_wheel_entry,
                                now + timer->repeat_time_ms);
+            timer->state = TIMER_STATE_WAITING;
         }
+
 
         before_callback();
-        callback(timer->cookie);
+        callback(cookie);
         after_callback();
     }
-}
-
-/*
- * Check whether a timer is in the ready list
- */
-static bool
-timer_is_ready(timer_event_t *timer)
-{
-    list_links_t *cur;
-
-    LIST_FOREACH(&ready_timers, cur) {
-        if (cur == &timer->ready_links) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 indigo_error_t
@@ -482,12 +478,13 @@ ind_soc_timer_event_register_with_priority(
     /* Allow re-registering which resets the timer */
     if ((idx = timer_event_find(callback, cookie)) >= 0) {
         LOG_TRACE("Resetting event timer for %p to %d", callback, repeat_time_ms);
-        if (timer_is_ready(&timer_event[idx])) {
+        if (timer_event[idx].state == TIMER_STATE_READY) {
             list_remove(&timer_event[idx].ready_links);
-        } else {
+        } else if (timer_event[idx].state == TIMER_STATE_WAITING) {
             timer_wheel_remove(timer_wheel, &timer_event[idx].timer_wheel_entry);
         }
         timer_event[idx].repeat_time_ms = repeat_time_ms;
+        timer_event[idx].state = TIMER_STATE_WAITING;
         timer_wheel_insert(timer_wheel, &timer_event[idx].timer_wheel_entry,
                            INDIGO_CURRENT_TIME + repeat_time_ms);
         return INDIGO_ERROR_NONE;
@@ -503,6 +500,7 @@ ind_soc_timer_event_register_with_priority(
     timer_event[idx].priority = priority;
     timer_wheel_insert(timer_wheel, &timer_event[idx].timer_wheel_entry,
                        INDIGO_CURRENT_TIME + repeat_time_ms);
+    timer_event[idx].state = TIMER_STATE_WAITING;
 
     return INDIGO_ERROR_NONE;
 }
@@ -527,13 +525,13 @@ ind_soc_timer_event_unregister(ind_soc_timer_callback_f callback, void *cookie)
         return INDIGO_ERROR_NOT_FOUND;
     }
 
-    if (timer_is_ready(&timer_event[idx])) {
+    if (timer_event[idx].state == TIMER_STATE_READY) {
         list_remove(&timer_event[idx].ready_links);
-    } else {
+    } else if (timer_event[idx].state == TIMER_STATE_WAITING) {
         timer_wheel_remove(timer_wheel, &timer_event[idx].timer_wheel_entry);
     }
 
-    timer_event[idx].callback = NULL;
+    timer_event[idx].state = TIMER_STATE_FREE;
 
     return INDIGO_ERROR_NONE;
 }
