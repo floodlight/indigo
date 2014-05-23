@@ -411,6 +411,15 @@ find_ready_timers(indigo_time_t now)
 
 /*
  * Run callbacks for timer events.
+ *
+ * The ready list is treated as a queue to allow timer callbacks to arbitrarily
+ * unregister themselves or other timers. The slight difficulty is that
+ * timers with a different priority level need to remain on the ready list. Doing
+ * this while treating the ready list as a queue requires a temporary list.
+ *
+ * A timer in the READY state may be either on the ready list or the temporary
+ * list. In either case, the list_remove in ind_soc_timer_event_unregister will
+ * remove it from the correct list.
  */
 static void
 process_timers(ind_soc_priority_t priority)
