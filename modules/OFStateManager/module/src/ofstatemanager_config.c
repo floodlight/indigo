@@ -224,11 +224,12 @@ ind_core_cfg_stage(cJSON *config)
 
     err = ind_cfg_lookup_string(config, "disconnected_mode", &str);
     if (err == INDIGO_ERROR_NONE) {
-        staged_config.disconnected_mode = parse_disconnected_mode(str);
-        if (staged_config.disconnected_mode == -1) {
+        int disconnected_mode = parse_disconnected_mode(str);
+        if (disconnected_mode == -1) {
             AIM_LOG_ERROR("Config: Could not parse disconnected_mode");
             return INDIGO_ERROR_PARAM;
         }
+        staged_config.disconnected_mode = disconnected_mode;
     } else if (err == INDIGO_ERROR_NOT_FOUND) {
         staged_config.disconnected_mode = INDIGO_CORE_DISCONNECTED_MODE_STICKY;
     } else {
