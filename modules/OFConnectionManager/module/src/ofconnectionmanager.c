@@ -1201,9 +1201,10 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
 {
     uint8_t auxiliary_id = 0;
 
-    /* Only send port status async msg to the slave */
+    /* Only send certain async messages to the slave */
     if (ctrl->role == INDIGO_CXN_R_SLAVE && 
-        obj->object_id != OF_PORT_STATUS) {
+        obj->object_id != OF_PORT_STATUS &&
+        obj->object_id != OF_BSN_CONTROLLER_CONNECTIONS_REPLY) {
         return 0;
     }    
 
