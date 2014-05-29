@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2014, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -99,6 +99,16 @@ typedef struct indigo_fi_port_stats {
     uint64_t tx_packets_multicast;
     uint64_t tx_dropped;
     uint64_t tx_errors;
+    uint64_t rx_runts;
+    uint64_t rx_giants;
+    uint64_t rx_crc_errors;
+    uint64_t rx_alignment_errors;
+    uint64_t rx_symbol_errors;
+    uint64_t rx_pause_input;
+    uint64_t tx_collisions;
+    uint64_t tx_late_collisions;
+    uint64_t tx_deferred;
+    uint64_t tx_pause_output;
 } indigo_fi_port_stats_t;
 
 #endif /* _INDIGO_FI_H_ */
