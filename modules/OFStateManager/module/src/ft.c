@@ -653,7 +653,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
     err = ft_entry_set_effects(entry, flow_add);
-    if (err != INDIGO_ERROR_NONE) {
+    if (err < 0) {
         aim_free(entry);
         return err;
     }
