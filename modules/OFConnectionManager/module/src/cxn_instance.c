@@ -76,45 +76,6 @@ state_info_t state_info[INDIGO_CXN_S_COUNT] = {
 #define MAX_WRITE_MSGS 32
 
 
-/**
- * Dump data buffer
- */
-#define HEX_LEN 80
-#define PER_LINE 16
-static inline void
-cxn_data_hexdump(unsigned char *buf, int bytes)
-{
-    int idx;
-    char display[HEX_LEN];
-    int disp_offset = 0;
-    int buf_offset = 0;
-
-    while (bytes > 0) {
-        disp_offset = 0;
-        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
-            disp_offset += sprintf(&display[disp_offset],
-                                   "%02x", buf[buf_offset + idx]);
-        }
-
-        for (idx = bytes; idx < PER_LINE; ++idx) {
-            disp_offset += sprintf(&display[disp_offset], "  ");
-        }
-        disp_offset += sprintf(&display[disp_offset], " :");
-
-        for (idx = 0; (idx < PER_LINE) && (idx < bytes); idx++) {
-            if (buf[idx] < 32) {
-                disp_offset += sprintf(&display[disp_offset], ".");
-            } else {
-                disp_offset += sprintf(&display[disp_offset], "%c",
-                                       buf[buf_offset + idx]);
-            }
-        }
-        AIM_LOG_TRACE("%s", display);
-        bytes -= PER_LINE;
-        buf_offset += PER_LINE;
-    }
-}
-
 /****************************************************************
  *
  * Connection utility routines
@@ -1294,34 +1255,6 @@ void ind_cxn_disconnect(connection_t *cxn)
  * Connection instance write buffer management
  *
  ****************************************************************/
-
-/**
- * Write a monolithic chunk of data to the socket
- *
- * @returns The number of bytes written or an error code
- *
- * NOTE:  Updates cxn output pointer
- */
-static inline int
-write_chunk(connection_t *cxn, uint8_t *start, ssize_t bytes)
-{
-    int bytes_out;
-
-    bytes_out = send(cxn->sd, start, bytes, MSG_NOSIGNAL);
-    /* @fixme MSG_NOSIGNAL is not portable; supported on Linux and some BSDs */
-    if (bytes_out == 0 || (bytes_out < 0 && (errno == EAGAIN ||
-                                             errno == EWOULDBLOCK))) {
-        /* Socket isn't ready */
-        return 0; /* No bytes out, but no error */
-    } else if (bytes_out < 0) {
-        return INDIGO_ERROR_UNKNOWN;
-    }
-    LOG_TRACE(cxn, "Wrote %d of %d", bytes_out, (int)bytes);
-
-    cxn->status.bytes_out += bytes_out;
-
-    return bytes_out;
-}
 
 /**
  * Process messages waiting to be sent to a connection socket
