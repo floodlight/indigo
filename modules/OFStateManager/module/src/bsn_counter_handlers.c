@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2014, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -171,6 +171,17 @@ ind_core_bsn_port_counter_stats_entry_populate(of_bsn_port_counter_stats_entry_t
     append_uint64(&values, stats.tx_packets_multicast);
     append_uint64(&values, stats.tx_dropped);
     append_uint64(&values, stats.tx_errors);
+
+    append_uint64(&values, stats.rx_runts);
+    append_uint64(&values, stats.rx_giants);
+    append_uint64(&values, stats.rx_crc_errors);
+    append_uint64(&values, stats.rx_alignment_errors);
+    append_uint64(&values, stats.rx_symbol_errors);
+    append_uint64(&values, stats.rx_pause_input);
+    append_uint64(&values, stats.tx_collisions);
+    append_uint64(&values, stats.tx_late_collisions);
+    append_uint64(&values, stats.tx_deferred);
+    append_uint64(&values, stats.tx_pause_output);
 }
 
 void
