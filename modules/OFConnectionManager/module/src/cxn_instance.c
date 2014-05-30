@@ -1269,12 +1269,12 @@ ind_cxn_process_write_buffer(connection_t *cxn)
     int num_iovecs = 0;
     struct iovec iovecs[MAX_WRITE_MSGS];
     biglist_t *cur_node;
-    struct iovec *iov;
+    int i;
 
     /* Iterate over cxn->output_list adding buffers to iovecs */
     cur_node = cxn->output_list;
     while (cur_node != NULL && num_iovecs < MAX_WRITE_MSGS) {
-        iov = &iovecs[num_iovecs];
+        struct iovec *iov = &iovecs[num_iovecs];
         iov->iov_base = BIGLIST_CAST(void *, cur_node);
         iov->iov_len = of_message_length_get(iov->iov_base);
         if (num_iovecs == 0) {
@@ -1299,8 +1299,8 @@ ind_cxn_process_write_buffer(connection_t *cxn)
      * sent messages.
      */
     left = written;
-    iov = iovecs;
-    while (left > 0) {
+    for (i = 0; i < num_iovecs; i++) {
+        struct iovec *iov = &iovecs[i];
         int to_write, bytes_out;
         cur_node = cxn->output_list;
 
@@ -1326,7 +1326,6 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         }
 
         left -= bytes_out;
-        iov++;
     }
 
     if (cxn->output_list == NULL) { /* Nothing (more) to send */
