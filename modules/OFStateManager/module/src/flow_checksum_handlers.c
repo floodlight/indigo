@@ -117,6 +117,7 @@ ind_core_bsn_table_checksum_stats_request_handler(of_object_t *_obj,
 
     for (table_id = 0; table_id < FT_MAX_TABLES; table_id++) {
         ft_table_t *table = &ind_core_ft->tables[table_id];
+        of_bsn_table_checksum_stats_entry_table_id_set(entry, table_id);
         of_bsn_table_checksum_stats_entry_checksum_set(entry, table->checksum);
 
         if (of_list_append(&entries, entry) < 0) {
