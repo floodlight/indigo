@@ -32,6 +32,7 @@
 #include <OFConnectionManager/ofconnectionmanager.h>
 #include <BigList/biglist.h>
 #include <debug_counter/debug_counter.h>
+#include <BigRing/bigring.h>
 
 #define READ_BUFFER_SIZE (64 * 1024)
 
@@ -49,6 +50,11 @@
  * made visible via the config.
  */
 #define WRITE_BUFFER_SIZE (16 * 1024 * 1024)
+
+/**
+ * Maximum number of messages that can be waiting to be written to the socket
+ */
+#define WRITE_QUEUE_SIZE 1000
 
 /**
  * Write queue length above which to drop noncritical messages
@@ -112,8 +118,8 @@ typedef struct connection_s {
     int bytes_needed; /* Num bytes needed for next process step */
 
     /* Write queue */
-    biglist_t *output_list; /* List of outgoing messages */
-    int output_head_offset; /* Bytes already sent out from head of output_list */
+    bigring_t *write_queue; /* Ringbuffer of pointers to message data */
+    int write_queue_head_offset; /* Bytes already sent out from head of write_queue */
     int bytes_enqueued;     /* Total bytes queued */
     int pkts_enqueued;      /* Total pkts queued */
 

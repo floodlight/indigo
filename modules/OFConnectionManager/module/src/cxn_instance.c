@@ -95,7 +95,6 @@ static void
 cleanup_disconnect(connection_t *cxn)
 {
     uint8_t *data;
-    biglist_t *ble;
 
     cxn->status.disconnect_count++;
 
@@ -113,16 +112,14 @@ cleanup_disconnect(connection_t *cxn)
                 cxn->read_bytes);
     cxn->read_bytes = 0;
     /* Clear write queue */
-    BIGLIST_FOREACH_DATA(ble, cxn->output_list, uint8_t *, data) {
+    while ((data = bigring_shift(cxn->write_queue))) {
         LOG_TRACE(cxn, "Freeing outgoing msg %p", data);
         aim_free(data);
     }
-    biglist_free(cxn->output_list);
-    cxn->output_list = NULL;
 
     cxn->bytes_enqueued = 0;
     cxn->pkts_enqueued = 0;
-    cxn->output_head_offset = 0;
+    cxn->write_queue_head_offset = 0;
 }
 
 
@@ -1274,22 +1271,25 @@ ind_cxn_process_write_buffer(connection_t *cxn)
     int written, left;
     int num_iovecs = 0;
     struct iovec iovecs[MAX_WRITE_MSGS];
-    biglist_t *cur_node;
-    int i;
+    int i, queue_iter;
 
-    /* Iterate over cxn->output_list adding buffers to iovecs */
-    cur_node = cxn->output_list;
-    while (cur_node != NULL && num_iovecs < MAX_WRITE_MSGS) {
+    bigring_iter_start(cxn->write_queue, &queue_iter);
+
+    /* Iterate over write queue adding buffers to iovecs */
+    while (num_iovecs < MAX_WRITE_MSGS) {
+        void *data = bigring_iter_next(cxn->write_queue, &queue_iter);
+        if (data == NULL) {
+            break;
+        }
         struct iovec *iov = &iovecs[num_iovecs];
-        iov->iov_base = BIGLIST_CAST(void *, cur_node);
+        iov->iov_base = data;
         iov->iov_len = of_message_length_get(iov->iov_base);
         if (num_iovecs == 0) {
             /* First buffer may be partially written */
-            iov->iov_base += cxn->output_head_offset;
-            iov->iov_len -= cxn->output_head_offset;
+            iov->iov_base += cxn->write_queue_head_offset;
+            iov->iov_len -= cxn->write_queue_head_offset;
         }
         num_iovecs++;
-        cur_node = biglist_next(cur_node);
     }
 
     written = writev(cxn->sd, iovecs, num_iovecs);
@@ -1308,7 +1308,6 @@ ind_cxn_process_write_buffer(connection_t *cxn)
     for (i = 0; i < num_iovecs; i++) {
         struct iovec *iov = &iovecs[i];
         int to_write, bytes_out;
-        cur_node = cxn->output_list;
 
         /* Number of bytes we attempted to send in this message */
         to_write = iov->iov_len;
@@ -1318,23 +1317,21 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         cxn->bytes_enqueued -= bytes_out;
 
         if (bytes_out == to_write) { /* Completed this message */
-            aim_free(BIGLIST_CAST(void *, cur_node));
-            cxn->output_list =
-                biglist_remove_link_free(cxn->output_list, cur_node);
+            aim_free(bigring_shift(cxn->write_queue));
             cxn->pkts_enqueued--;
             cxn->status.messages_out++;
-            cxn->output_head_offset = 0;
+            cxn->write_queue_head_offset = 0;
         } else {
             /* Partial write */
             INDIGO_ASSERT(bytes_out < to_write);
-            cxn->output_head_offset += bytes_out;
+            cxn->write_queue_head_offset += bytes_out;
             break;
         }
 
         left -= bytes_out;
     }
 
-    if (cxn->output_list == NULL) { /* Nothing (more) to send */
+    if (bigring_count(cxn->write_queue) == 0) { /* Nothing (more) to send */
         LOG_TRACE(cxn, "No more data to write");
         INDIGO_ASSERT(cxn->bytes_enqueued == 0);
         INDIGO_ASSERT(cxn->pkts_enqueued == 0);
@@ -1377,7 +1374,14 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
                   len, msg_len);
         return INDIGO_ERROR_UNKNOWN;
     }
-    cxn->output_list = biglist_append(cxn->output_list, (void *)data);
+
+    if (bigring_count(cxn->write_queue) < bigring_size(cxn->write_queue)) {
+        bigring_push(cxn->write_queue, data);
+    } else {
+        LOG_TRACE(cxn, "Dropping message due to full ringbuffer");
+        return INDIGO_ERROR_RESOURCE;
+    }
+
     cxn->bytes_enqueued += len;
     cxn->pkts_enqueued += 1;
 
