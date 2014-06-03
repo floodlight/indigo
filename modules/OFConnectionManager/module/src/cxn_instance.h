@@ -51,6 +51,11 @@
 #define WRITE_BUFFER_SIZE (16 * 1024 * 1024)
 
 /**
+ * Write queue length above which to drop noncritical messages
+ */
+#define NONCRITICAL_DROP_THRESHOLD 64
+
+/**
  * Connection flag, connection is to be removed pending op completion
  */
 #define CXN_TO_BE_REMOVED 0x1
@@ -113,10 +118,9 @@ typedef struct connection_s {
     int pkts_enqueued;      /* Total pkts queued */
 
     /* Additional debug info */
+    debug_counter_t tx_drop_counter;
     debug_counter_t rx_counters[OF_MESSAGE_OBJECT_COUNT];
     debug_counter_t tx_counters[OF_MESSAGE_OBJECT_COUNT];
-
-    uint64_t packet_ins;
 
     int outstanding_op_cnt; /* Number of outstanding operations */
     struct {
@@ -147,21 +151,6 @@ typedef struct connection_s {
     /* Pointer to the Controller clock to which this connection belongs */
     controller_t *controller;
 } connection_t;
-
-/* Should a packet in be dropped based on connection state?
- * @TODO This may need tuning
- */
-#define PACKET_IN_DROP_QUEUE_MAX 64
-#define CXN_DROP_PACKET_IN(cxn, obj)                    \
-    ((cxn)->pkts_enqueued > PACKET_IN_DROP_QUEUE_MAX)
-
-/**
- * Should a flow removed message be dropped based on connection state?
- * @TODO This may need tuning
- */
-#define FLOW_REMOVED_DROP_QUEUE_MAX 64
-#define CXN_DROP_FLOW_REMOVED(cxn, obj)                \
-    ((cxn)->pkts_enqueued > FLOW_REMOVED_DROP_QUEUE_MAX)
 
 /**
  * How many bytes in buffer are free

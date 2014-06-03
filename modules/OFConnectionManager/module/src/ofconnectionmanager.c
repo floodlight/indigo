@@ -1083,6 +1083,22 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
                            ((obj)->object_id == OF_PORT_STATUS) ||  \
                            ((obj)->object_id == OF_FLOW_REMOVED))
 
+/*
+ * Decide which messages can be dropped due to a long write queue
+ */
+static bool
+cxn_message_is_noncritical(of_object_id_t object_id)
+{
+    switch (object_id) {
+    case OF_FLOW_REMOVED: return true;
+    case OF_PACKET_IN: return true;
+    case OF_BSN_FLOW_IDLE: return true;
+    case OF_BSN_ARP_IDLE: return true;
+    case OF_BSN_PDU_RX_TIMEOUT: return true;
+    default: return false;
+    }
+}
+
 /* Send an OpenFlow message to a controller connection
  *
  * This routine takes ownership of the object.
@@ -1128,18 +1144,11 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
         }
     }
 
-    /* async message throttling */
-    if (obj->object_id == OF_PACKET_IN) {
-        cxn->packet_ins++;
-        if (CXN_DROP_PACKET_IN(cxn, obj)) {
-            LOG_TRACE("Dropping packetIn");
-            cxn->status.packet_in_drop++;
-            goto done;
-        }
-    } else if (obj->object_id == OF_FLOW_REMOVED) {
-        if (CXN_DROP_FLOW_REMOVED(cxn, obj)) {
-            LOG_TRACE("Dropping flowRemoved");
-            cxn->status.flow_removed_drop++;
+    /* Drop noncritical messages before the write buffer fills up completely */
+    if (cxn->pkts_enqueued > NONCRITICAL_DROP_THRESHOLD) {
+        if (cxn_message_is_noncritical(obj->object_id)) {
+            LOG_TRACE("Dropping noncritical %s message", of_object_id_str[obj->object_id]);
+            debug_counter_inc(&cxn->tx_drop_counter);
             goto done;
         }
     }
@@ -1755,10 +1764,6 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "    Threshold: %d.\n", cxn->keepalive.threshold);
         aim_printf(pvs, "    Outstanding Echo Count: %d.\n", 
                    cxn->keepalive.outstanding_echo_cnt);
-        aim_printf(pvs, "    Packet ins: %"PRIu64"\n",
-                   cxn->packet_ins);
-        aim_printf(pvs, "    Packet in drops: %"PRIu64"\n",
-                   cxn->status.packet_in_drop);
 
         aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
                    cxn->status.messages_in);
@@ -1784,6 +1789,8 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
             counter += debug_counter_get(&cxn->tx_counters[idx]);
         }
         aim_printf(pvs, "    Cumulative messages out: %"PRIu64"\n", counter);
+        aim_printf(pvs, "    Dropped outgoing messages: %"PRIu64"\n",
+                   debug_counter_get(&cxn->tx_drop_counter));
         if (details) {
             for (idx = 0; idx < OF_MESSAGE_OBJECT_COUNT; idx++) {
                 if (debug_counter_get(&cxn->tx_counters[idx]) > 0) {
