@@ -1261,84 +1261,92 @@ void ind_cxn_disconnect(connection_t *cxn)
 
 /**
  * Process messages waiting to be sent to a connection socket
- *
- * @returns The number of bytes written or an error code
  */
 
-int
+indigo_error_t
 ind_cxn_process_write_buffer(connection_t *cxn)
 {
-    int written, left;
-    int num_iovecs = 0;
-    struct iovec iovecs[MAX_WRITE_MSGS];
-    int i, queue_iter;
+    /* This is a do-while to delay the should_yield check to the end */
+    do {
+        int written, left;
+        int total = 0; /* number of bytes we expect to write */
+        int num_iovecs = 0;
+        struct iovec iovecs[MAX_WRITE_MSGS];
+        int i, queue_iter;
 
-    bigring_iter_start(cxn->write_queue, &queue_iter);
+        bigring_iter_start(cxn->write_queue, &queue_iter);
 
-    /* Iterate over write queue adding buffers to iovecs */
-    while (num_iovecs < MAX_WRITE_MSGS) {
-        void *data = bigring_iter_next(cxn->write_queue, &queue_iter);
-        if (data == NULL) {
+        /* Iterate over write queue adding buffers to iovecs */
+        while (num_iovecs < MAX_WRITE_MSGS) {
+            void *data = bigring_iter_next(cxn->write_queue, &queue_iter);
+            if (data == NULL) {
+                break;
+            }
+            struct iovec *iov = &iovecs[num_iovecs];
+            iov->iov_base = data;
+            iov->iov_len = of_message_length_get(iov->iov_base);
+            if (num_iovecs == 0) {
+                /* First buffer may be partially written */
+                iov->iov_base += cxn->write_queue_head_offset;
+                iov->iov_len -= cxn->write_queue_head_offset;
+            }
+            num_iovecs++;
+            total += iov->iov_len;
+        }
+
+        written = writev(cxn->sd, iovecs, num_iovecs);
+
+        if (written < 0) {
+            /* Error writing to connection socket */
+            LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
+            return INDIGO_ERROR_UNKNOWN;
+        }
+
+        /*
+        * Iterate over cxn->output_list and iovecs together, freeing completely
+        * sent messages.
+        */
+        left = written;
+        for (i = 0; i < num_iovecs; i++) {
+            struct iovec *iov = &iovecs[i];
+            int to_write, bytes_out;
+
+            /* Number of bytes we attempted to send in this message */
+            to_write = iov->iov_len;
+
+            /* Number of bytes we actually sent in this message */
+            bytes_out = aim_imin(left, to_write);
+            cxn->bytes_enqueued -= bytes_out;
+
+            if (bytes_out == to_write) { /* Completed this message */
+                aim_free(bigring_shift(cxn->write_queue));
+                cxn->pkts_enqueued--;
+                cxn->status.messages_out++;
+                cxn->write_queue_head_offset = 0;
+            } else {
+                /* Partial write */
+                INDIGO_ASSERT(bytes_out < to_write);
+                cxn->write_queue_head_offset += bytes_out;
+                break;
+            }
+
+            left -= bytes_out;
+        }
+
+        if (written != total) {
+            /* Short write, the socket buffer is full */
             break;
         }
-        struct iovec *iov = &iovecs[num_iovecs];
-        iov->iov_base = data;
-        iov->iov_len = of_message_length_get(iov->iov_base);
-        if (num_iovecs == 0) {
-            /* First buffer may be partially written */
-            iov->iov_base += cxn->write_queue_head_offset;
-            iov->iov_len -= cxn->write_queue_head_offset;
-        }
-        num_iovecs++;
-    }
+    } while (cxn->pkts_enqueued > 0 && !ind_soc_should_yield());
 
-    written = writev(cxn->sd, iovecs, num_iovecs);
-
-    if (written < 0) {
-        /* Error writing to connection socket */
-        LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
-        return INDIGO_ERROR_UNKNOWN;
-    }
-
-    /*
-     * Iterate over cxn->output_list and iovecs together, freeing completely
-     * sent messages.
-     */
-    left = written;
-    for (i = 0; i < num_iovecs; i++) {
-        struct iovec *iov = &iovecs[i];
-        int to_write, bytes_out;
-
-        /* Number of bytes we attempted to send in this message */
-        to_write = iov->iov_len;
-
-        /* Number of bytes we actually sent in this message */
-        bytes_out = aim_imin(left, to_write);
-        cxn->bytes_enqueued -= bytes_out;
-
-        if (bytes_out == to_write) { /* Completed this message */
-            aim_free(bigring_shift(cxn->write_queue));
-            cxn->pkts_enqueued--;
-            cxn->status.messages_out++;
-            cxn->write_queue_head_offset = 0;
-        } else {
-            /* Partial write */
-            INDIGO_ASSERT(bytes_out < to_write);
-            cxn->write_queue_head_offset += bytes_out;
-            break;
-        }
-
-        left -= bytes_out;
-    }
-
-    if (bigring_count(cxn->write_queue) == 0) { /* Nothing (more) to send */
+    if (cxn->pkts_enqueued == 0) {
         LOG_TRACE(cxn, "No more data to write");
         INDIGO_ASSERT(cxn->bytes_enqueued == 0);
-        INDIGO_ASSERT(cxn->pkts_enqueued == 0);
+        INDIGO_ASSERT(bigring_count(cxn->write_queue) == 0);
         CXN_WRITE_CLEAR(cxn->sd);
     }
 
-    return written;
+    return INDIGO_ERROR_NONE;
 }
 
 /**
