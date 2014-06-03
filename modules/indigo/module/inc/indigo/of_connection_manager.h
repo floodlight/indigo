@@ -206,7 +206,6 @@ typedef enum indigo_cxn_role_e {
 /**
  * Status of a connection instance.
  *    state The current connection state (see indigo_cxn_state_t)
- *    role The HA role, if applicable; only valid if state is CONNECTED
  *    negotiated_version If connected, the version used by the connection
  *    disconnect_count Number of times controller has disconnected from switch
  *    forced_disconnect_count Number of times the switch disconnected
@@ -226,8 +225,6 @@ typedef struct indigo_cxn_status_s {
     uint64_t bytes_out;
     uint64_t messages_in;
     uint64_t messages_out;
-    uint64_t packet_in_drop;
-    uint64_t flow_removed_drop;
 } indigo_cxn_status_t;
 
 /****************************************************************

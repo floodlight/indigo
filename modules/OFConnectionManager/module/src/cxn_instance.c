@@ -1574,6 +1574,14 @@ ind_cxn_register_debug_counters(connection_t *cxn)
     int i;
     const int skip = 3; /* "of_" prefix */
 
+    {
+        char name[DEBUG_COUNTER_NAME_SIZE];
+        aim_snprintf(name, sizeof(name), "cxn." CXN_FMT ".tx_drop", CXN_FMT_ARGS(cxn));
+        name[sizeof(name)-1] = '\0';
+        char *description = "Outgoing message dropped by the switch due to long send queue";
+        debug_counter_register(&cxn->tx_drop_counter, aim_strdup(name), description);
+    }
+
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         char name[DEBUG_COUNTER_NAME_SIZE];
         aim_snprintf(name, sizeof(name), "cxn." CXN_FMT ".rx.%s", CXN_FMT_ARGS(cxn), of_object_id_str[i]+skip);
@@ -1595,6 +1603,12 @@ void
 ind_cxn_unregister_debug_counters(connection_t *cxn)
 {
     int i;
+
+    {
+        char *name = (char *) cxn->tx_drop_counter.name;
+        debug_counter_unregister(&cxn->tx_drop_counter);
+        aim_free(name);
+    }
 
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         debug_counter_t *counter = &cxn->rx_counters[i];
