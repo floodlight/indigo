@@ -408,6 +408,9 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         LOG_TRACE("Flow table now has %d entries",
                   ind_core_ft->current_count);
         entry->table_id = table_id;
+        if (table != NULL) {
+            table->num_flows += 1;
+        }
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 

@@ -50,6 +50,7 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     strncpy(table->name, name, sizeof(table->name));
     table->ops = ops;
     table->priv = priv;
+    table->num_flows = 0;
 
     AIM_TRUE_OR_DIE(ind_core_tables[table_id] == NULL);
     ind_core_tables[table_id] = table;
