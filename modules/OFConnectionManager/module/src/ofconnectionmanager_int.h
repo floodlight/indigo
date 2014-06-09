@@ -55,7 +55,11 @@
 /**
  * Version used for async messages when no controller is connected.
  */
+#if defined(INDIGO_ASYNC_MSG_OF_VER)
+#define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION INDIGO_ASYNC_MSG_OF_VER
+#else
 #define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION OF_VERSION_1_3
+#endif
 
 /**
  * Default value for the aux connections echo period in milliseconds
