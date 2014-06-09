@@ -68,6 +68,16 @@ typedef struct indigo_fi_flow_stats {
 } indigo_fi_flow_stats_t;
 
 /**
+ * @brief Table statistics counters
+ */
+
+typedef struct indigo_fi_table_stats {
+    uint32_t max_entries;   /**< Maximum number of entries in table - not enforced */
+    uint64_t lookup_count;  /**< Number of packets looked up in table */
+    uint64_t matched_count; /**< Number of packets that hit table */
+} indigo_fi_table_stats_t;
+
+/**
  * @brief VLAN statistics counters
  *
  * Should be set to -1 if not supported.
