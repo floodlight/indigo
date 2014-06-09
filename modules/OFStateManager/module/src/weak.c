@@ -94,4 +94,11 @@ indigo_fwd_flow_hit_status_get(
     return INDIGO_ERROR_BAD_TABLE_ID;
 }
 
+WEAK indigo_error_t
+indigo_fwd_table_stats_get(of_table_stats_request_t *table_stats_request,
+                           of_table_stats_reply_t **table_stats_reply_ptr)
+{
+    return INDIGO_ERROR_NOT_SUPPORTED;
+}
+
 #endif
