@@ -47,7 +47,7 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     }
 
     ind_core_table_t *table = aim_zmalloc(sizeof(*table));
-    table->name = aim_strdup(name);
+    strncpy(table->name, name, sizeof(table->name));
     table->ops = ops;
     table->priv = priv;
 
@@ -71,7 +71,6 @@ void indigo_core_table_unregister(uint8_t table_id)
         }
     }
 
-    aim_free(table->name);
     aim_free(table);
     ind_core_tables[table_id] = NULL;
 }
