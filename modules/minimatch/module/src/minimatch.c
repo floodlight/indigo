@@ -206,10 +206,10 @@ minimatch_overlap(const minimatch_t *a, const minimatch_t *b)
 uint32_t
 minimatch_hash(const minimatch_t *minimatch, uint32_t seed)
 {
-    /* TODO optimize */
-    of_match_t match;
-    minimatch_expand(minimatch, &match);
-    return murmur_hash(&match, sizeof(match), seed);
+    uint32_t h = seed;
+    h = murmur_hash(&minimatch->bitmap, sizeof(minimatch->bitmap), h);
+    h = murmur_hash(minimatch->words, minimatch->num_words * sizeof(uint32_t), h);
+    return h;
 }
 
 void
