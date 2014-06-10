@@ -92,11 +92,21 @@ minimatch_expand(const minimatch_t *minimatch, of_match_t *match)
 bool
 minimatch_equal(const minimatch_t *a, const minimatch_t *b)
 {
-    /* TODO optimize */
-    of_match_t match_a, match_b;
-    minimatch_expand(a, &match_a);
-    minimatch_expand(b, &match_b);
-    return of_match_eq(&match_a, &match_b);
+    if (memcmp(a->bitmap, b->bitmap, sizeof(a->bitmap))) {
+        return false;
+    }
+
+    AIM_ASSERT(a->num_words == b->num_words, "length mismatch");
+
+    if (memcmp(a->words, b->words, a->num_words*sizeof(uint32_t))) {
+        return false;
+    }
+
+    if (a->version != b->version) {
+        return false;
+    }
+
+    return true;
 }
 
 bool
