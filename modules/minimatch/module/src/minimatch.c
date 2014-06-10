@@ -169,14 +169,38 @@ minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
 bool
 minimatch_overlap(const minimatch_t *a, const minimatch_t *b)
 {
+    int idx_a = 0, idx_b = 0;
+    int i;
+
     /*
      * For each match word, check that a and b agree on the fields where
      * the intersection of the masks is set.
      */
-    of_match_t match_a, match_b;
-    minimatch_expand(a, &match_a);
-    minimatch_expand(b, &match_b);
-    return of_match_overlap(&match_a, &match_b);
+    for (i = 0; i < OF_MATCH_FIELDS_WORDS; i++) {
+        uint32_t field_a, mask_a, field_b, mask_b;
+
+        if ((a->bitmap[i/32] >> (i % 32)) & 1) {
+            field_a = a->words[idx_a++];
+            mask_a = a->words[idx_a++];
+        } else {
+            field_a = 0;
+            mask_a = 0;
+        }
+
+        if ((b->bitmap[i/32] >> (i % 32)) & 1) {
+            field_b = b->words[idx_b++];
+            mask_b = b->words[idx_b++];
+        } else {
+            field_b = 0;
+            mask_b = 0;
+        }
+
+        if ((field_a & mask_b) != (field_b & mask_a)) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 uint32_t
