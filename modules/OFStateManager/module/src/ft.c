@@ -48,11 +48,11 @@ static void ft_checksum_update(ft_instance_t ft, ft_entry_t *entry);
 
 static int
 ft_strict_match_to_bucket_index(ft_instance_t ft,
-                                of_match_t *match,
+                                minimatch_t *minimatch,
                                 uint16_t priority)
 {
     uint32_t h = FT_HASH_SEED;
-    h = murmur_hash(match, sizeof(*match), h);
+    h = minimatch_hash(minimatch, h);
     h = murmur_hash(&priority, sizeof(priority), h);
     return h % ft->config.strict_match_bucket_count;
 }
@@ -243,10 +243,7 @@ ft_strict_match(ft_instance_t instance,
 
     INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
 
-    of_match_t match;
-    minimatch_expand(&query->minimatch, &match);
-
-    bucket_idx = ft_strict_match_to_bucket_index(instance, &match,
+    bucket_idx = ft_strict_match_to_bucket_index(instance, &query->minimatch,
                                                  query->priority);
     list_head_t *bucket = &instance->strict_match_buckets[bucket_idx];
 
@@ -564,11 +561,8 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    of_match_t match;
-    minimatch_expand(&entry->minimatch, &match);
-
     if (ft->strict_match_buckets) { /* Strict match hash */
-        idx = ft_strict_match_to_bucket_index(ft, &match, entry->priority);
+        idx = ft_strict_match_to_bucket_index(ft, &entry->minimatch, entry->priority);
         list_push(&ft->strict_match_buckets[idx], &entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
@@ -610,12 +604,9 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    of_match_t match;
-    minimatch_expand(&entry->minimatch, &match);
-
     if (ft->strict_match_buckets) { /* Strict match hash */
         INDIGO_ASSERT(!list_empty(&ft->strict_match_buckets[
-            ft_strict_match_to_bucket_index(ft, &match, entry->priority)]));
+            ft_strict_match_to_bucket_index(ft, &entry->minimatch, entry->priority)]));
         list_remove(&entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
