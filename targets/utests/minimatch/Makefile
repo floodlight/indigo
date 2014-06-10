@@ -21,7 +21,7 @@ include ../../../init.mk
 MODULE := minimatch_utest
 TEST_MODULE := minimatch
 
-DEPENDMODULES := AIM loci
+DEPENDMODULES := AIM loci murmur
 
 GLOBAL_LINK_LIBS += -lm
 
