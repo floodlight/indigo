@@ -58,7 +58,7 @@ extern indigo_error_t indigo_fwd_forwarding_features_get(
 /**
  * @brief Flow create
  * @param of_flow_add The original LOCI request
- * @param [out] table_id Table inserted into
+ * @param [out] table_id Table inserted into (ignored)
  *
  * Create a flow for the forwarding engine.
  *
