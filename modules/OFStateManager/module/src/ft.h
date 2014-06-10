@@ -280,6 +280,9 @@ ft_entry_modify_effects(ft_instance_t instance,
  * The callback function will be called with a NULL entry argument at
  * the end of the iteration.
  *
+ * This function moves the metamatch. The caller does not need to clean up the
+ * metamatch, even if this function fails.
+ *
  * Deleted entries are skipped.
  */
 

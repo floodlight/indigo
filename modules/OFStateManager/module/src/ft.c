@@ -243,7 +243,10 @@ ft_strict_match(ft_instance_t instance,
 
     INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
 
-    bucket_idx = ft_strict_match_to_bucket_index(instance, &query->match,
+    of_match_t match;
+    minimatch_expand(&query->minimatch, &match);
+
+    bucket_idx = ft_strict_match_to_bucket_index(instance, &match,
                                                  query->priority);
     list_head_t *bucket = &instance->strict_match_buckets[bucket_idx];
 
@@ -335,13 +338,10 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         }
     }
 
-    of_match_t match;
-    minimatch_expand(&entry->minimatch, &match);
-
     switch (query->mode) {
     case OF_MATCH_NON_STRICT:
         /* Check if the entry's match is more specific than the query's */
-        if (!of_match_more_specific(&match, &query->match)) {
+        if (!minimatch_more_specific(&entry->minimatch, &query->minimatch)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -352,7 +352,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_STRICT:
-        if (!of_match_eq(&match, &query->match)) {
+        if (!minimatch_equal(&entry->minimatch, &query->minimatch)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -367,7 +367,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_OVERLAP:
-        if (!of_match_overlap(&match, &query->match)) {
+        if (!minimatch_overlap(&entry->minimatch, &query->minimatch)) {
             break;
         }
         rv = 1;
@@ -455,6 +455,7 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
+        ft_iterator_cleanup(&state->iter);
         aim_free(state);
         return rv;
     }
@@ -539,6 +540,10 @@ ft_iterator_cleanup(ft_iterator_t *iter)
     if (iter->next_entry != NULL) {
         list_remove(&iter->entry_links);
         iter->next_entry = NULL;
+    }
+
+    if (iter->use_query) {
+        metamatch_cleanup(&iter->query);
     }
 }
 
@@ -799,4 +804,10 @@ ft_checksum_update(ft_instance_t ft, ft_entry_t *entry)
     table->checksum ^= entry->cookie;
     int bucket = table->checksum_shift < 64 ? entry->cookie >> table->checksum_shift : 0;
     table->checksum_buckets[bucket] ^= entry->cookie;
+}
+
+void
+metamatch_cleanup(of_meta_match_t *metamatch)
+{
+    minimatch_cleanup(&metamatch->minimatch);
 }

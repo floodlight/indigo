@@ -540,6 +540,7 @@ test_ft_hash(void)
     };
     of_flow_add_t *flow_add;
     of_meta_match_t query;
+    of_match_t match;
     ft_entry_t *entry = NULL;
     uint16_t orig_prio;
     uint64_t orig_cookie;
@@ -593,8 +594,9 @@ test_ft_hash(void)
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
-    TEST_OK(of_flow_add_match_get(flow_add, &query.match));
-    orig_eth_type = query.match.fields.eth_type;
+    TEST_OK(of_flow_add_match_get(flow_add, &match));
+    minimatch_init(&query.minimatch, &match);
+    orig_eth_type = match.fields.eth_type;
 
     /* These don't change */
     query.check_priority                = 1;
@@ -605,8 +607,10 @@ test_ft_hash(void)
     /* Test success on non-strict match */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 1);
     TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
@@ -615,8 +619,10 @@ test_ft_hash(void)
     /* Test success on strict match */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 1);
     TEST_INDIGO_OK(ft_strict_match(ft, &query, &lookup_entry));
@@ -625,8 +631,10 @@ test_ft_hash(void)
     /* Test fail lookup for port, strict */
     query.out_port                      = 1;
     query.mode                          = OF_MATCH_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 0);
     TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
@@ -635,8 +643,10 @@ test_ft_hash(void)
     /* Test fail lookup for strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
-    query.match.fields.eth_type         = orig_eth_type + 1;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type + 1;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 0);
     TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
@@ -645,16 +655,20 @@ test_ft_hash(void)
     /* Test fail lookup for non-strict value */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = orig_eth_type + 1;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type + 1;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 0);
 
     /* Test fail lookup for strict mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 0);
     TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
@@ -663,8 +677,10 @@ test_ft_hash(void)
     /* Test success for non-strict with varying mask */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 1);
     TEST_INDIGO_OK(first_match(ft, &query, &lookup_entry));
@@ -679,30 +695,36 @@ test_ft_hash(void)
     /* Create a new flow table and add TEST_FLOW_COUNT entries. Do some queries */
     ft = ft_create(&config);
     TEST_ASSERT(ft != NULL);
-    TEST_OK(populate_table(ft, TEST_FLOW_COUNT, &query.match));
-    orig_eth_type = query.match.fields.eth_type; /* Last ethtype added */
+    TEST_OK(populate_table(ft, TEST_FLOW_COUNT, &match));
+    orig_eth_type = match.fields.eth_type; /* Last ethtype added */
 
     /* Query table and expect to get all results */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = 0;
-    query.match.masks.eth_type          = 0;
+    match.fields.eth_type               = 0;
+    match.masks.eth_type                = 0;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == TEST_FLOW_COUNT);
 
     /* Query table and expect to get one match */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = orig_eth_type;
-    query.match.masks.eth_type          = 0xffff;
+    match.fields.eth_type               = orig_eth_type;
+    match.masks.eth_type                = 0xffff;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == 1);
 
     /* Query table and expect to get 50 matches (every other one) */
     query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
-    query.match.fields.eth_type         = 0x1;
-    query.match.masks.eth_type          = 0x1;
+    match.fields.eth_type               = 0x1;
+    match.masks.eth_type                = 0x1;
+    minimatch_cleanup(&query.minimatch);
+    minimatch_init(&query.minimatch, &match);
 
     TEST_ASSERT(count_matching(ft, &query) == TEST_FLOW_COUNT/2);
 
@@ -713,8 +735,10 @@ test_ft_hash(void)
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         query.out_port                      = OF_PORT_DEST_WILDCARD;
         query.mode                          = OF_MATCH_STRICT;
-        query.match.fields.eth_type         = TEST_ETH_TYPE(idx);
-        query.match.masks.eth_type          = 0xffff;
+        match.fields.eth_type               = TEST_ETH_TYPE(idx);
+        match.masks.eth_type                = 0xffff;
+        minimatch_cleanup(&query.minimatch);
+        minimatch_init(&query.minimatch, &match);
 
         TEST_ASSERT(count_matching(ft, &query) == 1);
 
