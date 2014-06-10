@@ -24,7 +24,7 @@
 void
 minimatch_init(minimatch_t *minimatch, const of_match_t *match)
 {
-    int i;
+    int i, j = 0;
     int num_words = 0;
     int idx = 0;
     uint32_t *fields = (uint32_t *)&match->fields;
@@ -50,10 +50,19 @@ minimatch_init(minimatch_t *minimatch, const of_match_t *match)
      * For each bit set in the bitmap, copy the corresponding words from the
      * fields and masks to our words array.
      */
-    for (i = 0; i < OF_MATCH_FIELDS_WORDS; i++) {
-        if (masks[i]) {
-            minimatch->words[idx++] = fields[i];
-            minimatch->words[idx++] = masks[i];
+    for (i = 0; i < AIM_ARRAYSIZE(minimatch->bitmap); i++) {
+        uint32_t bitmap_word = minimatch->bitmap[i];
+
+        while (bitmap_word) {
+            int skip = __builtin_ctz(bitmap_word);
+            bitmap_word >>= skip;
+            j += skip;
+
+            minimatch->words[idx++] = fields[j];
+            minimatch->words[idx++] = masks[j];
+
+            j++;
+            bitmap_word >>= 1;
         }
     }
 }
