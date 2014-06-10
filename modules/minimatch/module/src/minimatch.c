@@ -67,7 +67,7 @@ minimatch_cleanup(minimatch_t *minimatch)
 void
 minimatch_expand(const minimatch_t *minimatch, of_match_t *match)
 {
-    int i;
+    int i, j = 0;
     int idx = 0;
     uint32_t *fields = (uint32_t *)&match->fields;
     uint32_t *masks = (uint32_t *)&match->masks;
@@ -79,12 +79,19 @@ minimatch_expand(const minimatch_t *minimatch, of_match_t *match)
      * For each bit set in the bitmap, copy the corresponding words from the
      * words array to the match fields and masks.
      */
-    for (i = 0; i < OF_MATCH_FIELDS_WORDS; i++) {
-        uint32_t bitmap_word = minimatch->bitmap[i/32];
-        uint32_t bit = i % 32;
-        if ((bitmap_word >> bit) & 1) {
-            fields[i] = minimatch->words[idx++];
-            masks[i] = minimatch->words[idx++];
+    for (i = 0; i < AIM_ARRAYSIZE(minimatch->bitmap); i++) {
+        uint32_t bitmap_word = minimatch->bitmap[i];
+
+        while (bitmap_word) {
+            int skip = __builtin_ctz(bitmap_word);
+            bitmap_word >>= skip;
+            j += skip;
+
+            fields[j] = minimatch->words[idx++];
+            masks[j] = minimatch->words[idx++];
+
+            j++;
+            bitmap_word >>= 1;
         }
     }
 }
