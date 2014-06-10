@@ -335,10 +335,13 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         }
     }
 
+    of_match_t match;
+    minimatch_expand(&entry->minimatch, &match);
+
     switch (query->mode) {
     case OF_MATCH_NON_STRICT:
         /* Check if the entry's match is more specific than the query's */
-        if (!of_match_more_specific(&entry->match, &query->match)) {
+        if (!of_match_more_specific(&match, &query->match)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -349,7 +352,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_STRICT:
-        if (!of_match_eq(&entry->match, &query->match)) {
+        if (!of_match_eq(&match, &query->match)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -364,7 +367,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_OVERLAP:
-        if (!of_match_overlap(&entry->match, &query->match)) {
+        if (!of_match_overlap(&match, &query->match)) {
             break;
         }
         rv = 1;
@@ -556,8 +559,11 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
+    of_match_t match;
+    minimatch_expand(&entry->minimatch, &match);
+
     if (ft->strict_match_buckets) { /* Strict match hash */
-        idx = ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority);
+        idx = ft_strict_match_to_bucket_index(ft, &match, entry->priority);
         list_push(&ft->strict_match_buckets[idx], &entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
@@ -599,9 +605,12 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
+    of_match_t match;
+    minimatch_expand(&entry->minimatch, &match);
+
     if (ft->strict_match_buckets) { /* Strict match hash */
         INDIGO_ASSERT(!list_empty(&ft->strict_match_buckets[
-            ft_strict_match_to_bucket_index(ft, &entry->match, entry->priority)]));
+            ft_strict_match_to_bucket_index(ft, &match, entry->priority)]));
         list_remove(&entry->strict_match_links);
     }
     if (ft->flow_id_buckets) { /* Flow ID hash */
@@ -639,10 +648,14 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
 
     entry->id = id;
 
-    if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
+    of_match_t match;
+    if (of_flow_add_match_get(flow_add, &match) < 0) {
         aim_free(entry);
         return INDIGO_ERROR_UNKNOWN;
     }
+
+    minimatch_init(&entry->minimatch, &match);
+
     of_flow_add_cookie_get(flow_add, &entry->cookie);
     of_flow_add_priority_get(flow_add, &entry->priority);
     of_flow_add_flags_get(flow_add, &entry->flags);
@@ -652,6 +665,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     err = ft_entry_set_effects(entry, flow_add);
     if (err < 0) {
         aim_free(entry);
+        minimatch_cleanup(&entry->minimatch);
         return err;
     }
 
@@ -684,6 +698,7 @@ ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
         entry->effects.actions = NULL;
     }
 
+    minimatch_cleanup(&entry->minimatch);
     aim_free(entry);
 }
 

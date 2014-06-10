@@ -23,6 +23,7 @@
 #include <AIM/aim_list.h>
 #include <indigo/indigo.h>
 #include <loci/loci.h>
+#include <minimatch/minimatch.h>
 
 #include "ofstatemanager_int.h"
 
@@ -67,7 +68,7 @@ typedef struct ft_entry_s {
     indigo_flow_id_t     id;
 
     /* Invariant */
-    of_match_t match;
+    minimatch_t minimatch;
     uint16_t priority;
     uint16_t idle_timeout;
     uint16_t hard_timeout;

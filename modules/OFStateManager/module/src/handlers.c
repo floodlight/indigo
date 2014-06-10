@@ -870,7 +870,10 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
             of_flow_stats_entry_flags_set(&stats_entry, entry->flags);
         }
 
-        if (of_flow_stats_entry_match_set(&stats_entry, &entry->match)) {
+        of_match_t match;
+        minimatch_expand(&entry->minimatch, &match);
+
+        if (of_flow_stats_entry_match_set(&stats_entry, &match)) {
             LOG_ERROR("Failed to set match in flow stats entry");
             return;
         }

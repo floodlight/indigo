@@ -433,7 +433,11 @@ depopulate_table(ft_instance_t ft)
     for (idx = 0; idx < count; ++idx) {
         entry = ft_lookup(ft, TEST_KEY(idx));
         TEST_ASSERT(entry != NULL);
-        TEST_ASSERT(entry->match.fields.eth_type == TEST_ETH_TYPE(idx));
+
+        of_match_t match;
+        minimatch_expand(&entry->minimatch, &match);
+        TEST_ASSERT(match.fields.eth_type == TEST_ETH_TYPE(idx));
+
         ft_delete(ft, entry);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
