@@ -397,6 +397,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
     of_flow_add_t *flow_add_base;
     of_flow_add_t *flow_add;
     ft_entry_t    *entry;
+    minimatch_t minimatch;
 
     flow_add_base = of_flow_add_new(OF_VERSION_1_0);
     TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add_base, 1) != 0);
@@ -408,7 +409,8 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
                     != NULL);
         match->fields.eth_type = TEST_ETH_TYPE(idx);
         TEST_OK(of_flow_add_match_set(flow_add, match));
-        TEST_INDIGO_OK(ft_add(ft, TEST_KEY(idx), flow_add, &entry));
+        minimatch_init(&minimatch, match);
+        TEST_INDIGO_OK(ft_add(ft, TEST_KEY(idx), flow_add, &minimatch, &entry));
         of_object_delete(flow_add);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
@@ -547,6 +549,7 @@ test_ft_hash(void)
     uint16_t orig_eth_type;
     int idx;
     ft_entry_t *lookup_entry;
+    minimatch_t minimatch;
 
     /* Test edge cases for create/destroy */
     ft_destroy(NULL);
@@ -562,9 +565,13 @@ test_ft_hash(void)
     flow_add = of_flow_add_new(OF_VERSION_1_0);
     TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, 1) != 0);
     of_flow_add_flags_set(flow_add, 0);
+    TEST_ASSERT(of_flow_add_match_get(flow_add, &match) == 0);
 
-    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
-    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID + 1, flow_add, &entry));
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &minimatch, &entry));
+
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID + 1, flow_add, &minimatch, &entry));
 
     TEST_ASSERT(ft->current_count == 2);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
@@ -583,7 +590,8 @@ test_ft_hash(void)
     of_flow_add_priority_get(flow_add, &orig_prio);
     of_flow_add_cookie_get(flow_add, &orig_cookie);
 
-    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &entry));
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &minimatch, &entry));
     TEST_ASSERT(ft->current_count == 1);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
     entry = ft_lookup(ft, TEST_ENT_ID);
@@ -761,11 +769,15 @@ add_flow(ft_instance_t ft, int id, ft_entry_t **entry_p)
 {
     of_flow_add_t *flow_add;
     ft_entry_t *entry;
+    of_match_t match;
+    minimatch_t minimatch;
     flow_add = of_flow_add_new(OF_VERSION_1_0);
     of_flow_add_OF_VERSION_1_0_populate(flow_add, id);
     of_flow_add_flags_set(flow_add, 0);
     of_flow_add_cookie_set(flow_add, id);
-    TEST_INDIGO_OK(ft_add(ft, id, flow_add, &entry));
+    TEST_ASSERT(of_flow_add_match_get(flow_add, &match) == 0);
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, id, flow_add, &minimatch, &entry));
     of_object_delete(flow_add);
     *entry_p = entry;
     return 0;
@@ -955,6 +967,8 @@ test_ft_iter_task(void)
     of_flow_add_t *flow_add1, *flow_add2;
     ft_entry_t *entry1, *entry2;
     struct iter_task_state state;
+    of_match_t match;
+    minimatch_t minimatch;
 
     ft = ft_create(&config);
 
@@ -966,8 +980,13 @@ test_ft_iter_task(void)
     of_flow_add_OF_VERSION_1_0_populate(flow_add2, 2);
     of_flow_add_flags_set(flow_add2, 0);
 
-    TEST_INDIGO_OK(ft_add(ft, 1, flow_add1, &entry1));
-    TEST_INDIGO_OK(ft_add(ft, 2, flow_add2, &entry2));
+    TEST_ASSERT(of_flow_add_match_get(flow_add1, &match) == 0);
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, 1, flow_add1, &minimatch, &entry1));
+
+    TEST_ASSERT(of_flow_add_match_get(flow_add2, &match) == 0);
+    minimatch_init(&minimatch, &match);
+    TEST_INDIGO_OK(ft_add(ft, 2, flow_add2, &minimatch, &entry2));
 
     state = (struct iter_task_state) { .ft = ft, .finished = -1, .entries_seen = 0 };
     ft_spawn_iter_task(ft, NULL, iter_task_cb, &state, IND_SOC_NORMAL_PRIORITY);

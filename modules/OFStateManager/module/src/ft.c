@@ -30,7 +30,7 @@
 #include "ft.h"
 #include "expiration.h"
 
-static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p);
+static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, minimatch_t *minimatch, ft_entry_t **entry_p);
 static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
@@ -168,7 +168,8 @@ ft_destroy(ft_instance_t ft)
 
 indigo_error_t
 ft_add(ft_instance_t ft, indigo_flow_id_t id,
-       of_flow_add_t *flow_add, ft_entry_t **entry_p)
+       of_flow_add_t *flow_add, minimatch_t *minimatch,
+       ft_entry_t **entry_p)
 {
     ft_entry_t *entry = NULL;
     indigo_error_t rv;
@@ -177,10 +178,11 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
 
     /* If flow ID already exists, error. */
     if (ft_lookup(ft, id) != NULL) {
+        minimatch_cleanup(minimatch);
         return INDIGO_ERROR_EXISTS;
     }
 
-    if ((rv = ft_entry_create(id, flow_add, &entry)) < 0) {
+    if ((rv = ft_entry_create(id, flow_add, minimatch, &entry)) < 0) {
         return rv;
     }
 
@@ -630,12 +632,16 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
  *
  * @param id The flow ID to use
  * @param flow_add Pointer to the flow add object for the entry
+ * @param minimatch Pointer to the minimatch already extracted from the flow
  * @param_p entry Populated with pointer to new flowtable entry on success
  *
  * The list links are not modified by this call.
+ *
+ * The minimatch is moved.
  */
 static indigo_error_t
-ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p)
+ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
+                minimatch_t *minimatch, ft_entry_t **entry_p)
 {
     indigo_error_t err;
     ft_entry_t *entry;
@@ -644,13 +650,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
 
     entry->id = id;
 
-    of_match_t match;
-    if (of_flow_add_match_get(flow_add, &match) < 0) {
-        aim_free(entry);
-        return INDIGO_ERROR_UNKNOWN;
-    }
-
-    minimatch_init(&entry->minimatch, &match);
+    minimatch_move(&entry->minimatch, minimatch);
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
     of_flow_add_priority_get(flow_add, &entry->priority);

@@ -193,14 +193,18 @@ void ft_destroy(ft_instance_t ft);
  * @param ft The flow table handle
  * @param id The external flow identifier
  * @param flow_add The LOCI flow mod object resulting in the add
+ * @param minimatch Pointer to the minimatch extracted from the flow
  * @param entry_p Output; pointer to place to store entry if successful
  *
  * If the entry already exists, an error is returned.
+ *
+ * The minimatch is moved.
  */
 
 indigo_error_t ft_add(ft_instance_t ft,
                       indigo_flow_id_t id,
                       of_flow_add_t *flow_add,
+                      minimatch_t *minimatch,
                       ft_entry_t **entry_p);
 
 /**

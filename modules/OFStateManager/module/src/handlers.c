@@ -320,6 +320,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     ft_entry_t        *entry = 0;
     indigo_flow_id_t  flow_id;
     uint16_t idle_timeout, hard_timeout;
+    minimatch_t minimatch;
 
     ver = obj->version;
 
@@ -356,6 +357,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
     bool strict_match = ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE;
+    /* We're going to save this minimatch in the flowtable entry */
+    minimatch_move(&minimatch, &query.minimatch);
     metamatch_cleanup(&query);
 
     if (strict_match) {
@@ -380,6 +383,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                 flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
             }
 
+            minimatch_cleanup(&minimatch);
             return;
         }
     }
@@ -389,7 +393,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     flow_id = flow_id_next();
 
-    rv = ft_add(ind_core_ft, flow_id, obj, &entry);
+    rv = ft_add(ind_core_ft, flow_id, obj, &minimatch, &entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %s",
                   indigo_strerror(rv));
