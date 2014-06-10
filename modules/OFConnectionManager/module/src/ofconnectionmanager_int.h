@@ -53,11 +53,6 @@
     } while (0)
 
 /**
- * Version used for async messages when no controller is connected.
- */
-#define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION OF_VERSION_1_3
-
-/**
  * Default value for the aux connections echo period in milliseconds
  */
 #define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
