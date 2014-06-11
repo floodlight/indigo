@@ -658,6 +658,12 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     entry->insert_time = INDIGO_CURRENT_TIME;
     entry->last_counter_change = entry->insert_time;
 
+    if (flow_add->version >= OF_VERSION_1_1) {
+        of_flow_add_table_id_get(flow_add, &entry->table_id);
+    } else {
+        entry->table_id = 0;
+    }
+
     *entry_p = entry;
 
     return INDIGO_ERROR_NONE;

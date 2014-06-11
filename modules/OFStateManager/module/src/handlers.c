@@ -315,7 +315,6 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     ft_entry_t        *entry = 0;
     indigo_flow_id_t  flow_id;
     uint16_t idle_timeout, hard_timeout;
-    uint8_t table_id;
 
     ver = obj->version;
 
@@ -391,23 +390,18 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
 
-    table_id = 0;
-    if (obj->version >= OF_VERSION_1_1) {
-        of_flow_add_table_id_get(obj, &table_id);
-    }
-
-    ind_core_table_t *table = ind_core_table_get(table_id);
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
         rv = table->ops->entry_create(table->priv, cxn_id,
                                       obj, flow_id, &entry->priv);
     } else {
-        rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &table_id);
+        uint8_t ignored_table_id;
+        rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &ignored_table_id);
     }
 
     if (rv == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow table now has %d entries",
                   ind_core_ft->current_count);
-        entry->table_id = table_id;
         if (table != NULL) {
             table->num_flows += 1;
         }
