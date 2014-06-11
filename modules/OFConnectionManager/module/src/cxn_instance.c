@@ -1247,6 +1247,8 @@ void ind_cxn_disconnect(connection_t *cxn)
         if (cxn->outstanding_op_cnt == 0) {
             cxn_state_set(cxn, INDIGO_CXN_S_DISCONNECTED);
         }
+    } else {
+        cleanup_disconnect(cxn);
     }
 }
 
