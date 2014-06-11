@@ -709,6 +709,7 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
     } else {
         ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer,
                                        &connection[cxn_id]);
+        ind_cxn_disconnect(&connection[cxn_id]);
         connection[cxn_id].active = 0;
     }
 
