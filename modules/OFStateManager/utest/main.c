@@ -462,11 +462,7 @@ check_bucket_counts(ft_instance_t ft, int expected)
     }
     TEST_ASSERT(count == expected);
 
-    count = 0;
-    for (idx = 0; idx < ft->config.strict_match_bucket_count; idx++) {
-        count += list_length(&ft->strict_match_buckets[idx]);
-    }
-    TEST_ASSERT(count == expected);
+    TEST_ASSERT(bighash_entry_count(ft->strict_match_hashtable) == expected);
 
     return 0;
 }
@@ -531,7 +527,6 @@ test_ft_hash(void)
 {
     ft_instance_t ft;
     ft_config_t config = {
-        1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
     of_flow_add_t *flow_add;
@@ -748,7 +743,6 @@ test_ft_iterator(void)
 {
     ft_instance_t ft;
     ft_config_t config = {
-        1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
     int i;
@@ -921,7 +915,6 @@ test_ft_iter_task(void)
 {
     ft_instance_t ft;
     ft_config_t config = {
-        1024, /* strict_match buckets */
         1024, /* flow_id buckets */
     };
     of_flow_add_t *flow_add1, *flow_add2;

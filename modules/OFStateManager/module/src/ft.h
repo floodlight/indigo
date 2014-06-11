@@ -54,6 +54,7 @@
 #include <AIM/aim_list.h>
 #include <stdbool.h>
 #include <debug_counter/debug_counter.h>
+#include <BigHash/bighash.h>
 
 #include "ft_entry.h"
 
@@ -83,13 +84,10 @@ typedef ft_public_t *ft_instance_t;
 
 /**
  * Flow table configuration structure
- * @param max_entries Maximum number of entries to support
- * @param strict_match_bucket_count How many buckets for strict_match hash table
  * @param flow_id_bucket_count How many buckets for flow_id hash table
  */
 
 typedef struct ft_config_s {
-    int strict_match_bucket_count;
     int flow_id_bucket_count;
 } ft_config_t;
 
@@ -122,7 +120,7 @@ struct ft_public_s {
 
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
+    bighash_table_t *strict_match_hashtable;
     list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
     list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 
