@@ -447,7 +447,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
     int count = 0;
     ft_entry_t *_entry;
     list_links_t *cur, *next;
-    int idx;
 
     FT_ITER(ft, _entry, cur, next) {
         (void)_entry;
@@ -456,13 +455,8 @@ check_bucket_counts(ft_instance_t ft, int expected)
     TEST_ASSERT(count == expected);
 
     /* Check the buckets */
-    count = 0;
-    for (idx = 0; idx < ft->config.flow_id_bucket_count; idx++) {
-        count += list_length(&ft->flow_id_buckets[idx]);
-    }
-    TEST_ASSERT(count == expected);
-
     TEST_ASSERT(bighash_entry_count(ft->strict_match_hashtable) == expected);
+    TEST_ASSERT(bighash_entry_count(ft->flow_id_hashtable) == expected);
 
     return 0;
 }
@@ -526,9 +520,6 @@ static int
 test_ft_hash(void)
 {
     ft_instance_t ft;
-    ft_config_t config = {
-        1024, /* flow_id buckets */
-    };
     of_flow_add_t *flow_add;
     of_meta_match_t query;
     ft_entry_t *entry = NULL;
@@ -541,12 +532,12 @@ test_ft_hash(void)
     /* Test edge cases for create/destroy */
     ft_destroy(NULL);
 
-    ft = ft_create(&config);
+    ft = ft_create();
     TEST_ASSERT(ft != NULL);
     ft_destroy(ft);
 
     /* Create, add two entries, delete without emptying */
-    ft = ft_create(&config);
+    ft = ft_create();
     TEST_ASSERT(ft != NULL);
 
     flow_add = of_flow_add_new(OF_VERSION_1_0);
@@ -563,7 +554,7 @@ test_ft_hash(void)
     of_object_delete(flow_add);
 
     /* Test simple cases for hash table */
-    ft = ft_create(&config);
+    ft = ft_create();
     TEST_ASSERT(ft != NULL);
 
     /* Set up flow add structure */
@@ -668,7 +659,7 @@ test_ft_hash(void)
     ft_destroy(ft);
 
     /* Create a new flow table and add TEST_FLOW_COUNT entries. Do some queries */
-    ft = ft_create(&config);
+    ft = ft_create();
     TEST_ASSERT(ft != NULL);
     TEST_OK(populate_table(ft, TEST_FLOW_COUNT, &query.match));
     orig_eth_type = query.match.fields.eth_type; /* Last ethtype added */
@@ -742,14 +733,11 @@ static int
 test_ft_iterator(void)
 {
     ft_instance_t ft;
-    ft_config_t config = {
-        1024, /* flow_id buckets */
-    };
     int i;
     const int num_flows = 3;
     ft_entry_t *entries[num_flows];
 
-    ft = ft_create(&config);
+    ft = ft_create();
 
     for (i = 0; i < num_flows; i++) {
         TEST_OK(add_flow(ft, i, &entries[i]));
@@ -914,14 +902,11 @@ static int
 test_ft_iter_task(void)
 {
     ft_instance_t ft;
-    ft_config_t config = {
-        1024, /* flow_id buckets */
-    };
     of_flow_add_t *flow_add1, *flow_add2;
     ft_entry_t *entry1, *entry2;
     struct iter_task_state state;
 
-    ft = ft_create(&config);
+    ft = ft_create();
 
     flow_add1 = of_flow_add_new(OF_VERSION_1_0);
     of_flow_add_OF_VERSION_1_0_populate(flow_add1, 1);
