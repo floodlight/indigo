@@ -679,6 +679,11 @@ process_flow_removal(ft_entry_t *entry,
         }
     }
 
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
+    if (table != NULL) {
+        table->num_flows -= 1;
+    }
+
     ft_delete(ind_core_ft, entry);
 
     LOG_TRACE("Flow table now has %d entries",

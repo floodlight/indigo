@@ -27,9 +27,10 @@
 #include <indigo/of_state_manager.h>
 
 typedef struct ind_core_table_s {
-    char *name;
+    of_table_name_t name;
     void *priv;
     const indigo_core_table_ops_t *ops;
+    uint32_t num_flows;
 } ind_core_table_t;
 
 ind_core_table_t *ind_core_table_get(uint8_t table_id);

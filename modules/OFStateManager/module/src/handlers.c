@@ -402,6 +402,9 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (rv == INDIGO_ERROR_NONE) {
         LOG_TRACE("Flow table now has %d entries",
                   ind_core_ft->current_count);
+        if (table != NULL) {
+            table->num_flows += 1;
+        }
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
@@ -1116,11 +1119,57 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_table_stats_request_t *reply = NULL;
     indigo_error_t rv;
 
-    rv = indigo_fwd_table_stats_get(obj, &reply);
-    if (rv < 0) {
-        LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
-        /* TODO send error */
-        return;
+    if (ind_core_num_tables_registered == 0) {
+        rv = indigo_fwd_table_stats_get(obj, &reply);
+        if (rv < 0) {
+            LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
+            /* TODO send error */
+            return;
+        }
+    } else {
+        of_version_t version = obj->version;
+
+        reply = of_table_stats_reply_new(version);
+        AIM_TRUE_OR_DIE(reply != NULL);
+
+        uint32_t xid;
+        of_table_stats_request_xid_get(obj, &xid);
+        of_table_stats_reply_xid_set(reply, xid);
+
+        of_list_table_stats_entry_t list[1];
+        of_table_stats_reply_entries_bind(reply, list);
+
+        int i;
+        for (i = 0; i < 256; i++) {
+            ind_core_table_t *table = ind_core_table_get(i);
+
+            if (table == NULL) {
+                continue;
+            }
+
+            indigo_fi_table_stats_t table_stats;
+            memset(&table_stats, -1, sizeof(table_stats));
+
+            if (table->ops->table_stats_get) {
+                (void) table->ops->table_stats_get(table->priv, cxn_id, &table_stats);
+            }
+
+            of_table_stats_entry_t entry[1];
+            of_table_stats_entry_init(entry, version, -1, 1);
+            (void) of_list_table_stats_entry_append_bind(list, entry);
+
+            of_table_stats_entry_table_id_set(entry, i);
+            if (version < OF_VERSION_1_3) {
+                of_table_stats_entry_name_set(entry, table->name);
+                of_table_stats_entry_max_entries_set(entry, table_stats.max_entries);
+            }
+            if (version < OF_VERSION_1_2) {
+                of_table_stats_entry_wildcards_set(entry, 0x3fffff); /* All wildcards */
+            }
+            of_table_stats_entry_active_count_set(entry, table->num_flows);
+            of_table_stats_entry_lookup_count_set(entry, table_stats.lookup_count);
+            of_table_stats_entry_matched_count_set(entry, table_stats.matched_count);
+        }
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
