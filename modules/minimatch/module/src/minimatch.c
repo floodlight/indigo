@@ -129,37 +129,56 @@ bool
 minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
 {
     int idx_a = 0, idx_b = 0;
-    int i;
+    int i, j = 0;
 
     /*
      * For each match word, check that a's mask is at least as specific as b's
      * mask and that a and b agree on the fields where b's mask is set.
      */
-    for (i = 0; i < OF_MATCH_FIELDS_WORDS; i++) {
-        uint32_t field_a, mask_a, field_b, mask_b;
+    for (i = 0; i < AIM_ARRAYSIZE(a->bitmap); i++) {
+        uint32_t bitmap_word_a = a->bitmap[i];
+        uint32_t bitmap_word_b = b->bitmap[i];
 
-        if ((a->bitmap[i/32] >> (i % 32)) & 1) {
-            field_a = a->words[idx_a++];
-            mask_a = a->words[idx_a++];
-        } else {
-            field_a = 0;
-            mask_a = 0;
+        if (!bitmap_word_b) {
+            /* Nothing set in b's mask, so a must be at least as specific */
+            continue;
         }
 
-        if ((b->bitmap[i/32] >> (i % 32)) & 1) {
-            field_b = b->words[idx_b++];
-            mask_b = b->words[idx_b++];
-        } else {
-            field_b = 0;
-            mask_b = 0;
-        }
+        while (bitmap_word_a | bitmap_word_b) {
+            int skip = __builtin_ctz(bitmap_word_a | bitmap_word_b);
+            bitmap_word_a >>= skip;
+            bitmap_word_b >>= skip;
+            j += skip;
 
-        if (mask_b & ~mask_a) {
-            return false;
-        }
+            uint32_t field_a, mask_a, field_b, mask_b;
 
-        if ((field_a & mask_b) != (field_b & mask_b)) {
-            return false;
+            if (bitmap_word_a & 1) {
+                field_a = a->words[idx_a++];
+                mask_a = a->words[idx_a++];
+            } else {
+                field_a = 0;
+                mask_a = 0;
+            }
+
+            if (bitmap_word_b & 1) {
+                field_b = b->words[idx_b++];
+                mask_b = b->words[idx_b++];
+            } else {
+                field_b = 0;
+                mask_b = 0;
+            }
+
+            if (mask_b & ~mask_a) {
+                return false;
+            }
+
+            if ((field_a & mask_b) != (field_b & mask_b)) {
+                return false;
+            }
+
+            j++;
+            bitmap_word_a >>= 1;
+            bitmap_word_b >>= 1;
         }
     }
 
