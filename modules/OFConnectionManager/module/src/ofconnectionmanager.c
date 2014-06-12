@@ -69,8 +69,6 @@ static void
 ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                             int write_ready, int error_seen);
 
-static void ind_cxn_status_notify(void);
-
 /****************************************************************
  * Connection Manager Data shared within module
  ****************************************************************/
@@ -429,7 +427,7 @@ ind_cxn_status_change(connection_t *cxn)
  * HACK reusing the reply message for this async notification.
  */
 
-static void
+void
 ind_cxn_status_notify(void)
 {
     of_version_t version;

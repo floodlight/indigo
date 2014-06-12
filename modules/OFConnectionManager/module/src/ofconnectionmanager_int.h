@@ -110,6 +110,8 @@ int ind_aux_connection_add(connection_t *cxn, uint32_t num_aux);
 
 void ind_controller_disconnect(controller_t *ctrl);
 
+void ind_cxn_status_notify(void);
+
 /**
  * The OF message callback vector from state manager
  */
