@@ -643,6 +643,8 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
                      cxn->controller->controller_id, role_to_string(role));
             cxn->controller->role = role;
         }
+
+        ind_cxn_status_notify();
     }
 
     of_nicira_controller_role_reply_xid_set(reply, xid);
@@ -734,6 +736,8 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
                 LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
                 cxn->controller->role = role;
             }
+
+            ind_cxn_status_notify();
         }
     }
 
