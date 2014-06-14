@@ -23,6 +23,7 @@
 #include <AIM/aim_list.h>
 #include <indigo/indigo.h>
 #include <loci/loci.h>
+#include <minimatch/minimatch.h>
 
 #include "ofstatemanager_int.h"
 
@@ -67,7 +68,7 @@ typedef struct ft_entry_s {
     indigo_flow_id_t     id;
 
     /* Invariant */
-    of_match_t match;
+    minimatch_t minimatch;
     uint16_t priority;
     uint16_t idle_timeout;
     uint16_t hard_timeout;
@@ -155,7 +156,7 @@ typedef enum of_match_mode_e {
 #define TABLE_ID_ANY (0xff)
 
 typedef struct of_meta_match_s {
-    of_match_t match;       /* The match object for the query */
+    minimatch_t minimatch;  /* Compressed match object for the query */
     of_match_mode_t mode;   /* See above */
     uint64_t cookie;
     uint64_t cookie_mask;   /* If 0, do not match cookie */
@@ -174,5 +175,7 @@ typedef struct of_meta_match_s {
  */
 
 extern int ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry);
+
+void metamatch_cleanup(of_meta_match_t *metamatch);
 
 #endif /* _OFSTATEMANAGER_FT_ENTRY_H_ */

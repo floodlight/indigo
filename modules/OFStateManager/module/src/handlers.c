@@ -237,10 +237,12 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
     } else {
         query->table_id = TABLE_ID_ANY;
     }
-    if (of_flow_modify_match_get(obj, &(query->match)) < 0) {
+    of_match_t match;
+    if (of_flow_modify_match_get(obj, &match) < 0) {
         LOG_ERROR("Failed to extract match from flow");
         return INDIGO_ERROR_UNKNOWN;
     }
+    minimatch_init(&query->minimatch, &match);
     query->mode = query_mode;
     if ((query_mode == OF_MATCH_STRICT) || (query_mode == OF_MATCH_OVERLAP)) {
         query->check_priority = 1;
@@ -277,9 +279,12 @@ overlap_found(of_flow_modify_t *obj)
 
     FT_ITER(ind_core_ft, entry, cur, next) {
         if (ft_entry_meta_match(&query, entry)) {
+            metamatch_cleanup(&query);
             return 1;
         }
     }
+
+    metamatch_cleanup(&query);
 
     return 0;
 }
@@ -315,6 +320,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     ft_entry_t        *entry = 0;
     indigo_flow_id_t  flow_id;
     uint16_t idle_timeout, hard_timeout;
+    minimatch_t minimatch;
 
     ver = obj->version;
 
@@ -350,8 +356,12 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         /* TODO send error */
         return;
     }
+    bool strict_match = ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE;
+    /* We're going to save this minimatch in the flowtable entry */
+    minimatch_move(&minimatch, &query.minimatch);
+    metamatch_cleanup(&query);
 
-    if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
+    if (strict_match) {
         if (obj->version == OF_VERSION_1_0) {
             /* Delete existing flow */
             ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
@@ -373,6 +383,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                 flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
             }
 
+            minimatch_cleanup(&minimatch);
             return;
         }
     }
@@ -382,7 +393,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     flow_id = flow_id_next();
 
-    rv = ft_add(ind_core_ft, flow_id, obj, &entry);
+    rv = ft_add(ind_core_ft, flow_id, obj, &minimatch, &entry);
     if (rv != INDIGO_ERROR_NONE) {
         LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %s",
                   indigo_strerror(rv));
@@ -634,6 +645,8 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     rv = ft_strict_match(ind_core_ft, &query, &entry);
+    metamatch_cleanup(&query);
+
     if (rv == INDIGO_ERROR_NOT_FOUND) {
         LOG_TRACE("No entries to modify strict, treat as add.");
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
@@ -738,6 +751,8 @@ ind_core_flow_delete_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (ft_strict_match(ind_core_ft, &query, &entry) == INDIGO_ERROR_NONE) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, cxn_id);
     }
+
+    metamatch_cleanup(&query);
 }
 
 
@@ -873,7 +888,10 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
             of_flow_stats_entry_flags_set(&stats_entry, entry->flags);
         }
 
-        if (of_flow_stats_entry_match_set(&stats_entry, &entry->match)) {
+        of_match_t match;
+        minimatch_expand(&entry->minimatch, &match);
+
+        if (of_flow_stats_entry_match_set(&stats_entry, &match)) {
             LOG_ERROR("Failed to set match in flow stats entry");
             return;
         }
@@ -924,10 +942,12 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
-    if (of_flow_stats_request_match_get(obj, &(query.match)) < 0) {
+    of_match_t match;
+    if (of_flow_stats_request_match_get(obj, &match) < 0) {
         LOG_ERROR("Failed to get flow stats match.");
         return;
     }
+    minimatch_init(&query.minimatch, &match);
     of_flow_stats_request_out_port_get(obj, &(query.out_port));
     of_flow_stats_request_table_id_get(obj, &(query.table_id));
     if (obj->version >= OF_VERSION_1_1) {
@@ -1033,10 +1053,12 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));
-    if (of_aggregate_stats_request_match_get(obj, &(query.match)) < 0) {
+    of_match_t match;
+    if (of_aggregate_stats_request_match_get(obj, &match) < 0) {
         LOG_ERROR("Failed to get aggregate stats match.");
         return;
     }
+    minimatch_init(&query.minimatch, &match);
     of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
     of_aggregate_stats_request_table_id_get(obj, &(query.table_id));
     if (obj->version >= OF_VERSION_1_1) {
