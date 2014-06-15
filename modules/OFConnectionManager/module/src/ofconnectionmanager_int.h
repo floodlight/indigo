@@ -53,11 +53,6 @@
     } while (0)
 
 /**
- * Version used for async messages when no controller is connected.
- */
-#define IND_CXN_DEFAULT_ASYNC_MESSAGE_VERSION OF_VERSION_1_3
-
-/**
  * Default value for the aux connections echo period in milliseconds
  */
 #define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
@@ -114,6 +109,8 @@ void ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 int ind_aux_connection_add(connection_t *cxn, uint32_t num_aux);
 
 void ind_controller_disconnect(controller_t *ctrl);
+
+void ind_cxn_status_notify(void);
 
 /**
  * The OF message callback vector from state manager

@@ -54,6 +54,9 @@ cdefs: &cdefs
 - OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK:
     doc: "Maximum number of OpenFlow messages to process per socket in one tick of the event loop."
     default: 10
+- OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION:
+    doc: "OpenFlow version to use for asynchronous message when no controller is connected."
+    default: OF_VERSION_1_3
 
 definitions:
   cdefs:

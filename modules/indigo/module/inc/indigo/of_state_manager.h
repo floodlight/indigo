@@ -429,6 +429,16 @@ typedef struct indigo_core_table_ops_s {
     indigo_error_t (*entry_hit_status_get)(
         void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
         bool *hit_status);
+
+    /**
+     * Retrieve table stats
+     * @param table_priv Private data passed to indigo_core_table_register
+     * @param cxn_id Connection requesting this operation
+     * @param [out] table_stats Current stats
+     */
+    indigo_error_t (*table_stats_get)(
+        void *table_priv, indigo_cxn_id_t cxn_id,
+        indigo_fi_table_stats_t *table_stats);
 } indigo_core_table_ops_t;
 
 /**

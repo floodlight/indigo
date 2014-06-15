@@ -139,6 +139,16 @@
 #define OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK 10
 #endif
 
+/**
+ * OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION
+ *
+ * OpenFlow version to use for asynchronous message when no controller is connected. */
+
+
+#ifndef OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION
+#define OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION OF_VERSION_1_3
+#endif
+
 
 
 /**

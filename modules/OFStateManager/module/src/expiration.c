@@ -204,7 +204,10 @@ send_idle_notification(ft_entry_t *entry)
     of_bsn_flow_idle_priority_set(msg, entry->priority);
     of_bsn_flow_idle_table_id_set(msg, entry->table_id);
 
-    if (of_bsn_flow_idle_match_set(msg, &entry->match)) {
+    of_match_t match;
+    minimatch_expand(&entry->minimatch, &match);
+
+    if (of_bsn_flow_idle_match_set(msg, &match)) {
         LOG_ERROR("Failed to set match in idle notification");
         of_object_delete(msg);
         return;

@@ -25,6 +25,7 @@
 #include "ofstatemanager_log.h"
 
 static ind_core_table_t *ind_core_tables[256];
+int ind_core_num_tables_registered;
 
 ind_core_table_t *
 ind_core_table_get(uint8_t table_id)
@@ -47,12 +48,14 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     }
 
     ind_core_table_t *table = aim_zmalloc(sizeof(*table));
-    table->name = aim_strdup(name);
+    strncpy(table->name, name, sizeof(table->name));
     table->ops = ops;
     table->priv = priv;
+    table->num_flows = 0;
 
     AIM_TRUE_OR_DIE(ind_core_tables[table_id] == NULL);
     ind_core_tables[table_id] = table;
+    ind_core_num_tables_registered++;
 
     LOG_INFO("Registered flowtable \"%s\" with table id %d", name, table_id);
 }
@@ -71,7 +74,7 @@ void indigo_core_table_unregister(uint8_t table_id)
         }
     }
 
-    aim_free(table->name);
     aim_free(table);
     ind_core_tables[table_id] = NULL;
+    ind_core_num_tables_registered--;
 }

@@ -30,7 +30,7 @@
 #include "ft.h"
 #include "expiration.h"
 
-static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p);
+static indigo_error_t ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, minimatch_t *minimatch, ft_entry_t **entry_p);
 static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
@@ -43,11 +43,11 @@ static void ft_checksum_update(ft_instance_t ft, ft_entry_t *entry);
 
 static int
 ft_strict_match_hash(ft_instance_t ft,
-                     of_match_t *match,
+                     minimatch_t *minimatch,
                      uint16_t priority)
 {
     uint32_t h = FT_HASH_SEED;
-    h = murmur_hash(match, sizeof(*match), h);
+    h = minimatch_hash(minimatch, h);
     h = murmur_hash(&priority, sizeof(priority), h);
     return h;
 }
@@ -134,7 +134,8 @@ ft_destroy(ft_instance_t ft)
 
 indigo_error_t
 ft_add(ft_instance_t ft, indigo_flow_id_t id,
-       of_flow_add_t *flow_add, ft_entry_t **entry_p)
+       of_flow_add_t *flow_add, minimatch_t *minimatch,
+       ft_entry_t **entry_p)
 {
     ft_entry_t *entry = NULL;
     indigo_error_t rv;
@@ -143,10 +144,11 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
 
     /* If flow ID already exists, error. */
     if (ft_lookup(ft, id) != NULL) {
+        minimatch_cleanup(minimatch);
         return INDIGO_ERROR_EXISTS;
     }
 
-    if ((rv = ft_entry_create(id, flow_add, &entry)) < 0) {
+    if ((rv = ft_entry_create(id, flow_add, minimatch, &entry)) < 0) {
         return rv;
     }
 
@@ -209,7 +211,7 @@ ft_strict_match(ft_instance_t instance,
 
     INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
 
-    hash = ft_strict_match_hash(instance, &query->match, query->priority);
+    hash = ft_strict_match_hash(instance, &query->minimatch, query->priority);
 
     for (hash_entry = bighash_first(instance->strict_match_hashtable, hash);
          hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
@@ -305,7 +307,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
     switch (query->mode) {
     case OF_MATCH_NON_STRICT:
         /* Check if the entry's match is more specific than the query's */
-        if (!of_match_more_specific(&entry->match, &query->match)) {
+        if (!minimatch_more_specific(&entry->minimatch, &query->minimatch)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -316,7 +318,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_STRICT:
-        if (!of_match_eq(&entry->match, &query->match)) {
+        if (!minimatch_equal(&entry->minimatch, &query->minimatch)) {
             break;
         }
         if (query->out_port != OF_PORT_DEST_WILDCARD) {
@@ -331,7 +333,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         rv = 1;
         break;
     case OF_MATCH_OVERLAP:
-        if (!of_match_overlap(&entry->match, &query->match)) {
+        if (!minimatch_overlap(&entry->minimatch, &query->minimatch)) {
             break;
         }
         rv = 1;
@@ -419,6 +421,7 @@ ft_spawn_iter_task(ft_instance_t instance,
 
     rv = ind_soc_task_register(ft_iter_task_callback, state, priority);
     if (rv != INDIGO_ERROR_NONE) {
+        ft_iterator_cleanup(&state->iter);
         aim_free(state);
         return rv;
     }
@@ -504,6 +507,10 @@ ft_iterator_cleanup(ft_iterator_t *iter)
         list_remove(&iter->entry_links);
         iter->next_entry = NULL;
     }
+
+    if (iter->use_query) {
+        metamatch_cleanup(&iter->query);
+    }
 }
 
 /**
@@ -527,7 +534,7 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     bighash_insert(
         ft->strict_match_hashtable,
         &entry->strict_match_hash_entry,
-        ft_strict_match_hash(ft, &entry->match, entry->priority));
+        ft_strict_match_hash(ft, &entry->minimatch, entry->priority));
 
     /* Flow ID hash */
     bighash_insert(
@@ -592,12 +599,16 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
  *
  * @param id The flow ID to use
  * @param flow_add Pointer to the flow add object for the entry
+ * @param minimatch Pointer to the minimatch already extracted from the flow
  * @param_p entry Populated with pointer to new flowtable entry on success
  *
  * The list links are not modified by this call.
+ *
+ * The minimatch is moved.
  */
 static indigo_error_t
-ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry_p)
+ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
+                minimatch_t *minimatch, ft_entry_t **entry_p)
 {
     indigo_error_t err;
     ft_entry_t *entry;
@@ -606,10 +617,8 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
 
     entry->id = id;
 
-    if (of_flow_add_match_get(flow_add, &entry->match) < 0) {
-        aim_free(entry);
-        return INDIGO_ERROR_UNKNOWN;
-    }
+    minimatch_move(&entry->minimatch, minimatch);
+
     of_flow_add_cookie_get(flow_add, &entry->cookie);
     of_flow_add_priority_get(flow_add, &entry->priority);
     of_flow_add_flags_get(flow_add, &entry->flags);
@@ -619,6 +628,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add, ft_entry_t **entry
     err = ft_entry_set_effects(entry, flow_add);
     if (err < 0) {
         aim_free(entry);
+        minimatch_cleanup(&entry->minimatch);
         return err;
     }
 
@@ -651,6 +661,7 @@ ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry)
         entry->effects.actions = NULL;
     }
 
+    minimatch_cleanup(&entry->minimatch);
     aim_free(entry);
 }
 
@@ -751,4 +762,10 @@ ft_checksum_update(ft_instance_t ft, ft_entry_t *entry)
     table->checksum ^= entry->cookie;
     int bucket = table->checksum_shift < 64 ? entry->cookie >> table->checksum_shift : 0;
     table->checksum_buckets[bucket] ^= entry->cookie;
+}
+
+void
+metamatch_cleanup(of_meta_match_t *metamatch)
+{
+    minimatch_cleanup(&metamatch->minimatch);
 }

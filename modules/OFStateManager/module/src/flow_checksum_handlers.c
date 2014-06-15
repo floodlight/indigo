@@ -149,7 +149,7 @@ ind_core_bsn_table_set_buckets_size_handler(of_object_t *_obj,
                                             indigo_cxn_id_t cxn_id)
 {
     of_bsn_table_set_buckets_size_t *obj = _obj;
-    uint16_t table_id;
+    uint8_t table_id;
     uint32_t buckets_size;
     indigo_error_t rv;
 

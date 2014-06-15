@@ -174,7 +174,10 @@ send_flow_removed_message(ft_entry_t *entry,
         of_flow_removed_hard_timeout_set(msg, entry->hard_timeout);
     }
 
-    if (of_flow_removed_match_set(msg, &entry->match)) {
+    of_match_t match;
+    minimatch_expand(&entry->minimatch, &match);
+
+    if (of_flow_removed_match_set(msg, &match)) {
         LOG_ERROR("Failed to set match in flow removed message");
         of_object_delete(msg);
         return;
@@ -675,6 +678,11 @@ process_flow_removal(ft_entry_t *entry,
         }
     }
 
+    ind_core_table_t *table = ind_core_table_get(entry->table_id);
+    if (table != NULL) {
+        table->num_flows -= 1;
+    }
+
     ft_delete(ind_core_ft, entry);
 
     LOG_TRACE("Flow table now has %d entries",
@@ -1023,8 +1031,11 @@ ind_core_ft_dump(aim_pvs_t* pvs)
     list_links_t *cur, *next;
 
     FT_ITER(ind_core_ft, entry, cur, next) {
+        of_match_t match;
+        minimatch_expand(&entry->minimatch, &match);
+
         aim_printf(pvs, "Flow %d:\n", entry->id);
-        loci_dump_match((loci_writer_f)aim_printf, pvs, &entry->match);
+        loci_dump_match((loci_writer_f)aim_printf, pvs, &match);
         aim_printf(pvs, "cookie: 0x%016"PRIx64"\n", entry->cookie);
         aim_printf(pvs, "idle_timeout: %hu\n", entry->idle_timeout);
         aim_printf(pvs, "hard_timeout: %hu\n", entry->hard_timeout);
@@ -1032,7 +1043,7 @@ ind_core_ft_dump(aim_pvs_t* pvs)
         aim_printf(pvs, "flags: %hu\n", entry->flags);
         aim_printf(pvs, "table_id: %hhu\n", entry->table_id);
 
-        if (entry->match.version == OF_VERSION_1_0) {
+        if (match.version == OF_VERSION_1_0) {
             int rv;
             of_action_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
@@ -1057,13 +1068,16 @@ ind_core_ft_show(aim_pvs_t* pvs)
     list_links_t *cur, *next;
 
     FT_ITER(ind_core_ft, entry, cur, next) {
+        of_match_t match;
+        minimatch_expand(&entry->minimatch, &match);
+
         aim_printf(pvs, "Flow %d: ", entry->id);
-        loci_show_match((loci_writer_f)aim_printf, pvs, &entry->match);
+        loci_show_match((loci_writer_f)aim_printf, pvs, &match);
         aim_printf(pvs, "cookie=0x%016"PRIx64" ", entry->cookie);
         aim_printf(pvs, "priority=%hu ", entry->priority);
         aim_printf(pvs, "table_id=%hhu ", entry->table_id);
 
-        if (entry->match.version == OF_VERSION_1_0) {
+        if (match.version == OF_VERSION_1_0) {
             int rv;
             of_action_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {

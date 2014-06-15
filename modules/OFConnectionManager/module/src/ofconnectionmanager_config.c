@@ -91,6 +91,11 @@ ofconnectionmanager_config_settings_t ofconnectionmanager_config_settings[] =
 #else
 { OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
+#ifdef OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION
+    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION) },
+#else
+{ OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
     { NULL, NULL }
 };
 #undef __ofconnectionmanager_config_STRINGIFY_VALUE
