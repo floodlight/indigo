@@ -474,6 +474,7 @@ module_init(void)
     }
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
         connection[idx].cxn_id = (indigo_cxn_id_t)idx;
+        connection[idx].write_queue = bigring_create(WRITE_QUEUE_SIZE, NULL);
     }
 
     ind_cfg_register(&ind_cxn_cfg_ops);

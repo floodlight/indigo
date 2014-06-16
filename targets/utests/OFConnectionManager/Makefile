@@ -21,7 +21,7 @@ include ../../../init.mk
 MODULE := OFConnectionManager_utest
 TEST_MODULE := OFConnectionManager
 
-DEPENDMODULES := AIM SocketManager indigo loci BigList cjson Configuration debug_counter timer_wheel
+DEPENDMODULES := AIM SocketManager indigo loci BigList cjson Configuration debug_counter timer_wheel BigRing OS
 
 # These indicate Linux specific implementations to be used for
 # various features
