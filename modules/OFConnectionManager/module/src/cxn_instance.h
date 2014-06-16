@@ -285,7 +285,7 @@ proto_ip_string(indigo_cxn_protocol_params_t *params)
 void ind_cxn_register_debug_counters(connection_t *cxn);
 void ind_cxn_unregister_debug_counters(connection_t *cxn);
 
-extern int ind_cxn_process_write_buffer(connection_t *cxn);
+extern indigo_error_t ind_cxn_process_write_buffer(connection_t *cxn);
 extern int ind_cxn_process_read_buffer(connection_t *cxn);
 
 void ind_cxn_block_barrier(connection_t *cxn);

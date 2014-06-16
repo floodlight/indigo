@@ -1266,7 +1266,11 @@ void ind_cxn_disconnect(connection_t *cxn)
 indigo_error_t
 ind_cxn_process_write_buffer(connection_t *cxn)
 {
-    /* This is a do-while to delay the should_yield check to the end */
+    /*
+     * Iterate over enqueued packets until none are left or socket buffer is
+     * full or we should yield; do-while delays the should_yield check until
+     * we've iterated at least once.
+     */
     do {
         int written, left;
         int total = 0; /* number of bytes we expect to write */
@@ -1276,7 +1280,10 @@ ind_cxn_process_write_buffer(connection_t *cxn)
 
         bigring_iter_start(cxn->write_queue, &queue_iter);
 
-        /* Iterate over write queue adding buffers to iovecs */
+        /*
+         * Iterate over write queue adding buffers to iovecs until we have
+         * collected the maximum number of msgs or none are left.
+         */
         while (num_iovecs < MAX_WRITE_MSGS) {
             void *data = bigring_iter_next(cxn->write_queue, &queue_iter);
             if (data == NULL) {
