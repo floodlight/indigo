@@ -37,12 +37,19 @@
 #include "handlers.h"
 #include <BigHash/bighash.h>
 
+typedef struct ind_core_group_table_s {
+    of_table_name_t name;
+    void *priv;
+    const indigo_core_group_table_ops_t *ops;
+} ind_core_group_table_t;
+
 typedef struct ind_core_group_s {
     bighash_entry_t hash_entry;
     uint32_t id;
     uint32_t type;
     of_list_bucket_t *buckets;
     indigo_time_t creation_time;
+    void *priv;
 } ind_core_group_t;
 
 #define TEMPLATE_NAME group_hashtable
@@ -51,7 +58,10 @@ typedef struct ind_core_group_s {
 #define TEMPLATE_ENTRY_FIELD hash_entry
 #include <BigHash/bighash_template.h>
 
+static ind_core_group_table_t *group_table_for_id(uint32_t group_id);
+
 static bighash_table_t *ind_core_group_hashtable;
+static ind_core_group_table_t *ind_core_group_tables[256];
 
 static ind_core_group_t *
 ind_core_group_lookup(uint32_t id)
@@ -60,9 +70,14 @@ ind_core_group_lookup(uint32_t id)
 }
 
 static void
-ind_core_group_delete_one(ind_core_group_t *group)
+ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id)
 {
-    indigo_fwd_group_delete(group->id);
+    ind_core_group_table_t *table = group_table_for_id(group->id);
+    if (table) {
+        table->ops->entry_delete(table->priv, cxn_id, group->priv);
+    } else {
+        indigo_fwd_group_delete(group->id);
+    }
     of_object_delete(group->buckets);
     bighash_remove(ind_core_group_hashtable, &group->hash_entry);
     aim_free(group);
@@ -80,6 +95,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     uint16_t err_type = OF_ERROR_TYPE_GROUP_MOD_FAILED;
     uint16_t err_code = OF_GROUP_MOD_FAILED_EPERM;
     indigo_error_t result;
+    void *entry_priv = NULL;
 
     of_group_add_xid_get(obj, &xid);
     of_group_add_group_type_get(obj, &type);
@@ -98,7 +114,13 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    result = indigo_fwd_group_add(id, type, &buckets);
+    ind_core_group_table_t *table = group_table_for_id(id);
+    if (table) {
+        result = table->ops->entry_create(table->priv, cxn_id, id, type, &buckets, &entry_priv);
+    } else {
+        result = indigo_fwd_group_add(id, type, &buckets);
+    }
+
     if (result < 0) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
         goto error;
@@ -110,6 +132,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     group->buckets = of_object_dup(&buckets);
     AIM_TRUE_OR_DIE(group->buckets != NULL);
     group->creation_time = INDIGO_CURRENT_TIME;
+    group->priv = entry_priv;
 
     group_hashtable_insert(ind_core_group_hashtable, group);
 
@@ -146,11 +169,21 @@ ind_core_group_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
+    ind_core_group_table_t *table = group_table_for_id(id);
     if (group->type == type) {
-        result = indigo_fwd_group_modify(id, &buckets);
+        if (table) {
+            result = table->ops->entry_modify(table->priv, cxn_id, group->priv, &buckets);
+        } else {
+            result = indigo_fwd_group_modify(id, &buckets);
+        }
     } else {
-        indigo_fwd_group_delete(id);
-        result = indigo_fwd_group_add(id, type, &buckets);
+        if (table) {
+            (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
+            result = table->ops->entry_create(table->priv, cxn_id, id, type, &buckets, &group->priv);
+        } else {
+            indigo_fwd_group_delete(id);
+            result = indigo_fwd_group_add(id, type, &buckets);
+        }
     }
 
     if (result < 0) {
@@ -190,10 +223,10 @@ ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         bighash_iter_t iter;
         for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
                 group; group = bighash_iter_next(&iter)) {
-            ind_core_group_delete_one(group);
+            ind_core_group_delete_one(group, cxn_id);
         }
     } else if (group != NULL) {
-        ind_core_group_delete_one(group);
+        ind_core_group_delete_one(group, cxn_id);
     } else if (id > OF_GROUP_MAX) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
         goto error;
@@ -218,7 +251,12 @@ ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
     of_group_stats_entry_duration_sec_set(entry, duration_sec);
     of_group_stats_entry_duration_nsec_set(entry, duration_nsec);
 
-    indigo_fwd_group_stats_get(group->id, entry);
+    ind_core_group_table_t *table = group_table_for_id(group->id);
+    if (table) {
+        table->ops->entry_stats_get(table->priv, group->priv, entry);
+    } else {
+        indigo_fwd_group_stats_get(group->id, entry);
+    }
 }
 
 /* TODO segment long replies */
@@ -332,4 +370,50 @@ ind_core_group_init(void)
 {
     ind_core_group_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
     AIM_TRUE_OR_DIE(ind_core_group_hashtable != NULL);
+}
+
+/*
+ * Group table management
+ */
+
+static ind_core_group_table_t *
+group_table_for_id(uint32_t group_id)
+{
+    return ind_core_group_tables[group_id >> 24];
+}
+
+void indigo_core_group_table_register(
+    uint8_t table_id, const char *name,
+    const indigo_core_group_table_ops_t *ops, void *priv)
+{
+    AIM_TRUE_OR_DIE(strlen(name) <= OF_MAX_TABLE_NAME_LEN);
+
+    ind_core_group_table_t *table = aim_zmalloc(sizeof(*table));
+    strncpy(table->name, name, sizeof(table->name));
+    table->ops = ops;
+    table->priv = priv;
+
+    AIM_TRUE_OR_DIE(ind_core_group_tables[table_id] == NULL);
+    ind_core_group_tables[table_id] = table;
+
+    LOG_INFO("Registered group table \"%s\" with table id %d", name, table_id);
+}
+
+void indigo_core_group_table_unregister(uint8_t table_id)
+{
+    ind_core_group_table_t *table = ind_core_group_tables[table_id];
+    AIM_TRUE_OR_DIE(table != NULL);
+
+    /* Delete groups remaining in this table */
+    bighash_iter_t iter;
+    ind_core_group_t *group;
+    for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
+            group; group = bighash_iter_next(&iter)) {
+        if (group_table_for_id(group->id) == table) {
+            ind_core_group_delete_one(group, INDIGO_CXN_ID_UNSPECIFIED);
+        }
+    }
+
+    aim_free(table);
+    ind_core_group_tables[table_id] = NULL;
 }

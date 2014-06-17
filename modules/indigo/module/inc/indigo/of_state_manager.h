@@ -459,5 +459,110 @@ void indigo_core_table_register(uint8_t table_id, const char *name, const indigo
  */
 void indigo_core_table_unregister(uint8_t table_id);
 
+
+/****************************************************************
+ *
+ * Group table registration
+ *
+ * Instead of implementing indigo_fwd_group_*, the Forwarding module can
+ * use this interface to register individual tables. The advantage
+ * is that the Forwarding module doesn't need to do the dispatch
+ * to the table implementation itself. In the future, indigo_group_*
+ * will be removed.
+ *
+ * These interfaces largely map to the OpenFlow group-mod message, but with a
+ * few differences for easier Forwarding implementation:
+ *
+ *  - Delete of OFPG_ALL is turned into a series of deletes of single groups.
+ *  - Modify with a changed type is turned into a delete and add.
+ *
+ * If Forwarding uses this interface exclusively then it does not
+ * need to maintain a hashtable keyed on group ID.
+ *
+ * Because OpenFlow does not include multiple group tables, we use the upper 8
+ * bits of the group ID as the table ID.
+ *
+ * This is intended to be used in conjunction with the Indigo
+ * forwarding pipeline interface. When indigo_fwd_pipeline_set is
+ * called all tables must first be unregistered, then the tables
+ * of the new pipeline must be registered.
+ *
+ ****************************************************************/
+
+/**
+ * Group table operations
+ */
+
+typedef struct indigo_core_group_table_ops_s {
+    /**
+     * Add an entry to the table
+     * @param table_priv Private data passed to indigo_core_group_table_register
+     * @param cxn_id Connection requesting this operation
+     * @param id Group ID
+     * @param group_type OpenFlow group type
+     * @param buckets LOCI bucket list
+     * @param [out] entry_priv Private data for this group
+     */
+    indigo_error_t (*entry_create)(
+        void *table_priv, indigo_cxn_id_t cxn_id,
+        uint32_t group_id, uint8_t group_type, of_list_bucket_t *buckets,
+        void **entry_priv);
+
+    /**
+     * Modify an entry in the table
+     * @param table_priv Private data passed to indigo_core_group_table_register
+     * @param cxn_id Connection requesting this operation
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param buckets LOCI bucket list
+     */
+    indigo_error_t (*entry_modify)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv,
+        of_list_bucket_t *buckets);
+
+    /**
+     * Delete an entry from the table
+     * @param table_priv Private data passed to indigo_core_group_table_register
+     * @param cxn_id Connection requesting this operation
+     * @param entry_priv Private data returned by the entry_create operation
+     *
+     * No further operations will be called with entry_priv, so the
+     * implementation should deallocate it.
+     */
+    indigo_error_t (*entry_delete)(
+        void *table_priv, indigo_cxn_id_t cxn_id, void *entry_priv);
+
+    /**
+     * Retrieve stats for an entry
+     * @param table_priv Private data passed to indigo_core_group_table_register
+     * @param entry_priv Private data returned by the entry_create operation
+     * @param stats LOCI of_group_stats_entry_t to be filled in with stats
+     */
+    indigo_error_t (*entry_stats_get)(
+        void *table_priv, void *entry_priv,
+        of_group_stats_entry_t *stats);
+} indigo_core_group_table_ops_t;
+
+/**
+ * Register a group table
+ *
+ * The table ID and name must be unique. The ops must be valid at least until
+ * the table is unregistered. 'table_priv' will be passed to every operation on
+ * the table.
+ *
+ * Existing groups with the same table ID will be deleted.
+ */
+void indigo_core_group_table_register(
+    uint8_t table_id,
+    const char *name,
+    const indigo_core_group_table_ops_t *ops,
+    void *table_priv);
+
+/**
+ * Unregister a group table
+ *
+ * Existing entries will be deleted.
+ */
+void indigo_core_group_table_unregister(uint8_t table_id);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
