@@ -34,7 +34,6 @@
 static void send_idle_notification(ft_entry_t *entry);
 
 static LIST_DEFINE(expiration_queue);
-static bool task_running = false;
 
 static indigo_time_t
 calc_expiration_time(ft_entry_t *entry, int *reason)
@@ -87,7 +86,15 @@ ind_core_expiration_remove(ft_entry_t *entry)
     list_remove(&entry->expiration_links);
 }
 
-static void
+/*
+ * Expiration processing for a single flow
+ *
+ * For idle timeouts, will check with the hardware to see if the flow has been
+ * hit since the last time it was checked.
+ *
+ * Returns true if the flow actually expired.
+ */
+static bool
 expire_flow(ft_entry_t *entry, int reason)
 {
     if (reason == INDIGO_FLOW_REMOVED_HARD_TIMEOUT) {
@@ -95,6 +102,7 @@ expire_flow(ft_entry_t *entry, int reason)
                   entry->hard_timeout,
                   INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
         ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
+        return true;
     } else if (reason == OF_FLOW_REMOVED_REASON_IDLE_TIMEOUT) {
         int rv;
         bool hit;
@@ -112,7 +120,7 @@ expire_flow(ft_entry_t *entry, int reason)
             LOG_ERROR("Failed to get hit status for flow "
                       INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
                       entry->id, indigo_strerror(rv));
-            return;
+            return false;
         }
 
         if (hit || entry->flags & OF_FLOW_MOD_FLAG_BSN_SEND_IDLE) {
@@ -131,51 +139,35 @@ expire_flow(ft_entry_t *entry, int reason)
                           INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                 ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
             }
-        }
-    }
-}
 
-static ind_soc_task_status_t
-expiration_task(void *cookie)
-{
-    indigo_time_t current_time = INDIGO_CURRENT_TIME;
-    (void) cookie;
-
-    while (!list_empty(&expiration_queue)) {
-        int reason;
-        list_links_t *links = expiration_queue.links.next;
-        ft_entry_t *entry = FT_ENTRY_CONTAINER(links, expiration);
-        if (calc_expiration_time(entry, &reason) <= current_time) {
-            expire_flow(entry, reason);
+            return true;
         } else {
-            break;
+            return false;
         }
-        if (ind_soc_should_yield()) {
-            return IND_SOC_TASK_CONTINUE;
-        }
+    } else {
+        AIM_TRUE_OR_DIE(0);
     }
-
-    task_running = false;
-    return IND_SOC_TASK_FINISHED;
 }
 
 void
 ind_core_expiration_timer(void *cookie)
 {
-    int rv;
-    (void) cookie;
+    indigo_time_t now = INDIGO_CURRENT_TIME;
+    int expired_flows = 0; /* Limit the number of messages sent to the controller each tick */
 
-    if (task_running) {
-        AIM_LOG_VERBOSE("Not starting expiration task because it is already running");
-        return;
-    }
-
-    if ((rv = ind_soc_task_register(expiration_task, NULL,
-                                    IND_SOC_NORMAL_PRIORITY)) < 0) {
-        AIM_LOG_ERROR("Failed to start flow expiration task: %s",
-                      indigo_strerror(rv));
-    } else {
-        task_running = true;
+    while (expired_flows < 32 &&
+            !ind_soc_should_yield() &&
+            !list_empty(&expiration_queue)) {
+        int reason;
+        list_links_t *links = expiration_queue.links.next;
+        ft_entry_t *entry = FT_ENTRY_CONTAINER(links, expiration);
+        if (calc_expiration_time(entry, &reason) <= now) {
+            if (expire_flow(entry, reason)) {
+                expired_flows++;
+            }
+        } else {
+            break;
+        }
     }
 }
 
