@@ -252,6 +252,43 @@ test_group_table_entry_stats(void)
     return TEST_PASS;
 }
 
+static int
+test_group_table_entry_refcount(void)
+{
+    memset(&table, 0, sizeof(table));
+    memset(&stats, 0, sizeof(stats));
+    table.magic = TABLE_MAGIC;
+    indigo_core_group_table_register(TABLE_ID, "test", &test_ops, &table);
+    AIM_TRUE_OR_DIE(stats.count_op == 0);
+
+    memset(&stats, 0, sizeof(stats));
+    do_add(1, OF_GROUP_TYPE_SELECT, 1000);
+    AIM_TRUE_OR_DIE(stats.count_add == 1);
+    AIM_TRUE_OR_DIE(stats.count_op == 1);
+
+    void *priv = indigo_core_group_acquire(entry_id_to_group_id(1));
+    AIM_TRUE_OR_DIE(priv == &table.entries[1]);
+
+    memset(&stats, 0, sizeof(stats));
+    do_delete(1);
+    AIM_TRUE_OR_DIE(stats.count_op == 0);
+
+    indigo_core_group_release(entry_id_to_group_id(1));
+
+    memset(&stats, 0, sizeof(stats));
+    do_delete(1);
+    AIM_TRUE_OR_DIE(stats.entries[1].count_delete == 1);
+    AIM_TRUE_OR_DIE(stats.entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(stats.count_delete == 1);
+    AIM_TRUE_OR_DIE(stats.count_op == 1);
+
+    memset(&stats, 0, sizeof(stats));
+    indigo_core_group_table_unregister(TABLE_ID);
+    AIM_TRUE_OR_DIE(stats.count_op == 0);
+
+    return TEST_PASS;
+}
+
 int
 test_group_table(void)
 {
@@ -260,6 +297,7 @@ test_group_table(void)
     RUN_TEST(group_table_entry_modify);
     RUN_TEST(group_table_entry_modify_type);
     RUN_TEST(group_table_entry_stats);
+    RUN_TEST(group_table_entry_refcount);
     return TEST_PASS;
 }
 

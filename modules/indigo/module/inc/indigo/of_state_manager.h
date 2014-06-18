@@ -564,5 +564,20 @@ void indigo_core_group_table_register(
  */
 void indigo_core_group_table_unregister(uint8_t table_id);
 
+/**
+ * Acquire a reference to a group
+ *
+ * Returns the priv pointer returned by the entry_create operation.
+ *
+ * All references acquired by this function must be released before
+ * OFStateManager will allow the group to be destroyed.
+ */
+void *indigo_core_group_acquire(uint32_t group_id);
+
+/**
+ * Release a reference to a group
+ */
+void indigo_core_group_release(uint32_t group_id);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */

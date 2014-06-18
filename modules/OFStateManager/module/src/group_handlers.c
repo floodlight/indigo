@@ -47,6 +47,7 @@ typedef struct ind_core_group_s {
     bighash_entry_t hash_entry;
     uint32_t id;
     uint32_t type;
+    uint32_t refcount;
     of_list_bucket_t *buckets;
     indigo_time_t creation_time;
     void *priv;
@@ -69,9 +70,14 @@ ind_core_group_lookup(uint32_t id)
     return group_hashtable_first(ind_core_group_hashtable, &id);
 }
 
-static void
-ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id)
+static indigo_error_t
+ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id, uint16_t *err_code)
 {
+    if (group->refcount > 0) {
+        *err_code = OF_GROUP_MOD_FAILED_CHAINED_GROUP;
+        return INDIGO_ERROR_UNKNOWN;
+    }
+
     ind_core_group_table_t *table = group_table_for_id(group->id);
     if (table) {
         table->ops->entry_delete(table->priv, cxn_id, group->priv);
@@ -81,6 +87,8 @@ ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id)
     of_object_delete(group->buckets);
     bighash_remove(ind_core_group_hashtable, &group->hash_entry);
     aim_free(group);
+
+    return INDIGO_ERROR_NONE;
 }
 
 void
@@ -129,6 +137,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     group = aim_malloc(sizeof(*group));
     group->id = id;
     group->type = type;
+    group->refcount = 0;
     group->buckets = of_object_dup(&buckets);
     AIM_TRUE_OR_DIE(group->buckets != NULL);
     group->creation_time = INDIGO_CURRENT_TIME;
@@ -221,12 +230,20 @@ ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     if (id == OF_GROUP_ALL) {
         bighash_iter_t iter;
+        bool failed = false;
         for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
                 group; group = bighash_iter_next(&iter)) {
-            ind_core_group_delete_one(group, cxn_id);
+            if (ind_core_group_delete_one(group, cxn_id, &err_code) < 0) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            goto error;
         }
     } else if (group != NULL) {
-        ind_core_group_delete_one(group, cxn_id);
+        if (ind_core_group_delete_one(group, cxn_id, &err_code) < 0) {
+            goto error;
+        }
     } else if (id > OF_GROUP_MAX) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
         goto error;
@@ -250,6 +267,7 @@ ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
     calc_duration(current_time, group->creation_time, &duration_sec, &duration_nsec);
     of_group_stats_entry_duration_sec_set(entry, duration_sec);
     of_group_stats_entry_duration_nsec_set(entry, duration_nsec);
+    of_group_stats_entry_ref_count_set(entry, group->refcount);
 
     ind_core_group_table_t *table = group_table_for_id(group->id);
     if (table) {
@@ -410,10 +428,36 @@ void indigo_core_group_table_unregister(uint8_t table_id)
     for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
             group; group = bighash_iter_next(&iter)) {
         if (group_table_for_id(group->id) == table) {
-            ind_core_group_delete_one(group, INDIGO_CXN_ID_UNSPECIFIED);
+            uint16_t err_code;
+            if (ind_core_group_delete_one(group, INDIGO_CXN_ID_UNSPECIFIED, &err_code) < 0) {
+                AIM_LOG_WARN("Failed to delete group %d, leaking", group->id);
+            }
         }
     }
 
     aim_free(table);
     ind_core_group_tables[table_id] = NULL;
+}
+
+void *
+indigo_core_group_acquire(uint32_t group_id)
+{
+    ind_core_group_t *group = ind_core_group_lookup(group_id);
+    if (group == NULL) {
+        return NULL;
+    }
+
+    group->refcount++;
+    return group->priv;
+}
+
+void
+indigo_core_group_release(uint32_t group_id)
+{
+    ind_core_group_t *group = ind_core_group_lookup(group_id);
+
+    AIM_ASSERT(group != NULL, "nonexistent group during release");
+    AIM_ASSERT(group->refcount > 0, "zero group refcount during release");
+
+    group->refcount--;
 }
