@@ -141,11 +141,6 @@ minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
         uint32_t bitmap_word_a = a->bitmap[i];
         uint32_t bitmap_word_b = b->bitmap[i];
 
-        if (!bitmap_word_b) {
-            /* Nothing set in b's mask, so a must be at least as specific */
-            continue;
-        }
-
         while (bitmap_word_a | bitmap_word_b) {
             int skip = __builtin_ctz(bitmap_word_a | bitmap_word_b);
             bitmap_word_a >>= skip;
