@@ -91,6 +91,40 @@ ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id, uint1
     return INDIGO_ERROR_NONE;
 }
 
+static indigo_error_t
+ind_core_group_modify(ind_core_group_t *group, uint8_t type, of_list_bucket_t *buckets, indigo_cxn_id_t cxn_id)
+{
+    ind_core_group_table_t *table = group_table_for_id(group->id);
+    indigo_error_t result;
+
+    if (group->type == type) {
+        if (table) {
+            result = table->ops->entry_modify(table->priv, cxn_id, group->priv, buckets);
+        } else {
+            result = indigo_fwd_group_modify(group->id, buckets);
+        }
+    } else {
+        if (table) {
+            (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
+            result = table->ops->entry_create(table->priv, cxn_id, group->id, type, buckets, &group->priv);
+        } else {
+            indigo_fwd_group_delete(group->id);
+            result = indigo_fwd_group_add(group->id, type, buckets);
+        }
+    }
+
+    if (result < 0) {
+        return result;
+    }
+
+    group->type = type;
+    of_object_delete(group->buckets);
+    group->buckets = of_object_dup(buckets);
+    AIM_TRUE_OR_DIE(group->buckets != NULL);
+
+    return INDIGO_ERROR_NONE;
+}
+
 void
 ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
@@ -115,8 +149,15 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (group != NULL) {
-        err_code = OF_GROUP_MOD_FAILED_GROUP_EXISTS;
-        goto error;
+        /* Convert duplicate add to a modify */
+        result = ind_core_group_modify(group, type, &buckets, cxn_id);
+
+        if (result < 0) {
+            err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+            goto error;
+        } else {
+            return;
+        }
     } else if (id > OF_GROUP_MAX) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
         goto error;
@@ -178,32 +219,12 @@ ind_core_group_modify_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    ind_core_group_table_t *table = group_table_for_id(id);
-    if (group->type == type) {
-        if (table) {
-            result = table->ops->entry_modify(table->priv, cxn_id, group->priv, &buckets);
-        } else {
-            result = indigo_fwd_group_modify(id, &buckets);
-        }
-    } else {
-        if (table) {
-            (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
-            result = table->ops->entry_create(table->priv, cxn_id, id, type, &buckets, &group->priv);
-        } else {
-            indigo_fwd_group_delete(id);
-            result = indigo_fwd_group_add(id, type, &buckets);
-        }
-    }
+    result = ind_core_group_modify(group, type, &buckets, cxn_id);
 
     if (result < 0) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
         goto error;
     }
-
-    group->type = type;
-    of_object_delete(group->buckets);
-    group->buckets = of_object_dup(&buckets);
-    AIM_TRUE_OR_DIE(group->buckets != NULL);
 
     return;
 

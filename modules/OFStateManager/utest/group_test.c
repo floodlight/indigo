@@ -220,6 +220,34 @@ test_group_table_entry_modify_type(void)
     return TEST_PASS;
 }
 
+/* Duplicate add becomes a modify */
+static int
+test_group_table_entry_dup_add(void)
+{
+    memset(&table, 0, sizeof(table));
+    memset(&stats, 0, sizeof(stats));
+    table.magic = TABLE_MAGIC;
+    indigo_core_group_table_register(TABLE_ID, "test", &test_ops, &table);
+    AIM_TRUE_OR_DIE(stats.count_op == 0);
+
+    do_add(1, OF_GROUP_TYPE_SELECT, 1000);
+    do_add(2, OF_GROUP_TYPE_SELECT, 2000);
+
+    memset(&stats, 0, sizeof(stats));
+    do_add(1, OF_GROUP_TYPE_SELECT, 3000);
+    AIM_TRUE_OR_DIE(table.entries[1].port == 3000);
+    AIM_TRUE_OR_DIE(stats.entries[1].count_modify == 1);
+    AIM_TRUE_OR_DIE(stats.entries[1].count_op == 1);
+    AIM_TRUE_OR_DIE(stats.count_modify == 1);
+    AIM_TRUE_OR_DIE(stats.count_op == 1);
+
+    memset(&stats, 0, sizeof(stats));
+    indigo_core_group_table_unregister(TABLE_ID);
+    AIM_TRUE_OR_DIE(stats.count_op == 2);
+
+    return TEST_PASS;
+}
+
 static int
 test_group_table_entry_stats(void)
 {
@@ -296,6 +324,7 @@ test_group_table(void)
     RUN_TEST(group_table_entry_delete);
     RUN_TEST(group_table_entry_modify);
     RUN_TEST(group_table_entry_modify_type);
+    RUN_TEST(group_table_entry_dup_add);
     RUN_TEST(group_table_entry_stats);
     RUN_TEST(group_table_entry_refcount);
     return TEST_PASS;
