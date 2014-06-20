@@ -482,3 +482,14 @@ indigo_core_group_release(uint32_t group_id)
 
     group->refcount--;
 }
+
+void *
+indigo_core_group_lookup(uint32_t group_id)
+{
+    ind_core_group_t *group = ind_core_group_lookup(group_id);
+    if (group == NULL) {
+        return NULL;
+    }
+
+    return group->priv;
+}

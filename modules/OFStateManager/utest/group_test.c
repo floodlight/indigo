@@ -297,6 +297,8 @@ test_group_table_entry_refcount(void)
     void *priv = indigo_core_group_acquire(entry_id_to_group_id(1));
     AIM_TRUE_OR_DIE(priv == &table.entries[1]);
 
+    AIM_TRUE_OR_DIE(indigo_core_group_lookup(entry_id_to_group_id(1)) == &table.entries[1]);
+
     memset(&stats, 0, sizeof(stats));
     do_delete(1);
     AIM_TRUE_OR_DIE(stats.count_op == 0);
@@ -309,6 +311,8 @@ test_group_table_entry_refcount(void)
     AIM_TRUE_OR_DIE(stats.entries[1].count_op == 1);
     AIM_TRUE_OR_DIE(stats.count_delete == 1);
     AIM_TRUE_OR_DIE(stats.count_op == 1);
+
+    AIM_TRUE_OR_DIE(indigo_core_group_lookup(entry_id_to_group_id(1)) == NULL);
 
     memset(&stats, 0, sizeof(stats));
     indigo_core_group_table_unregister(TABLE_ID);

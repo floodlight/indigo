@@ -579,5 +579,15 @@ void *indigo_core_group_acquire(uint32_t group_id);
  */
 void indigo_core_group_release(uint32_t group_id);
 
+/**
+ * Lookup a group
+ *
+ * Returns the priv pointer returned by the entry_create operation.
+ *
+ * Does not increment the group's reference count, so the returned pointer
+ * must not be used after returning to the event loop.
+ */
+void *indigo_core_group_lookup(uint32_t group_id);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
