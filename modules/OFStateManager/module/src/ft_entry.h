@@ -89,8 +89,8 @@ typedef struct ft_entry_s {
 
     /* For linked list maintance */
     list_links_t table_links;      /* For iterating across the flow table */
-    list_links_t strict_match_links;  /* Search by strict match */
-    list_links_t flow_id_links;    /* Search by flow id */
+    bighash_entry_t strict_match_hash_entry;  /* Search by strict match */
+    bighash_entry_t flow_id_hash_entry; /* Search by flow id */
     list_links_t cookie_links;     /* Search by cookie */
     list_links_t expiration_links; /* Expiration list entry */
     list_head_t iterators;         /* List of ft_iterator_t objects

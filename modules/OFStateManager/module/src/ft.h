@@ -54,6 +54,7 @@
 #include <AIM/aim_list.h>
 #include <stdbool.h>
 #include <debug_counter/debug_counter.h>
+#include <BigHash/bighash.h>
 
 #include "ft_entry.h"
 
@@ -76,22 +77,6 @@ typedef struct ft_public_s ft_public_t;
  */
 
 typedef ft_public_t *ft_instance_t;
-
-/****************************************************************
- * Managing a flow table instance: Configuration, status, handle
- ****************************************************************/
-
-/**
- * Flow table configuration structure
- * @param max_entries Maximum number of entries to support
- * @param strict_match_bucket_count How many buckets for strict_match hash table
- * @param flow_id_bucket_count How many buckets for flow_id hash table
- */
-
-typedef struct ft_config_s {
-    int strict_match_bucket_count;
-    int flow_id_bucket_count;
-} ft_config_t;
 
 /**
  * Per-table bookkeeping
@@ -116,20 +101,16 @@ typedef struct ft_table_s {
  * flow table instance implementation
  */
 struct ft_public_s {
-    ft_config_t config;
-
     int current_count;             /* Number of flows in the flowtable */
 
     list_head_t all_list;          /* Single list of all current entries */
 
-    list_head_t *strict_match_buckets;  /* Array of strict match based buckets */
-    list_head_t *flow_id_buckets;  /* Array of flow_id based buckets */
+    bighash_table_t *strict_match_hashtable;
+    bighash_table_t *flow_id_hashtable;
     list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 
     ft_table_t tables[FT_MAX_TABLES];
 };
-
-#define FT_CONFIG(_ft) (&(_ft)->config)
 
 /**
  * Safe iterator for the flowtable
@@ -169,13 +150,10 @@ typedef struct ft_iterator_s {
 /*
  * Create a flow table instance
  *
- * @param config Pointer to configuration structure
  * @returns A handle for the flow table instance
- *
- * If config->max_entries <= 0, use the default size
  */
 
-ft_instance_t ft_create(ft_config_t *config);
+ft_instance_t ft_create(void);
 
 /**
  * Delete a flow table instance and free resources

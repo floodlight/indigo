@@ -41,27 +41,21 @@ static void ft_checksum_update(ft_instance_t ft, ft_entry_t *entry);
 #define FT_HASH_SEED 0
 #define FT_MAX_CHECKSUM_BUCKETS 65536
 
-/**
- * @fixme Consider using something other than murmur for small data
- * hash calculations.  Multiplying by a prime is a good option
- */
-
 static int
-ft_strict_match_to_bucket_index(ft_instance_t ft,
-                                minimatch_t *minimatch,
-                                uint16_t priority)
+ft_strict_match_hash(ft_instance_t ft,
+                     minimatch_t *minimatch,
+                     uint16_t priority)
 {
     uint32_t h = FT_HASH_SEED;
     h = minimatch_hash(minimatch, h);
     h = murmur_hash(&priority, sizeof(priority), h);
-    return h % ft->config.strict_match_bucket_count;
+    return h;
 }
 
 static int
-ft_flow_id_to_bucket_index(ft_instance_t ft, indigo_flow_id_t *flow_id)
+ft_flow_id_hash(ft_instance_t ft, indigo_flow_id_t flow_id)
 {
-    return (murmur_hash(flow_id, sizeof(*flow_id), FT_HASH_SEED) %
-            ft->config.flow_id_bucket_count);
+    return murmur_hash(&flow_id, sizeof(flow_id), FT_HASH_SEED);
 }
 
 static int
@@ -71,7 +65,7 @@ ft_cookie_to_bucket_index(ft_instance_t ft, uint64_t cookie)
 }
 
 ft_instance_t
-ft_create(ft_config_t *config)
+ft_create(void)
 {
     ft_instance_t ft;
     int bytes;
@@ -79,22 +73,12 @@ ft_create(ft_config_t *config)
 
     /* Allocate the flow table itself */
     ft = aim_zmalloc(sizeof(*ft));
-    INDIGO_MEM_COPY(&ft->config,  config, sizeof(ft_config_t));
 
     list_init(&ft->all_list);
 
     /* Allocate and init buckets for each search type */
-    bytes = sizeof(list_head_t) * config->strict_match_bucket_count;
-    ft->strict_match_buckets = aim_zmalloc(bytes);
-    for (idx = 0; idx < config->strict_match_bucket_count; idx++) {
-        list_init(&ft->strict_match_buckets[idx]);
-    }
-
-    bytes = sizeof(list_head_t) * config->flow_id_bucket_count;
-    ft->flow_id_buckets = aim_zmalloc(bytes);
-    for (idx = 0; idx < config->flow_id_bucket_count; idx++) {
-        list_init(&ft->flow_id_buckets[idx]);
-    }
+    ft->strict_match_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
+    ft->flow_id_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
 
     bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
     ft->cookie_buckets = aim_zmalloc(bytes);
@@ -112,22 +96,6 @@ ft_create(ft_config_t *config)
     return ft;
 }
 
-/* Macro for checking bucket lists are empty */
-#if !defined(FT_NO_ERROR_CHECKING)
-#define CHECK_BUCKETS(type) do {                                           \
-        int idx, cnt;                                                      \
-        for (idx = 0; idx < ft->config.type##_bucket_count; idx++) {       \
-            if ((cnt = list_length(&ft->type##_buckets[idx])) != 0) {      \
-                LOG_ERROR("ERROR: bucket list %s has len %d on delete",    \
-                          #type, cnt);                                     \
-                break;                                                     \
-            }                                                              \
-        }                                                                  \
-    } while (0)
-#else
-#define CHECK_BUCKETS(type)
-#endif
-
 void
 ft_destroy(ft_instance_t ft)
 {
@@ -144,15 +112,13 @@ ft_destroy(ft_instance_t ft)
         ft_entry_destroy(ft, entry);
     }
 
-    if (ft->strict_match_buckets != NULL) {
-        CHECK_BUCKETS(strict_match);
-        aim_free(ft->strict_match_buckets);
-        ft->strict_match_buckets = NULL;
+    if (ft->strict_match_hashtable != NULL) {
+        bighash_table_destroy(ft->strict_match_hashtable, NULL);
+        ft->strict_match_hashtable = NULL;
     }
-    if (ft->flow_id_buckets != NULL) {
-        CHECK_BUCKETS(flow_id);
-        aim_free(ft->flow_id_buckets);
-        ft->flow_id_buckets = NULL;
+    if (ft->flow_id_hashtable != NULL) {
+        bighash_table_destroy(ft->flow_id_hashtable, NULL);
+        ft->flow_id_hashtable = NULL;
     }
     if (ft->cookie_buckets != NULL) {
         aim_free(ft->cookie_buckets);
@@ -240,17 +206,16 @@ ft_strict_match(ft_instance_t instance,
                of_meta_match_t *query,
                ft_entry_t **entry_ptr)
 {
-    int bucket_idx;
-    list_links_t *cur;
+    uint32_t hash;
+    bighash_entry_t *hash_entry;
 
     INDIGO_ASSERT(query->mode == OF_MATCH_STRICT);
 
-    bucket_idx = ft_strict_match_to_bucket_index(instance, &query->minimatch,
-                                                 query->priority);
-    list_head_t *bucket = &instance->strict_match_buckets[bucket_idx];
+    hash = ft_strict_match_hash(instance, &query->minimatch, query->priority);
 
-    LIST_FOREACH(bucket, cur) {
-        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, strict_match);
+    for (hash_entry = bighash_first(instance->strict_match_hashtable, hash);
+         hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
+        ft_entry_t *entry = container_of(hash_entry, strict_match_hash_entry, ft_entry_t);
         if (ft_entry_meta_match(query, entry)) {
             *entry_ptr = entry;
             return INDIGO_ERROR_NONE;
@@ -263,12 +228,14 @@ ft_strict_match(ft_instance_t instance,
 ft_entry_t *
 ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
 {
-    int bucket_idx = ft_flow_id_to_bucket_index(ft, &id);
-    list_head_t *bucket = &ft->flow_id_buckets[bucket_idx];
-    list_links_t *cur;
+    uint32_t hash;
+    bighash_entry_t *hash_entry;
 
-    LIST_FOREACH(bucket, cur) {
-        ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, flow_id);
+    hash = ft_flow_id_hash(ft, id);
+
+    for (hash_entry = bighash_first(ft->flow_id_hashtable, hash);
+         hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
+        ft_entry_t *entry = container_of(hash_entry, flow_id_hash_entry, ft_entry_t);
         if (entry->id == id) {
             return entry;
         }
@@ -563,14 +530,18 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
     /* Link to full table iteration */
     list_push(&ft->all_list, &entry->table_links);
 
-    if (ft->strict_match_buckets) { /* Strict match hash */
-        idx = ft_strict_match_to_bucket_index(ft, &entry->minimatch, entry->priority);
-        list_push(&ft->strict_match_buckets[idx], &entry->strict_match_links);
-    }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        idx = ft_flow_id_to_bucket_index(ft, &entry->id);
-        list_push(&ft->flow_id_buckets[idx], &entry->flow_id_links);
-    }
+    /* Strict match hash */
+    bighash_insert(
+        ft->strict_match_hashtable,
+        &entry->strict_match_hash_entry,
+        ft_strict_match_hash(ft, &entry->minimatch, entry->priority));
+
+    /* Flow ID hash */
+    bighash_insert(
+        ft->flow_id_hashtable,
+        &entry->flow_id_hash_entry,
+        ft_flow_id_hash(ft, entry->id));
+
     if (ft->cookie_buckets) { /* Cookie prefix */
         idx = ft_cookie_to_bucket_index(ft, entry->cookie);
         list_push(&ft->cookie_buckets[idx], &entry->cookie_links);
@@ -606,16 +577,12 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
     /* Remove from full table iteration */
     list_remove(&entry->table_links);
 
-    if (ft->strict_match_buckets) { /* Strict match hash */
-        INDIGO_ASSERT(!list_empty(&ft->strict_match_buckets[
-            ft_strict_match_to_bucket_index(ft, &entry->minimatch, entry->priority)]));
-        list_remove(&entry->strict_match_links);
-    }
-    if (ft->flow_id_buckets) { /* Flow ID hash */
-        INDIGO_ASSERT(!list_empty(&ft->flow_id_buckets[ft_flow_id_to_bucket_index(ft,
-            &entry->id)]));
-        list_remove(&entry->flow_id_links);
-    }
+    /* Strict match hash */
+    bighash_remove(ft->strict_match_hashtable, &entry->strict_match_hash_entry);
+
+    /* Flow ID hash */
+    bighash_remove(ft->flow_id_hashtable, &entry->flow_id_hash_entry);
+
     if (ft->cookie_buckets) { /* Cookie prefix */
         INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
             entry->cookie)]));

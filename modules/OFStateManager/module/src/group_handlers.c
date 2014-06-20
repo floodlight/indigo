@@ -330,6 +330,6 @@ ind_core_group_features_stats_request_handler(of_object_t *_obj,
 void
 ind_core_group_init(void)
 {
-    ind_core_group_hashtable = bighash_table_create(1024);
+    ind_core_group_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
     AIM_TRUE_OR_DIE(ind_core_group_hashtable != NULL);
 }

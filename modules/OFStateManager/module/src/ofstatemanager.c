@@ -536,8 +536,6 @@ indigo_core_dpid_get(of_dpid_t *dpid)
 indigo_error_t
 ind_core_init(ind_core_config_t *config)
 {
-    ft_config_t ft_config;
-
     INDIGO_MEM_COPY(&ind_core_config, config, sizeof(*config));
 
     LOG_TRACE("OF state mgr init called");
@@ -565,10 +563,8 @@ ind_core_init(ind_core_config_t *config)
         /* Default value */
         config->max_flowtable_entries = 16384;
     }
-    ft_config.strict_match_bucket_count = config->max_flowtable_entries;
-    ft_config.flow_id_bucket_count = config->max_flowtable_entries;
 
-    if ((ind_core_ft = ft_create(&ft_config)) == NULL) {
+    if ((ind_core_ft = ft_create()) == NULL) {
         LOG_ERROR("Unable to allocate flow table");
         return INDIGO_ERROR_RESOURCE;
     }

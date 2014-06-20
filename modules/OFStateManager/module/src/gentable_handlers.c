@@ -52,7 +52,6 @@ static uint8_t calc_checksum_buckets_shift(uint32_t checksum_buckets_size);
 static struct ind_core_gentable_checksum_bucket *find_checksum_bucket(indigo_core_gentable_t *gentable, of_checksum_128_t *checksum);
 static void update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
 static uint32_t hash_key(of_list_bsn_tlv_t *key);
-static list_head_t *find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash);
 static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
@@ -67,11 +66,10 @@ struct indigo_core_gentable {
     const indigo_core_gentable_ops_t *ops;
     void *priv;
     uint64_t generation_id;
-    list_head_t *key_buckets;
+    bighash_table_t *key_hashtable;
     struct ind_core_gentable_checksum_bucket *checksum_buckets;
     uint32_t max_entries;
     uint32_t num_entries;
-    uint32_t key_buckets_size; /* always a power of 2 */
     uint32_t checksum_buckets_size; /* always a power of 2 */
     uint16_t table_id;
     uint8_t checksum_buckets_shift; /* see checksum_buckets_shift */
@@ -80,9 +78,8 @@ struct indigo_core_gentable {
 };
 
 struct ind_core_gentable_entry {
-    list_links_t key_links;
+    bighash_entry_t key_hash_entry;
     list_links_t checksum_links;
-    uint32_t key_hash;
     void *priv;
     of_list_bsn_tlv_t *key;
     of_list_bsn_tlv_t *value;
@@ -122,7 +119,6 @@ indigo_core_gentable_register(
     gentable->priv = table_priv;
     gentable->max_entries = max_entries;
     gentable->checksum_buckets_size = buckets_size;
-    gentable->key_buckets_size = buckets_size;
 
     gentable->checksum_buckets_shift =
         calc_checksum_buckets_shift(gentable->checksum_buckets_size);
@@ -130,12 +126,7 @@ indigo_core_gentable_register(
     gentable->table_id = alloc_table_id();
     gentable->generation_id = next_generation_id++;
 
-    gentable->key_buckets = aim_malloc(sizeof(*gentable->key_buckets) *
-                                       gentable->key_buckets_size);
-
-    for (i = 0; i < gentable->key_buckets_size; i++) {
-        list_init(&gentable->key_buckets[i]);
-    }
+    gentable->key_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
 
     gentable->checksum_buckets = aim_malloc(sizeof(*gentable->checksum_buckets) *
                                             gentable->checksum_buckets_size);
@@ -159,26 +150,25 @@ void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
 {
     indigo_error_t rv;
-    int i;
+    bighash_iter_t iter;
+    bighash_entry_t *hash_entry;
 
     AIM_TRUE_OR_DIE(gentables[gentable->table_id] == gentable);
 
     /* Delete all entries */
-    for (i = 0; i < gentable->key_buckets_size; i++) {
-        list_links_t *cur, *next;
-        LIST_FOREACH_SAFE(&gentable->key_buckets[i], cur, next) {
-            struct ind_core_gentable_entry *entry =
-                container_of(cur, key_links, struct ind_core_gentable_entry);
-            rv = delete_entry(gentable, entry);
-            if (rv < 0) {
-                AIM_LOG_ERROR("failed to delete %s gentable entry during unregister, leaking", gentable->name);
-            }
+    for (hash_entry = bighash_iter_start(gentable->key_hashtable, &iter);
+         hash_entry != NULL; hash_entry = bighash_iter_next(&iter)) {
+        struct ind_core_gentable_entry *entry =
+            container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
+        rv = delete_entry(gentable, entry);
+        if (rv < 0) {
+            AIM_LOG_ERROR("failed to delete %s gentable entry during unregister, leaking", gentable->name);
         }
     }
 
     gentables[gentable->table_id] = NULL;
 
-    aim_free(gentable->key_buckets);
+    bighash_table_destroy(gentable->key_hashtable, NULL);
     aim_free(gentable->checksum_buckets);
     aim_free(gentable);
 }
@@ -227,12 +217,10 @@ ind_core_bsn_gentable_entry_add_handler(
         /* Allocate new entry */
         entry = aim_zmalloc(sizeof(*entry));
         entry->key = of_object_dup(&key);
-
-        entry->key_hash = hash_key(&key);
         entry->priv = priv;
 
         /* Insert into key bucket */
-        list_push(find_key_bucket(gentable, entry->key_hash), &entry->key_links);
+        bighash_insert(gentable->key_hashtable, &entry->key_hash_entry, hash_key(&key));
 
         gentable->num_entries++;
     } else {
@@ -871,12 +859,6 @@ hash_key(of_list_bsn_tlv_t *key)
     return murmur_hash(OF_OBJECT_BUFFER_INDEX(key, 0), key->length, 0);
 }
 
-static list_head_t *
-find_key_bucket(indigo_core_gentable_t *gentable, uint32_t key_hash)
-{
-    return &gentable->key_buckets[key_hash & (gentable->key_buckets_size - 1)];
-}
-
 static indigo_error_t
 delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry)
 {
@@ -888,7 +870,7 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
         return rv;
     }
 
-    list_remove(&entry->key_links);
+    bighash_remove(gentable->key_hashtable, &entry->key_hash_entry);
     list_remove(&entry->checksum_links);
 
     checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
@@ -908,15 +890,13 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
 static struct ind_core_gentable_entry *
 find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key)
 {
-    list_links_t *cur, *next;
+    bighash_entry_t *hash_entry;
 
-    uint32_t hash = hash_key(key);
-    list_head_t *bucket = find_key_bucket(gentable, hash);
-
-    LIST_FOREACH_SAFE(bucket, cur, next) {
+    for (hash_entry = bighash_first(gentable->key_hashtable, hash_key(key));
+         hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
         struct ind_core_gentable_entry *entry =
-            container_of(cur, key_links, struct ind_core_gentable_entry);
-        if (entry->key_hash == hash && key_equality(key, entry->key)) {
+            container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
+        if (key_equality(key, entry->key)) {
             return entry;
         }
     }
