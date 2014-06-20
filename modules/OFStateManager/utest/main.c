@@ -327,28 +327,6 @@ indigo_error_t indigo_port_desc_stats_get(
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
-indigo_fwd_group_add(uint32_t id, uint8_t group_type, of_list_bucket_t *buckets)
-{
-    return INDIGO_ERROR_NOT_SUPPORTED;
-}
-
-indigo_error_t
-indigo_fwd_group_modify(uint32_t id, of_list_bucket_t *buckets)
-{
-    return INDIGO_ERROR_NOT_SUPPORTED;
-}
-
-void
-indigo_fwd_group_delete(uint32_t id)
-{
-}
-
-void
-indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry)
-{
-}
-
 void
 indigo_fwd_pipeline_get(of_desc_str_t pipeline)
 {
