@@ -24,7 +24,7 @@
 void
 minimatch_init(minimatch_t *minimatch, const of_match_t *match)
 {
-    int i, j = 0;
+    int i, j;
     int num_words = 0;
     int idx = 0;
     uint32_t *fields = (uint32_t *)&match->fields;
@@ -52,6 +52,7 @@ minimatch_init(minimatch_t *minimatch, const of_match_t *match)
      */
     for (i = 0; i < AIM_ARRAYSIZE(minimatch->bitmap); i++) {
         uint32_t bitmap_word = minimatch->bitmap[i];
+        j = i * 32;
 
         while (bitmap_word) {
             int skip = __builtin_ctz(bitmap_word);
@@ -76,7 +77,7 @@ minimatch_cleanup(minimatch_t *minimatch)
 void
 minimatch_expand(const minimatch_t *minimatch, of_match_t *match)
 {
-    int i, j = 0;
+    int i, j;
     int idx = 0;
     uint32_t *fields = (uint32_t *)&match->fields;
     uint32_t *masks = (uint32_t *)&match->masks;
@@ -90,6 +91,7 @@ minimatch_expand(const minimatch_t *minimatch, of_match_t *match)
      */
     for (i = 0; i < AIM_ARRAYSIZE(minimatch->bitmap); i++) {
         uint32_t bitmap_word = minimatch->bitmap[i];
+        j = i * 32;
 
         while (bitmap_word) {
             int skip = __builtin_ctz(bitmap_word);
@@ -129,7 +131,7 @@ bool
 minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
 {
     int idx_a = 0, idx_b = 0;
-    int i, j = 0;
+    int i;
 
     /*
      * For each match word, check that a's mask is at least as specific as b's
@@ -139,16 +141,10 @@ minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
         uint32_t bitmap_word_a = a->bitmap[i];
         uint32_t bitmap_word_b = b->bitmap[i];
 
-        if (!bitmap_word_b) {
-            /* Nothing set in b's mask, so a must be at least as specific */
-            continue;
-        }
-
         while (bitmap_word_a | bitmap_word_b) {
             int skip = __builtin_ctz(bitmap_word_a | bitmap_word_b);
             bitmap_word_a >>= skip;
             bitmap_word_b >>= skip;
-            j += skip;
 
             uint32_t field_a, mask_a, field_b, mask_b;
 
@@ -176,7 +172,6 @@ minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
                 return false;
             }
 
-            j++;
             bitmap_word_a >>= 1;
             bitmap_word_b >>= 1;
         }

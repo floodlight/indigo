@@ -31,10 +31,12 @@ test_basic(void)
         .fields = {
             .vlan_vid = 0x567,
             .eth_dst = { { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc } },
+            .bsn_vrf = 1,
         },
         .masks = {
             .vlan_vid = 0xffff,
             .eth_dst = { { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } },
+            .bsn_vrf = 0xffff,
         },
     };
 
@@ -44,10 +46,12 @@ test_basic(void)
         .fields = {
             .vlan_vid = 0x567,
             .eth_dst = { { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbd } },
+            .bsn_vrf = 2,
         },
         .masks = {
             .vlan_vid = 0xffff,
             .eth_dst = { { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } },
+            .bsn_vrf = 0xffff,
         },
     };
 
@@ -58,11 +62,13 @@ test_basic(void)
             .vlan_vid = 0x567,
             .eth_dst = { { 0x12, 0x34, 0x56, 0x78, 0x9a, 0xbd } },
             .eth_type = 0x0800,
+            .bsn_vrf = 2,
         },
         .masks = {
             .vlan_vid = 0xffff,
             .eth_dst = { { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } },
             .eth_type = 0xffff,
+            .bsn_vrf = 0xffff,
         },
     };
 
@@ -147,22 +153,25 @@ random_match(of_match_t *match)
     uint8_t *fields = (uint8_t *)&match->fields;
     uint8_t *masks = (uint8_t *)&match->masks;
 
-    /* Use a very small portion of the match to ensure we get some
-     * equal/overlap/more-specific matches. */
-    const int match_bytes = 12;
-    AIM_ASSERT(match_bytes < sizeof(of_match_t));
-    AIM_ASSERT(match_bytes*2 <= 32);
+    /*
+     * Use a very small portion of the match to ensure we get some
+     * equal/overlap/more-specific matches.
+     *
+     * The offsets used are intended to cover edge cases.
+     */
+    const int match_offsets[] = { 0, 15*4, 15*4+1, 31*4, 32*4, 48*4, 61*4 };
+    AIM_ASSERT(AIM_ARRAYSIZE(match_offsets)*2 <= 32);
 
     uint32_t r = random();
 
     int i;
-    for (i = 0; i < match_bytes; i++) {
+    for (i = 0; i < AIM_ARRAYSIZE(match_offsets); i++) {
         uint8_t mask = r & 1;
         r >>= 1;
         uint8_t field = r & mask;
         r >>= 1;
-        fields[i] = field;
-        masks[i] = mask;
+        fields[match_offsets[i]] = field;
+        masks[match_offsets[i]] = mask;
     }
 }
 
