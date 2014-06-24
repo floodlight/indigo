@@ -386,7 +386,7 @@ do_delete(uint32_t entry_id)
 }
 
 static void
-do_entry_stats()
+do_entry_stats(void)
 {
     of_object_t *obj = of_group_stats_request_new(OF_VERSION_1_3);
     of_group_stats_request_xid_set(obj, 0x12345678);
