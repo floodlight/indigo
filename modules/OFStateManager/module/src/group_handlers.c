@@ -91,6 +91,49 @@ ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id, uint1
     return INDIGO_ERROR_NONE;
 }
 
+/*
+ * We can't delete a group referenced by another group. Repeatedly try deleting
+ * all groups with refcount==0 until we stop making progress.
+ *
+ * This is worst case quadratic time if only a single group is deleted each
+ * iteration. That's not realistic because the chaining of groups is limited.
+ * The expected runtime is the maximum chaining depth times the number of
+ * groups.
+ */
+static indigo_error_t
+ind_core_group_delete_all(indigo_cxn_id_t cxn_id, uint16_t *err_code)
+{
+    bighash_iter_t iter;
+    bool failed = false;
+    ind_core_group_t *group;
+    bool progress;
+    int iters = 0;
+
+    do {
+        progress = false;
+        for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
+                group; group = bighash_iter_next(&iter)) {
+            if (group->refcount == 0) {
+                if (ind_core_group_delete_one(group, cxn_id, err_code) < 0) {
+                    failed = true;
+                } else {
+                    progress = true;
+                }
+            }
+        }
+        iters++;
+        AIM_TRUE_OR_DIE(iters < 10);
+    } while (progress);
+
+    AIM_LOG_VERBOSE("deleted all groups in %d iterations", iters);
+
+    if (failed || bighash_entry_count(ind_core_group_hashtable) > 0) {
+        return INDIGO_ERROR_UNKNOWN;
+    } else {
+        return INDIGO_ERROR_NONE;
+    }
+}
+
 static indigo_error_t
 ind_core_group_modify(ind_core_group_t *group, uint8_t type, of_list_bucket_t *buckets, indigo_cxn_id_t cxn_id)
 {
@@ -250,15 +293,7 @@ ind_core_group_delete_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (id == OF_GROUP_ALL) {
-        bighash_iter_t iter;
-        bool failed = false;
-        for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
-                group; group = bighash_iter_next(&iter)) {
-            if (ind_core_group_delete_one(group, cxn_id, &err_code) < 0) {
-                failed = true;
-            }
-        }
-        if (failed) {
+        if (ind_core_group_delete_all(cxn_id, &err_code) < 0) {
             goto error;
         }
     } else if (group != NULL) {
@@ -443,7 +478,12 @@ void indigo_core_group_table_unregister(uint8_t table_id)
     ind_core_group_table_t *table = ind_core_group_tables[table_id];
     AIM_TRUE_OR_DIE(table != NULL);
 
-    /* Delete groups remaining in this table */
+    /*
+     * Delete groups remaining in this table
+     *
+     * Assumes groups in the same table can't reference each other, and the
+     * pipeline unregisters tables in the right order.
+     */
     bighash_iter_t iter;
     ind_core_group_t *group;
     for (group = bighash_iter_start(ind_core_group_hashtable, &iter);
