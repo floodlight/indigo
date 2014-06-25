@@ -49,6 +49,8 @@
 
 
 /* Short hand logging macros */
+#define LOG_MSG(cxn, fmt, ...)                                        \
+    AIM_LOG_MSG("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_ERROR(cxn, fmt, ...)                                        \
     AIM_LOG_ERROR("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_WARN(cxn, fmt, ...)                                        \
@@ -837,6 +839,49 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
 }
 
+/**
+ * Handle a BSN log message
+ */
+
+static void
+bsn_log_handle(connection_t *cxn, of_object_t *_obj)
+{
+    of_bsn_log_t *obj = _obj;
+    uint8_t loglevel;
+    of_octets_t data;
+
+    of_bsn_log_loglevel_get(obj, &loglevel);
+    of_bsn_log_data_get(obj, &data);
+
+    /*
+     * No easy way to pass the log flag and get all the features of
+     * the logging macros.
+     */
+    switch (loglevel) {
+
+#define level(name) \
+    case OFP_BSN_LOGLEVEL_ ## name: \
+        LOG_ ## name(cxn, "from controller: %.*s", data.bytes, data.data); \
+        break;
+
+    level(MSG)
+    level(ERROR)
+    level(WARN)
+    level(INFO)
+    level(VERBOSE)
+    level(TRACE)
+
+#undef level
+
+    default:
+        LOG_ERROR(cxn, "Invalid loglevel in bsn_log message");
+        indigo_cxn_send_error_reply(
+            cxn->cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_EPERM);
+        return;
+    }
+}
 
 /**
  * Increment the outstanding op count
@@ -920,6 +965,10 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 
     case OF_BSN_SET_AUX_CXNS_REQUEST:
         aux_connections_request_handle(cxn, obj);
+        return;
+
+    case OF_BSN_LOG:
+        bsn_log_handle(cxn, obj);
         return;
 
     /* Check permissions and fall through */
