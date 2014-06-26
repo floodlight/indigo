@@ -571,6 +571,12 @@ void indigo_core_group_table_unregister(uint8_t table_id);
  *
  * All references acquired by this function must be released before
  * OFStateManager will allow the group to be destroyed.
+ *
+ * This is used when a flow or another group references a group. The
+ * referenced group will not be allowed to be deleted until all
+ * flows/groups referencing it are deleted (or modified to not reference
+ * the group). This prevents dangling references in the forwarding hardware
+ * or software.
  */
 void *indigo_core_group_acquire(uint32_t group_id);
 

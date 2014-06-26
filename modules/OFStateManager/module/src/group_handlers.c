@@ -21,7 +21,8 @@
  * @file
  * @brief OpenFlow message handlers for group messages
  *
- * See detailed documentation in the Indigo architecture headers.
+ * See detailed documentation in the Indigo architecture headers,
+ * specifically the section on "Group table registration".
  */
 
 #include "ofstatemanager_log.h"
@@ -37,12 +38,24 @@
 #include "handlers.h"
 #include <BigHash/bighash.h>
 
+/*
+ * A group table
+ *
+ * Different group tables may have different function pointers
+ * to add/modify/remove/etc entries.
+ */
 typedef struct ind_core_group_table_s {
     of_table_name_t name;
     void *priv;
     const indigo_core_group_table_ops_t *ops;
 } ind_core_group_table_t;
 
+/*
+ * A single OpenFlow group
+ *
+ * Indexed by group ID. Contains the data needed to send a group (desc) stats
+ * reply and track the mapping from group ID to Forwarding's private data.
+ */
 typedef struct ind_core_group_s {
     bighash_entry_t hash_entry;
     uint32_t id;
@@ -108,6 +121,7 @@ ind_core_group_delete_all(indigo_cxn_id_t cxn_id, uint16_t *err_code)
     ind_core_group_t *group;
     bool progress;
     int iters = 0;
+    int orig_count = bighash_entry_count(ind_core_group_hashtable);
 
     do {
         progress = false;
@@ -125,7 +139,9 @@ ind_core_group_delete_all(indigo_cxn_id_t cxn_id, uint16_t *err_code)
         AIM_TRUE_OR_DIE(iters < 10);
     } while (progress);
 
-    AIM_LOG_VERBOSE("deleted all groups in %d iterations", iters);
+    AIM_LOG_VERBOSE("deleted %d/%d groups in %d iterations",
+                    orig_count - bighash_entry_count(ind_core_group_hashtable),
+                    orig_count, iters);
 
     if (failed || bighash_entry_count(ind_core_group_hashtable) > 0) {
         return INDIGO_ERROR_UNKNOWN;
@@ -135,7 +151,8 @@ ind_core_group_delete_all(indigo_cxn_id_t cxn_id, uint16_t *err_code)
 }
 
 static indigo_error_t
-ind_core_group_modify(ind_core_group_t *group, uint8_t type, of_list_bucket_t *buckets, indigo_cxn_id_t cxn_id)
+ind_core_group_modify(ind_core_group_t *group, uint8_t type,
+                      of_list_bucket_t *buckets, indigo_cxn_id_t cxn_id)
 {
     ind_core_group_table_t *table = group_table_for_id(group->id);
     indigo_error_t result;
@@ -147,9 +164,11 @@ ind_core_group_modify(ind_core_group_t *group, uint8_t type, of_list_bucket_t *b
             result = indigo_fwd_group_modify(group->id, buckets);
         }
     } else {
+        /* Type change is implemented as delete+add */
         if (table) {
             (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
-            result = table->ops->entry_create(table->priv, cxn_id, group->id, type, buckets, &group->priv);
+            result = table->ops->entry_create(table->priv, cxn_id, group->id,
+                                              type, buckets, &group->priv);
         } else {
             indigo_fwd_group_delete(group->id);
             result = indigo_fwd_group_add(group->id, type, buckets);
@@ -160,6 +179,7 @@ ind_core_group_modify(ind_core_group_t *group, uint8_t type, of_list_bucket_t *b
         return result;
     }
 
+    /* Update type and buckets */
     group->type = type;
     of_object_delete(group->buckets);
     group->buckets = of_object_dup(buckets);
@@ -192,7 +212,12 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (group != NULL) {
-        /* Convert duplicate add to a modify */
+        /*
+         * Convert duplicate add to a modify
+         *
+         * This is in violation of the spec, but it makes pushing groups easier for the
+         * controller. This behavior matches the flowtable and gentables.
+         */
         result = ind_core_group_modify(group, type, &buckets, cxn_id);
 
         if (result < 0) {
