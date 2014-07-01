@@ -1712,10 +1712,12 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
 
     LOG_VERBOSE("Connection reset for id %d", cxn_id);
     if (cxn_id == IND_CXN_RESET_ALL) {
-        /* Iterate thru active controllers */
+        /* Iterate thru active controllers and reset all but listening */
         indigo_controller_id_t id;
         FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
-            ind_controller_disconnect(ctrl);
+            if (!ctrl->config_params.listen) {
+                ind_controller_disconnect(ctrl);
+            }
         }
     } else if (!INDIGO_CXN_INVALID(cxn_id)) {
         cxn = CXN_ID_TO_CONNECTION(cxn_id);
