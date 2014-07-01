@@ -275,7 +275,9 @@ ft_set_checksum_buckets_size(ft_instance_t ft, uint8_t table_id, uint32_t bucket
     list_links_t *cur;
     LIST_FOREACH(&ft->all_list, cur) {
         ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, table);
-        ft_checksum_add(ft, entry);
+        if (entry->table_id == table_id) {
+            ft_checksum_add(ft, entry);
+        }
     }
 
     return INDIGO_ERROR_NONE;
