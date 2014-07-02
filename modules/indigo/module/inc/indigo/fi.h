@@ -119,6 +119,11 @@ typedef struct indigo_fi_port_stats {
     uint64_t tx_late_collisions;
     uint64_t tx_deferred;
     uint64_t tx_pause_output;
+    uint64_t rx_packets;
+    uint64_t tx_packets;
+    uint64_t rx_length_errors;
+    uint64_t rx_overflow_errors;
+    uint64_t tx_carrier_errors;
 } indigo_fi_port_stats_t;
 
 #endif /* _INDIGO_FI_H_ */
