@@ -36,7 +36,8 @@ static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
 static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
-static void ft_checksum_update(ft_instance_t ft, ft_entry_t *entry);
+static void ft_checksum_add(ft_instance_t ft, ft_entry_t *entry);
+static void ft_checksum_subtract(ft_instance_t ft, ft_entry_t *entry);
 
 #define FT_HASH_SEED 0
 #define FT_MAX_CHECKSUM_BUCKETS 65536
@@ -157,7 +158,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     debug_counter_inc(&ft_add_counter);
     debug_counter_inc(&ft_flow_counter);
 
-    ft_checksum_update(ft, entry);
+    ft_checksum_add(ft, entry);
 
     if (entry_p != NULL) {
         *entry_p = entry;
@@ -171,7 +172,7 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
     LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
 
-    ft_checksum_update(ft, entry);
+    ft_checksum_subtract(ft, entry);
     ft_entry_unlink(ft, entry);
     ft_entry_destroy(ft, entry);
 
@@ -183,7 +184,7 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 void
 ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
 {
-    ft_checksum_update(ft, entry);
+    ft_checksum_subtract(ft, entry);
     ft_entry_unlink(ft, entry);
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
@@ -198,7 +199,7 @@ ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
     entry->last_counter_change = entry->insert_time;
 
     ft_entry_link(ft, entry);
-    ft_checksum_update(ft, entry);
+    ft_checksum_add(ft, entry);
 }
 
 indigo_error_t
@@ -274,7 +275,9 @@ ft_set_checksum_buckets_size(ft_instance_t ft, uint8_t table_id, uint32_t bucket
     list_links_t *cur;
     LIST_FOREACH(&ft->all_list, cur) {
         ft_entry_t *entry = FT_ENTRY_CONTAINER(cur, table);
-        ft_checksum_update(ft, entry);
+        if (entry->table_id == table_id) {
+            ft_checksum_add(ft, entry);
+        }
     }
 
     return INDIGO_ERROR_NONE;
@@ -752,16 +755,29 @@ ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
 }
 
 static void
-ft_checksum_update(ft_instance_t ft, ft_entry_t *entry)
+ft_checksum_add(ft_instance_t ft, ft_entry_t *entry)
 {
     if (entry->table_id >= FT_MAX_TABLES) {
         return;
     }
 
     ft_table_t *table = &ft->tables[entry->table_id];
-    table->checksum ^= entry->cookie;
+    table->checksum += entry->cookie;
     int bucket = table->checksum_shift < 64 ? entry->cookie >> table->checksum_shift : 0;
-    table->checksum_buckets[bucket] ^= entry->cookie;
+    table->checksum_buckets[bucket] += entry->cookie;
+}
+
+static void
+ft_checksum_subtract(ft_instance_t ft, ft_entry_t *entry)
+{
+    if (entry->table_id >= FT_MAX_TABLES) {
+        return;
+    }
+
+    ft_table_t *table = &ft->tables[entry->table_id];
+    table->checksum -= entry->cookie;
+    int bucket = table->checksum_shift < 64 ? entry->cookie >> table->checksum_shift : 0;
+    table->checksum_buckets[bucket] -= entry->cookie;
 }
 
 void

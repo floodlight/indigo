@@ -50,7 +50,8 @@ static indigo_core_gentable_t *find_gentable_by_id(uint32_t table_id);
 static uint16_t alloc_table_id(void);
 static uint8_t calc_checksum_buckets_shift(uint32_t checksum_buckets_size);
 static struct ind_core_gentable_checksum_bucket *find_checksum_bucket(indigo_core_gentable_t *gentable, of_checksum_128_t *checksum);
-static void update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
+static void add_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
+static void subtract_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
 static uint32_t hash_key(of_list_bsn_tlv_t *key);
 static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
@@ -237,10 +238,10 @@ ind_core_bsn_gentable_entry_add_handler(
         /* Remove from old checksum bucket */
         checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
         list_remove(&entry->checksum_links);
-        update_checksum(&checksum_bucket->checksum, &entry->checksum);
+        subtract_checksum(&checksum_bucket->checksum, &entry->checksum);
 
         /* Remove from table checksum */
-        update_checksum(&gentable->checksum, &entry->checksum);
+        subtract_checksum(&gentable->checksum, &entry->checksum);
     }
 
     /* Update value and checksum */
@@ -250,10 +251,10 @@ ind_core_bsn_gentable_entry_add_handler(
     /* Insert into checksum bucket */
     checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
     list_push(&checksum_bucket->entries, &entry->checksum_links);
-    update_checksum(&checksum_bucket->checksum, &entry->checksum);
+    add_checksum(&checksum_bucket->checksum, &entry->checksum);
 
     /* Add to table checksum */
-    update_checksum(&gentable->checksum, &entry->checksum);
+    add_checksum(&gentable->checksum, &entry->checksum);
 
     return;
 
@@ -453,7 +454,7 @@ ind_core_bsn_gentable_set_buckets_size_handler(
             struct ind_core_gentable_checksum_bucket *new_bucket;
             new_bucket = find_checksum_bucket(gentable, &entry->checksum);
             list_push(&new_bucket->entries, &entry->checksum_links);
-            update_checksum(&new_bucket->checksum, &entry->checksum);
+            add_checksum(&new_bucket->checksum, &entry->checksum);
         }
     }
 
@@ -847,10 +848,18 @@ find_checksum_bucket(indigo_core_gentable_t *gentable, of_checksum_128_t *checks
 }
 
 static void
-update_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src)
+add_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src)
 {
-    dst->lo ^= src->lo;
-    dst->hi ^= src->hi;
+    dst->lo += src->lo;
+    dst->hi += src->hi + (dst->lo < src->lo);
+}
+
+static void
+subtract_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src)
+{
+    uint64_t prev_lo = dst->lo;
+    dst->lo -= src->lo;
+    dst->hi -= src->hi + (dst->lo > prev_lo);
 }
 
 static uint32_t
@@ -875,8 +884,8 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
 
     checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
 
-    update_checksum(&checksum_bucket->checksum, &entry->checksum);
-    update_checksum(&gentable->checksum, &entry->checksum);
+    subtract_checksum(&checksum_bucket->checksum, &entry->checksum);
+    subtract_checksum(&gentable->checksum, &entry->checksum);
 
     of_object_delete(entry->key);
     of_object_delete(entry->value);
