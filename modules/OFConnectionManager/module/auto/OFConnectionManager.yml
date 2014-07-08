@@ -58,11 +58,23 @@ cdefs: &cdefs
     doc: "OpenFlow version to use for asynchronous message when no controller is connected."
     default: OF_VERSION_1_3
 
+ofconnectionmanager_log_types: &ofconnectionmanager_log_types
+- local
+
 definitions:
   cdefs:
     OFCONNECTIONMANAGER_CONFIG_HEADER:
       defs: *cdefs
       basename: ofconnectionmanager_config
+
+  enum: &enum
+    ofconnectionmanager_log_flag:
+      members: *ofconnectionmanager_log_types
+
+  aim_custom_log_macro:
+    ofconnectionmanager:
+      flags: *ofconnectionmanager_log_types
+      prefix: OFCONNECTIONMANAGER_LOG_FLAG_
 
   portingmacro:
     OFCONNECTIONMANAGER:

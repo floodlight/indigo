@@ -35,6 +35,6 @@
 AIM_LOG_STRUCT_DEFINE(
                       OFCONNECTIONMANAGER_CONFIG_LOG_OPTIONS_DEFAULT,
                       OFCONNECTIONMANAGER_CONFIG_LOG_BITS_DEFAULT,
-                      NULL, /* Custom log map */
+                      ofconnectionmanager_log_flag_map, /* Custom log map */
                       OFCONNECTIONMANAGER_CONFIG_LOG_CUSTOM_BITS_DEFAULT
                       );
