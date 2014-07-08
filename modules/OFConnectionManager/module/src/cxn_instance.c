@@ -62,6 +62,10 @@
 #define LOG_TRACE(cxn, fmt, ...)                                        \
     AIM_LOG_TRACE("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 
+#define LOG_LOCAL(cxn, fmt, ...)                                        \
+    OFCONNECTIONMANAGER_LOG_LOCAL("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
+
+
 #define NO_CXN_LOG_VERBOSE(fmt, ...)                                    \
     AIM_LOG_VERBOSE(fmt, ##__VA_ARGS__)
 
@@ -258,8 +262,13 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         return;
     }
 
-    LOG_INFO(cxn, "%s->%s", CXN_STATE_NAME(old_state),
-             CXN_STATE_NAME(new_state));
+    if (!CXN_LOCAL(cxn)) {
+        LOG_INFO(cxn, "%s->%s", CXN_STATE_NAME(old_state),
+                 CXN_STATE_NAME(new_state));
+    } else {
+        LOG_LOCAL(cxn, "%s->%s", CXN_STATE_NAME(old_state),
+                  CXN_STATE_NAME(new_state));
+    }
 
     /****************************************************************
      *
@@ -1038,7 +1047,9 @@ read_from_cxn(connection_t *cxn)
 
     if (bytes_in <= 0) {
         if (bytes_in == 0) { /* Socket is closed */
-            LOG_INFO(cxn, "Connection closed by remote host");
+            if (!CXN_LOCAL(cxn)) {
+                LOG_INFO(cxn, "Connection closed by remote host");
+            }
             return INDIGO_ERROR_CONNECTION;
         }
 

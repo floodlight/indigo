@@ -23,8 +23,59 @@
  *
  *****************************************************************************/
 #include <OFConnectionManager/ofconnectionmanager_config.h>
+#include "ofconnectionmanager_int.h"
 
+/* <auto.start.enum(ALL).source> */
+aim_map_si_t ofconnectionmanager_log_flag_map[] =
+{
+    { "local", OFCONNECTIONMANAGER_LOG_FLAG_LOCAL },
+    { NULL, 0 }
+};
 
-/* <--auto.start.enum(ALL).source> */
+aim_map_si_t ofconnectionmanager_log_flag_desc_map[] =
+{
+    { "None", OFCONNECTIONMANAGER_LOG_FLAG_LOCAL },
+    { NULL, 0 }
+};
+
+const char*
+ofconnectionmanager_log_flag_name(ofconnectionmanager_log_flag_t e)
+{
+    const char* name;
+    if(aim_map_si_i(&name, e, ofconnectionmanager_log_flag_map, 0)) {
+        return name;
+    }
+    else {
+        return "-invalid value for enum type 'ofconnectionmanager_log_flag'";
+    }
+}
+
+int
+ofconnectionmanager_log_flag_value(const char* str, ofconnectionmanager_log_flag_t* e, int substr)
+{
+    int i;
+    AIM_REFERENCE(substr);
+    if(aim_map_si_s(&i, str, ofconnectionmanager_log_flag_map, 0)) {
+        /* Enum Found */
+        *e = i;
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
+
+const char*
+ofconnectionmanager_log_flag_desc(ofconnectionmanager_log_flag_t e)
+{
+    const char* name;
+    if(aim_map_si_i(&name, e, ofconnectionmanager_log_flag_desc_map, 0)) {
+        return name;
+    }
+    else {
+        return "-invalid value for enum type 'ofconnectionmanager_log_flag'";
+    }
+}
+
 /* <auto.end.enum(ALL).source> */
 
