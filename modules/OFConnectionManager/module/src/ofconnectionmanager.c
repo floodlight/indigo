@@ -1878,10 +1878,8 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 void 
 ind_controller_disconnect(controller_t *ctrl)
 {
-    if (!ctrl->config_params.local) {
-        LOG_INFO("Controller disconnect: %s", 
-                 proto_ip_string(&ctrl->protocol_params));
-    }
+    LOG_INFO("Controller disconnect: %s", 
+             proto_ip_string(&ctrl->protocol_params));
 
     ind_aux_connection_remove(ctrl, 0);   
 
