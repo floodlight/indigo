@@ -178,13 +178,6 @@ extern indigo_error_t indigo_fwd_experimenter(
     of_experimenter_t *experimenter,
     indigo_cxn_id_t cxn_id);
 
-
-/**
- * Notify forwarding of changes in expiration processing behavior
- */
-extern indigo_error_t indigo_fwd_expiration_enable_set(int is_enabled);
-extern indigo_error_t indigo_fwd_expiration_enable_get(int *is_enabled);
-
 /**
  * Group management
  *

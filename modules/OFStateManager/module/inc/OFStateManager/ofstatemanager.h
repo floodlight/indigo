@@ -48,7 +48,6 @@
 #define IND_CORE_SERIAL_NUM_DEFAULT "11235813213455"
 
 typedef struct ind_core_config_s {
-    int expire_flows;   /**< Boolean, should state mgr manage flow expires */
     int stats_check_ms; /**< How frequently to check stats for expire, etc */
     indigo_core_disconnected_mode_t disconnected_mode;
     int max_flowtable_entries; /**< Maximum number of entries in the flowtable */

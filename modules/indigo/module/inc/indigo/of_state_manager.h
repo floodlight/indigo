@@ -128,33 +128,6 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
  */
 extern void indigo_core_port_status_update(of_port_status_t *port_status);
 
-
-/****************************************************************
- * Asynchronous forwarding flow removed event notification call
- *
- ****************************************************************/
-
-/**
- * @brief Notify state manager that a flow has been removed
- * @param reason The reason the flow was removed.  See fi.h.
- * @param stats A stats structure identifying the flow and related info
- *
- * This call is made from forwarding to the state manager to indicate
- * that a flow has been removed for some reason.
- *
- * Not all implementations may support this.  It is provided for
- * those which may do all flow expiration processing in the
- * forwarding module, and for those which may evict flows due
- * to resource or other constraints.
- *
- * It is not recommended that this call be made if a flow was removed because
- * of a call from the state manager to indigo_fwd_flow_delete.
- */
-
-extern void indigo_core_flow_removed(
-    indigo_fi_flow_removed_t reason,
-    indigo_fi_flow_stats_t *stats);
-
 /****************************************************************
  * Asynchronous connection manager notification, disconnection mode
  ****************************************************************/

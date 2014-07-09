@@ -832,8 +832,6 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     }
 
     indigo_fi_flow_stats_t flow_stats = {
-        .flow_id = entry->id,
-        .duration_ns = 0,
         .packets = -1,
         .bytes = -1,
     };
@@ -989,8 +987,6 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
 
     if (entry != NULL) {
         indigo_fi_flow_stats_t flow_stats = {
-            .flow_id = entry->id,
-            .duration_ns = 0,
             .packets = -1,
             .bytes = -1,
         };

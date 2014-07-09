@@ -54,15 +54,9 @@ typedef enum indigo_fi_flow_removed_e {
 
 /**
  * @brief Flow statistics counters
- *
- * Not all implementations will support duration_ns.  It must be 0 if not used.
- * It is provided for implementations that do timing events such as flow
- * expirations in the forwarding module.
  */
 
 typedef struct indigo_fi_flow_stats {
-    indigo_flow_id_t flow_id; /**< The ID of the flow */
-    uint64_t duration_ns;     /**< Time in ns flow exists or existed */
     uint64_t packets;         /**< Number of packets in flow  */
     uint64_t bytes;           /**< Number of bytes in flow  */
 } indigo_fi_flow_stats_t;
