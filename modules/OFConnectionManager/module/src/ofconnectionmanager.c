@@ -196,31 +196,6 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
 
 #define ID_TO_CONTROLLER(id) (&controllers[id])
 
-/**
- * Connection cookies
- *
- * Long running tasks may hold dangling references to connections that have
- * been disconnected after the request was received. This is especially
- * a problem for barrier blockers. The fix is to include a generation ID
- * along with the connection ID.
- *
- * FIXME The connection ID used for sending messages does not have this
- * protection. We should add the generation ID to all connection IDs and
- * get rid of this separate cookie.
- *
- * Special care is taken to make sure valid cookies are not equal to NULL.
- */
-
-void *cxn_to_cookie(connection_t *cxn)
-{
-    return (void *)(uintptr_t)(cxn->cxn_id + 1);
-}
-
-connection_t* cookie_to_cxn(void* cookie)
-{
-    return CXN_ID_TO_CONNECTION((indigo_cxn_id_t)(uintptr_t)cookie - 1);
-}
-
 
 /**
  * @brief Callback to process "socket ready"
@@ -1898,10 +1873,9 @@ indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *b
     if (CXN_ID_VALID(cxn_id)) {
         connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
         ind_cxn_block_barrier(cxn);
-        blocker->cookie = cxn_to_cookie(cxn);
-        INDIGO_ASSERT(blocker->cookie != NULL);
+        blocker->cxn_id = cxn_id;
     } else {
-        blocker->cookie = NULL;
+        blocker->cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
     }
 
 #ifndef NDEBUG
@@ -1912,12 +1886,12 @@ indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *b
 void
 indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
 {
-    if (blocker->cookie != NULL) {
-        connection_t *cxn = cookie_to_cxn(blocker->cookie);
+    if (CXN_ID_VALID(blocker->cxn_id)) {
+        connection_t *cxn = CXN_ID_TO_CONNECTION(blocker->cxn_id);
         if (cxn != NULL) {
             ind_cxn_unblock_barrier(cxn);
         }
-        blocker->cookie = NULL;
+        blocker->cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
     }
 
 #ifndef NDEBUG

@@ -494,7 +494,7 @@ void indigo_cxn_async_channel_selector_unregister(
  */
 
 typedef struct indigo_cxn_barrier_blocker_s {
-    void *cookie;
+    indigo_cxn_id_t cxn_id;
 #ifndef NDEBUG
     void *tracker;
 #endif
