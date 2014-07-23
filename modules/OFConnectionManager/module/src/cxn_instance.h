@@ -78,6 +78,16 @@
  */
 #define MAX_AUX_CONNECTIONS 8       
 
+/**
+ * The connection ID is split into two fields. The lower 16 bits are the index
+ * of the connection in the connection array. The upper 16 bits are a
+ * generation ID. Each time the connection disconnects, the generation ID is
+ * incremented. Because we compare the connection IDs when doing a lookup,
+ * we will fail attempts to use a stale connection ID.
+ */
+#define CXN_ID_GENERATION_SHIFT 16
+#define CXN_ID_TO_INDEX(cxn_id) ((cxn_id) & ((1<<CXN_ID_GENERATION_SHIFT)-1))
+
 /* Controller control block */
 typedef struct controller_s {
     indigo_cxn_protocol_params_t protocol_params;
@@ -168,17 +178,17 @@ typedef struct connection_s {
 /**
  * Is a connection active (in any state)?
  */
-#define CXN_ACTIVE(cxn) ((cxn)->active)
+#define CXN_ACTIVE(cxn) ((cxn) && (cxn)->active)
 
 /**
  * Is connection marked local
  */
-#define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local) 
+#define CXN_LOCAL(cxn) ((cxn) && (cxn)->controller->config_params.local)
 
 /**
  * Is connection marked listen
  */
-#define CXN_LISTEN(cxn) ((cxn)->controller->config_params.listen) 
+#define CXN_LISTEN(cxn) ((cxn) && (cxn)->controller->config_params.listen)
 
 /**
  * Is a controller active 
