@@ -1901,3 +1901,22 @@ indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
      * frees */
 #endif
 }
+
+void
+indigo_cxn_pause(indigo_cxn_id_t cxn_id)
+{
+    AIM_ASSERT(CXN_ID_ACTIVE(cxn_id));
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_pause(cxn);
+    }
+}
+
+void
+indigo_cxn_resume(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_resume(cxn);
+    }
+}

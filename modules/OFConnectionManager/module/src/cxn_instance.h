@@ -166,6 +166,9 @@ typedef struct connection_s {
 
     /* Pointer to the Controller clock to which this connection belongs */
     controller_t *controller;
+
+    /* If set, don't read any messages for this connection */
+    bool paused;
 } connection_t;
 
 /**
@@ -300,6 +303,9 @@ extern int ind_cxn_process_read_buffer(connection_t *cxn);
 
 void ind_cxn_block_barrier(connection_t *cxn);
 void ind_cxn_unblock_barrier(connection_t *cxn);
+
+void ind_cxn_pause(connection_t *cxn);
+void ind_cxn_resume(connection_t *cxn);
 
 #if 0 /* TBD */
 /**

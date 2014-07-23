@@ -575,9 +575,7 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
     LOG_TRACE(cxn, "Outstanding op count %d", cxn->outstanding_op_cnt);
 
     /* Pause the socket and mark a barrier is pending */
-    if (ind_soc_data_in_pause(cxn->sd) < 0) {
-        LOG_ERROR(cxn, "Error pausing soc read on barrier request");
-    }
+    ind_cxn_pause(cxn);
     cxn->barrier.pendingf = 1;
 
     return (INDIGO_ERROR_NONE);
@@ -928,7 +926,7 @@ ind_cxn_unblock_barrier(connection_t *cxn)
             LOG_TRACE(cxn, "Op count 0, sending barrier reply");
             send_barrier_reply(cxn);
             cxn->barrier.pendingf = 0;
-            (void)ind_soc_data_in_resume(cxn->sd);
+            ind_cxn_resume(cxn);
         }
     }
 }
@@ -1098,7 +1096,7 @@ read_message(connection_t *cxn)
     int rv = INDIGO_ERROR_NONE;
 
     /* Break out of message processing loop after a barrier */
-    if (cxn->barrier.pendingf) {
+    if (cxn->paused) {
         return INDIGO_ERROR_PENDING;
     }
 
@@ -1617,6 +1615,7 @@ ind_cxn_disconnected_init(connection_t *cxn)
     cxn->status.messages_out = 0;
     cxn->fail_count = 0;
     cxn->hello_time = 0;
+    cxn->paused = false;
 }
 
 /**
@@ -1711,4 +1710,23 @@ ind_cxn_unregister_debug_counters(connection_t *cxn)
         debug_counter_unregister(counter);
         aim_free(name);
     }
+}
+
+void
+ind_cxn_pause(connection_t *cxn)
+{
+    AIM_ASSERT(!cxn->paused);
+    if (ind_soc_data_in_pause(cxn->sd) < 0) {
+        LOG_ERROR(cxn, "Error pausing connection");
+        return;
+    }
+    cxn->paused = true;
+}
+
+void
+ind_cxn_resume(connection_t *cxn)
+{
+    AIM_ASSERT(cxn->paused);
+    (void)ind_soc_data_in_resume(cxn->sd);
+    cxn->paused = false;
 }
