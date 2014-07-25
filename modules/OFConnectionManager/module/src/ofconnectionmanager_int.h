@@ -154,6 +154,9 @@ extern void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
 extern const struct ind_cfg_ops ind_cxn_cfg_ops;
 
+/* Run all barrier notify callbacks */
+void ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id);
+
 #include <OFConnectionManager/ofconnectionmanager.h>
 
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */
