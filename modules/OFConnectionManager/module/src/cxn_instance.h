@@ -155,9 +155,6 @@ typedef struct connection_s {
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
 
-    /* To detect object staleness */
-    uint32_t generation_id;
-
     /* Used by the bsn_time_request message handler */
     indigo_time_t hello_time;
 

@@ -112,7 +112,6 @@ cleanup_disconnect(connection_t *cxn)
     cxn->sd = -1;
 
     /* Increment the generation ID for this connection */
-    cxn->generation_id++;
     cxn->cxn_id += (1 << CXN_ID_GENERATION_SHIFT);
     cxn->controller->aux_id_to_cxn_id[cxn->auxiliary_id] = cxn->cxn_id;
 
