@@ -96,8 +96,8 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
  */
 static controller_t controllers[MAX_CONTROLLERS];
 
-#define CXN_ID_ACTIVE(cxn_id) CXN_ACTIVE(&connection[cxn_id])
-#define CXN_ID_TCP_CONNECTED(cxn_id) CXN_TCP_CONNECTED(&connection[cxn_id])
+#define CXN_ID_ACTIVE(cxn_id) CXN_ACTIVE(CXN_ID_TO_CONNECTION(cxn_id))
+#define CXN_ID_TCP_CONNECTED(cxn_id) CXN_TCP_CONNECTED(CXN_ID_TO_CONNECTION(cxn_id))
 
 #if 0
 /**
@@ -122,36 +122,30 @@ static int preferred_cxn_id = -1;
  * Connection instance bookkeeping
  ****************************************************************/
 #define CXN_ID_VALID(cxn_id)                                        \
-    (((cxn_id) >= 0) && ((cxn_id) < MAX_CONTROLLER_CONNECTIONS))
+    (((cxn_id) >= 0) && (CXN_ID_TO_INDEX(cxn_id) < MAX_CONTROLLER_CONNECTIONS))
 
 #define CXN_TO_CXN_ID(cxn) ((cxn)->cxn_id)
 
-#define ACTIVE_ENTRY(cxn_id)                                \
-    (CXN_ID_VALID(cxn_id) && (connection[cxn_id].active))
-
-#define TCP_CONNECTED_ENTRY(cxn_id)                                     \
-    (ACTIVE_ENTRY(cxn_id) && (CXN_TCP_CONNECTED(&connection[cxn_id])))
-
 /* Includes local connection */
-#define FOREACH_ACTIVE_CXN(cxn_id, cxn)                                 \
-    for (cxn_id = 0, cxn = &connection[0];                              \
-         cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
-         ++cxn_id, cxn = &connection[cxn_id])                           \
+#define FOREACH_ACTIVE_CXN(idx, cxn)                                    \
+    for (idx = 0, cxn = &connection[0];                                 \
+         idx < MAX_CONTROLLER_CONNECTIONS;                              \
+         ++idx, cxn = &connection[idx])                                 \
         if (CXN_ACTIVE(cxn))
 
 /* Only remote connections */
-#define FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn)                          \
-    for (cxn_id = 0, cxn = &connection[0];                              \
-         cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
-         ++cxn_id, cxn = &connection[cxn_id])                           \
+#define FOREACH_REMOTE_ACTIVE_CXN(idx, cxn)                             \
+    for (idx = 0, cxn = &connection[0];                                 \
+         idx < MAX_CONTROLLER_CONNECTIONS;                              \
+         ++idx, cxn = &connection[idx])                                 \
         if (CXN_ACTIVE(cxn) && !CXN_LOCAL(cxn))
 
 /* All remote main connections which completed hand-shake and with 
  * requested role */
-#define FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, cxn_role)   \
-    for (cxn_id = 0, cxn = &connection[0];                              \
-         cxn_id < MAX_CONTROLLER_CONNECTIONS;                           \
-         ++cxn_id, cxn = &connection[cxn_id])                           \
+#define FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, cxn_role)      \
+    for (idx = 0, cxn = &connection[0];                                 \
+         idx < MAX_CONTROLLER_CONNECTIONS;                              \
+         ++idx, cxn = &connection[idx])                                 \
         if (CXN_ACTIVE(cxn) && !CXN_LOCAL(cxn) &&                       \
             (cxn->auxiliary_id == 0) &&                                 \
             (cxn->controller->role == cxn_role) &&                      \
@@ -161,7 +155,18 @@ static int preferred_cxn_id = -1;
  * Convert connection ID to pointer to cxn block
  */
 
-#define CXN_ID_TO_CONNECTION(cxn_id) (&connection[cxn_id])
+#define CXN_ID_TO_CONNECTION(cxn_id) cxn_id_to_connection(cxn_id)
+
+static connection_t *
+cxn_id_to_connection(indigo_cxn_id_t cxn_id)
+{
+    AIM_ASSERT(CXN_ID_TO_INDEX(cxn_id) < MAX_CONTROLLER_CONNECTIONS, "invalid connection ID");
+    connection_t *cxn = &connection[CXN_ID_TO_INDEX(cxn_id)];
+    if (cxn->cxn_id != cxn_id) {
+        return NULL;
+    }
+    return cxn;
+}
 
 /****************************************************************
  * Controller instance bookkeeping
@@ -190,57 +195,6 @@ static int preferred_cxn_id = -1;
  */
 
 #define ID_TO_CONTROLLER(id) (&controllers[id])
-
-/**
- * Connection cookies
- *
- * Long running tasks may hold dangling references to connections that have
- * been disconnected after the request was received. This is especially
- * a problem for barrier blockers. The fix is to include a generation ID
- * along with the connection ID.
- *
- * FIXME The connection ID used for sending messages does not have this
- * protection. We should add the generation ID to all connection IDs and
- * get rid of this separate cookie.
- *
- * Special care is taken to make sure valid cookies are not equal to NULL.
- */
-
-#define GEN_ID_SHIFT 16
-#define GEN_ID_MASK 0xffff
-#define CXN_ID_MASK 0xffff
-
-void *cxn_to_cookie(connection_t *cxn)
-{
-    void *cookie;
-    if (CXN_ACTIVE(cxn)) {
-        cookie = (void *)
-            ((uintptr_t)
-             (((cxn->generation_id & GEN_ID_MASK) << GEN_ID_SHIFT) |
-              (cxn->cxn_id & CXN_ID_MASK)) + 1 /* Ensure no NULLs */);
-    } else {
-        cookie = NULL;
-    }
-    return cookie;
-}
-
-connection_t* cookie_to_cxn(void* cookie)
-{
-    uintptr_t val = (uintptr_t) cookie - 1 /* Reverse "ensure no NULLs" */;
-    uint32_t gen_id = (val >> GEN_ID_SHIFT) & GEN_ID_MASK;
-    indigo_cxn_id_t cxn_id = val & CXN_ID_MASK;
-
-    if (ACTIVE_ENTRY(cxn_id)) {
-        connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
-        if ((cxn->generation_id & GEN_ID_MASK) == gen_id) {
-            return cxn;
-        } else {
-            return NULL;
-        }
-    } else {
-        return NULL;
-    }
-}
 
 
 /**
@@ -473,7 +427,7 @@ module_init(void)
         controllers[idx].controller_id = (indigo_controller_id_t)idx;
     }
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
-        connection[idx].cxn_id = (indigo_cxn_id_t)idx;
+        connection[idx].cxn_id = (indigo_cxn_id_t)idx; /* Zero generation ID */
         connection[idx].write_queue = bigring_create(WRITE_QUEUE_SIZE, NULL);
     }
 
@@ -491,7 +445,7 @@ find_free_connection(void) {
     int idx;
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
         if (!connection[idx].active) {
-            return (indigo_cxn_id_t)idx;
+            return connection[idx].cxn_id;
         }
     }
 
@@ -702,14 +656,14 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 
     LOG_INFO("Connection remove: " CXN_FMT, CXN_FMT_ARGS(CXN_ID_TO_CONNECTION(cxn_id)));
 
-    if (CONNECTION_STATE(&connection[cxn_id]) != INDIGO_CXN_S_DISCONNECTED) {
-        connection[cxn_id].flags |= CXN_TO_BE_REMOVED;
-        ind_cxn_disconnect(&connection[cxn_id]);
+    connection_t *cxn = cxn_id_to_connection(cxn_id);
+    if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
+        cxn->flags |= CXN_TO_BE_REMOVED;
+        ind_cxn_disconnect(cxn);
     } else {
-        ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer,
-                                       &connection[cxn_id]);
-        ind_cxn_disconnect(&connection[cxn_id]);
-        connection[cxn_id].active = 0;
+        ind_soc_timer_event_unregister(ind_cxn_connection_retry_timer, cxn);
+        ind_cxn_disconnect(cxn);
+        cxn->active = 0;
     }
 
     /* @fixme If no connections active, turn off periodic timeout */
@@ -952,7 +906,9 @@ indigo_cxn_connection_status_get(
         return INDIGO_ERROR_PARAM;
     }
 
-    INDIGO_MEM_COPY(status, &connection[cxn_id].status, sizeof(*status));
+    connection_t *cxn = cxn_id_to_connection(cxn_id);
+
+    INDIGO_MEM_COPY(status, &cxn->status, sizeof(*status));
 
     return INDIGO_ERROR_NONE;
 }
@@ -1015,10 +971,10 @@ ind_controller_change_master(indigo_controller_id_t master_id)
 void
 ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 {
-    indigo_cxn_id_t cxn_id;
+    int idx;
     connection_t *cxn;
     indigo_cxn_protocol_params_t *protocol_params; 
-    FOREACH_REMOTE_ACTIVE_CXN(cxn_id, cxn) {
+    FOREACH_REMOTE_ACTIVE_CXN(idx, cxn) {
         of_bsn_controller_connection_t entry;
         of_desc_str_t uri;
         uint32_t role;
@@ -1626,11 +1582,11 @@ indigo_error_t
 ind_cxn_message_trace(indigo_cxn_id_t cxn_id, aim_pvs_t* pvs)
 {
     connection_t *cxn;
-    indigo_cxn_id_t _cxn_id;
-    FOREACH_ACTIVE_CXN(_cxn_id, cxn) {
-        if(cxn_id == -1 || cxn_id == _cxn_id) {
+    int idx;
+    FOREACH_ACTIVE_CXN(idx, cxn) {
+        if(cxn_id == -1 || cxn_id == cxn->cxn_id) {
             cxn->trace_pvs = pvs;
-            if(cxn_id == _cxn_id) {
+            if(cxn_id == cxn->cxn_id) {
                 break;
             }
         }
@@ -1674,11 +1630,11 @@ indigo_error_t
 indigo_cxn_list(indigo_cxn_info_t** list)
 {
     indigo_cxn_info_t* head = NULL;
-    indigo_cxn_id_t cxn_id;
+    int idx;
     connection_t *cxn;
-    FOREACH_ACTIVE_CXN(cxn_id, cxn) {
+    FOREACH_ACTIVE_CXN(idx, cxn) {
         indigo_cxn_info_t* entry = aim_malloc(sizeof(*entry));
-        entry->cxn_id = cxn_id;
+        entry->cxn_id = cxn->cxn_id;
         entry->cxn_status = cxn->status;
         entry->cxn_proto_params = cxn->controller->protocol_params;
         entry->cxn_config_params = cxn->controller->config_params;
@@ -1733,9 +1689,9 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
 void
 ind_cxn_stats_show(aim_pvs_t *pvs, int details)
 {
-    indigo_cxn_id_t cxn_id;
     connection_t *cxn;
     int idx;
+    int cxn_idx;
     int cxn_count = 0;
     uint64_t counter;
 
@@ -1749,13 +1705,13 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    ind_cxn_internal_errors);
     }
 
-    FOREACH_ACTIVE_CXN(cxn_id, cxn) {
+    FOREACH_ACTIVE_CXN(cxn_idx, cxn) {
         cxn_count++;
         aim_printf(pvs, "Stats for%s%s connection " CXN_FMT ":\n",
                    CXN_LOCAL(cxn) ? " local" : "",
                    CXN_LISTEN(cxn) ? " listening" : "",
                    CXN_FMT_ARGS(cxn));
-        aim_printf(pvs, "    Id: %d.\n", cxn_id);
+        aim_printf(pvs, "    Id: %d.\n", cxn->cxn_id);
         aim_printf(pvs, "    Auxiliary Id: %d.\n", cxn->auxiliary_id);
         aim_printf(pvs, "    Controller Id: %d.\n", 
                    cxn->controller->controller_id);
@@ -1814,29 +1770,29 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
 indigo_error_t
 indigo_cxn_get_async_version(of_version_t* of_version)
 {
-    indigo_cxn_id_t cxn_id;
+    int idx;
     connection_t *cxn;
 
     /* See if there is any connection with role as MASTER */
-    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_MASTER) {
+    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, INDIGO_CXN_R_MASTER) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
     /* See if there is any connection with role as EQUAL */
-    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_EQUAL) {
+    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, INDIGO_CXN_R_EQUAL) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
     /* See if there is any connection with role as SLAVE */
-    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_SLAVE) {
+    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, INDIGO_CXN_R_SLAVE) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
 
     /* See if there is any connection with role as UNKNOWN, e.g. oftest */
-    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(cxn_id, cxn, INDIGO_CXN_R_UNKNOWN) {
+    FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, INDIGO_CXN_R_UNKNOWN) {
         *of_version = cxn->status.negotiated_version;
         return INDIGO_ERROR_NONE;
     }
@@ -1883,7 +1839,10 @@ ind_controller_disconnect(controller_t *ctrl)
 
     ind_aux_connection_remove(ctrl, 0);   
 
-    ind_cxn_disconnect(CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0])); 
+    connection_t *main_cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]);
+    if (main_cxn != NULL) {
+        ind_cxn_disconnect(main_cxn);
+    }
 
     if (ctrl->ephemeral) {
         ctrl->active = 0;
@@ -1914,10 +1873,9 @@ indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *b
     if (CXN_ID_VALID(cxn_id)) {
         connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
         ind_cxn_block_barrier(cxn);
-        blocker->cookie = cxn_to_cookie(cxn);
-        INDIGO_ASSERT(blocker->cookie != NULL);
+        blocker->cxn_id = cxn_id;
     } else {
-        blocker->cookie = NULL;
+        blocker->cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
     }
 
 #ifndef NDEBUG
@@ -1928,12 +1886,12 @@ indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *b
 void
 indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
 {
-    if (blocker->cookie != NULL) {
-        connection_t *cxn = cookie_to_cxn(blocker->cookie);
+    if (CXN_ID_VALID(blocker->cxn_id)) {
+        connection_t *cxn = CXN_ID_TO_CONNECTION(blocker->cxn_id);
         if (cxn != NULL) {
             ind_cxn_unblock_barrier(cxn);
         }
-        blocker->cookie = NULL;
+        blocker->cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
     }
 
 #ifndef NDEBUG
@@ -1942,4 +1900,23 @@ indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
     /* Deliberately leave blocker->tracker as is to let valgrind catch double
      * frees */
 #endif
+}
+
+void
+indigo_cxn_pause(indigo_cxn_id_t cxn_id)
+{
+    AIM_ASSERT(CXN_ID_ACTIVE(cxn_id));
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_pause(cxn);
+    }
+}
+
+void
+indigo_cxn_resume(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_resume(cxn);
+    }
 }

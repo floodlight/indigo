@@ -78,6 +78,16 @@
  */
 #define MAX_AUX_CONNECTIONS 8       
 
+/**
+ * The connection ID is split into two fields. The lower 16 bits are the index
+ * of the connection in the connection array. The upper 16 bits are a
+ * generation ID. Each time the connection disconnects, the generation ID is
+ * incremented. Because we compare the connection IDs when doing a lookup,
+ * we will fail attempts to use a stale connection ID.
+ */
+#define CXN_ID_GENERATION_SHIFT 16
+#define CXN_ID_TO_INDEX(cxn_id) ((cxn_id) & ((1<<CXN_ID_GENERATION_SHIFT)-1))
+
 /* Controller control block */
 typedef struct controller_s {
     indigo_cxn_protocol_params_t protocol_params;
@@ -145,9 +155,6 @@ typedef struct connection_s {
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
 
-    /* To detect object staleness */
-    uint32_t generation_id;
-
     /* Used by the bsn_time_request message handler */
     indigo_time_t hello_time;
 
@@ -156,6 +163,9 @@ typedef struct connection_s {
 
     /* Pointer to the Controller clock to which this connection belongs */
     controller_t *controller;
+
+    /* If set, don't read any messages for this connection */
+    bool paused;
 } connection_t;
 
 /**
@@ -168,17 +178,17 @@ typedef struct connection_s {
 /**
  * Is a connection active (in any state)?
  */
-#define CXN_ACTIVE(cxn) ((cxn)->active)
+#define CXN_ACTIVE(cxn) ((cxn) && (cxn)->active)
 
 /**
  * Is connection marked local
  */
-#define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local) 
+#define CXN_LOCAL(cxn) ((cxn) && (cxn)->controller->config_params.local)
 
 /**
  * Is connection marked listen
  */
-#define CXN_LISTEN(cxn) ((cxn)->controller->config_params.listen) 
+#define CXN_LISTEN(cxn) ((cxn) && (cxn)->controller->config_params.listen)
 
 /**
  * Is a controller active 
@@ -290,6 +300,9 @@ extern int ind_cxn_process_read_buffer(connection_t *cxn);
 
 void ind_cxn_block_barrier(connection_t *cxn);
 void ind_cxn_unblock_barrier(connection_t *cxn);
+
+void ind_cxn_pause(connection_t *cxn);
+void ind_cxn_resume(connection_t *cxn);
 
 #if 0 /* TBD */
 /**

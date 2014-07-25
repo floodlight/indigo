@@ -312,7 +312,6 @@ struct ind_core_gentable_clear_state {
     indigo_cxn_id_t cxn_id;
     of_version_t version;
     uint32_t xid;
-    indigo_cxn_barrier_blocker_t blocker;
     uint32_t error_count;
     uint32_t deleted_count;
 };
@@ -337,7 +336,7 @@ clear_iter(void *cookie, indigo_core_gentable_t *gentable,
         of_bsn_gentable_clear_reply_error_count_set(reply, state->error_count);
         indigo_cxn_send_controller_message(state->cxn_id, reply);
 
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(state->cxn_id);
         aim_free(state);
     }
 }
@@ -370,14 +369,14 @@ ind_core_bsn_gentable_clear_request_handler(
     state->cxn_id = cxn_id;
     state->version = obj->version;
     of_bsn_gentable_clear_request_xid_get(obj, &state->xid);
-    indigo_cxn_block_barrier(cxn_id, &state->blocker);
+    indigo_cxn_pause(cxn_id);
 
     rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(cxn_id);
         aim_free(state);
     }
 }
@@ -465,7 +464,6 @@ struct ind_core_gentable_entry_stats_state {
     indigo_cxn_id_t cxn_id;
     of_version_t version;
     uint32_t xid;
-    indigo_cxn_barrier_blocker_t blocker;
     of_object_t *reply;
 };
 
@@ -505,7 +503,7 @@ entry_stats_iter(void *cookie, indigo_core_gentable_t *gentable,
         of_object_delete(stats_entry);
     } else {
         indigo_cxn_send_controller_message(state->cxn_id, state->reply);
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(state->cxn_id);
         aim_free(state);
     }
 }
@@ -545,15 +543,15 @@ ind_core_bsn_gentable_entry_stats_request_handler(
     state->cxn_id = cxn_id;
     state->version = obj->version;
     state->xid = xid;
-    indigo_cxn_block_barrier(cxn_id, &state->blocker);
     state->reply = reply;
+    indigo_cxn_pause(cxn_id);
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_stats_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(cxn_id);
         of_object_delete(state->reply);
         aim_free(state);
     }
@@ -563,7 +561,6 @@ struct ind_core_gentable_entry_desc_stats_state {
     indigo_cxn_id_t cxn_id;
     of_version_t version;
     uint32_t xid;
-    indigo_cxn_barrier_blocker_t blocker;
     of_object_t *reply;
 };
 
@@ -601,7 +598,7 @@ entry_desc_stats_iter(void *cookie, indigo_core_gentable_t *gentable,
         of_object_delete(stats_entry);
     } else {
         indigo_cxn_send_controller_message(state->cxn_id, state->reply);
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(state->cxn_id);
         aim_free(state);
     }
 }
@@ -641,15 +638,15 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     state->cxn_id = cxn_id;
     state->version = obj->version;
     state->xid = xid;
-    indigo_cxn_block_barrier(cxn_id, &state->blocker);
     state->reply = reply;
+    indigo_cxn_pause(cxn_id);
 
     rv = ind_core_gentable_spawn_iter_task(gentable, entry_desc_stats_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
         AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
-        indigo_cxn_unblock_barrier(&state->blocker);
+        indigo_cxn_resume(cxn_id);
         of_object_delete(state->reply);
         aim_free(state);
     }

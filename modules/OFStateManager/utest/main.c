@@ -241,6 +241,20 @@ indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
     outstanding_op_cnt--;
 }
 
+void
+indigo_cxn_pause(indigo_cxn_id_t cxn_id)
+{
+    assert(outstanding_op_cnt >= 0);
+    outstanding_op_cnt++;
+}
+
+void
+indigo_cxn_resume(indigo_cxn_id_t cxn_id)
+{
+    assert(outstanding_op_cnt > 0);
+    outstanding_op_cnt--;
+}
+
 indigo_error_t
 indigo_port_modify(of_port_mod_t *port_mod)
 {

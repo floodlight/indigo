@@ -494,7 +494,7 @@ void indigo_cxn_async_channel_selector_unregister(
  */
 
 typedef struct indigo_cxn_barrier_blocker_s {
-    void *cookie;
+    indigo_cxn_id_t cxn_id;
 #ifndef NDEBUG
     void *tracker;
 #endif
@@ -512,6 +512,24 @@ void indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker
  * @param blocker Previously created by indigo_cxn_block_barrier
  */
 void indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker);
+
+/**
+ * @brief Pause reading messages from a connection
+ * @param cxn_id Connection ID
+ *
+ * We handle messages that require more than a small amount of CPU time
+ * asynchronously. Each of these long-running tasks consumes some resources,
+ * so we don't want to run more than a small constant number in parallel.
+ * OFStateManager will use this interface to pause reading messages from the
+ * connection requesting a long-running task until the task completes.
+ */
+void indigo_cxn_pause(indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Resume reading messages from a connection
+ * @param cxn_id Connection ID
+ */
+void indigo_cxn_resume(indigo_cxn_id_t cxn_id);
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */
