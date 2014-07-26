@@ -391,15 +391,22 @@ ft_iter_task_callback(void *cookie)
     struct ft_iter_task_state *state = cookie;
 
     do {
-        ft_entry_t *entry = ft_iterator_next(&state->iter);
-        if (entry == NULL) {
-            /* Finished */
-            state->callback(state->cookie, NULL);
-            ft_iterator_cleanup(&state->iter);
-            aim_free(state);
-            return IND_SOC_TASK_FINISHED;
-        } else {
-            state->callback(state->cookie, entry);
+        /*
+         * ind_soc_should_yield() is expensive and our work per entry is small,
+         * so process many entries between checking if we should yield.
+         */
+        int i;
+        for (i = 0; i < 32; i++) {
+            ft_entry_t *entry = ft_iterator_next(&state->iter);
+            if (entry == NULL) {
+                /* Finished */
+                state->callback(state->cookie, NULL);
+                ft_iterator_cleanup(&state->iter);
+                aim_free(state);
+                return IND_SOC_TASK_FINISHED;
+            } else {
+                state->callback(state->cookie, entry);
+            }
         }
     } while (!ind_soc_should_yield());
 
