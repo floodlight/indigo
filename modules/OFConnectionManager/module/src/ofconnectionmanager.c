@@ -1920,3 +1920,67 @@ indigo_cxn_resume(indigo_cxn_id_t cxn_id)
         ind_cxn_resume(cxn);
     }
 }
+
+/****************************************************************
+ * Barrier notification callback bookkeeping
+ ****************************************************************/
+
+struct barrier_notify_callback {
+    indigo_cxn_barrier_notify_f callback;
+    void *cookie;
+};
+
+#define MAX_BARRIER_NOTIFY_CALLBACKS 4
+
+static struct barrier_notify_callback barrier_notify_callbacks[MAX_BARRIER_NOTIFY_CALLBACKS];
+
+void
+indigo_cxn_barrier_notify_register(
+    indigo_cxn_barrier_notify_f handler, void *cookie)
+{
+    int idx;
+
+    LOG_TRACE("Register barrier callback %p, cookie %p",
+              handler, cookie);
+    AIM_ASSERT(handler != NULL);
+    for (idx = 0; idx < MAX_BARRIER_NOTIFY_CALLBACKS; ++idx) {
+        struct barrier_notify_callback *cb = &barrier_notify_callbacks[idx];
+        if (cb->callback == NULL) {
+            cb->callback = handler;
+            cb->cookie = cookie;
+            return;
+        }
+    }
+
+    AIM_ASSERT(0, "Could not find free slot for barrier callback, consider increasing MAX_BARRIER_NOTIFY_CALLBACKS");
+}
+
+void
+indigo_cxn_barrier_notify_unregister(
+    indigo_cxn_barrier_notify_f handler, void *cookie)
+{
+    int idx;
+
+    LOG_TRACE("Unregister barrier callback %p, cookie %p",
+              handler, cookie);
+    for (idx = 0; idx < MAX_BARRIER_NOTIFY_CALLBACKS; ++idx) {
+        struct barrier_notify_callback *cb = &barrier_notify_callbacks[idx];
+        if ((cb->callback == handler) && (cb->cookie == cookie)) {
+            cb->callback = NULL;
+            cb->cookie = NULL;
+            return;
+        }
+    }
+}
+
+void
+ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id)
+{
+    int idx;
+    for (idx = 0; idx < MAX_BARRIER_NOTIFY_CALLBACKS; ++idx) {
+        struct barrier_notify_callback *cb = &barrier_notify_callbacks[idx];
+        if (cb->callback != NULL) {
+            cb->callback(cxn_id, cb->cookie);
+        }
+    }
+}

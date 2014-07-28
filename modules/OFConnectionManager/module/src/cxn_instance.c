@@ -577,6 +577,10 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
     ind_cxn_pause(cxn);
     cxn->barrier.pendingf = 1;
 
+    /* Notify other modules to finish their delayed processing and unblock the
+     * barrier */
+    ind_cxn_barrier_notify(cxn->cxn_id);
+
     return (INDIGO_ERROR_NONE);
 }
 

@@ -531,5 +531,39 @@ void indigo_cxn_pause(indigo_cxn_id_t cxn_id);
  */
 void indigo_cxn_resume(indigo_cxn_id_t cxn_id);
 
+/**
+ * Barrier notification callback
+ *
+ * @param cxn_id Connection ID where the barrier was received
+ * @param cookie Passed in on register
+ */
+
+typedef void (*indigo_cxn_barrier_notify_f)(
+    indigo_cxn_id_t              cxn_id,
+    void                         *cookie);
+
+/**
+ * Register a barrier notification handler
+ * @param handler The handler to register
+ * @param cookie Anonymous data passed back to handler
+ *
+ * Registered functions are called when any connection receives a barrier
+ * and barriers on that connection are currently blocked.
+ */
+void indigo_cxn_barrier_notify_register(
+    indigo_cxn_barrier_notify_f handler,
+    void *cookie);
+
+/**
+ * Unregister a barrier notification handler
+ * @param handler The handler to unregister
+ * @param cookie Cookie associated with handler
+ *
+ * The cookie is part of the lookup key
+ */
+void indigo_cxn_barrier_notify_unregister(
+    indigo_cxn_barrier_notify_f handler,
+    void *cookie);
+
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */
