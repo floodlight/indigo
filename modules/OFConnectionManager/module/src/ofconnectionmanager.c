@@ -542,6 +542,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     }
 
     cxn = CXN_ID_TO_CONNECTION(*cxn_id);
+    AIM_ASSERT(cxn != NULL);
+
     ctrl = ID_TO_CONTROLLER(controller_id);
 
     /* Initialize connection structure */
@@ -726,6 +728,8 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
     int idx;
     indigo_cxn_id_t cxn_id;
 
+    AIM_ASSERT(cxn != NULL);
+
     if (num_aux > MAX_AUX_CONNECTIONS) {
         LOG_ERROR("Requested aux %d is greater than supported %d",
                   num_aux, MAX_AUX_CONNECTIONS);
@@ -907,6 +911,7 @@ indigo_cxn_connection_status_get(
     }
 
     connection_t *cxn = cxn_id_to_connection(cxn_id);
+    AIM_ASSERT(cxn != NULL);
 
     INDIGO_MEM_COPY(status, &cxn->status, sizeof(*status));
 
