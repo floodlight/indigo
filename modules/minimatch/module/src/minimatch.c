@@ -133,6 +133,11 @@ minimatch_more_specific(const minimatch_t *a, const minimatch_t *b)
     int idx_a = 0, idx_b = 0;
     int i;
 
+    if (b->num_words == 0) {
+        /* B's mask is all zero, so A must be more specific */
+        return true;
+    }
+
     /*
      * For each match word, check that a's mask is at least as specific as b's
      * mask and that a and b agree on the fields where b's mask is set.
