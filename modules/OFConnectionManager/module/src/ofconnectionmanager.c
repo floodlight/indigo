@@ -731,7 +731,7 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
     AIM_ASSERT(cxn != NULL);
 
     if (num_aux > MAX_AUX_CONNECTIONS) {
-        LOG_ERROR("Requested aux %d is greater than supported %d",
+        LOG_ERROR("Requested number of auxiliary connections %d is greater than supported %d",
                   num_aux, MAX_AUX_CONNECTIONS);
         return 1;
     }
@@ -770,7 +770,7 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
             cxn->controller->aux_id_to_cxn_id[idx] = cxn_id;
         }
 
-        LOG_INFO("Aux cxn's for controller " CXN_FMT ", changed from %d to %d", 
+        LOG_INFO("Number of auxiliary connections for controller " CXN_FMT " changed from %d to %d",
                  CXN_FMT_ARGS(cxn), cxn->controller->num_aux, num_aux);
         cxn->controller->num_aux = num_aux; 
     }
@@ -1081,7 +1081,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!CXN_TCP_CONNECTED(cxn)) {
-        LOG_ERROR("Connection id %d is not connected", cxn_id);
+        LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_FMT,
+                    of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
         goto done;
     }
 
@@ -1124,7 +1125,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     debug_counter_inc(&cxn->tx_counters[obj->object_id]);
 
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
-        LOG_ERROR("Could not enqueue message data, disconnecting");
+        LOG_ERROR("Could not enqueue %s message data to cxn " CXN_FMT ", disconnecting",
+                  of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
         aim_free(data);
         ind_controller_disconnect(cxn->controller);
     }
