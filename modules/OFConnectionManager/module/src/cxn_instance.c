@@ -461,10 +461,12 @@ periodic_keepalive(void *cookie)
 
     if (cxn->keepalive.outstanding_echo_cnt > cxn->keepalive.threshold) {
         if (cxn->auxiliary_id == 0) {
-            LOG_INFO(cxn, "Exceeded outstanding echo requests. Resetting cxn");
+            LOG_INFO(cxn, "Exceeded maximum outstanding echo requests (%d) on main connection. Disconnecting.",
+                     cxn->keepalive.threshold);
             ind_controller_disconnect(cxn->controller);
         } else {
-            LOG_WARN(cxn, "Exceeded outstanding echo requests.");
+            LOG_WARN(cxn, "Exceeded maximum outstanding echo requests (%d) on auxiliary connection.",
+                     cxn->keepalive.threshold);
         } 
         return;
     }
@@ -1222,7 +1224,11 @@ process_message(connection_t *cxn)
 
     obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
-        LOG_ERROR(cxn, "Could not parse msg to OF object, len %d", len);
+        LOG_ERROR(cxn, "Failed to parse OpenFlow message version=%u type=%u length=%u xid=%u",
+                  of_message_version_get(cxn->read_buffer),
+                  of_message_type_get(cxn->read_buffer),
+                  of_message_length_get(cxn->read_buffer),
+                  of_message_xid_get(cxn->read_buffer));
         send_parse_error_message(cxn, cxn->read_buffer, len);
         return;
     }
@@ -1443,11 +1449,14 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
 
     /* See notes about WRITE_BUFFER_SIZE in cxn_instance.h */
     if (len > CXN_WRITE_BYTES_AVAIL(cxn)) {
+        LOG_ERROR(cxn, "Dropping message due to full write buffer (%d bytes in %d messages enqueued)",
+                  cxn->bytes_enqueued, cxn->pkts_enqueued);
         return INDIGO_ERROR_RESOURCE;
     }
 
     /* Verify that the length is what is reported by the OF msg */
     msg_len = of_message_length_get(data);
+    AIM_ASSERT(len == msg_len, "Inconsistent message length");
     if (len != msg_len) {
         LOG_ERROR(cxn, "Error in message length: %d != %d, discarding",
                   len, msg_len);
@@ -1457,7 +1466,8 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     if (bigring_count(cxn->write_queue) < bigring_size(cxn->write_queue)) {
         bigring_push(cxn->write_queue, data);
     } else {
-        LOG_TRACE(cxn, "Dropping message due to full ringbuffer");
+        LOG_ERROR(cxn, "Dropping message due to full ringbuffer (%d bytes in %d messages enqueued)",
+                  cxn->bytes_enqueued, cxn->pkts_enqueued);
         return INDIGO_ERROR_RESOURCE;
     }
 
