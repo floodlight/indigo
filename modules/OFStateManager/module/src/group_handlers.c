@@ -93,7 +93,11 @@ ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id, uint1
 
     ind_core_group_table_t *table = group_table_for_id(group->id);
     if (table) {
-        table->ops->entry_delete(table->priv, cxn_id, group->priv);
+        indigo_error_t rv = table->ops->entry_delete(table->priv, cxn_id, group->priv);
+        if (rv < 0) {
+            *err_code = OF_GROUP_MOD_FAILED_EPERM;
+            return rv;
+        }
     } else {
         indigo_fwd_group_delete(group->id);
     }
