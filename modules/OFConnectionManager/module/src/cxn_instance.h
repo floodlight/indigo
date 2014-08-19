@@ -178,17 +178,17 @@ typedef struct connection_s {
 /**
  * Is a connection active (in any state)?
  */
-#define CXN_ACTIVE(cxn) ((cxn) && (cxn)->active)
+#define CXN_ACTIVE(cxn) ((cxn)->active)
 
 /**
  * Is connection marked local
  */
-#define CXN_LOCAL(cxn) ((cxn) && (cxn)->controller->config_params.local)
+#define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local)
 
 /**
  * Is connection marked listen
  */
-#define CXN_LISTEN(cxn) ((cxn) && (cxn)->controller->config_params.listen)
+#define CXN_LISTEN(cxn) ((cxn)->controller->config_params.listen)
 
 /**
  * Is a controller active 
