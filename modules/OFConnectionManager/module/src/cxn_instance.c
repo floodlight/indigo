@@ -1374,9 +1374,14 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         written = writev(cxn->sd, iovecs, num_iovecs);
 
         if (written < 0) {
-            /* Error writing to connection socket */
-            LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
-            return INDIGO_ERROR_UNKNOWN;
+            if (errno == EAGAIN) {
+                /* Socket buffer full and nothing was written */
+                written = 0;
+            } else {
+                /* Error writing to connection socket */
+                LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
+                return INDIGO_ERROR_UNKNOWN;
+            }
         }
 
         /*
