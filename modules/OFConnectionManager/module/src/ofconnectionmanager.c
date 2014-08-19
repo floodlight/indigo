@@ -1080,9 +1080,9 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!CXN_TCP_CONNECTED(cxn)) {
-        LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_FMT,
-                    of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
+    if (!cxn || !CXN_TCP_CONNECTED(cxn)) {
+        LOG_VERBOSE("Attempted to send %s message to disconnected connection",
+                    of_object_id_str[obj->object_id]);
         goto done;
     }
 
