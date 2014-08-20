@@ -1909,6 +1909,7 @@ void
 indigo_cxn_pause(indigo_cxn_id_t cxn_id)
 {
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    AIM_ASSERT(cxn != NULL);
     if (cxn != NULL) {
         ind_cxn_pause(cxn);
     }
