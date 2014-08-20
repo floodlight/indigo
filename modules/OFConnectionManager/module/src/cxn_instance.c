@@ -265,11 +265,15 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
     }
 
     if (!CXN_LOCAL(cxn)) {
-        LOG_INFO(cxn, "%s->%s", CXN_STATE_NAME(old_state),
-                 CXN_STATE_NAME(new_state));
+        LOG_INFO(cxn, "%s->%s (id "CXN_ID_FMT")",
+                 CXN_STATE_NAME(old_state),
+                 CXN_STATE_NAME(new_state),
+                 CXN_ID_FMT_ARGS(cxn->cxn_id));
     } else {
-        LOG_LOCAL(cxn, "%s->%s", CXN_STATE_NAME(old_state),
-                  CXN_STATE_NAME(new_state));
+        LOG_LOCAL(cxn, "%s->%s (id "CXN_ID_FMT")",
+                  CXN_STATE_NAME(old_state),
+                  CXN_STATE_NAME(new_state),
+                  CXN_ID_FMT_ARGS(cxn->cxn_id));
     }
 
     /****************************************************************
