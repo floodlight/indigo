@@ -96,19 +96,6 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
  */
 static controller_t controllers[MAX_CONTROLLERS];
 
-#define CXN_ID_ACTIVE(cxn_id) CXN_ACTIVE(CXN_ID_TO_CONNECTION(cxn_id))
-#define CXN_ID_TCP_CONNECTED(cxn_id) CXN_TCP_CONNECTED(CXN_ID_TO_CONNECTION(cxn_id))
-
-#if 0
-/**
- * Support one special local connection
- */
-static int local_cxn_id = -1;
-
-#define LOCAL_ACTIVE CXN_ID_ACTIVE(local_cxn_id)
-#define LOCAL_TCP_CONNECTED CXN_ID_TCP_CONNECTED(local_cxn_id)
-#endif
-
 /**
  * Preferred connection when UNSPECIFIED is used
  *
@@ -165,6 +152,7 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
     if (cxn->cxn_id != cxn_id) {
         return NULL;
     }
+    AIM_ASSERT(cxn->active);
     return cxn;
 }
 
@@ -440,16 +428,16 @@ module_init(void)
     return INDIGO_ERROR_NONE;
 }
 
-static indigo_cxn_id_t
+static connection_t *
 find_free_connection(void) {
     int idx;
     for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
         if (!connection[idx].active) {
-            return connection[idx].cxn_id;
+            return &connection[idx];
         }
     }
 
-    return INVALID_ID;
+    return NULL;
 }
 
 static indigo_controller_id_t
@@ -535,14 +523,13 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     connection_t *cxn;
     controller_t *ctrl;   
  
-    *cxn_id = find_free_connection();
-    if (INDIGO_CXN_INVALID(*cxn_id)) {
+    cxn = find_free_connection();
+    if (cxn == NULL) {
         LOG_ERROR("Could not allocate space for connection");
         return NULL;
     }
 
-    cxn = CXN_ID_TO_CONNECTION(*cxn_id);
-    AIM_ASSERT(cxn != NULL);
+    *cxn_id = cxn->cxn_id;
 
     ctrl = ID_TO_CONTROLLER(controller_id);
 
@@ -651,14 +638,16 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
 static indigo_error_t
 ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 {
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
-        LOG_ERROR("Remove connection id %d invalid or not active", cxn_id);
-        return INDIGO_ERROR_PARAM;
+    connection_t *cxn = cxn_id_to_connection(cxn_id);
+
+    if (!cxn) {
+        LOG_ERROR("Attempted to remove nonexistent connection " CXN_ID_FMT,
+                  CXN_ID_FMT_ARGS(cxn_id));
+        return INDIGO_ERROR_NOT_FOUND;
     }
 
-    LOG_INFO("Connection remove: " CXN_FMT, CXN_FMT_ARGS(CXN_ID_TO_CONNECTION(cxn_id)));
+    LOG_INFO("Connection remove: " CXN_FMT, CXN_FMT_ARGS(cxn));
 
-    connection_t *cxn = cxn_id_to_connection(cxn_id);
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
         cxn->flags |= CXN_TO_BE_REMOVED;
         ind_cxn_disconnect(cxn);
@@ -884,14 +873,14 @@ indigo_cxn_connection_config_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_config_params_t *config)
 {
-    connection_t *cxn;
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
 
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
-        LOG_TRACE("Config_get id %d invalid or not active", cxn_id);
-        return INDIGO_ERROR_PARAM;
+    if (!cxn) {
+        LOG_WARN("Attempted to get config for nonexistent connection " CXN_ID_FMT,
+                 CXN_ID_FMT_ARGS(cxn_id));
+        return INDIGO_ERROR_NOT_FOUND;
     }
 
-    cxn = CXN_ID_TO_CONNECTION(cxn_id);
     INDIGO_ASSERT(cxn->controller != NULL);
 
     INDIGO_MEM_COPY(config, &cxn->controller->config_params, sizeof(*config)); 
@@ -905,13 +894,13 @@ indigo_cxn_connection_status_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_status_t *status)
 {
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
-        LOG_TRACE("Status_get id %d invalid or not active", cxn_id);
-        return INDIGO_ERROR_PARAM;
-    }
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
 
-    connection_t *cxn = cxn_id_to_connection(cxn_id);
-    AIM_ASSERT(cxn != NULL);
+    if (!cxn) {
+        LOG_WARN("Attempted to get status for nonexistent connection " CXN_ID_FMT,
+                 CXN_ID_FMT_ARGS(cxn_id));
+        return INDIGO_ERROR_NOT_FOUND;
+    }
 
     INDIGO_MEM_COPY(status, &cxn->status, sizeof(*status));
 
@@ -1080,9 +1069,9 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
-    if (!CXN_TCP_CONNECTED(cxn)) {
-        LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_FMT,
-                    of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
+    if (!cxn || !CXN_TCP_CONNECTED(cxn)) {
+        LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_ID_FMT,
+                    of_object_id_str[obj->object_id], CXN_ID_FMT_ARGS(cxn_id));
         goto done;
     }
 
@@ -1443,13 +1432,20 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
     of_octets_t payload;
     uint32_t xid;
 
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    if (cxn == NULL) {
+        LOG_ERROR("Attempted to send error message to nonexistent connection " CXN_ID_FMT,
+                  CXN_ID_FMT_ARGS(cxn_id));
+        return;
+    }
+
     payload.data = OF_OBJECT_BUFFER_INDEX(orig, 0);
     payload.bytes = orig->length;
 
     xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
 
     LOG_TRACE("Sending error msg to " CXN_FMT ". type %d. code %d.",
-              CXN_FMT_ARGS(CXN_ID_TO_CONNECTION(cxn_id)), type, code);
+              CXN_FMT_ARGS(cxn), type, code);
 
     if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
         LOG_ERROR("Could not allocate error message");
@@ -1673,7 +1669,7 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
         return;
     }
 
-    LOG_VERBOSE("Connection reset for id %d", cxn_id);
+    LOG_VERBOSE("Connection reset for id " CXN_ID_FMT, CXN_ID_FMT_ARGS(cxn_id));
     if (cxn_id == IND_CXN_RESET_ALL) {
         /* Iterate thru active controllers and reset all but listening */
         indigo_controller_id_t id;
@@ -1684,7 +1680,9 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
         }
     } else if (!INDIGO_CXN_INVALID(cxn_id)) {
         cxn = CXN_ID_TO_CONNECTION(cxn_id);
-        ind_cxn_disconnect(cxn);
+        if (cxn != NULL) {
+            ind_cxn_disconnect(cxn);
+        }
     }
 }
 
@@ -1817,16 +1815,18 @@ indigo_cxn_get_async_version(of_version_t* of_version)
 indigo_error_t
 indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 {
-    connection_t *cxn;
-
-    if (auxiliary_id == NULL) return INDIGO_ERROR_PARAM;
-
-    if (!CXN_ID_VALID(cxn_id) || !CXN_ID_ACTIVE(cxn_id)) {
-        LOG_ERROR("Connection id %d invalid or not active", cxn_id);
+    if (auxiliary_id == NULL) {
         return INDIGO_ERROR_PARAM;
     }
 
-    cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+
+    if (cxn == NULL) {
+        LOG_ERROR("Attempted to get auxiliary ID of nonexistent connection " CXN_ID_FMT,
+                  CXN_ID_FMT_ARGS(cxn_id));
+        return INDIGO_ERROR_NOT_FOUND;
+    }
+
     INDIGO_ASSERT(cxn->controller != NULL);
 
     *auxiliary_id = cxn->auxiliary_id;
@@ -1879,6 +1879,7 @@ indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *b
 {
     if (CXN_ID_VALID(cxn_id)) {
         connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+        AIM_ASSERT(cxn != NULL);
         ind_cxn_block_barrier(cxn);
         blocker->cxn_id = cxn_id;
     } else {
@@ -1912,8 +1913,8 @@ indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker)
 void
 indigo_cxn_pause(indigo_cxn_id_t cxn_id)
 {
-    AIM_ASSERT(CXN_ID_ACTIVE(cxn_id));
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
+    AIM_ASSERT(cxn != NULL);
     if (cxn != NULL) {
         ind_cxn_pause(cxn);
     }

@@ -87,6 +87,11 @@
  */
 #define CXN_ID_GENERATION_SHIFT 16
 #define CXN_ID_TO_INDEX(cxn_id) ((cxn_id) & ((1<<CXN_ID_GENERATION_SHIFT)-1))
+#define CXN_ID_TO_GENERATION(cxn_id) ((cxn_id) >> CXN_ID_GENERATION_SHIFT)
+
+/* Format a connection id as index:generation */
+#define CXN_ID_FMT "%u:%u"
+#define CXN_ID_FMT_ARGS(cxn_id) CXN_ID_TO_INDEX(cxn_id), CXN_ID_TO_GENERATION(cxn_id)
 
 /* Controller control block */
 typedef struct controller_s {
@@ -178,17 +183,17 @@ typedef struct connection_s {
 /**
  * Is a connection active (in any state)?
  */
-#define CXN_ACTIVE(cxn) ((cxn) && (cxn)->active)
+#define CXN_ACTIVE(cxn) ((cxn)->active)
 
 /**
  * Is connection marked local
  */
-#define CXN_LOCAL(cxn) ((cxn) && (cxn)->controller->config_params.local)
+#define CXN_LOCAL(cxn) ((cxn)->controller->config_params.local)
 
 /**
  * Is connection marked listen
  */
-#define CXN_LISTEN(cxn) ((cxn) && (cxn)->controller->config_params.listen)
+#define CXN_LISTEN(cxn) ((cxn)->controller->config_params.listen)
 
 /**
  * Is a controller active 

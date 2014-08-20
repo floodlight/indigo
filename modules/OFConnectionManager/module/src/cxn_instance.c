@@ -265,11 +265,15 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
     }
 
     if (!CXN_LOCAL(cxn)) {
-        LOG_INFO(cxn, "%s->%s", CXN_STATE_NAME(old_state),
-                 CXN_STATE_NAME(new_state));
+        LOG_INFO(cxn, "%s->%s (id "CXN_ID_FMT")",
+                 CXN_STATE_NAME(old_state),
+                 CXN_STATE_NAME(new_state),
+                 CXN_ID_FMT_ARGS(cxn->cxn_id));
     } else {
-        LOG_LOCAL(cxn, "%s->%s", CXN_STATE_NAME(old_state),
-                  CXN_STATE_NAME(new_state));
+        LOG_LOCAL(cxn, "%s->%s (id "CXN_ID_FMT")",
+                  CXN_STATE_NAME(old_state),
+                  CXN_STATE_NAME(new_state),
+                  CXN_ID_FMT_ARGS(cxn->cxn_id));
     }
 
     /****************************************************************
@@ -1374,9 +1378,14 @@ ind_cxn_process_write_buffer(connection_t *cxn)
         written = writev(cxn->sd, iovecs, num_iovecs);
 
         if (written < 0) {
-            /* Error writing to connection socket */
-            LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
-            return INDIGO_ERROR_UNKNOWN;
+            if (errno == EAGAIN) {
+                /* Socket buffer full and nothing was written */
+                written = 0;
+            } else {
+                /* Error writing to connection socket */
+                LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
+                return INDIGO_ERROR_UNKNOWN;
+            }
         }
 
         /*
