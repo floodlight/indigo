@@ -515,7 +515,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     int soc_flags;
     connection_t *cxn;
     controller_t *ctrl;   
- 
+    struct sockaddr_storage sockaddr;
+
     cxn = find_free_connection();
     if (cxn == NULL) {
         LOG_ERROR("Could not allocate space for connection");
@@ -540,9 +541,14 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 
     ind_cxn_disconnected_init(cxn);
 
+    /* Parsed the protocol params just to get the family */
+    if (ind_cxn_parse_sockaddr(&ctrl->protocol_params, &sockaddr) < 0) {
+        return NULL;
+    }
+
     if (sd < 0) {
         /* Attempt to create the socket */
-        cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
+        cxn->sd = socket(sockaddr.ss_family, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
             LOG_ERROR("Failed to create connection socket: %s", strerror(errno));
             return NULL;

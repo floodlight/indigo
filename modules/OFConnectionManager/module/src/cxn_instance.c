@@ -1546,11 +1546,17 @@ ind_cxn_try_to_connect(connection_t *cxn)
     protocol_params = get_connection_params(cxn);
     INDIGO_ASSERT(protocol_params != NULL);
 
+    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
+        close(cxn->sd);
+        cxn->sd = -1;
+        return -1;
+    }
+
     if (cxn->sd < 0) {
         /* Attempt to create the socket */
         int soc_flags;
 
-        cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
+        cxn->sd = socket(cxn_addr.ss_family, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
             LOG_ERROR(cxn, "Failed to create controller connection socket: %s",
                       strerror(errno));
@@ -1576,12 +1582,6 @@ ind_cxn_try_to_connect(connection_t *cxn)
     }
 
     LOG_TRACE(cxn, "Attempting to connect");
-
-    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
-        close(cxn->sd);
-        cxn->sd = -1;
-        return -1;
-    }
 
     rv = connect(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr));
     if (rv != 0 && errno == EISCONN) {
