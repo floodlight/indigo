@@ -68,6 +68,7 @@ cxn_status_change(indigo_cxn_id_t cxn_id,
 
 #define CONTROLLER_IP "127.0.0.1"
 #define CONTROLLER_IPV6 "::1"
+#define CONTROLLER_IPV6_LINKLOCAL "fe80::b00b:4cff:fe2f:1fe3%lo"
 #define CONTROLLER_PORT 12345
 
 /* Return connection ID */
@@ -99,6 +100,22 @@ setup_cxn_ipv6(void)
 
     protocol_params.tcp_over_ipv6.protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
     sprintf(protocol_params.tcp_over_ipv6.controller_ip, "%s", CONTROLLER_IPV6);
+    protocol_params.tcp_over_ipv6.controller_port = CONTROLLER_PORT;
+
+    OK(indigo_controller_add(&protocol_params, &config_params, &id));
+
+    return id;
+}
+
+static int
+setup_cxn_ipv6_linklocal(void)
+{
+    indigo_controller_id_t id;
+
+    config_params.version = OF_VERSION_1_0;
+
+    protocol_params.tcp_over_ipv6.protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
+    sprintf(protocol_params.tcp_over_ipv6.controller_ip, "%s", CONTROLLER_IPV6_LINKLOCAL);
     protocol_params.tcp_over_ipv6.controller_port = CONTROLLER_PORT;
 
     OK(indigo_controller_add(&protocol_params, &config_params, &id));
@@ -169,6 +186,7 @@ int main(int argc, char* argv[])
     OK(ind_cxn_enable_set(1));
     INDIGO_ASSERT((controller_id = setup_cxn()) >= 0);
     INDIGO_ASSERT(setup_cxn_ipv6() >= 0);
+    INDIGO_ASSERT(setup_cxn_ipv6_linklocal() >= 0);
 
     for (idx = 1; idx < 5; idx++) {
         printf("run %d\n", idx);

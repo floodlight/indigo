@@ -46,6 +46,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <sys/errno.h>
+#include <netdb.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -1993,35 +1994,54 @@ ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id)
     }
 }
 
+static indigo_error_t
+parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
+                           struct sockaddr_storage *sockaddr)
+{
+    char port_str[16];
+    snprintf(port_str, sizeof(port_str), "%u", port);
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
+    hints.ai_family = family;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = 0;
+
+    struct addrinfo *ai;
+    int ret;
+
+    if ((ret = getaddrinfo(addr, port_str, &hints, &ai)) < 0) {
+        LOG_ERROR("Could not convert %s:%d to an %s socket address: %s",
+                  addr, port,
+                  family == AF_INET ? "ipv4" : "ipv6",
+                  gai_strerror(ret));
+        return INDIGO_ERROR_PARAM;
+    }
+
+    memcpy(sockaddr, ai->ai_addr, ai->ai_addrlen);
+    freeaddrinfo(ai);
+    return INDIGO_ERROR_NONE;
+}
+
 indigo_error_t
 ind_cxn_parse_sockaddr(
     const indigo_cxn_protocol_params_t *protocol_params,
     struct sockaddr_storage *sockaddr)
 {
     switch (protocol_params->header.protocol) {
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV4: {
-        const indigo_cxn_params_tcp_over_ipv4_t *params = &protocol_params->tcp_over_ipv4;
-        struct sockaddr_in *sa = (struct sockaddr_in *)sockaddr;
-        sa->sin_family = AF_INET;
-        sa->sin_port = htons(params->controller_port);
-        if (inet_pton(AF_INET, params->controller_ip, &sa->sin_addr) != 1) {
-            LOG_ERROR("Could not convert %s to an ipv4 address",
-                      params->controller_ip);
-            return INDIGO_ERROR_PARAM;
-        }
-        break;
-    }
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        return parse_sockaddr_getaddrinfo(
+            AF_INET,
+            protocol_params->tcp_over_ipv4.controller_ip,
+            protocol_params->tcp_over_ipv4.controller_port,
+            sockaddr);
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6: {
-        const indigo_cxn_params_tcp_over_ipv6_t *params = &protocol_params->tcp_over_ipv6;
-        struct sockaddr_in *sa = (struct sockaddr_in *)sockaddr;
-        sa->sin_family = AF_INET;
-        sa->sin_port = htons(params->controller_port);
-        if (inet_pton(AF_INET6, params->controller_ip, &sa->sin_addr) != 1) {
-            LOG_ERROR("Could not convert %s to an ipv6 address",
-                      params->controller_ip);
-            return INDIGO_ERROR_PARAM;
-        }
-        break;
+        return parse_sockaddr_getaddrinfo(
+            AF_INET6,
+            protocol_params->tcp_over_ipv6.controller_ip,
+            protocol_params->tcp_over_ipv6.controller_port,
+            sockaddr);
     }
     default:
         LOG_ERROR("Invalid protocol %d", protocol_params->header.protocol);
