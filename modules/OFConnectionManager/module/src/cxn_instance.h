@@ -283,7 +283,7 @@ get_connection_params(connection_t *cxn)
 
 /* WARNING: single threaded */
 /* Display the IP/port for a connection based on params */
-static char ip_print_buf[128];
+static char ip_print_buf[64];
 static inline char *
 proto_ip_string(indigo_cxn_protocol_params_t *params)
 {

@@ -2003,7 +2003,7 @@ static indigo_error_t
 parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
                            struct sockaddr_storage *sockaddr)
 {
-    char port_str[16];
+    char port_str[8];
     snprintf(port_str, sizeof(port_str), "%u", port);
 
     struct addrinfo hints;
