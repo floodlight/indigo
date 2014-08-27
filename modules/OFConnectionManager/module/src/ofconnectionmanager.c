@@ -1016,6 +1016,11 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
                 &protocol_params->tcp_over_ipv4;
             snprintf(uri, sizeof(uri), "tcp://%s:%d",
                 proto->controller_ip, proto->controller_port);
+        } else if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
+            indigo_cxn_params_tcp_over_ipv6_t *proto =
+                &protocol_params->tcp_over_ipv6;
+            snprintf(uri, sizeof(uri), "tcp://[%s]:%d",
+                proto->controller_ip, proto->controller_port);
         }
 
         of_bsn_controller_connection_uri_set(&entry, uri);
