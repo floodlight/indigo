@@ -1521,7 +1521,6 @@ ind_cxn_send_hello(connection_t *cxn)
     return rv;
 }
 
-
 /**
  * Attempt to connect to a controller instance.
  * @param cxn The instance control block
@@ -1535,8 +1534,7 @@ ind_cxn_try_to_connect(connection_t *cxn)
 {
     int rv;
     indigo_cxn_protocol_params_t *protocol_params;
-    indigo_cxn_params_tcp_over_ipv4_t *params;
-    struct sockaddr_in cxn_addr;
+    struct sockaddr_storage cxn_addr;
     cxn->fail_count++;
 
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
@@ -1547,7 +1545,6 @@ ind_cxn_try_to_connect(connection_t *cxn)
 
     protocol_params = get_connection_params(cxn);
     INDIGO_ASSERT(protocol_params != NULL);
-    params = &protocol_params->tcp_over_ipv4;
 
     if (cxn->sd < 0) {
         /* Attempt to create the socket */
@@ -1580,11 +1577,7 @@ ind_cxn_try_to_connect(connection_t *cxn)
 
     LOG_TRACE(cxn, "Attempting to connect");
 
-    cxn_addr.sin_family = AF_INET;
-    cxn_addr.sin_port = htons(params->controller_port);
-    if (inet_pton(AF_INET, params->controller_ip, &cxn_addr.sin_addr) != 1) {
-        LOG_ERROR(cxn, "Could not convert %s to inet address",
-                  params->controller_ip);
+    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
         close(cxn->sd);
         cxn->sd = -1;
         return -1;

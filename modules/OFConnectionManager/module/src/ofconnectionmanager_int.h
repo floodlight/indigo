@@ -157,6 +157,14 @@ extern const struct ind_cfg_ops ind_cxn_cfg_ops;
 /* Run all barrier notify callbacks */
 void ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id);
 
+struct sockaddr_storage;
+
+/* Parse the protocol params into a struct sockaddr */
+indigo_error_t
+ind_cxn_parse_sockaddr(
+    const indigo_cxn_protocol_params_t *protocol_params,
+    struct sockaddr_storage *sockaddr);
+
 #include <OFConnectionManager/ofconnectionmanager.h>
 
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */

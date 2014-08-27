@@ -461,25 +461,18 @@ find_free_controller(void) {
 static int
 listen_cxn_init(connection_t *cxn)
 {
-    struct sockaddr_in cxn_addr;
+    struct sockaddr_storage cxn_addr;
     indigo_error_t rv;
     indigo_cxn_protocol_params_t *protocol_params;
-    indigo_cxn_params_tcp_over_ipv4_t *params;
 
     LOG_VERBOSE("Initializing listening socket");
 
     protocol_params = get_connection_params(cxn);
     INDIGO_ASSERT(protocol_params != NULL); 
-    params = &protocol_params->tcp_over_ipv4;
 
-    /* complete the socket structure */
-    memset(&cxn_addr, 0, sizeof(cxn_addr));
-    cxn_addr.sin_family = AF_INET;
-    if (inet_pton(AF_INET, params->controller_ip, &cxn_addr.sin_addr) != 1) {
-        LOG_ERROR("Could not convert %s to inet address", params->controller_ip);
+    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
         return INDIGO_ERROR_UNKNOWN;
     }
-    cxn_addr.sin_port = htons(params->controller_port);
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
@@ -1991,4 +1984,30 @@ ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id)
             cb->callback(cxn_id, cb->cookie);
         }
     }
+}
+
+indigo_error_t
+ind_cxn_parse_sockaddr(
+    const indigo_cxn_protocol_params_t *protocol_params,
+    struct sockaddr_storage *sockaddr)
+{
+    switch (protocol_params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4: {
+        const indigo_cxn_params_tcp_over_ipv4_t *params = &protocol_params->tcp_over_ipv4;
+        struct sockaddr_in *sa = (struct sockaddr_in *)sockaddr;
+        sa->sin_family = AF_INET;
+        sa->sin_port = htons(params->controller_port);
+        if (inet_pton(AF_INET, params->controller_ip, &sa->sin_addr) != 1) {
+            LOG_ERROR("Could not convert %s to an ipv4 address",
+                      params->controller_ip);
+            return INDIGO_ERROR_PARAM;
+        }
+        break;
+    }
+    default:
+        LOG_ERROR("Invalid protocol %d", protocol_params->header.protocol);
+        return INDIGO_ERROR_PARAM;
+    }
+
+    return INDIGO_ERROR_NONE;
 }
