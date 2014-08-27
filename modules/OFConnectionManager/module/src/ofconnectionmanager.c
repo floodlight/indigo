@@ -46,6 +46,7 @@
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <sys/errno.h>
+#include <netdb.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -461,25 +462,18 @@ find_free_controller(void) {
 static int
 listen_cxn_init(connection_t *cxn)
 {
-    struct sockaddr_in cxn_addr;
+    struct sockaddr_storage cxn_addr;
     indigo_error_t rv;
     indigo_cxn_protocol_params_t *protocol_params;
-    indigo_cxn_params_tcp_over_ipv4_t *params;
 
     LOG_VERBOSE("Initializing listening socket");
 
     protocol_params = get_connection_params(cxn);
     INDIGO_ASSERT(protocol_params != NULL); 
-    params = &protocol_params->tcp_over_ipv4;
 
-    /* complete the socket structure */
-    memset(&cxn_addr, 0, sizeof(cxn_addr));
-    cxn_addr.sin_family = AF_INET;
-    if (inet_pton(AF_INET, params->controller_ip, &cxn_addr.sin_addr) != 1) {
-        LOG_ERROR("Could not convert %s to inet address", params->controller_ip);
+    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
         return INDIGO_ERROR_UNKNOWN;
     }
-    cxn_addr.sin_port = htons(params->controller_port);
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
@@ -522,7 +516,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     int soc_flags;
     connection_t *cxn;
     controller_t *ctrl;   
- 
+    struct sockaddr_storage sockaddr;
+
     cxn = find_free_connection();
     if (cxn == NULL) {
         LOG_ERROR("Could not allocate space for connection");
@@ -547,9 +542,14 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 
     ind_cxn_disconnected_init(cxn);
 
+    /* Parsed the protocol params just to get the family */
+    if (ind_cxn_parse_sockaddr(&ctrl->protocol_params, &sockaddr) < 0) {
+        return NULL;
+    }
+
     if (sd < 0) {
         /* Attempt to create the socket */
-        cxn->sd = socket(AF_INET, SOCK_STREAM, 0);
+        cxn->sd = socket(sockaddr.ss_family, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
             LOG_ERROR("Failed to create connection socket: %s", strerror(errno));
             return NULL;
@@ -792,7 +792,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_PARAM;
     }
 
-    if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
+    if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4 &&
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
         LOG_ERROR("Unsupported protocol for connection add: %d",
                   protocol_params->header.protocol);
         return INDIGO_ERROR_NOT_SUPPORTED;
@@ -1014,6 +1015,11 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
             indigo_cxn_params_tcp_over_ipv4_t *proto =
                 &protocol_params->tcp_over_ipv4;
             snprintf(uri, sizeof(uri), "tcp://%s:%d",
+                proto->controller_ip, proto->controller_port);
+        } else if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
+            indigo_cxn_params_tcp_over_ipv6_t *proto =
+                &protocol_params->tcp_over_ipv6;
+            snprintf(uri, sizeof(uri), "tcp://[%s]:%d",
                 proto->controller_ip, proto->controller_port);
         }
 
@@ -1991,4 +1997,61 @@ ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id)
             cb->callback(cxn_id, cb->cookie);
         }
     }
+}
+
+static indigo_error_t
+parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
+                           struct sockaddr_storage *sockaddr)
+{
+    char port_str[8];
+    snprintf(port_str, sizeof(port_str), "%u", port);
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_flags = AI_NUMERICHOST|AI_NUMERICSERV;
+    hints.ai_family = family;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = 0;
+
+    struct addrinfo *ai;
+    int ret;
+
+    if ((ret = getaddrinfo(addr, port_str, &hints, &ai)) < 0) {
+        LOG_ERROR("Could not convert %s:%d to an %s socket address: %s",
+                  addr, port,
+                  family == AF_INET ? "ipv4" : "ipv6",
+                  gai_strerror(ret));
+        return INDIGO_ERROR_PARAM;
+    }
+
+    memcpy(sockaddr, ai->ai_addr, ai->ai_addrlen);
+    freeaddrinfo(ai);
+    return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
+ind_cxn_parse_sockaddr(
+    const indigo_cxn_protocol_params_t *protocol_params,
+    struct sockaddr_storage *sockaddr)
+{
+    switch (protocol_params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        return parse_sockaddr_getaddrinfo(
+            AF_INET,
+            protocol_params->tcp_over_ipv4.controller_ip,
+            protocol_params->tcp_over_ipv4.controller_port,
+            sockaddr);
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6: {
+        return parse_sockaddr_getaddrinfo(
+            AF_INET6,
+            protocol_params->tcp_over_ipv6.controller_ip,
+            protocol_params->tcp_over_ipv6.controller_port,
+            sockaddr);
+    }
+    default:
+        LOG_ERROR("Invalid protocol %d", protocol_params->header.protocol);
+        return INDIGO_ERROR_PARAM;
+    }
+
+    return INDIGO_ERROR_NONE;
 }

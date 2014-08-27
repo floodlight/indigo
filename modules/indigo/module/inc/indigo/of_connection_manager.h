@@ -78,11 +78,13 @@
  *
  * INDIGO_CXN_PROTO_INVALID A marker used to indicate an undefined protocol
  * INDIGO_CXN_PROTO_TCP_OVER_IPV4 Use TCP over IPv4 for the connection
+ * INDIGO_CXN_PROTO_TCP_OVER_IPV6 Use TCP over IPv6 for the connection
  */
 
 typedef enum indigo_cxn_protocol_e {
     INDIGO_CXN_PROTO_INVALID            = -1,
-    INDIGO_CXN_PROTO_TCP_OVER_IPV4      = 0
+    INDIGO_CXN_PROTO_TCP_OVER_IPV4      = 0,
+    INDIGO_CXN_PROTO_TCP_OVER_IPV6      = 1,
 } indigo_cxn_protocol_t;
 
 /**
@@ -112,12 +114,25 @@ typedef struct indigo_cxn_params_tcp_over_ipv4_s {
 } indigo_cxn_params_tcp_over_ipv4_t;
 
 /**
+ * TCP over IPv6 parameters
+ *     controller_ip IPv6 address of controller
+ *     controller_port Port number to use for connection
+ */
+#define INDIGO_CXN_IPV6_STRING_LEN 64
+typedef struct indigo_cxn_params_tcp_over_ipv6_s {
+    indigo_cxn_protocol_t protocol;
+    char controller_ip[INDIGO_CXN_IPV6_STRING_LEN];
+    uint16_t controller_port;
+} indigo_cxn_params_tcp_over_ipv6_t;
+
+/**
  * The super class for connection parameters
  */
 
 typedef union indigo_cxn_protocol_params_u {
     indigo_cxn_params_header_t header;
     indigo_cxn_params_tcp_over_ipv4_t tcp_over_ipv4;
+    indigo_cxn_params_tcp_over_ipv6_t tcp_over_ipv6;
 } indigo_cxn_protocol_params_t;
 
 /**
