@@ -31,6 +31,7 @@
 #include "ofconnectionmanager_log.h"
 #include "cxn_instance.h"
 #include <cjson/cJSON.h>
+#include <sys/socket.h>
 
 /* Very verbose for debugging */
 /* #define OF_CXN_DUMP_ALL_OBJECTS 1 */
@@ -156,8 +157,6 @@ extern const struct ind_cfg_ops ind_cxn_cfg_ops;
 
 /* Run all barrier notify callbacks */
 void ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id);
-
-struct sockaddr_storage;
 
 /* Parse the protocol params into a struct sockaddr */
 indigo_error_t
