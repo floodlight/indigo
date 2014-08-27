@@ -203,10 +203,9 @@ typedef struct connection_s {
 /**
  * Printf format and arguments macros
  */
-#define CXN_FMT "%s:%d:%d"
+#define CXN_FMT "%s:%d"
 #define CXN_FMT_ARGS(cxn) \
-    get_connection_params(cxn)->tcp_over_ipv4.controller_ip, \
-    get_connection_params(cxn)->tcp_over_ipv4.controller_port, \
+    proto_ip_string(get_connection_params(cxn)), \
     (cxn)->auxiliary_id
 
 /**
