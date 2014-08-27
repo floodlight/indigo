@@ -281,17 +281,27 @@ get_connection_params(connection_t *cxn)
  * Debug and logging routines
  ****************************************************************/
 
-/* WARNING: single threaded; ipv4 specific */
+/* WARNING: single threaded */
 /* Display the IP/port for a connection based on params */
-static char ip_print_buf[64];
+static char ip_print_buf[128];
 static inline char *
 proto_ip_string(indigo_cxn_protocol_params_t *params)
 {
-    int port;
-
-    port = params->tcp_over_ipv4.controller_port;
-
-    snprintf(ip_print_buf, 64, "%s:%d", params->tcp_over_ipv4.controller_ip, port);
+    switch (params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        snprintf(ip_print_buf, sizeof(ip_print_buf), "%s:%d",
+                 params->tcp_over_ipv4.controller_ip,
+                 params->tcp_over_ipv4.controller_port);
+        break;
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        snprintf(ip_print_buf, sizeof(ip_print_buf), "%s:%d",
+                 params->tcp_over_ipv6.controller_ip,
+                 params->tcp_over_ipv6.controller_port);
+        break;
+    default:
+        strcpy(ip_print_buf, "invalid");
+        break;
+    }
 
     return ip_print_buf;
 }

@@ -791,7 +791,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         return INDIGO_ERROR_PARAM;
     }
 
-    if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
+    if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4 &&
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
         LOG_ERROR("Unsupported protocol for connection add: %d",
                   protocol_params->header.protocol);
         return INDIGO_ERROR_NOT_SUPPORTED;
@@ -2005,6 +2006,18 @@ ind_cxn_parse_sockaddr(
         sa->sin_port = htons(params->controller_port);
         if (inet_pton(AF_INET, params->controller_ip, &sa->sin_addr) != 1) {
             LOG_ERROR("Could not convert %s to an ipv4 address",
+                      params->controller_ip);
+            return INDIGO_ERROR_PARAM;
+        }
+        break;
+    }
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6: {
+        const indigo_cxn_params_tcp_over_ipv6_t *params = &protocol_params->tcp_over_ipv6;
+        struct sockaddr_in *sa = (struct sockaddr_in *)sockaddr;
+        sa->sin_family = AF_INET;
+        sa->sin_port = htons(params->controller_port);
+        if (inet_pton(AF_INET6, params->controller_ip, &sa->sin_addr) != 1) {
+            LOG_ERROR("Could not convert %s to an ipv6 address",
                       params->controller_ip);
             return INDIGO_ERROR_PARAM;
         }
