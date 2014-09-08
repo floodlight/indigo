@@ -395,8 +395,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     rv = ft_add(ind_core_ft, flow_id, obj, &minimatch, &entry);
     if (rv != INDIGO_ERROR_NONE) {
-        AIM_LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %s",
-                      indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to insert flow in OFStateManager flowtable: %s",
+                         indigo_strerror(rv));
         /* TODO send error */
         return;
     }
@@ -865,7 +865,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         of_flow_stats_reply_entries_bind(state->reply, &list);
         of_flow_stats_entry_init(&stats_entry, state->reply->version, -1, 1);
         if (of_list_flow_stats_entry_append_bind(&list, &stats_entry)) {
-            AIM_LOG_ERROR("failed to append to flow stats list");
+            AIM_LOG_INTERNAL("Failed to append to flow stats list");
             return;
         }
 
@@ -882,7 +882,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         minimatch_expand(&entry->minimatch, &match);
 
         if (of_flow_stats_entry_match_set(&stats_entry, &match)) {
-            AIM_LOG_ERROR("Failed to set match in flow stats entry");
+            AIM_LOG_INTERNAL("Failed to set match in flow stats entry");
             return;
         }
 
@@ -890,13 +890,13 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
             if (stats_entry.version == OF_VERSION_1_0) {
                 if (of_flow_stats_entry_actions_set(
                         &stats_entry, entry->effects.actions) < 0) {
-                    AIM_LOG_ERROR("Failed to set actions list of flow stats entry");
+                    AIM_LOG_INTERNAL("Failed to set actions list of flow stats entry");
                     return;
                 }
             } else {
                 if (of_flow_stats_entry_instructions_set(
                         &stats_entry, entry->effects.instructions) < 0) {
-                    AIM_LOG_ERROR("Failed to set instructions list of flow stats entry");
+                    AIM_LOG_INTERNAL("Failed to set instructions list of flow stats entry");
                     return;
                 }
             }
@@ -934,7 +934,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     of_match_t match;
     if (of_flow_stats_request_match_get(obj, &match) < 0) {
-        AIM_LOG_ERROR("Failed to get flow stats match.");
+        AIM_LOG_INTERNAL("Failed to get flow stats match");
         return;
     }
     minimatch_init(&query.minimatch, &match);
@@ -959,7 +959,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter,
                             state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        AIM_LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to start flow stats iter: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         aim_free(state);
     }
@@ -1044,7 +1044,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     of_match_t match;
     if (of_aggregate_stats_request_match_get(obj, &match) < 0) {
-        AIM_LOG_ERROR("Failed to get aggregate stats match.");
+        AIM_LOG_INTERNAL("Failed to get aggregate stats match.");
         return;
     }
     minimatch_init(&query.minimatch, &match);
@@ -1070,7 +1070,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
                             state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        AIM_LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         aim_free(state);
         return;
@@ -1479,7 +1479,7 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
         of_bsn_switch_pipeline_stats_entry_init(&entry, version, -1, 1);
         if (of_list_bsn_switch_pipeline_stats_entry_append_bind(&list,
                                                                 &entry)) {
-            AIM_LOG_ERROR("Failed to append to pipeline stats list");
+            AIM_LOG_INTERNAL("Failed to append to pipeline stats list");
             break;
         } else {
             of_bsn_switch_pipeline_stats_entry_pipeline_set(&entry,

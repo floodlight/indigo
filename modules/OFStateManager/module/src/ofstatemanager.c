@@ -91,14 +91,14 @@ static int ind_core_connection_count;
 
 #define INIT_CHECK do {                         \
         if (!ind_core_init_done) {              \
-            AIM_LOG_ERROR("Not initialized");   \
+            AIM_LOG_INTERNAL("Not initialized");\
             return INDIGO_ERROR_INIT;           \
         }                                       \
     } while(0)
 
 #define ENABLED_CHECK do {                      \
         if (!ind_core_module_enabled) {         \
-            AIM_LOG_ERROR("Not enabled");       \
+            AIM_LOG_INTERNAL("Not enabled");    \
             return INDIGO_ERROR_INIT;           \
         }                                       \
     } while(0)
@@ -177,7 +177,7 @@ send_flow_removed_message(ft_entry_t *entry,
     minimatch_expand(&entry->minimatch, &match);
 
     if (of_flow_removed_match_set(msg, &match)) {
-        AIM_LOG_ERROR("Failed to set match in flow removed message");
+        AIM_LOG_INTERNAL("Failed to set match in flow removed message");
         of_object_delete(msg);
         return;
     }
@@ -221,7 +221,7 @@ void
 indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 {
     if (!ind_core_module_enabled) {
-        AIM_LOG_ERROR("Not enabled");
+        AIM_LOG_INTERNAL("Not enabled");
         return;
     }
 
@@ -490,8 +490,8 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_ECHO_REPLY:
     case OF_BARRIER_REQUEST:
     case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
-        AIM_LOG_ERROR("Expected OFConnectionManager to handle %s",
-                      of_object_id_str[obj->object_id]);
+        AIM_LOG_INTERNAL("Expected OFConnectionManager to handle %s",
+                         of_object_id_str[obj->object_id]);
         ind_core_unhandled_message(obj, cxn);
         break;
 

@@ -343,7 +343,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         break;
     default:
         /* Internal error */
-        AIM_LOG_ERROR("Internal error: unknown query mode %d", query->mode);
+        AIM_LOG_INTERNAL("Unknown flowtable query mode %d", query->mode);
         break;
     }
 

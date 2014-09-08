@@ -163,7 +163,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
             container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
         rv = delete_entry(gentable, entry);
         if (rv < 0) {
-            AIM_LOG_ERROR("failed to delete %s gentable entry during unregister, leaking", gentable->name);
+            AIM_LOG_INTERNAL("Failed to delete %s gentable entry during unregister, leaking", gentable->name);
         }
     }
 
@@ -375,7 +375,7 @@ ind_core_bsn_gentable_clear_request_handler(
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         aim_free(state);
     }
@@ -550,7 +550,7 @@ ind_core_bsn_gentable_entry_stats_request_handler(
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         of_object_delete(state->reply);
         aim_free(state);
@@ -645,7 +645,7 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
-        AIM_LOG_ERROR("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to spawn gentable iter task: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         of_object_delete(state->reply);
         aim_free(state);
@@ -950,7 +950,7 @@ ind_core_gentable_iter_task_callback(void *cookie)
     indigo_core_gentable_t *gentable = find_gentable_by_id(state->table_id);
 
     if (gentable == NULL || gentable->generation_id != state->generation_id) {
-        AIM_LOG_WARN("gentable %s disappeared during iteration");
+        AIM_LOG_INTERNAL("gentable %s disappeared during iteration");
         state->callback(state->cookie, NULL, NULL);
         aim_free(state);
         return IND_SOC_TASK_FINISHED;

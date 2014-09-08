@@ -117,9 +117,9 @@ expire_flow(ft_entry_t *entry, int reason)
         }
 
         if (rv != INDIGO_ERROR_NONE) {
-            AIM_LOG_ERROR("Failed to get hit status for flow "
-                          INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
-                          entry->id, indigo_strerror(rv));
+            AIM_LOG_INTERNAL("Failed to get hit status for flow "
+                             INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                             entry->id, indigo_strerror(rv));
             return false;
         }
 
@@ -199,7 +199,7 @@ send_idle_notification(ft_entry_t *entry)
     minimatch_expand(&entry->minimatch, &match);
 
     if (of_bsn_flow_idle_match_set(msg, &match)) {
-        AIM_LOG_ERROR("Failed to set match in idle notification");
+        AIM_LOG_INTERNAL("Failed to set match in idle notification");
         of_object_delete(msg);
         return;
     }
