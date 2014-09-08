@@ -156,8 +156,7 @@ send_flow_removed_message(ft_entry_t *entry,
     }
 
     if ((msg = of_flow_removed_new(ver)) == NULL) {
-        AIM_LOG_ERROR("Failed to allocate flow_removed message");
-        return;
+        AIM_DIE("Failed to allocate flow_removed message");
     }
 
     calc_duration(current, entry->insert_time, &secs, &nsecs);
@@ -565,8 +564,7 @@ ind_core_init(ind_core_config_t *config)
     }
 
     if ((ind_core_ft = ft_create()) == NULL) {
-        AIM_LOG_ERROR("Unable to allocate flow table");
-        return INDIGO_ERROR_RESOURCE;
+        AIM_DIE("Failed to allocate flow table");
     }
 
     ind_core_connection_count = 0;

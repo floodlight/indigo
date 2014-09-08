@@ -808,14 +808,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     if (state->reply == NULL) {
         state->reply = of_flow_stats_reply_new(state->version);
         if (state->reply == NULL) {
-            AIM_LOG_ERROR("Failed to allocate of_flow_stats_reply.");
-            if (entry == NULL) {
-                /* This is the last callback, so need to clean up
-                 * before returning. */
-                indigo_cxn_resume(state->cxn_id);
-                aim_free(state);
-            }
-            return;
+            AIM_DIE("Failed to allocate of_flow_stats_reply");
         }
 
         of_flow_stats_reply_xid_set(state->reply, state->xid);
@@ -1024,7 +1017,7 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
             of_aggregate_stats_reply_flow_count_set(reply, state->flows);
             indigo_cxn_send_controller_message(state->cxn_id, reply);
         } else {
-            AIM_LOG_ERROR("Failed to allocate aggregate stats reply.");
+            AIM_DIE("Failed to allocate aggregate stats reply");
         }
         indigo_cxn_resume(state->cxn_id);
         aim_free(state);
@@ -1103,8 +1096,7 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Create reply and send to controller */
     if ((reply = of_desc_stats_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create desc stats reply message");
-        return;
+        AIM_DIE("Failed to allocate desc stats reply message");
     }
 
     of_desc_stats_request_xid_get(obj, &xid);
@@ -1211,8 +1203,7 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
 
     /* Generate a port_desc_stats reply and send to controller */
     if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create port_desc_stats reply message");
-        return;
+        AIM_DIE("Failed to allocate port_desc_stats reply message");
     }
 
     of_port_desc_stats_request_xid_get(obj, &xid);
@@ -1241,8 +1232,7 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Generate a features reply and send to controller */
     if ((reply = of_features_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create features reply message");
-        return;
+        AIM_DIE("Failed to allocate features reply message");
     }
 
     of_features_request_xid_get(obj, &xid);
@@ -1375,8 +1365,7 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
 
     /* Create reply and send to controller */
     if ((reply = of_bsn_hybrid_get_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create hybrid_get reply message");
-        return;
+        AIM_DIE("Failed to allocate hybrid_get reply message");
     }
 
     of_bsn_hybrid_get_request_xid_get(obj, &xid);
@@ -1404,8 +1393,7 @@ ind_core_bsn_sw_pipeline_get_request_handler(of_object_t *_obj,
     of_desc_str_t pipeline;
 
     if ((reply = of_bsn_get_switch_pipeline_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create sw pipeline get reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline get reply message");
     }
 
     of_bsn_get_switch_pipeline_request_xid_get(obj, &xid);
@@ -1436,8 +1424,7 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_desc_str_t pipeline;
 
     if ((reply = of_bsn_set_switch_pipeline_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create sw pipeline set reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline set reply message");
     }
 
     of_bsn_set_switch_pipeline_request_pipeline_get(obj, &pipeline);
@@ -1476,8 +1463,7 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
     of_desc_str_t *pipelines;
 
     if ((reply = of_bsn_switch_pipeline_stats_reply_new(obj->version)) == NULL) {
-        AIM_LOG_ERROR("Failed to create sw pipeline stats reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline stats reply message");
     }
 
     version = obj->version;

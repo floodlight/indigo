@@ -188,8 +188,7 @@ send_idle_notification(ft_entry_t *entry)
     }
 
     if ((msg = of_bsn_flow_idle_new(ver)) == NULL) {
-        AIM_LOG_ERROR("Failed to allocate flow_idle message");
-        return;
+        AIM_DIE("Failed to allocate flow_idle message");
     }
 
     of_bsn_flow_idle_cookie_set(msg, entry->cookie);

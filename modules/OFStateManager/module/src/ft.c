@@ -684,16 +684,14 @@ ft_entry_set_effects(ft_entry_t *entry,
     {
         of_list_action_t *actions;
         if ((actions = of_flow_modify_actions_get(flow_mod)) == NULL) {
-            AIM_LOG_ERROR("Could not get action list");
-            return INDIGO_ERROR_RESOURCE;
+            AIM_DIE("Failed to allocate action list");
         }
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = actions;
     } else {
         of_list_instruction_t *instructions;
         if ((instructions = of_flow_modify_instructions_get(flow_mod)) == NULL) {
-            AIM_LOG_ERROR("Could not get instruction list");
-            return INDIGO_ERROR_RESOURCE;
+            AIM_DIE("Failed to allocate instruction list");
         }
         of_list_instruction_delete(entry->effects.instructions);
         entry->effects.instructions = instructions;
