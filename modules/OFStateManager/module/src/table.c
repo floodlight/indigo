@@ -57,7 +57,7 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     ind_core_tables[table_id] = table;
     ind_core_num_tables_registered++;
 
-    AIM_LOG_INFO("Registered flowtable \"%s\" with table id %d", name, table_id);
+    AIM_LOG_VERBOSE("Registered flowtable \"%s\" with table id %d", name, table_id);
 }
 
 void indigo_core_table_unregister(uint8_t table_id)

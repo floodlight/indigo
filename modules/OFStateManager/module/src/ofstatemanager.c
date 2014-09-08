@@ -509,7 +509,7 @@ indigo_error_t
 indigo_core_dpid_set(of_dpid_t dpid)
 {
     if (ind_core_dpid != dpid) {
-        AIM_LOG_INFO("Changing switch DPID to %016x", dpid);
+        AIM_LOG_INFO("Setting switch DPID to %016x", dpid);
         INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
         ind_cxn_reset(IND_CXN_RESET_ALL);
     } else {
@@ -733,7 +733,7 @@ ind_core_enable_set(int enable)
     INIT_CHECK;
 
     if (enable && !ind_core_module_enabled) {
-        AIM_LOG_INFO("Enabling OF state mgr");
+        AIM_LOG_VERBOSE("Enabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_register_with_priority(
                 ind_core_expiration_timer, NULL,
@@ -741,7 +741,7 @@ ind_core_enable_set(int enable)
         }
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {
-        AIM_LOG_INFO("Disabling OF state mgr");
+        AIM_LOG_VERBOSE("Disabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_unregister(ind_core_expiration_timer, NULL);
         }

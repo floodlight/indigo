@@ -1443,7 +1443,7 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_bsn_set_switch_pipeline_request_pipeline_get(obj, &pipeline);
     of_bsn_set_switch_pipeline_request_xid_get(obj, &xid);
 
-    AIM_LOG_INFO("Setting pipeline: %s", pipeline);
+    AIM_LOG_VERBOSE("Setting pipeline: %s", pipeline);
     if ((rv = indigo_fwd_pipeline_set(pipeline)) != INDIGO_ERROR_NONE) {
         AIM_LOG_ERROR("Failed to set pipeline: %s", indigo_strerror(rv));
         of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
