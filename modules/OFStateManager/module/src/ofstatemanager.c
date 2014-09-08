@@ -91,14 +91,14 @@ static int ind_core_connection_count;
 
 #define INIT_CHECK do {                         \
         if (!ind_core_init_done) {              \
-            LOG_ERROR("Not initialized");       \
+            AIM_LOG_ERROR("Not initialized");   \
             return INDIGO_ERROR_INIT;           \
         }                                       \
     } while(0)
 
 #define ENABLED_CHECK do {                      \
         if (!ind_core_module_enabled) {         \
-            LOG_ERROR("Not enabled");           \
+            AIM_LOG_ERROR("Not enabled");       \
             return INDIGO_ERROR_INIT;           \
         }                                       \
     } while(0)
@@ -109,16 +109,16 @@ indigo_error_t
 indigo_core_packet_in(of_packet_in_t *packet_in)
 {
     if (!ind_core_module_enabled) {
-        LOG_TRACE("Packet in called when not enabled");
+        AIM_LOG_TRACE("Packet in called when not enabled");
         of_object_delete(packet_in);
         return INDIGO_ERROR_INIT;
     }
 
-    LOG_TRACE("Packet in rcvd");
+    AIM_LOG_TRACE("Packet in rcvd");
     debug_counter_inc(&ind_core_packet_in_counter);
 
     if (ind_core_packet_in_notify(packet_in) == INDIGO_CORE_LISTENER_RESULT_DROP) {
-        LOG_TRACE("Listener dropped packet-in");
+        AIM_LOG_TRACE("Listener dropped packet-in");
         of_object_delete(packet_in);
         return INDIGO_ERROR_NONE;
     }
@@ -156,7 +156,7 @@ send_flow_removed_message(ft_entry_t *entry,
     }
 
     if ((msg = of_flow_removed_new(ver)) == NULL) {
-        LOG_ERROR("Failed to allocate flow_removed message");
+        AIM_LOG_ERROR("Failed to allocate flow_removed message");
         return;
     }
 
@@ -178,7 +178,7 @@ send_flow_removed_message(ft_entry_t *entry,
     minimatch_expand(&entry->minimatch, &match);
 
     if (of_flow_removed_match_set(msg, &match)) {
-        LOG_ERROR("Failed to set match in flow removed message");
+        AIM_LOG_ERROR("Failed to set match in flow removed message");
         of_object_delete(msg);
         return;
     }
@@ -222,15 +222,15 @@ void
 indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 {
     if (!ind_core_module_enabled) {
-        LOG_ERROR("Not enabled");
+        AIM_LOG_ERROR("Not enabled");
         return;
     }
 
-    LOG_TRACE("Received %s message from cxn %d",
-              of_object_id_str[obj->object_id], cxn);
+    AIM_LOG_TRACE("Received %s message from cxn %d",
+                  of_object_id_str[obj->object_id], cxn);
 
     if (ind_core_message_notify(cxn, obj) == INDIGO_CORE_LISTENER_RESULT_DROP) {
-        LOG_TRACE("Listener dropped message");
+        AIM_LOG_TRACE("Listener dropped message");
         return;
     }
 
@@ -491,8 +491,8 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     case OF_ECHO_REPLY:
     case OF_BARRIER_REQUEST:
     case OF_NICIRA_CONTROLLER_ROLE_REQUEST:
-        LOG_ERROR("Expected OFConnectionManager to handle %s",
-                  of_object_id_str[obj->object_id]);
+        AIM_LOG_ERROR("Expected OFConnectionManager to handle %s",
+                      of_object_id_str[obj->object_id]);
         ind_core_unhandled_message(obj, cxn);
         break;
 
@@ -509,11 +509,11 @@ indigo_error_t
 indigo_core_dpid_set(of_dpid_t dpid)
 {
     if (ind_core_dpid != dpid) {
-        LOG_INFO("Changing switch DPID to %016x", dpid);
+        AIM_LOG_INFO("Changing switch DPID to %016x", dpid);
         INDIGO_MEM_COPY(&ind_core_dpid, &dpid, sizeof(ind_core_dpid));
         ind_cxn_reset(IND_CXN_RESET_ALL);
     } else {
-        LOG_VERBOSE("Switch DPID set called but unchanged");
+        AIM_LOG_VERBOSE("Switch DPID set called but unchanged");
     }
 
     return INDIGO_ERROR_NONE;
@@ -538,7 +538,7 @@ ind_core_init(ind_core_config_t *config)
 {
     INDIGO_MEM_COPY(&ind_core_config, config, sizeof(*config));
 
-    LOG_TRACE("OF state mgr init called");
+    AIM_LOG_TRACE("OF state mgr init called");
 
     if (ind_core_init_done) {
         return INDIGO_ERROR_NONE;
@@ -565,7 +565,7 @@ ind_core_init(ind_core_config_t *config)
     }
 
     if ((ind_core_ft = ft_create()) == NULL) {
-        LOG_ERROR("Unable to allocate flow table");
+        AIM_LOG_ERROR("Unable to allocate flow table");
         return INDIGO_ERROR_RESOURCE;
     }
 
@@ -643,8 +643,8 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
         .bytes = -1,
     };
 
-    LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
-              INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+    AIM_LOG_TRACE("Removing flow " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
@@ -654,8 +654,8 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
     }
 
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Error deleting flow " INDIGO_FLOW_ID_PRINTF_FORMAT ": %s",
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id), indigo_strerror(rv));
+        AIM_LOG_ERROR("Error deleting flow " INDIGO_FLOW_ID_PRINTF_FORMAT ": %s",
+                      INDIGO_FLOW_ID_PRINTF_ARG(entry->id), indigo_strerror(rv));
         /* Ignoring failure */
     }
 
@@ -685,8 +685,8 @@ process_flow_removal(ft_entry_t *entry,
 
     ft_delete(ind_core_ft, entry);
 
-    LOG_TRACE("Flow table now has %d entries",
-              ind_core_ft->current_count);
+    AIM_LOG_TRACE("Flow table now has %d entries",
+                  ind_core_ft->current_count);
 }
 
 /**
@@ -706,16 +706,16 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
         return;
     }
 
-    LOG_TRACE("Async flow removed. reason %d. id "
-              INDIGO_FLOW_ID_PRINTF_FORMAT, reason,
-              INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
+    AIM_LOG_TRACE("Async flow removed. reason %d. id "
+                  INDIGO_FLOW_ID_PRINTF_FORMAT, reason,
+                  INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
 
     /* After entry look up, this looks like ind_core_flow_entry_delete */
     entry = ft_lookup(ind_core_ft, stats->flow_id);
     if (entry == NULL) {
-        LOG_TRACE("Async flow removed: did not find entry in SM table. id "
-                  INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
+        AIM_LOG_TRACE("Async flow removed: did not find entry in SM table. id "
+                      INDIGO_FLOW_ID_PRINTF_FORMAT,
+                      INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
         return;
     }
 
@@ -728,12 +728,12 @@ indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
 indigo_error_t
 ind_core_enable_set(int enable)
 {
-    LOG_TRACE("OF state mgr enable called");
+    AIM_LOG_TRACE("OF state mgr enable called");
 
     INIT_CHECK;
 
     if (enable && !ind_core_module_enabled) {
-        LOG_INFO("Enabling OF state mgr");
+        AIM_LOG_INFO("Enabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_register_with_priority(
                 ind_core_expiration_timer, NULL,
@@ -741,14 +741,14 @@ ind_core_enable_set(int enable)
         }
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {
-        LOG_INFO("Disabling OF state mgr");
+        AIM_LOG_INFO("Disabling OF state mgr");
         if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
             ind_soc_timer_event_unregister(ind_core_expiration_timer, NULL);
         }
         ind_core_module_enabled = 0;
     } else {
-        LOG_VERBOSE("Redundant enable call.  Currently %s",
-                    ind_core_module_enabled ? "enabled" : "disabled");
+        AIM_LOG_VERBOSE("Redundant enable call.  Currently %s",
+                        ind_core_module_enabled ? "enabled" : "disabled");
     }
 
     return INDIGO_ERROR_NONE;
@@ -758,7 +758,7 @@ ind_core_enable_set(int enable)
 indigo_error_t
 ind_core_enable_get(int *enable)
 {
-    LOG_TRACE("OF state mgr enable get called");
+    AIM_LOG_TRACE("OF state mgr enable get called");
     if (enable == NULL) {
         return INDIGO_ERROR_PARAM;
     }
@@ -771,11 +771,11 @@ ind_core_enable_get(int *enable)
 indigo_error_t
 ind_core_finish(void)
 {
-    LOG_TRACE("OF state mgr finish called");
+    AIM_LOG_TRACE("OF state mgr finish called");
 
     /* Indicate core is shutting down */
     if (ind_core_module_enabled) {
-        LOG_VERBOSE("Finish is calling disable");
+        AIM_LOG_VERBOSE("Finish is calling disable");
         ind_core_enable_set(0);
     }
 
@@ -950,7 +950,7 @@ indigo_core_disconnected_mode_set(indigo_core_disconnected_mode_t mode)
     case INDIGO_CORE_DISCONNECTED_MODE_CLOSED:
         break;
     default:
-        LOG_ERROR("Bad disconnect mode set; %d", mode);
+        AIM_LOG_ERROR("Bad disconnect mode set; %d", mode);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -959,7 +959,7 @@ indigo_core_disconnected_mode_set(indigo_core_disconnected_mode_t mode)
     }
 
     /* @FIXME: If mode change and this would affect current state, update */
-    LOG_TRACE("Setting disconnect mode to %d", mode);
+    AIM_LOG_TRACE("Setting disconnect mode to %d", mode);
     ind_core_config.disconnected_mode = mode;
 
     return INDIGO_ERROR_NONE;
@@ -1013,10 +1013,10 @@ indigo_core_port_status_update(of_port_status_t *of_port_status)
      * Special case: We allow this call to pass thru even if not enabled.
      */
 
-    LOG_TRACE("OF state mgr port status update");
+    AIM_LOG_TRACE("OF state mgr port status update");
 
     if (ind_core_port_status_notify(of_port_status) == INDIGO_CORE_LISTENER_RESULT_DROP) {
-        LOG_TRACE("Listener dropped port status update");
+        AIM_LOG_TRACE("Listener dropped port status update");
         of_object_delete(of_port_status);
         return;
     }

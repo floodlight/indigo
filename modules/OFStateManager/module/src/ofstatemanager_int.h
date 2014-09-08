@@ -37,20 +37,13 @@
 #include <OFStateManager/ofstatemanager_config.h>
 #include <cjson/cJSON.h>
 
-/* Short hand logging macros */
-#define LOG_ERROR AIM_LOG_ERROR
-#define LOG_WARN AIM_LOG_WARN
-#define LOG_INFO AIM_LOG_INFO
-#define LOG_VERBOSE AIM_LOG_VERBOSE
-#define LOG_TRACE AIM_LOG_TRACE
-
 /**
  * Try an operation and return the error code on failure.
  */
 #define _TRY(op) do {                                                   \
         int _rv;                                                        \
         if ((_rv = (op)) < 0) {                                         \
-            LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
+            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
             return _rv;                                                 \
         }                                                               \
     } while (0)
@@ -61,7 +54,7 @@
 #define _TRY_NR(op) do {                                                \
         int _rv;                                                        \
         if ((_rv = (op)) < 0) {                                         \
-            LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
+            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
         }                                                               \
     } while (0)
 
@@ -71,7 +64,7 @@
 #define _TRY_RV(op, specified_rv) do {                                  \
         int _rv;                                                        \
         if ((_rv = (op)) < 0) {                                         \
-            LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
+            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
             return (specified_rv);                                      \
         }                                                               \
     } while (0)

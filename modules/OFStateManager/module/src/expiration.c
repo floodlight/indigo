@@ -98,9 +98,9 @@ static bool
 expire_flow(ft_entry_t *entry, int reason)
 {
     if (reason == INDIGO_FLOW_REMOVED_HARD_TIMEOUT) {
-        LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                  entry->hard_timeout,
-                  INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+        AIM_LOG_TRACE("Hard TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                      entry->hard_timeout,
+                      INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
         ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
         return true;
     } else if (reason == OF_FLOW_REMOVED_REASON_IDLE_TIMEOUT) {
@@ -117,9 +117,9 @@ expire_flow(ft_entry_t *entry, int reason)
         }
 
         if (rv != INDIGO_ERROR_NONE) {
-            LOG_ERROR("Failed to get hit status for flow "
-                      INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
-                      entry->id, indigo_strerror(rv));
+            AIM_LOG_ERROR("Failed to get hit status for flow "
+                          INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                          entry->id, indigo_strerror(rv));
             return false;
         }
 
@@ -134,9 +134,9 @@ expire_flow(ft_entry_t *entry, int reason)
             if (entry->flags & OF_FLOW_MOD_FLAG_BSN_SEND_IDLE) {
                 send_idle_notification(entry);
             } else {
-                LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
-                          entry->idle_timeout,
-                          INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
+                AIM_LOG_TRACE("Idle TO (%d): " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                              entry->idle_timeout,
+                              INDIGO_FLOW_ID_PRINTF_ARG(entry->id));
                 ind_core_flow_entry_delete(entry, reason, INDIGO_CXN_ID_UNSPECIFIED);
             }
 
@@ -188,7 +188,7 @@ send_idle_notification(ft_entry_t *entry)
     }
 
     if ((msg = of_bsn_flow_idle_new(ver)) == NULL) {
-        LOG_ERROR("Failed to allocate flow_idle message");
+        AIM_LOG_ERROR("Failed to allocate flow_idle message");
         return;
     }
 
@@ -200,7 +200,7 @@ send_idle_notification(ft_entry_t *entry)
     minimatch_expand(&entry->minimatch, &match);
 
     if (of_bsn_flow_idle_match_set(msg, &match)) {
-        LOG_ERROR("Failed to set match in idle notification");
+        AIM_LOG_ERROR("Failed to set match in idle notification");
         of_object_delete(msg);
         return;
     }
