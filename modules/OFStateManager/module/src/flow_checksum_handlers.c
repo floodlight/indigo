@@ -47,7 +47,7 @@ ind_core_bsn_flow_checksum_bucket_stats_request_handler(of_object_t *_obj,
     of_bsn_flow_checksum_bucket_stats_request_table_id_get(obj, &table_id);
 
     if (table_id >= FT_MAX_TABLES) {
-        AIM_LOG_WARN("Invalid table ID %u", table_id);
+        AIM_LOG_WARN("Invalid table ID %u in BSN flow checksum bucket stats request", table_id);
         indigo_cxn_send_error_reply(cxn_id, obj,
                                     OF_ERROR_TYPE_BAD_REQUEST,
                                     OF_REQUEST_FAILED_EPERM);

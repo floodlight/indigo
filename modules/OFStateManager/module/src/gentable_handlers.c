@@ -196,7 +196,7 @@ ind_core_bsn_gentable_entry_add_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in add message", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -282,7 +282,7 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in delete message", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -292,7 +292,7 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     entry = find_entry_by_key(gentable, &key);
     if (entry == NULL) {
-        AIM_LOG_TRACE("Nonexistent %s gentable entry", gentable->name);
+        AIM_LOG_TRACE("Nonexistent %s gentable entry in delete message", gentable->name);
         return;
     }
 
@@ -357,7 +357,7 @@ ind_core_bsn_gentable_clear_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in clear message", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -400,7 +400,7 @@ ind_core_bsn_gentable_set_buckets_size_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in set-buckets-size message", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -528,7 +528,7 @@ ind_core_bsn_gentable_entry_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in entry stats request", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -623,7 +623,7 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in entry desc stats request", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -753,7 +753,7 @@ ind_core_bsn_gentable_bucket_stats_request_handler(
 
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
-        AIM_LOG_ERROR("Nonexistent gentable id %d", table_id);
+        AIM_LOG_ERROR("Nonexistent gentable id %d in bucket stats request", table_id);
         indigo_cxn_send_error_reply(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,

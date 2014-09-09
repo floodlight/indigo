@@ -383,7 +383,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             if (rv == INDIGO_ERROR_NONE) {
                 ft_overwrite(ind_core_ft, entry, obj);
             } else {
-                AIM_LOG_ERROR("Error from Forwarding while modifying flow: %d",
+                AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
                               indigo_strerror(rv));
                 flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
             }
@@ -566,7 +566,7 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
         } else {
-            AIM_LOG_ERROR("Error from Forwarding while modifying flow: %d",
+            AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
                           indigo_strerror(rv));
             flow_mod_err_msg_send(rv, state->request->version,
                                   state->cxn_id, state->request);
@@ -668,7 +668,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (rv == INDIGO_ERROR_NONE) {
         ft_entry_modify_effects(ind_core_ft, entry, obj);
     } else {
-        AIM_LOG_ERROR("Error from Forwarding while modifying flow: %d",
+        AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
                       indigo_strerror(rv));
         flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
     }
@@ -1445,7 +1445,7 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
 
     AIM_LOG_VERBOSE("Setting pipeline: %s", pipeline);
     if ((rv = indigo_fwd_pipeline_set(pipeline)) != INDIGO_ERROR_NONE) {
-        AIM_LOG_ERROR("Failed to set pipeline: %s", indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to set switch pipeline: %s", indigo_strerror(rv));
         of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
     } else {
         of_bsn_set_switch_pipeline_reply_status_set(reply, 0);

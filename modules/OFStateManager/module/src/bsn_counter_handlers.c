@@ -90,7 +90,7 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
     of_bsn_vlan_counter_stats_request_vlan_vid_get(obj, &vlan_vid);
 
     if ((vlan_vid == 0 || vlan_vid > 4095) && (vlan_vid != OF_BSN_VLAN_ALL)) {
-        AIM_LOG_WARN("Invalid VLAN %u", vlan_vid);
+        AIM_LOG_WARN("Invalid VLAN %u in BSN VLAN counter stats request", vlan_vid);
         indigo_cxn_send_error_reply(cxn_id, obj,
                                     OF_ERROR_TYPE_BAD_REQUEST,
                                     OF_REQUEST_FAILED_EPERM);
