@@ -38,38 +38,6 @@
 #include <cjson/cJSON.h>
 
 /**
- * Try an operation and return the error code on failure.
- */
-#define _TRY(op) do {                                                   \
-        int _rv;                                                        \
-        if ((_rv = (op)) < 0) {                                         \
-            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
-            return _rv;                                                 \
-        }                                                               \
-    } while (0)
-
-/**
- * As above, but do not return on error; just log it
- */
-#define _TRY_NR(op) do {                                                \
-        int _rv;                                                        \
-        if ((_rv = (op)) < 0) {                                         \
-            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
-        }                                                               \
-    } while (0)
-
-/**
- * Try an operation and return a specified error code on failure.
- */
-#define _TRY_RV(op, specified_rv) do {                                  \
-        int _rv;                                                        \
-        if ((_rv = (op)) < 0) {                                         \
-            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__);  \
-            return (specified_rv);                                      \
-        }                                                               \
-    } while (0)
-
-/**
  * Local state manager configuration data
  * @li init_done Have values been initialized
  * @li flags See OpenFlow protocol, set_config message

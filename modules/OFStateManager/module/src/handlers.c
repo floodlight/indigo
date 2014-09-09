@@ -274,8 +274,13 @@ overlap_found(of_flow_modify_t *obj)
     ft_entry_t *entry;
     list_links_t *cur, *next;
     of_meta_match_t query;
+    indigo_error_t rv;
 
-    _TRY(flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1));
+    rv = flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1);
+    if (rv < 0) {
+        AIM_LOG_INTERNAL("Failed to setup query in overlap_found: %s", indigo_strerror(rv));
+        return rv;
+    }
 
     FT_ITER(ind_core_ft, entry, cur, next) {
         if (ft_entry_meta_match(&query, entry)) {
@@ -1229,6 +1234,7 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_features_reply_t *reply;
     uint32_t xid;
     of_dpid_t dpid;
+    indigo_error_t rv;
 
     /* Generate a features reply and send to controller */
     if ((reply = of_features_reply_new(obj->version)) == NULL) {
@@ -1237,14 +1243,21 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     of_features_request_xid_get(obj, &xid);
     of_features_reply_xid_set(reply, xid);
-    _TRY_NR(indigo_core_dpid_get(&dpid));
+    indigo_core_dpid_get(&dpid);
     of_features_reply_datapath_id_set(reply, dpid);
     of_features_reply_n_buffers_set(reply, 0);
-    _TRY_NR(indigo_fwd_forwarding_features_get(reply));
-    _TRY_NR(indigo_port_features_get(reply));
+
+    if ((rv = indigo_fwd_forwarding_features_get(reply)) < 0) {
+        AIM_LOG_INTERNAL("Failed to get Forwarding features: %s", indigo_strerror(rv));
+    }
+
+    if ((rv = indigo_port_features_get(reply)) < 0) {
+        AIM_LOG_INTERNAL("Failed to get PortManager features: %s", indigo_strerror(rv));
+    }
+
     if (obj->version >= OF_VERSION_1_3) {
         uint8_t auxiliary_id;
-        _TRY_NR(indigo_cxn_get_auxiliary_id(cxn_id, &auxiliary_id)); 
+        indigo_cxn_get_auxiliary_id(cxn_id, &auxiliary_id);
         of_features_reply_auxiliary_id_set(reply, auxiliary_id);
     }
 
