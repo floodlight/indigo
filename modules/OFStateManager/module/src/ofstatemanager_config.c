@@ -248,7 +248,7 @@ ind_core_cfg_commit(void)
     aim_log_t *lobj;
 
     if ((lobj = aim_log_find("ofstatemanager")) == NULL) {
-        AIM_LOG_WARN("Could not find log module");
+        AIM_LOG_INTERNAL("Could not find log module");
     } else {
         lobj->common_flags = staged_config.log_flags;
     }

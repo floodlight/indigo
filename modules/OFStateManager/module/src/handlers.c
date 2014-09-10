@@ -56,8 +56,8 @@ flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
 void
 ind_core_unhandled_message(of_object_t *obj, indigo_cxn_id_t cxn_id)
 {
-    LOG_WARN("Unhandled message %s from cxn %d.",
-             of_object_id_str[obj->object_id], cxn_id);
+    AIM_LOG_WARN("Unhandled message %s from cxn %d.",
+                 of_object_id_str[obj->object_id], cxn_id);
 
     /* Generate error message */
     indigo_cxn_send_error_reply(cxn_id, obj,
@@ -106,7 +106,7 @@ ind_core_port_mod_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_port_no_t port_no;
 
         of_port_mod_port_no_get(obj, &port_no);
-        LOG_ERROR("Failed to modify port %u: %s", port_no, indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to modify port %u: %s", port_no, indigo_strerror(rv));
 
         indigo_cxn_send_error_reply(
                 cxn_id, obj,
@@ -143,8 +143,8 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_port_no_t port_no;
         of_port_stats_request_port_no_get(obj, &port_no);
 
-        LOG_ERROR("Failed to get stats for port %u: %s",
-                  port_no, indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to get stats for port %u: %s",
+                      port_no, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -179,8 +179,8 @@ ind_core_queue_get_config_request_handler(of_object_t *_obj,
 
         indigo_cxn_send_controller_message(cxn_id, reply);
     } else {
-        LOG_ERROR("Failed to get queue config on port %u: %s",
-                  port, indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to get queue config on port %u: %s",
+                      port, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -216,8 +216,8 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         uint32_t queue_id;
         of_queue_stats_request_port_no_get(obj, &port_no);
         of_queue_stats_request_queue_id_get(obj, &queue_id);
-        LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
-                  queue_id, port_no, indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
+                      queue_id, port_no, indigo_strerror(rv));
         /* @todo sending type 0, code 0 error message */
         indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
     }
@@ -239,7 +239,7 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
     }
     of_match_t match;
     if (of_flow_modify_match_get(obj, &match) < 0) {
-        LOG_ERROR("Failed to extract match from flow");
+        AIM_LOG_ERROR("Failed to extract match from flow");
         return INDIGO_ERROR_UNKNOWN;
     }
     minimatch_init(&query->minimatch, &match);
@@ -274,8 +274,13 @@ overlap_found(of_flow_modify_t *obj)
     ft_entry_t *entry;
     list_links_t *cur, *next;
     of_meta_match_t query;
+    indigo_error_t rv;
 
-    _TRY(flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1));
+    rv = flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1);
+    if (rv < 0) {
+        AIM_LOG_INTERNAL("Failed to setup query in overlap_found: %s", indigo_strerror(rv));
+        return rv;
+    }
 
     FT_ITER(ind_core_ft, entry, cur, next) {
         if (ft_entry_meta_match(&query, entry)) {
@@ -331,7 +336,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     if (flags & OF_FLOW_MOD_FLAG_CHECK_OVERLAP_BY_VERSION(ver)) {
         if (overlap_found(obj)) {
-            LOG_TRACE("Overlap found when adding flow");
+            AIM_LOG_TRACE("Overlap found when adding flow");
             indigo_cxn_send_error_reply(
                     cxn_id, obj,
                     OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
@@ -342,7 +347,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     if ((flags & OF_FLOW_MOD_FLAG_EMERG_BY_VERSION(ver)) &&
         (idle_timeout != 0 || hard_timeout != 0)) {
-        LOG_TRACE("Attempted to set timeout on an emergency flow");
+        AIM_LOG_TRACE("Attempted to set timeout on an emergency flow");
         indigo_cxn_send_error_reply(
                 cxn_id, obj,
                 OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
@@ -367,7 +372,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_OVERWRITE, cxn_id);
         } else {
             /* Overwrite existing flow */
-            LOG_TRACE("Overwriting existing flow");
+            AIM_LOG_TRACE("Overwriting existing flow");
             ind_core_table_t *table = ind_core_table_get(entry->table_id);
             if (table != NULL) {
                 rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
@@ -378,8 +383,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             if (rv == INDIGO_ERROR_NONE) {
                 ft_overwrite(ind_core_ft, entry, obj);
             } else {
-                LOG_ERROR("Error from Forwarding while modifying flow: %d",
-                          indigo_strerror(rv));
+                AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
+                              indigo_strerror(rv));
                 flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
             }
 
@@ -389,14 +394,14 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     /* No match found, add as normal */
-    LOG_TRACE("Adding new flow");
+    AIM_LOG_TRACE("Adding new flow");
 
     flow_id = flow_id_next();
 
     rv = ft_add(ind_core_ft, flow_id, obj, &minimatch, &entry);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to insert flow in OFStateManager flowtable: %s",
-                  indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to insert flow in OFStateManager flowtable: %s",
+                         indigo_strerror(rv));
         /* TODO send error */
         return;
     }
@@ -411,16 +416,16 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     if (rv == INDIGO_ERROR_NONE) {
-        LOG_TRACE("Flow table now has %d entries",
-                  ind_core_ft->current_count);
+        AIM_LOG_TRACE("Flow table now has %d entries",
+                      ind_core_ft->current_count);
         if (table != NULL) {
             table->num_flows += 1;
         }
     } else { /* Error during insertion at forwarding layer */
        uint32_t xid;
 
-       LOG_ERROR("Error from Forwarding while inserting flow: %s",
-                 indigo_strerror(rv));
+       AIM_LOG_ERROR("Error from Forwarding while inserting flow: %s",
+                     indigo_strerror(rv));
        debug_counter_inc(&ft_forwarding_add_error_counter);
 
        of_flow_add_xid_get(obj, &xid);
@@ -561,18 +566,18 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
         } else {
-            LOG_ERROR("Error from Forwarding while modifying flow: %d",
-                      indigo_strerror(rv));
+            AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
+                          indigo_strerror(rv));
             flow_mod_err_msg_send(rv, state->request->version,
                                   state->cxn_id, state->request);
         }
     } else {
         if (state->num_matched == 0) {
-            LOG_TRACE("No entries to modify, treat as add");
+            AIM_LOG_TRACE("No entries to modify, treat as add");
             /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
             ind_core_flow_add_handler(state->request, state->cxn_id);
         } else {
-            LOG_TRACE("Finished flow modify task");
+            AIM_LOG_TRACE("Finished flow modify task");
         }
         indigo_cxn_resume(state->cxn_id);
         of_object_delete(state->request);
@@ -647,7 +652,7 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     metamatch_cleanup(&query);
 
     if (rv == INDIGO_ERROR_NOT_FOUND) {
-        LOG_TRACE("No entries to modify strict, treat as add.");
+        AIM_LOG_TRACE("No entries to modify strict, treat as add.");
         /* OpenFlow 1.0.0, section 4.6, page 14.  Treat as an add */
         ind_core_flow_add_handler(_obj, cxn_id);
         return;
@@ -663,8 +668,8 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (rv == INDIGO_ERROR_NONE) {
         ft_entry_modify_effects(ind_core_ft, entry, obj);
     } else {
-        LOG_ERROR("Error from Forwarding while modifying flow: %d",
-                  indigo_strerror(rv));
+        AIM_LOG_ERROR("Error from Forwarding while modifying flow: %s",
+                      indigo_strerror(rv));
         flow_mod_err_msg_send(rv, obj->version, cxn_id, obj);
     }
 }
@@ -685,7 +690,7 @@ delete_iter_cb(void *cookie, ft_entry_t *entry)
     if (entry != NULL) {
         ind_core_flow_entry_delete(entry, INDIGO_FLOW_REMOVED_DELETE, state->cxn_id);
     } else {
-        LOG_TRACE("Finished flow delete task");
+        AIM_LOG_TRACE("Finished flow delete task");
         indigo_cxn_resume(state->cxn_id);
         aim_free(state);
     }
@@ -773,7 +778,7 @@ ind_core_get_config_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     /* Allocate reply */
     reply = of_get_config_reply_new(obj->version);
     if (reply == NULL) {
-        LOG_TRACE("Could not alloc get_config_reply.");
+        AIM_LOG_TRACE("Could not alloc get_config_reply.");
         return;
     }
 
@@ -808,14 +813,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     if (state->reply == NULL) {
         state->reply = of_flow_stats_reply_new(state->version);
         if (state->reply == NULL) {
-            LOG_ERROR("Failed to allocate of_flow_stats_reply.");
-            if (entry == NULL) {
-                /* This is the last callback, so need to clean up
-                 * before returning. */
-                indigo_cxn_resume(state->cxn_id);
-                aim_free(state);
-            }
-            return;
+            AIM_DIE("Failed to allocate of_flow_stats_reply");
         }
 
         of_flow_stats_reply_xid_set(state->reply, state->xid);
@@ -849,14 +847,14 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     }
 
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
-                  entry->id, indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                      entry->id, indigo_strerror(rv));
         return;
     }
 
     /* Skip entry if stats request version is not equal to entry version */
     if (state->version != entry->effects.actions->version) {
-        LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
+        AIM_LOG_TRACE("Stats request version (%d) differs from entry version (%d). "
                   "Entry is skipped.",
                   state->version, entry->effects.actions->version);
         return;
@@ -872,7 +870,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         of_flow_stats_reply_entries_bind(state->reply, &list);
         of_flow_stats_entry_init(&stats_entry, state->reply->version, -1, 1);
         if (of_list_flow_stats_entry_append_bind(&list, &stats_entry)) {
-            LOG_ERROR("failed to append to flow stats list");
+            AIM_LOG_INTERNAL("Failed to append to flow stats list");
             return;
         }
 
@@ -889,7 +887,7 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
         minimatch_expand(&entry->minimatch, &match);
 
         if (of_flow_stats_entry_match_set(&stats_entry, &match)) {
-            LOG_ERROR("Failed to set match in flow stats entry");
+            AIM_LOG_INTERNAL("Failed to set match in flow stats entry");
             return;
         }
 
@@ -897,13 +895,13 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
             if (stats_entry.version == OF_VERSION_1_0) {
                 if (of_flow_stats_entry_actions_set(
                         &stats_entry, entry->effects.actions) < 0) {
-                    LOG_ERROR("Failed to set actions list of flow stats entry");
+                    AIM_LOG_INTERNAL("Failed to set actions list of flow stats entry");
                     return;
                 }
             } else {
                 if (of_flow_stats_entry_instructions_set(
                         &stats_entry, entry->effects.instructions) < 0) {
-                    LOG_ERROR("Failed to set instructions list of flow stats entry");
+                    AIM_LOG_INTERNAL("Failed to set instructions list of flow stats entry");
                     return;
                 }
             }
@@ -941,7 +939,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     of_match_t match;
     if (of_flow_stats_request_match_get(obj, &match) < 0) {
-        LOG_ERROR("Failed to get flow stats match.");
+        AIM_LOG_INTERNAL("Failed to get flow stats match");
         return;
     }
     minimatch_init(&query.minimatch, &match);
@@ -966,7 +964,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_flow_stats_iter,
                             state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to start flow stats iter: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to start flow stats iter: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         aim_free(state);
     }
@@ -1006,8 +1004,8 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
         }
 
         if (rv != INDIGO_ERROR_NONE) {
-            LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
-                      entry->id, indigo_strerror(rv));
+            AIM_LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
+                          entry->id, indigo_strerror(rv));
             return;
         }
 
@@ -1024,7 +1022,7 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
             of_aggregate_stats_reply_flow_count_set(reply, state->flows);
             indigo_cxn_send_controller_message(state->cxn_id, reply);
         } else {
-            LOG_ERROR("Failed to allocate aggregate stats reply.");
+            AIM_DIE("Failed to allocate aggregate stats reply");
         }
         indigo_cxn_resume(state->cxn_id);
         aim_free(state);
@@ -1051,7 +1049,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     INDIGO_MEM_SET(&query, 0, sizeof(query));
     of_match_t match;
     if (of_aggregate_stats_request_match_get(obj, &match) < 0) {
-        LOG_ERROR("Failed to get aggregate stats match.");
+        AIM_LOG_INTERNAL("Failed to get aggregate stats match.");
         return;
     }
     minimatch_init(&query.minimatch, &match);
@@ -1077,7 +1075,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
     rv = ft_spawn_iter_task(ind_core_ft, &query, ind_core_aggregate_stats_iter,
                             state, IND_SOC_NORMAL_PRIORITY);
     if (rv != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Failed to start aggregate stats iter: %s", indigo_strerror(rv));
         indigo_cxn_resume(cxn_id);
         aim_free(state);
         return;
@@ -1103,8 +1101,7 @@ ind_core_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
     /* Create reply and send to controller */
     if ((reply = of_desc_stats_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create desc stats reply message");
-        return;
+        AIM_DIE("Failed to allocate desc stats reply message");
     }
 
     of_desc_stats_request_xid_get(obj, &xid);
@@ -1140,7 +1137,7 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     if (ind_core_num_tables_registered == 0) {
         rv = indigo_fwd_table_stats_get(obj, &reply);
         if (rv < 0) {
-            LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
+            AIM_LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
             /* TODO send error */
             return;
         }
@@ -1211,8 +1208,7 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
 
     /* Generate a port_desc_stats reply and send to controller */
     if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create port_desc_stats reply message");
-        return;
+        AIM_DIE("Failed to allocate port_desc_stats reply message");
     }
 
     of_port_desc_stats_request_xid_get(obj, &xid);
@@ -1238,23 +1234,30 @@ ind_core_features_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_features_reply_t *reply;
     uint32_t xid;
     of_dpid_t dpid;
+    indigo_error_t rv;
 
     /* Generate a features reply and send to controller */
     if ((reply = of_features_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create features reply message");
-        return;
+        AIM_DIE("Failed to allocate features reply message");
     }
 
     of_features_request_xid_get(obj, &xid);
     of_features_reply_xid_set(reply, xid);
-    _TRY_NR(indigo_core_dpid_get(&dpid));
+    indigo_core_dpid_get(&dpid);
     of_features_reply_datapath_id_set(reply, dpid);
     of_features_reply_n_buffers_set(reply, 0);
-    _TRY_NR(indigo_fwd_forwarding_features_get(reply));
-    _TRY_NR(indigo_port_features_get(reply));
+
+    if ((rv = indigo_fwd_forwarding_features_get(reply)) < 0) {
+        AIM_LOG_INTERNAL("Failed to get Forwarding features: %s", indigo_strerror(rv));
+    }
+
+    if ((rv = indigo_port_features_get(reply)) < 0) {
+        AIM_LOG_INTERNAL("Failed to get PortManager features: %s", indigo_strerror(rv));
+    }
+
     if (obj->version >= OF_VERSION_1_3) {
         uint8_t auxiliary_id;
-        _TRY_NR(indigo_cxn_get_auxiliary_id(cxn_id, &auxiliary_id)); 
+        indigo_cxn_get_auxiliary_id(cxn_id, &auxiliary_id);
         of_features_reply_auxiliary_id_set(reply, auxiliary_id);
     }
 
@@ -1276,9 +1279,9 @@ ind_core_set_config_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     /* Handle object of type of_set_config_t */
     ind_core_of_config.config_set_done = 1;
     of_set_config_flags_get(obj, &ind_core_of_config.flags);
-    LOG_VERBOSE("Config flags set to 0x%x", ind_core_of_config.flags);
+    AIM_LOG_VERBOSE("Config flags set to 0x%x", ind_core_of_config.flags);
     of_set_config_miss_send_len_get(obj, &ind_core_of_config.miss_send_len);
-    LOG_VERBOSE("Miss send len set to %d", ind_core_of_config.miss_send_len);
+    AIM_LOG_VERBOSE("Miss send len set to %d", ind_core_of_config.miss_send_len);
 }
 
 /**
@@ -1322,10 +1325,10 @@ ind_core_experimenter_handler(of_object_t *obj, indigo_cxn_id_t cxn_id)
 
     /* Handle object of type of_experimenter_t */
     if ((fwd_rv = indigo_fwd_experimenter(obj, cxn_id)) < 0) {
-        LOG_TRACE("Error from fwd_experimenter: %s", indigo_strerror(fwd_rv));
+        AIM_LOG_TRACE("Error from fwd_experimenter: %s", indigo_strerror(fwd_rv));
     }
     if ((port_rv = indigo_port_experimenter(obj, cxn_id)) < 0) {
-        LOG_TRACE("Error from port_experimenter: %s", indigo_strerror(port_rv));
+        AIM_LOG_TRACE("Error from port_experimenter: %s", indigo_strerror(port_rv));
     }
 
     if ((fwd_rv == INDIGO_ERROR_NOT_SUPPORTED) &&
@@ -1346,7 +1349,7 @@ ind_core_experimenter_handler(of_object_t *obj, indigo_cxn_id_t cxn_id)
     }
 
     if (rv < 0) {
-        LOG_VERBOSE("Error handling experimenter message in port or fwding");
+        AIM_LOG_VERBOSE("Error handling experimenter message in port or fwding");
     }
 }
 
@@ -1371,12 +1374,11 @@ ind_core_bsn_hybrid_get_request_handler(of_object_t *_obj,
     of_bsn_hybrid_get_reply_t *reply;
     uint32_t xid;
 
-    LOG_TRACE("Received BSN hybrid_get message from %d", cxn_id);
+    AIM_LOG_TRACE("Received BSN hybrid_get message from %d", cxn_id);
 
     /* Create reply and send to controller */
     if ((reply = of_bsn_hybrid_get_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create hybrid_get reply message");
-        return;
+        AIM_DIE("Failed to allocate hybrid_get reply message");
     }
 
     of_bsn_hybrid_get_request_xid_get(obj, &xid);
@@ -1404,8 +1406,7 @@ ind_core_bsn_sw_pipeline_get_request_handler(of_object_t *_obj,
     of_desc_str_t pipeline;
 
     if ((reply = of_bsn_get_switch_pipeline_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create sw pipeline get reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline get reply message");
     }
 
     of_bsn_get_switch_pipeline_request_xid_get(obj, &xid);
@@ -1436,16 +1437,15 @@ ind_core_bsn_sw_pipeline_set_request_handler(of_object_t *_obj,
     of_desc_str_t pipeline;
 
     if ((reply = of_bsn_set_switch_pipeline_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create sw pipeline set reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline set reply message");
     }
 
     of_bsn_set_switch_pipeline_request_pipeline_get(obj, &pipeline);
     of_bsn_set_switch_pipeline_request_xid_get(obj, &xid);
 
-    LOG_INFO("Setting pipeline: %s", pipeline);
+    AIM_LOG_VERBOSE("Setting pipeline: %s", pipeline);
     if ((rv = indigo_fwd_pipeline_set(pipeline)) != INDIGO_ERROR_NONE) {
-        LOG_ERROR("Failed to set pipeline: %s", indigo_strerror(rv));
+        AIM_LOG_ERROR("Failed to set switch pipeline: %s", indigo_strerror(rv));
         of_bsn_set_switch_pipeline_reply_status_set(reply, 1);
     } else {
         of_bsn_set_switch_pipeline_reply_status_set(reply, 0);
@@ -1476,8 +1476,7 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
     of_desc_str_t *pipelines;
 
     if ((reply = of_bsn_switch_pipeline_stats_reply_new(obj->version)) == NULL) {
-        LOG_ERROR("Failed to create sw pipeline stats reply message");
-        return;
+        AIM_DIE("Failed to allocate sw pipeline stats reply message");
     }
 
     version = obj->version;
@@ -1493,7 +1492,7 @@ ind_core_bsn_sw_pipeline_stats_request_handler(of_object_t *_obj,
         of_bsn_switch_pipeline_stats_entry_init(&entry, version, -1, 1);
         if (of_list_bsn_switch_pipeline_stats_entry_append_bind(&list,
                                                                 &entry)) {
-            LOG_ERROR("Failed to append to pipeline stats list");
+            AIM_LOG_INTERNAL("Failed to append to pipeline stats list");
             break;
         } else {
             of_bsn_switch_pipeline_stats_entry_pipeline_set(&entry,

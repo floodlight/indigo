@@ -141,7 +141,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     ft_entry_t *entry = NULL;
     indigo_error_t rv;
 
-    LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
+    AIM_LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
 
     /* If flow ID already exists, error. */
     if (ft_lookup(ft, id) != NULL) {
@@ -170,7 +170,7 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
 void
 ft_delete(ft_instance_t ft, ft_entry_t *entry)
 {
-    LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
+    AIM_LOG_TRACE("Delete flow " INDIGO_FLOW_ID_PRINTF_FORMAT, entry->id);
 
     ft_checksum_subtract(ft, entry);
     ft_entry_unlink(ft, entry);
@@ -343,7 +343,7 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         break;
     default:
         /* Internal error */
-        AIM_LOG_ERROR("Internal error: unknown query mode %d", query->mode);
+        AIM_LOG_INTERNAL("Unknown flowtable query mode %d", query->mode);
         break;
     }
 
@@ -357,8 +357,8 @@ ft_entry_modify_effects(ft_instance_t instance,
 {
     indigo_error_t err;
 
-    LOG_TRACE("Modifying effects of entry " INDIGO_FLOW_ID_PRINTF_FORMAT,
-              entry->id);
+    AIM_LOG_TRACE("Modifying effects of entry " INDIGO_FLOW_ID_PRINTF_FORMAT,
+                  entry->id);
 
     err = ft_entry_set_effects(entry, flow_mod);
     if (err == INDIGO_ERROR_NONE) {
@@ -684,16 +684,14 @@ ft_entry_set_effects(ft_entry_t *entry,
     {
         of_list_action_t *actions;
         if ((actions = of_flow_modify_actions_get(flow_mod)) == NULL) {
-            LOG_ERROR("Could not get action list");
-            return INDIGO_ERROR_RESOURCE;
+            AIM_DIE("Failed to allocate action list");
         }
         of_list_action_delete(entry->effects.actions);
         entry->effects.actions = actions;
     } else {
         of_list_instruction_t *instructions;
         if ((instructions = of_flow_modify_instructions_get(flow_mod)) == NULL) {
-            LOG_ERROR("Could not get instruction list");
-            return INDIGO_ERROR_RESOURCE;
+            AIM_DIE("Failed to allocate instruction list");
         }
         of_list_instruction_delete(entry->effects.instructions);
         entry->effects.instructions = instructions;

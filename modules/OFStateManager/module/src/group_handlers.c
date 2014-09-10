@@ -499,7 +499,7 @@ void indigo_core_group_table_register(
     AIM_TRUE_OR_DIE(ind_core_group_tables[table_id] == NULL);
     ind_core_group_tables[table_id] = table;
 
-    LOG_INFO("Registered group table \"%s\" with table id %d", name, table_id);
+    AIM_LOG_VERBOSE("Registered group table \"%s\" with table id %d", name, table_id);
 }
 
 void indigo_core_group_table_unregister(uint8_t table_id)
@@ -520,7 +520,7 @@ void indigo_core_group_table_unregister(uint8_t table_id)
         if (group_table_for_id(group->id) == table) {
             uint16_t err_code;
             if (ind_core_group_delete_one(group, INDIGO_CXN_ID_UNSPECIFIED, &err_code) < 0) {
-                AIM_LOG_WARN("Failed to delete group %d, leaking", group->id);
+                AIM_LOG_WARN("Failed to delete group %d during unregister, leaking", group->id);
             }
         }
     }

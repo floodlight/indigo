@@ -475,12 +475,12 @@ do_barrier(void)
     int count = 0;
     assert(outstanding_op_cnt >= 0);
     while (outstanding_op_cnt > 0) {
-        LOG_VERBOSE("Waiting for barrier (outstanding_op_cnt %d)", outstanding_op_cnt);
+        AIM_LOG_VERBOSE("Waiting for barrier (outstanding_op_cnt %d)", outstanding_op_cnt);
         ind_soc_select_and_run(0);
         count++;
     }
     if (count > 0) {
-        LOG_VERBOSE("Ran %d event loop iterations while waiting for barrier", count);
+        AIM_LOG_VERBOSE("Ran %d event loop iterations while waiting for barrier", count);
     }
     return 0;
 }
