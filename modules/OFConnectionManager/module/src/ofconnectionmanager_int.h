@@ -43,17 +43,6 @@
 #endif
 
 /**
- * Try an operation and return the error code on failure.
- */
-#define _TRY(op) do {                                                   \
-        int _rv;                                                        \
-        if ((_rv = (op)) < 0) {                                         \
-            AIM_LOG_ERROR("ERROR %d at %s:%d\n", _rv, __FILE__, __LINE__); \
-            return _rv;                                                 \
-        }                                                               \
-    } while (0)
-
-/**
  * Default value for the aux connections echo period in milliseconds
  */
 #define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
