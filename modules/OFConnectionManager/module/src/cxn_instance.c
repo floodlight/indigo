@@ -498,8 +498,8 @@ send_barrier_reply(connection_t *cxn)
 {
    of_barrier_reply_t *obj = 0;
 
-   if ((obj = of_barrier_reply_new(cxn->status.negotiated_version)) == 0) {
-      LOG_ERROR(cxn, "Failed to allocate barrier reply");
+   if ((obj = of_barrier_reply_new(cxn->status.negotiated_version)) == NULL) {
+      AIM_DIE("Failed to allocate barrier reply");
       return INDIGO_ERROR_UNKNOWN;
    }
 
@@ -784,7 +784,7 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
 
     reply = of_bsn_time_reply_new(request->version);
     if (reply == NULL) {
-        LOG_ERROR(cxn, "Failed to allocate of_bsn_time_reply");
+        AIM_DIE("Failed to allocate of_bsn_time_reply");
         return;
     }
 
@@ -811,7 +811,7 @@ bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
 
     reply = of_bsn_controller_connections_reply_new(request->version);
     if (reply == NULL) {
-        LOG_ERROR(cxn, "Failed to allocate of_bsn_controller_connections_reply");
+        AIM_DIE("Failed to allocate of_bsn_controller_connections_reply");
         return;
     }
 
@@ -842,7 +842,7 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
 
     reply = of_bsn_set_aux_cxns_reply_new(request->version);
     if (reply == NULL) {
-        LOG_ERROR(cxn, "Failed to allocate of_bsn_set_aux_cxns_reply");
+        AIM_DIE("Failed to allocate of_bsn_set_aux_cxns_reply");
         return;
     }
 
@@ -1190,7 +1190,7 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
 
     error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
     if (error_msg == NULL) {
-        LOG_ERROR(cxn, "Could not allocate error message");
+        AIM_DIE("Could not allocate error message");
         return;
     }
 
@@ -1509,8 +1509,7 @@ ind_cxn_send_hello(connection_t *cxn)
     INDIGO_ASSERT(config_params != NULL);
 
     if ((hello = of_hello_new(config_params->version)) == NULL) {
-        LOG_ERROR(cxn, "Could not allocate hello object");
-        return INDIGO_ERROR_RESOURCE;
+        AIM_DIE("Could not allocate hello object");
     }
 
     of_hello_xid_set(hello, (uint32_t)ind_cxn_xid_get());

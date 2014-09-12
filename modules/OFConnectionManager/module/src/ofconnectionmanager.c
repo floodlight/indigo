@@ -900,8 +900,7 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
     if (cxn->status.negotiated_version == OF_VERSION_1_3) {
         of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
         if (msg == NULL) {
-            AIM_LOG_INFO("Failed to allocate role status message");
-            return;
+            AIM_DIE("Failed to allocate role status message");
         }
         of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
         of_bsn_role_status_reason_set(msg, reason);
@@ -1430,8 +1429,7 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
                   CXN_FMT_ARGS(cxn), type, code);
 
     if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
-        AIM_LOG_ERROR("Could not allocate error message");
-        return;
+        AIM_DIE("Could not allocate error message");
     }
 
     of_hello_failed_error_msg_xid_set(msg, xid);
