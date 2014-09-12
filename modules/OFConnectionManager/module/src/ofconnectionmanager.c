@@ -90,13 +90,6 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
  */
 static controller_t controllers[MAX_CONTROLLERS];
 
-/**
- * Preferred connection when UNSPECIFIED is used
- *
- * For now, preferred is always a remote connection
- */
-static int preferred_cxn_id = -1;
-
 #define INVALID_ID -1
 
 /****************************************************************
@@ -331,26 +324,16 @@ ind_cxn_status_change(connection_t *cxn)
 		 );
     }
 
-    /* Select this as preferred if no other connection known */
     if (!CXN_LOCAL(cxn)) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
             ++remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
-            if (preferred_cxn_id == -1) {
-                AIM_LOG_VERBOSE("Setting preferred cxn to " CXN_FMT,
-                                CXN_FMT_ARGS(cxn));
-                preferred_cxn_id = cxn->cxn_id;
-            }
         } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
             ind_cxn_status_notify();
         } else if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
             --remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
             ind_cxn_status_notify();
-            if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
-                AIM_LOG_VERBOSE("Clearing preferred connection");
-                preferred_cxn_id = -1;
-            }
         }
     }
 
