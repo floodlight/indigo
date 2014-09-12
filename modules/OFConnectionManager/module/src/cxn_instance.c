@@ -466,7 +466,7 @@ periodic_keepalive(void *cookie)
 
     if (cxn->keepalive.outstanding_echo_cnt > cxn->keepalive.threshold) {
         if (cxn->auxiliary_id == 0) {
-            LOG_INFO(cxn, "Exceeded maximum outstanding echo requests (%d) on main connection. Disconnecting.",
+            LOG_WARN(cxn, "Exceeded maximum outstanding echo requests (%d) on main connection. Disconnecting.",
                      cxn->keepalive.threshold);
             ind_controller_disconnect(cxn->controller);
         } else {
@@ -1593,7 +1593,7 @@ ind_cxn_try_to_connect(connection_t *cxn)
                (errno != EINPROGRESS) &&
                (errno != EALREADY)) {
         if ((cxn->fail_count & (cxn->fail_count - 1)) == 0) {
-            LOG_INFO(cxn, "Could not connect in %d tries: %s",
+            LOG_WARN(cxn, "Could not connect in %d tries: %s",
                      cxn->fail_count, strerror(errno));
         }
         close(cxn->sd);
