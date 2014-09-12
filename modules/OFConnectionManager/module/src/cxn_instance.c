@@ -61,6 +61,8 @@
     AIM_LOG_VERBOSE("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 #define LOG_TRACE(cxn, fmt, ...)                                        \
     AIM_LOG_TRACE("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
+#define LOG_INTERNAL(cxn, fmt, ...)                                        \
+    AIM_LOG_INTERNAL("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 
 #define LOG_LOCAL(cxn, fmt, ...)                                        \
     OFCONNECTIONMANAGER_LOG_LOCAL("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
@@ -261,10 +263,10 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
     }
 
     if (!CXN_LOCAL(cxn)) {
-        LOG_INFO(cxn, "%s->%s (id "CXN_ID_FMT")",
-                 CXN_STATE_NAME(old_state),
-                 CXN_STATE_NAME(new_state),
-                 CXN_ID_FMT_ARGS(cxn->cxn_id));
+        LOG_VERBOSE(cxn, "%s->%s (id "CXN_ID_FMT")",
+                    CXN_STATE_NAME(old_state),
+                    CXN_STATE_NAME(new_state),
+                    CXN_ID_FMT_ARGS(cxn->cxn_id));
     } else {
         LOG_LOCAL(cxn, "%s->%s (id "CXN_ID_FMT")",
                   CXN_STATE_NAME(old_state),
@@ -284,8 +286,8 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
     case INDIGO_CXN_S_DISCONNECTED:
         /* If moving to disconnected, must be closing (or disconnected) */
         if ((old_state != INDIGO_CXN_S_CLOSING)) {
-            LOG_ERROR(cxn, "Error in cxn SM: disconnected from %s",
-                      CXN_STATE_NAME(old_state));
+            LOG_INTERNAL(cxn, "Error in cxn SM: disconnected from %s",
+                         CXN_STATE_NAME(old_state));
             /* Clean up and hope for the best */
         }
         break;
@@ -413,8 +415,8 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
     int rv = INDIGO_ERROR_NONE;
 
     if (obj->object_id != OF_HELLO) {
-        LOG_ERROR(cxn, "Expecting HELLO but received %s message",
-                  of_object_id_str[obj->object_id]);
+        LOG_WARN(cxn, "Expecting HELLO but received %s message",
+                 of_object_id_str[obj->object_id]);
         rv = INDIGO_ERROR_PROTOCOL;
     } else {
         LOG_VERBOSE(cxn, "Received HELLO message (version %d)",
@@ -647,19 +649,19 @@ nicira_controller_role_request_handle(connection_t *cxn, of_object_t *_obj)
 
     role = translate_from_nicira_role(wire_role);
     if (role == INDIGO_CXN_R_UNKNOWN) {
-        LOG_ERROR(cxn, "Invalid role in role request message");
+        LOG_WARN(cxn, "Invalid role in role request message");
         of_object_delete(reply);
         return INDIGO_ERROR_UNKNOWN;
     }
 
-    LOG_VERBOSE(cxn, "Controller %d role request: %s", 
+    LOG_VERBOSE(cxn, "Controller %d role request: %s",
                 cxn->controller->controller_id, role_to_string(role));
     if (role != cxn->controller->role) {
         if (role == INDIGO_CXN_R_MASTER) {
             ind_controller_change_master(cxn->controller->controller_id);
         } else {
-            LOG_INFO(cxn, "Setting role for controller %d to %s", 
-                     cxn->controller->controller_id, role_to_string(role));
+            LOG_VERBOSE(cxn, "Setting role for controller %d to %s",
+                        cxn->controller->controller_id, role_to_string(role));
             cxn->controller->role = role;
         }
 
@@ -752,7 +754,7 @@ role_request_handle(connection_t *cxn, of_object_t *_obj)
             if (role == INDIGO_CXN_R_MASTER) {
                 ind_controller_change_master(cxn->controller->controller_id);
             } else {
-                LOG_INFO(cxn, "Setting role to %s", role_to_string(role));
+                LOG_VERBOSE(cxn, "Setting role to %s", role_to_string(role));
                 cxn->controller->role = role;
             }
 
@@ -894,7 +896,7 @@ bsn_log_handle(connection_t *cxn, of_object_t *_obj)
 #undef level
 
     default:
-        LOG_ERROR(cxn, "Invalid loglevel in bsn_log message");
+        LOG_WARN(cxn, "Invalid loglevel in bsn_log message");
         indigo_cxn_send_error_reply(
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
@@ -1059,7 +1061,7 @@ read_from_cxn(connection_t *cxn)
     if (bytes_in <= 0) {
         if (bytes_in == 0) { /* Socket is closed */
             if (!CXN_LOCAL(cxn)) {
-                LOG_INFO(cxn, "Connection closed by remote host");
+                LOG_VERBOSE(cxn, "Connection closed by remote host");
             }
             return INDIGO_ERROR_CONNECTION;
         }
@@ -1198,7 +1200,7 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     of_bad_request_error_msg_code_set(error_msg, code);
 
     if (of_bad_request_error_msg_data_set(error_msg, &payload) < 0) {
-        LOG_WARN(cxn, "Failed to append original request to error message");
+        LOG_INTERNAL(cxn, "Failed to append original request to error message");
     }
 
     indigo_cxn_send_controller_message(cxn->cxn_id, error_msg);
@@ -1219,7 +1221,6 @@ process_message(connection_t *cxn)
 {
     of_object_t *obj;
     int len;
-    int rv;
     of_object_storage_t obj_storage;
 
     /* Clear read buffer for next read */
@@ -1229,11 +1230,11 @@ process_message(connection_t *cxn)
 
     obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
-        LOG_ERROR(cxn, "Failed to parse OpenFlow message version=%u type=%u length=%u xid=%u",
-                  of_message_version_get(cxn->read_buffer),
-                  of_message_type_get(cxn->read_buffer),
-                  of_message_length_get(cxn->read_buffer),
-                  of_message_xid_get(cxn->read_buffer));
+        LOG_WARN(cxn, "Failed to parse OpenFlow message version=%u type=%u length=%u xid=%u",
+                 of_message_version_get(cxn->read_buffer),
+                 of_message_type_get(cxn->read_buffer),
+                 of_message_length_get(cxn->read_buffer),
+                 of_message_xid_get(cxn->read_buffer));
         send_parse_error_message(cxn, cxn->read_buffer, len);
         return;
     }
@@ -1273,10 +1274,7 @@ process_message(connection_t *cxn)
 
     /* FIXME:  Needs to be generalized to "handshake" state */
     if (!VERSION_IS_SET(cxn)) {/* Get version from initial hello message */
-        if ((rv = check_for_hello(cxn, obj)) < 0) {
-            LOG_ERROR(cxn, "Failed to check for hello", indigo_strerror(rv));
-            /* @fixme Should state be updated for some return codes? */
-        }
+        check_for_hello(cxn, obj);
     } else {
         /* Process received message */
         of_msg_process(cxn, obj);
@@ -1468,8 +1466,8 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     msg_len = of_message_length_get(data);
     AIM_ASSERT(len == msg_len, "Inconsistent message length");
     if (len != msg_len) {
-        LOG_ERROR(cxn, "Error in message length: %d != %d, discarding",
-                  len, msg_len);
+        LOG_INTERNAL(cxn, "Error in message length: %d != %d, discarding",
+                     len, msg_len);
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -1538,8 +1536,8 @@ ind_cxn_try_to_connect(connection_t *cxn)
     cxn->fail_count++;
 
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
-        LOG_ERROR(cxn, "Called try to connect when state is %s",
-                  CXN_STATE_NAME(CONNECTION_STATE(cxn)));
+        LOG_INTERNAL(cxn, "Called try to connect when state is %s",
+                     CXN_STATE_NAME(CONNECTION_STATE(cxn)));
         return -1;
     }
 
@@ -1732,7 +1730,7 @@ ind_cxn_pause(connection_t *cxn)
 {
     AIM_ASSERT(!cxn->paused);
     if (ind_soc_data_in_pause(cxn->sd) < 0) {
-        LOG_ERROR(cxn, "Error pausing connection");
+        LOG_INTERNAL(cxn, "Error pausing connection");
         return;
     }
     cxn->paused = true;
