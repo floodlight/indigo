@@ -65,10 +65,6 @@
 #define LOG_LOCAL(cxn, fmt, ...)                                        \
     OFCONNECTIONMANAGER_LOG_LOCAL("cxn " CXN_FMT ": " fmt, CXN_FMT_ARGS(cxn) , ##__VA_ARGS__)
 
-
-#define NO_CXN_LOG_VERBOSE(fmt, ...)                                    \
-    AIM_LOG_VERBOSE(fmt, ##__VA_ARGS__)
-
 #define STATE_INFO_INIT(s, t) { .name = #s, .timeout = t }
 state_info_t state_info[INDIGO_CXN_S_COUNT] = {
     STATE_INFO_INIT(DISCONNECTED, 0),
