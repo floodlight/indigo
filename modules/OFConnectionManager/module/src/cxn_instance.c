@@ -502,7 +502,6 @@ send_barrier_reply(connection_t *cxn)
 
    if ((obj = of_barrier_reply_new(cxn->status.negotiated_version)) == NULL) {
       AIM_DIE("Failed to allocate barrier reply");
-      return INDIGO_ERROR_UNKNOWN;
    }
 
    of_barrier_reply_xid_set(obj, cxn->barrier.xid);
@@ -787,7 +786,6 @@ bsn_time_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_time_reply_new(request->version);
     if (reply == NULL) {
         AIM_DIE("Failed to allocate of_bsn_time_reply");
-        return;
     }
 
     time_ms = INDIGO_TIME_DIFF_ms(cxn->hello_time, INDIGO_CURRENT_TIME);
@@ -814,7 +812,6 @@ bsn_controller_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_controller_connections_reply_new(request->version);
     if (reply == NULL) {
         AIM_DIE("Failed to allocate of_bsn_controller_connections_reply");
-        return;
     }
 
     of_bsn_controller_connections_reply_xid_set(reply, xid);
@@ -845,7 +842,6 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     reply = of_bsn_set_aux_cxns_reply_new(request->version);
     if (reply == NULL) {
         AIM_DIE("Failed to allocate of_bsn_set_aux_cxns_reply");
-        return;
     }
 
     of_bsn_set_aux_cxns_reply_xid_set(reply, xid);
@@ -1193,7 +1189,6 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
     if (error_msg == NULL) {
         AIM_DIE("Could not allocate error message");
-        return;
     }
 
     of_bad_request_error_msg_xid_set(error_msg, xid);
