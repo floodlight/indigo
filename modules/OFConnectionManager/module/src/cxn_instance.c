@@ -380,7 +380,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
                 cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
         }
 
-        if (cxn->auxiliary_id == 0) {
+        if (!CXN_LOCAL(cxn) && cxn->auxiliary_id == 0) {
             AIM_LOG_INFO("Connected to controller %s",
                          proto_ip_string(get_connection_params(cxn)));
         }
