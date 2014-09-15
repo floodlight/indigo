@@ -69,13 +69,6 @@ static void after_callback(void);
 static int init_done = 0;
 static int module_enabled = 0;
 
-/* Short hand logging macros */
-#define LOG_ERROR AIM_LOG_ERROR
-#define LOG_WARN AIM_LOG_WARN
-#define LOG_INFO AIM_LOG_INFO
-#define LOG_VERBOSE AIM_LOG_VERBOSE
-#define LOG_TRACE AIM_LOG_TRACE
-
 #define INVALID_SOCKET_ID -1
 
 /* Maximum simultaneous sockets to support */
@@ -209,19 +202,19 @@ ind_soc_socket_register_with_priority(int socket_id,
     AIM_ASSERT(priority >= IND_SOC_LOWEST_PRIORITY &&
                priority <= IND_SOC_HIGHEST_PRIORITY);
 
-    LOG_VERBOSE("Register socket %d", socket_id);
+    AIM_LOG_VERBOSE("Register socket %d", socket_id);
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_ERROR("Socket ID out of range: id %d", socket_id);
+        AIM_LOG_ERROR("Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (callback == NULL) {
-        LOG_ERROR("No callback specified");
+        AIM_LOG_ERROR("No callback specified");
         return INDIGO_ERROR_PARAM;
     }
 
     if (IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("Socket %d exists", socket_id);
+        AIM_LOG_INFO("Socket %d exists", socket_id);
         return INDIGO_ERROR_EXISTS;
     }
 
@@ -254,12 +247,12 @@ indigo_error_t
 ind_soc_data_out_ready(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_ERROR("data_out_ready: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_ERROR("data_out_ready: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("data_out_ready: Socket %d not registered", socket_id);
+        AIM_LOG_INFO("data_out_ready: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -272,12 +265,12 @@ indigo_error_t
 ind_soc_data_out_clear(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_ERROR("data_out_clear: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_ERROR("data_out_clear: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("data_out_clear: Socket %d not registered", socket_id);
+        AIM_LOG_INFO("data_out_clear: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -290,12 +283,12 @@ indigo_error_t
 ind_soc_data_in_pause(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_ERROR("data_in_pause: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_ERROR("data_in_pause: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("data_in_pause: Socket %d not registered", socket_id);
+        AIM_LOG_INFO("data_in_pause: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -308,12 +301,12 @@ indigo_error_t
 ind_soc_data_in_resume(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_ERROR("data_in_resume: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_ERROR("data_in_resume: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("data_in_resume: Socket %d not registered", socket_id);
+        AIM_LOG_INFO("data_in_resume: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -329,15 +322,15 @@ ind_soc_data_in_resume(int socket_id)
 indigo_error_t
 ind_soc_socket_unregister(int socket_id)
 {
-    LOG_VERBOSE("Unregister socket %d", socket_id);
+    AIM_LOG_VERBOSE("Unregister socket %d", socket_id);
 
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        LOG_INFO("unregister: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INFO("unregister: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        LOG_INFO("socket_unregister: Socket %d not registered", socket_id);
+        AIM_LOG_INFO("socket_unregister: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -477,16 +470,16 @@ ind_soc_timer_event_register_with_priority(
                priority <= IND_SOC_HIGHEST_PRIORITY);
 
     if (callback == NULL) {
-        LOG_ERROR("Null callback for timer register");
+        AIM_LOG_ERROR("Null callback for timer register");
         return INDIGO_ERROR_PARAM;
     }
     if (repeat_time_ms < 0) {
-        LOG_ERROR("Invalid repeat time for timer register: %d", repeat_time_ms);
+        AIM_LOG_ERROR("Invalid repeat time for timer register: %d", repeat_time_ms);
         return INDIGO_ERROR_PARAM;
     }
     /* Allow re-registering which resets the timer */
     if ((idx = timer_event_find(callback, cookie)) >= 0) {
-        LOG_TRACE("Resetting event timer for %p to %d", callback, repeat_time_ms);
+        AIM_LOG_TRACE("Resetting event timer for %p to %d", callback, repeat_time_ms);
         if (timer_event[idx].state == TIMER_STATE_READY) {
             list_remove(&timer_event[idx].ready_links);
         } else if (timer_event[idx].state == TIMER_STATE_WAITING) {
@@ -499,7 +492,7 @@ ind_soc_timer_event_register_with_priority(
         return INDIGO_ERROR_NONE;
     }
     if ((idx = timer_event_free_slot()) < 0) {
-        LOG_ERROR("No space for timer event %p, %p", callback, cookie);
+        AIM_LOG_ERROR("No space for timer event %p, %p", callback, cookie);
         return INDIGO_ERROR_RESOURCE;
     }
 
@@ -529,8 +522,8 @@ ind_soc_timer_event_unregister(ind_soc_timer_callback_f callback, void *cookie)
     int idx;
 
     if ((idx = timer_event_find(callback, cookie)) < 0) {
-        LOG_TRACE("Timer event %p, %p not found for unregister",
-                  callback, cookie);
+        AIM_LOG_TRACE("Timer event %p, %p not found for unregister",
+                      callback, cookie);
         return INDIGO_ERROR_NOT_FOUND;
     }
 
@@ -623,7 +616,7 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
 indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
-    LOG_INFO("Initializing socket manager");
+    AIM_LOG_INFO("Initializing socket manager");
 
     ind_cfg_register(&ind_soc_cfg_ops);
 
@@ -643,17 +636,17 @@ ind_soc_init(ind_soc_config_t *config)
 indigo_error_t
 ind_soc_enable_set(int enable)
 {
-    LOG_TRACE("OF socket mgr enable called");
+    AIM_LOG_TRACE("OF socket mgr enable called");
 
     if (enable && !module_enabled) {
-        LOG_INFO("Enabling OF socket mgr");
+        AIM_LOG_INFO("Enabling OF socket mgr");
         module_enabled = 1;
     } else if (!enable && module_enabled) {
-        LOG_INFO("Disabling OF socket mgr");
+        AIM_LOG_INFO("Disabling OF socket mgr");
         module_enabled = 0;
     } else {
-        LOG_VERBOSE("Redundant enable call.  Currently %s",
-                    module_enabled ? "enabled" : "disabled");
+        AIM_LOG_VERBOSE("Redundant enable call.  Currently %s",
+                        module_enabled ? "enabled" : "disabled");
     }
 
     return INDIGO_ERROR_NONE;
@@ -675,7 +668,7 @@ ind_soc_enable_get(int *enable)
 indigo_error_t
 ind_soc_finish(void)
 {
-    LOG_INFO("Shutting down socket manager");
+    AIM_LOG_INFO("Shutting down socket manager");
     soc_mgr_init();
     timer_wheel_destroy(timer_wheel);
     timer_wheel = NULL;
@@ -699,8 +692,8 @@ after_callback(void)
     indigo_time_t elapsed =
         INDIGO_TIME_DIFF_ms(callback_start_time, INDIGO_CURRENT_TIME);
     if (elapsed >= SOCKETMANAGER_CONFIG_TIMESLICE_MS * 2) {
-        LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
-                    (int)elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
+        AIM_LOG_VERBOSE("Callback exceeded 2x timeslice (ran for %d ms, timeslice is %d ms)",
+                        (int)elapsed, SOCKETMANAGER_CONFIG_TIMESLICE_MS);
     }
 }
 
@@ -831,17 +824,17 @@ ind_soc_select_and_run(int run_for_ms)
         timeout_ms = calculate_next_timeout(start, current,
                                             run_for_ms, next_timer_ms);
 
-        LOG_TRACE("polling %d fds, timeout %d ms", num_pollfds, timeout_ms);
+        AIM_LOG_TRACE("polling %d fds, timeout %d ms", num_pollfds, timeout_ms);
         rv = poll(pollfds, num_pollfds, timeout_ms);
-        LOG_TRACE("poll returned %d", rv);
+        AIM_LOG_TRACE("poll returned %d", rv);
 
         if (rv < 0 && errno != EINTR) {
-            LOG_ERROR("Error in poll: %s", strerror(errno));
+            AIM_LOG_ERROR("Error in poll: %s", strerror(errno));
             return INDIGO_ERROR_UNKNOWN;
         }
 
         priority = find_highest_ready_priority();
-        LOG_TRACE("processing priority %d", priority);
+        AIM_LOG_TRACE("processing priority %d", priority);
 
         process_sockets(priority);
         process_timers(priority);
