@@ -204,17 +204,17 @@ ind_soc_socket_register_with_priority(int socket_id,
 
     AIM_LOG_VERBOSE("Register socket %d", socket_id);
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_ERROR("Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (callback == NULL) {
-        AIM_LOG_ERROR("No callback specified");
+        AIM_LOG_INTERNAL("No callback specified");
         return INDIGO_ERROR_PARAM;
     }
 
     if (IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("Socket %d exists", socket_id);
+        AIM_LOG_INTERNAL("Socket %d exists", socket_id);
         return INDIGO_ERROR_EXISTS;
     }
 
@@ -247,12 +247,12 @@ indigo_error_t
 ind_soc_data_out_ready(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_ERROR("data_out_ready: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("data_out_ready: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("data_out_ready: Socket %d not registered", socket_id);
+        AIM_LOG_INTERNAL("data_out_ready: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -265,12 +265,12 @@ indigo_error_t
 ind_soc_data_out_clear(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_ERROR("data_out_clear: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("data_out_clear: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("data_out_clear: Socket %d not registered", socket_id);
+        AIM_LOG_INTERNAL("data_out_clear: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -283,12 +283,12 @@ indigo_error_t
 ind_soc_data_in_pause(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_ERROR("data_in_pause: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("data_in_pause: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("data_in_pause: Socket %d not registered", socket_id);
+        AIM_LOG_INTERNAL("data_in_pause: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -301,12 +301,12 @@ indigo_error_t
 ind_soc_data_in_resume(int socket_id)
 {
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_ERROR("data_in_resume: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("data_in_resume: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("data_in_resume: Socket %d not registered", socket_id);
+        AIM_LOG_INTERNAL("data_in_resume: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -325,12 +325,12 @@ ind_soc_socket_unregister(int socket_id)
     AIM_LOG_VERBOSE("Unregister socket %d", socket_id);
 
     if (!IS_LEGAL_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("unregister: Socket ID out of range: id %d", socket_id);
+        AIM_LOG_INTERNAL("unregister: Socket ID out of range: id %d", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
     if (!IS_ACTIVE_SOCKET_ID(socket_id)) {
-        AIM_LOG_INFO("socket_unregister: Socket %d not registered", socket_id);
+        AIM_LOG_INTERNAL("socket_unregister: Socket %d not registered", socket_id);
         return INDIGO_ERROR_PARAM;
     }
 
@@ -470,11 +470,11 @@ ind_soc_timer_event_register_with_priority(
                priority <= IND_SOC_HIGHEST_PRIORITY);
 
     if (callback == NULL) {
-        AIM_LOG_ERROR("Null callback for timer register");
+        AIM_LOG_INTERNAL("Null callback for timer register");
         return INDIGO_ERROR_PARAM;
     }
     if (repeat_time_ms < 0) {
-        AIM_LOG_ERROR("Invalid repeat time for timer register: %d", repeat_time_ms);
+        AIM_LOG_INTERNAL("Invalid repeat time for timer register: %d", repeat_time_ms);
         return INDIGO_ERROR_PARAM;
     }
     /* Allow re-registering which resets the timer */
