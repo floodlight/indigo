@@ -616,7 +616,7 @@ ind_soc_task_register(ind_soc_task_callback_f callback,
 indigo_error_t
 ind_soc_init(ind_soc_config_t *config)
 {
-    AIM_LOG_INFO("Initializing socket manager");
+    AIM_LOG_VERBOSE("Initializing socket manager");
 
     ind_cfg_register(&ind_soc_cfg_ops);
 
@@ -639,10 +639,10 @@ ind_soc_enable_set(int enable)
     AIM_LOG_TRACE("OF socket mgr enable called");
 
     if (enable && !module_enabled) {
-        AIM_LOG_INFO("Enabling OF socket mgr");
+        AIM_LOG_VERBOSE("Enabling OF socket mgr");
         module_enabled = 1;
     } else if (!enable && module_enabled) {
-        AIM_LOG_INFO("Disabling OF socket mgr");
+        AIM_LOG_VERBOSE("Disabling OF socket mgr");
         module_enabled = 0;
     } else {
         AIM_LOG_VERBOSE("Redundant enable call.  Currently %s",
@@ -668,7 +668,7 @@ ind_soc_enable_get(int *enable)
 indigo_error_t
 ind_soc_finish(void)
 {
-    AIM_LOG_INFO("Shutting down socket manager");
+    AIM_LOG_VERBOSE("Shutting down socket manager");
     soc_mgr_init();
     timer_wheel_destroy(timer_wheel);
     timer_wheel = NULL;
