@@ -492,7 +492,8 @@ ind_soc_timer_event_register_with_priority(
         return INDIGO_ERROR_NONE;
     }
     if ((idx = timer_event_free_slot()) < 0) {
-        AIM_LOG_ERROR("No space for timer event %p, %p", callback, cookie);
+        AIM_LOG_ERROR("Failed to register timer, exceeded maximum of %d",
+                      SOCKETMANAGER_CONFIG_MAX_TIMERS);
         return INDIGO_ERROR_RESOURCE;
     }
 
