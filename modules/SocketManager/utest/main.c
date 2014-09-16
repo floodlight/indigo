@@ -656,7 +656,7 @@ test_priority(void)
 }
 
 int
-main(int argc, char* argv[])
+aim_main(int argc, char* argv[])
 {
     ind_soc_config_t config = {0};
 
