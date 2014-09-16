@@ -50,13 +50,6 @@
 
 #include "ofconnectionmanager_int.h"
 
-/* Short hand logging macros */
-#define LOG_ERROR AIM_LOG_ERROR
-#define LOG_WARN AIM_LOG_WARN
-#define LOG_INFO AIM_LOG_INFO
-#define LOG_VERBOSE AIM_LOG_VERBOSE
-#define LOG_TRACE AIM_LOG_TRACE
-
 static int init_done = 0;
 static int module_enabled = 0;
 
@@ -96,13 +89,6 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
  * Controller control blocks, indexed by controller index
  */
 static controller_t controllers[MAX_CONTROLLERS];
-
-/**
- * Preferred connection when UNSPECIFIED is used
- *
- * For now, preferred is always a remote connection
- */
-static int preferred_cxn_id = -1;
 
 #define INVALID_ID -1
 
@@ -210,23 +196,23 @@ indigo_cxn_socket_ready_callback(
     int rv;
 
     cxn = (connection_t *)cookie;
-    LOG_TRACE("Soc %d ready, cxn %p. rd %d. wr %d. er %d",
-              socket_id, cookie, read_ready, write_ready, error_seen);
+    AIM_LOG_TRACE("Soc %d ready, cxn %p. rd %d. wr %d. er %d",
+                  socket_id, cookie, read_ready, write_ready, error_seen);
 
     if (!(CXN_ID_VALID(cxn->cxn_id))) {
-        LOG_ERROR("Bad cxn callback %p", cxn);
+        AIM_LOG_INTERNAL("Bad cxn callback %p", cxn);
         ++ind_cxn_internal_errors;
         return;
     }
 
     if (!(CXN_ACTIVE(cxn))) {
-        LOG_ERROR("Socket ready callback on non active cxn %p", cxn);
+        AIM_LOG_INTERNAL("Socket ready callback on non active cxn %p", cxn);
         ++ind_cxn_internal_errors;
         return;
     }
 
     if (!(CXN_TCP_CONNECTED(cxn))) {
-        LOG_ERROR("Socket ready callback on non connected cxn %p", cxn);
+        AIM_LOG_INTERNAL("Socket ready callback on non connected cxn %p", cxn);
         ++ind_cxn_internal_errors;
         return;
     }
@@ -237,8 +223,8 @@ indigo_cxn_socket_ready_callback(
         int socket_error = 0;
         socklen_t len = sizeof(socket_error);
         getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
-        LOG_ERROR("Error seen on connection " CXN_FMT ": %s",
-                  CXN_FMT_ARGS(cxn), strerror(socket_error));
+        AIM_LOG_ERROR("Error seen on connection " CXN_FMT ": %s",
+                      CXN_FMT_ARGS(cxn), strerror(socket_error));
         ind_controller_disconnect(cxn->controller);
         ++ind_cxn_internal_errors;
         return;
@@ -246,7 +232,7 @@ indigo_cxn_socket_ready_callback(
 
     if (read_ready) {
         if ((rv = ind_cxn_process_read_buffer(cxn)) < 0) {
-            LOG_VERBOSE("Error processing read buffer, resetting");
+            AIM_LOG_VERBOSE("Error processing read buffer, resetting");
             ind_controller_disconnect(cxn->controller);
             return;
         }
@@ -254,7 +240,7 @@ indigo_cxn_socket_ready_callback(
 
     if (write_ready) {
         if ((rv = ind_cxn_process_write_buffer(cxn)) < 0) {
-            LOG_ERROR("Error processing write buffer, resetting");
+            AIM_LOG_ERROR("Error processing write buffer, resetting");
             ind_controller_disconnect(cxn->controller);
             ++ind_cxn_internal_errors;
             return;
@@ -338,30 +324,20 @@ ind_cxn_status_change(connection_t *cxn)
 		 );
     }
 
-    /* Select this as preferred if no other connection known */
     if (!CXN_LOCAL(cxn)) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
             ++remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
-            if (preferred_cxn_id == -1) {
-                LOG_VERBOSE("Setting preferred cxn to " CXN_FMT,
-                            CXN_FMT_ARGS(cxn));
-                preferred_cxn_id = cxn->cxn_id;
-            }
         } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
             ind_cxn_status_notify();
         } else if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
             --remote_connection_count;
             indigo_core_connection_count_notify(remote_connection_count);
             ind_cxn_status_notify();
-            if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
-                LOG_VERBOSE("Clearing preferred connection");
-                preferred_cxn_id = -1;
-            }
         }
     }
 
-    LOG_TRACE("Cxn status change, rmt count %d", remote_connection_count);
+    AIM_LOG_TRACE("Cxn status change, rmt count %d", remote_connection_count);
 }
 
 /*
@@ -424,7 +400,7 @@ module_init(void)
 
     ind_cxn_generation_id = 0;
 
-    LOG_VERBOSE("Initial generation id: 0x%016"PRIx64, ind_cxn_generation_id);
+    AIM_LOG_VERBOSE("Initial generation id: 0x%016"PRIx64, ind_cxn_generation_id);
 
     return INDIGO_ERROR_NONE;
 }
@@ -466,7 +442,7 @@ listen_cxn_init(connection_t *cxn)
     indigo_error_t rv;
     indigo_cxn_protocol_params_t *protocol_params;
 
-    LOG_VERBOSE("Initializing listening socket");
+    AIM_LOG_VERBOSE("Initializing listening socket");
 
     protocol_params = get_connection_params(cxn);
     INDIGO_ASSERT(protocol_params != NULL); 
@@ -477,13 +453,13 @@ listen_cxn_init(connection_t *cxn)
 
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
-        LOG_ERROR("Could not bind to socket for local cxn: %s", strerror(errno));
+        AIM_LOG_ERROR("Could not bind to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
     /* show that we are willing to listen */
     if (listen(cxn->sd, LOCAL_CXN_BACKLOG) == -1) {
-        LOG_ERROR("Could not listen to socket for local cxn: %s", strerror(errno));
+        AIM_LOG_ERROR("Could not listen to socket for local cxn: %s", strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -492,7 +468,7 @@ listen_cxn_init(connection_t *cxn)
             cxn->sd, ind_cxn_listen_socket_ready,
             cxn, IND_CXN_EVENT_PRIORITY);
     if (rv < 0) {
-        LOG_ERROR("Could not register with socket manager: %s", indigo_strerror(rv));
+        AIM_LOG_INTERNAL("Could not register with socket manager: %s", indigo_strerror(rv));
         return INDIGO_ERROR_UNKNOWN;
     }
 
@@ -520,7 +496,7 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 
     cxn = find_free_connection();
     if (cxn == NULL) {
-        LOG_ERROR("Could not allocate space for connection");
+        AIM_LOG_INTERNAL("Could not allocate space for connection");
         return NULL;
     }
 
@@ -551,7 +527,7 @@ connection_socket_setup(indigo_controller_id_t controller_id,
         /* Attempt to create the socket */
         cxn->sd = socket(sockaddr.ss_family, SOCK_STREAM, 0);
         if (cxn->sd < 0) {
-            LOG_ERROR("Failed to create connection socket: %s", strerror(errno));
+            AIM_LOG_ERROR("Failed to create connection socket: %s", strerror(errno));
             return NULL;
         }
     } else {
@@ -561,7 +537,7 @@ connection_socket_setup(indigo_controller_id_t controller_id,
     soc_flags = fcntl(cxn->sd, F_GETFL, 0);
     if (soc_flags == -1 || fcntl(cxn->sd, F_SETFL,
                                  soc_flags | O_NONBLOCK) == -1) {
-        LOG_ERROR("Failed to set non-blocking flag for socket: %s", strerror(errno));
+        AIM_LOG_ERROR("Failed to set non-blocking flag for socket: %s", strerror(errno));
         close(cxn->sd);
         return NULL;
     }
@@ -573,8 +549,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
                           (char *) &flag, sizeof(int));
     }
 
-    LOG_VERBOSE("Created non-blocking socket %d for " CXN_FMT,
-                cxn->sd, CXN_FMT_ARGS(cxn));
+    AIM_LOG_VERBOSE("Created non-blocking socket %d for " CXN_FMT,
+                    cxn->sd, CXN_FMT_ARGS(cxn));
 
     cxn->active = 1;
     if (sd >= 0) { /* Assume connection is good to go */
@@ -601,16 +577,16 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
     indigo_error_t rv = INDIGO_ERROR_NONE;
     controller_t *ctrl = ID_TO_CONTROLLER(controller_id);
 
-    LOG_INFO("Connection add: %s:%d",
-             proto_ip_string(&ctrl->protocol_params),
-             auxiliary_id);
+    AIM_LOG_VERBOSE("Connection add: %s:%d",
+                    proto_ip_string(&ctrl->protocol_params),
+                    auxiliary_id);
 
     INDIGO_ASSERT(cxn_id != NULL);
 
     cxn = connection_socket_setup(controller_id, cxn_id, -1);
 
     if (cxn == NULL) {
-        LOG_ERROR("Could not set up connection");
+        AIM_LOG_ERROR("Could not set up connection");
         return INDIGO_ERROR_RESOURCE;
     } else {
         if (CXN_LISTEN(cxn)) {
@@ -641,12 +617,12 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
     connection_t *cxn = cxn_id_to_connection(cxn_id);
 
     if (!cxn) {
-        LOG_ERROR("Attempted to remove nonexistent connection " CXN_ID_FMT,
-                  CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_INTERNAL("Attempted to remove nonexistent connection " CXN_ID_FMT,
+                         CXN_ID_FMT_ARGS(cxn_id));
         return INDIGO_ERROR_NOT_FOUND;
     }
 
-    LOG_INFO("Connection remove: " CXN_FMT, CXN_FMT_ARGS(cxn));
+    AIM_LOG_VERBOSE("Connection remove: " CXN_FMT, CXN_FMT_ARGS(cxn));
 
     if (CONNECTION_STATE(cxn) != INDIGO_CXN_S_DISCONNECTED) {
         cxn->flags |= CXN_TO_BE_REMOVED;
@@ -682,14 +658,14 @@ ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
     if (num_aux == ctrl->num_aux) return INDIGO_ERROR_NONE;
  
     if (num_aux > ctrl->num_aux) {
-        LOG_TRACE("Requested num_aux %d is greater than current aux cxn's "
-                  "for controller %s", num_aux, proto_ip_string(
-                  &ctrl->protocol_params));        
+        AIM_LOG_TRACE("Requested num_aux %d is greater than current aux cxn's "
+                      "for controller %s", num_aux, proto_ip_string(
+                      &ctrl->protocol_params));        
         return INDIGO_ERROR_PARAM;
     }
 
-    LOG_INFO("Aux cxn's for controller %s, changed from %d to %d",
-             proto_ip_string(&ctrl->protocol_params), ctrl->num_aux, num_aux);
+    AIM_LOG_VERBOSE("Aux cxn's for controller %s, changed from %d to %d",
+                    proto_ip_string(&ctrl->protocol_params), ctrl->num_aux, num_aux);
     num_aux_current = ctrl->num_aux;
     ctrl->num_aux = num_aux;
 
@@ -720,33 +696,33 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
     AIM_ASSERT(cxn != NULL);
 
     if (num_aux > MAX_AUX_CONNECTIONS) {
-        LOG_ERROR("Requested number of auxiliary connections %d is greater than supported %d",
-                  num_aux, MAX_AUX_CONNECTIONS);
+        AIM_LOG_WARN("Requested number of auxiliary connections %d is greater than supported %d",
+                     num_aux, MAX_AUX_CONNECTIONS);
         return 1;
     }
 
     /* Check to make sure this is not a local connection */
     if (CXN_LOCAL(cxn)) {
-        LOG_ERROR("Aux cxn request received on local connection " CXN_FMT,
-                  CXN_FMT_ARGS(cxn));
+        AIM_LOG_WARN("Aux cxn request received on local connection " CXN_FMT,
+                     CXN_FMT_ARGS(cxn));
         return 1;
     }
 
     /* Check if this is the main connection of the attached controller */
     if (cxn->auxiliary_id != 0) {
-        LOG_ERROR("Aux cxn request received on non main connection " CXN_FMT ", "
-                  "with aux id %d", CXN_FMT_ARGS(cxn), cxn->auxiliary_id);
+        AIM_LOG_WARN("Aux cxn request received on non main connection " CXN_FMT ", "
+                     "with aux id %d", CXN_FMT_ARGS(cxn), cxn->auxiliary_id);
         return 1;
     } 
 
     if (num_aux == cxn->controller->num_aux) {
-        LOG_TRACE("Requested num_aux %d is equal to current aux cxn's for "
-                  "controller " CXN_FMT, num_aux, CXN_FMT_ARGS(cxn));
+        AIM_LOG_TRACE("Requested num_aux %d is equal to current aux cxn's for "
+                      "controller " CXN_FMT, num_aux, CXN_FMT_ARGS(cxn));
         return 0;
     } else if (num_aux < cxn->controller->num_aux) {
-        LOG_TRACE("Requested num_aux %d is less than current aux cxn's %d for "
-                  "controller " CXN_FMT, num_aux, cxn->controller->num_aux,
-                  CXN_FMT_ARGS(cxn));  
+        AIM_LOG_TRACE("Requested num_aux %d is less than current aux cxn's %d for "
+                      "controller " CXN_FMT, num_aux, cxn->controller->num_aux,
+                      CXN_FMT_ARGS(cxn));  
 
         if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) {
             return 1;
@@ -759,8 +735,8 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
             cxn->controller->aux_id_to_cxn_id[idx] = cxn_id;
         }
 
-        LOG_INFO("Number of auxiliary connections for controller " CXN_FMT " changed from %d to %d",
-                 CXN_FMT_ARGS(cxn), cxn->controller->num_aux, num_aux);
+        AIM_LOG_VERBOSE("Number of auxiliary connections for controller " CXN_FMT " changed from %d to %d",
+                        CXN_FMT_ARGS(cxn), cxn->controller->num_aux, num_aux);
         cxn->controller->num_aux = num_aux; 
     }
     
@@ -788,27 +764,27 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
     if (config_params->local &&
         (config_params->periodic_echo_ms ||
          config_params->reset_echo_count)) {
-        LOG_ERROR("Local connection with nonzero echo params on cxn add");
+        AIM_LOG_INTERNAL("Local connection with nonzero echo params on cxn add");
         return INDIGO_ERROR_PARAM;
     }
 
     if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4 &&
         protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
-        LOG_ERROR("Unsupported protocol for connection add: %d",
-                  protocol_params->header.protocol);
+        AIM_LOG_INTERNAL("Unsupported protocol for connection add: %d",
+                         protocol_params->header.protocol);
         return INDIGO_ERROR_NOT_SUPPORTED;
     }
 
     *controller_id = find_free_controller();
     if (INDIGO_CONTROLLER_INVALID(*controller_id)) {
-        LOG_ERROR("Could not allocate space for controller");
+        AIM_LOG_INTERNAL("Could not allocate space for controller");
         return INDIGO_ERROR_RESOURCE;
     }
 
-    LOG_INFO("Controller add: %s (%s, v%d)",
-             proto_ip_string(protocol_params),
-             config_params->listen ? "listen" : "remote",
-             config_params->version);
+    AIM_LOG_INFO("Controller add: %s (%s, v%d)",
+                 proto_ip_string(protocol_params),
+                 config_params->listen ? "listen" : "remote",
+                 config_params->version);
 
     ctrl = ID_TO_CONTROLLER(*controller_id);   
     
@@ -843,13 +819,13 @@ indigo_controller_remove(indigo_controller_id_t controller_id)
 
     if (!CONTROLLER_ID_VALID(controller_id) || 
         !CONTROLLER_ID_ACTIVE(controller_id)) {
-        LOG_ERROR("Remove controller id %d invalid or not active", 
-                  controller_id);
+        AIM_LOG_INTERNAL("Remove controller id %d invalid or not active", 
+                         controller_id);
         return INDIGO_ERROR_PARAM;
     }
 
     ctrl = ID_TO_CONTROLLER(controller_id);
-    LOG_INFO("Controller remove: %s", proto_ip_string(&ctrl->protocol_params));
+    AIM_LOG_INFO("Controller remove: %s", proto_ip_string(&ctrl->protocol_params));
 
     /* Remove all the aux connections first */
     rv = ind_aux_connection_remove(ctrl, 0);
@@ -877,8 +853,8 @@ indigo_cxn_connection_config_get(
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
 
     if (!cxn) {
-        LOG_WARN("Attempted to get config for nonexistent connection " CXN_ID_FMT,
-                 CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_INTERNAL("Attempted to get config for nonexistent connection " CXN_ID_FMT,
+                         CXN_ID_FMT_ARGS(cxn_id));
         return INDIGO_ERROR_NOT_FOUND;
     }
 
@@ -898,8 +874,8 @@ indigo_cxn_connection_status_get(
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
 
     if (!cxn) {
-        LOG_WARN("Attempted to get status for nonexistent connection " CXN_ID_FMT,
-                 CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_INTERNAL("Attempted to get status for nonexistent connection " CXN_ID_FMT,
+                         CXN_ID_FMT_ARGS(cxn_id));
         return INDIGO_ERROR_NOT_FOUND;
     }
 
@@ -924,8 +900,7 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
     if (cxn->status.negotiated_version == OF_VERSION_1_3) {
         of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
         if (msg == NULL) {
-            LOG_INFO("Failed to allocate role status message");
-            return;
+            AIM_DIE("Failed to allocate role status message");
         }
         of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
         of_bsn_role_status_reason_set(msg, reason);
@@ -949,12 +924,12 @@ ind_controller_change_master(indigo_controller_id_t master_id)
 
     FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
         if (ctrl->controller_id == master_id) {
-            LOG_INFO("Upgrading controller %s role to master", 
-                     proto_ip_string(&ctrl->protocol_params));
+            AIM_LOG_INFO("Upgrading controller %s role to master", 
+                         proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_MASTER;
         } else if (ctrl->role == INDIGO_CXN_R_MASTER) {
-            LOG_INFO("Downgrading controller %s role to slave", 
-                     proto_ip_string(&ctrl->protocol_params));
+            AIM_LOG_INFO("Downgrading controller %s role to slave", 
+                         proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(
                 CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]), 
@@ -976,7 +951,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 
         of_bsn_controller_connection_init(&entry, list->version, -1, 1);
         if (of_list_bsn_controller_connection_append_bind(list, &entry) < 0) {
-            LOG_ERROR("Failed to append controller connection to list");
+            AIM_LOG_INTERNAL("Failed to append controller connection to list");
             break;
         }
 
@@ -1070,21 +1045,21 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     uint32_t xid;
 
     if (INDIGO_CXN_INVALID(cxn_id)) {
-        LOG_ERROR("Invalid or no active connection: %d", cxn_id);
+        AIM_LOG_INTERNAL("Invalid or no active connection: %d", cxn_id);
         goto done;
     }
 
     cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (!cxn || !CXN_TCP_CONNECTED(cxn)) {
-        LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_ID_FMT,
-                    of_object_id_str[obj->object_id], CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_VERBOSE("Attempted to send %s message to disconnected connection " CXN_ID_FMT,
+                        of_object_id_str[obj->object_id], CXN_ID_FMT_ARGS(cxn_id));
         goto done;
     }
 
     xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(OF_OBJECT_BUFFER_INDEX(obj, 0)));
 
-    LOG_VERBOSE("cxn " CXN_FMT ": Sending %s message xid %u",
-                CXN_FMT_ARGS(cxn), of_object_id_str[obj->object_id], xid);
+    AIM_LOG_VERBOSE("cxn " CXN_FMT ": Sending %s message xid %u",
+                    CXN_FMT_ARGS(cxn), of_object_id_str[obj->object_id], xid);
 
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: send to cxn=%d\n", cxn->cxn_id);
@@ -1095,8 +1070,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
 
     if (!CXN_HANDSHAKE_COMPLETE(cxn)) {
         if (IS_ASYNC_MSG(obj)) {
-            LOG_TRACE("Handshake not complete; drop async msg %s",
-                      of_object_id_str[obj->object_id]);
+            AIM_LOG_TRACE("Handshake not complete; drop async msg %s",
+                          of_object_id_str[obj->object_id]);
             goto done;
         }
     }
@@ -1104,7 +1079,7 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     /* Drop noncritical messages before the write buffer fills up completely */
     if (cxn->pkts_enqueued > NONCRITICAL_DROP_THRESHOLD) {
         if (cxn_message_is_noncritical(obj->object_id)) {
-            LOG_TRACE("Dropping noncritical %s message", of_object_id_str[obj->object_id]);
+            AIM_LOG_TRACE("Dropping noncritical %s message", of_object_id_str[obj->object_id]);
             debug_counter_inc(&cxn->tx_drop_counter);
             goto done;
         }
@@ -1120,8 +1095,8 @@ indigo_cxn_send_controller_message(indigo_cxn_id_t cxn_id, of_object_t *obj)
     debug_counter_inc(&cxn->tx_counters[obj->object_id]);
 
     if (ind_cxn_instance_enqueue(cxn, data, len) < 0) {
-        LOG_ERROR("Could not enqueue %s message data to cxn " CXN_FMT ", disconnecting",
-                  of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
+        AIM_LOG_ERROR("Could not enqueue %s message data to cxn " CXN_FMT ", disconnecting",
+                      of_object_id_str[obj->object_id], CXN_FMT_ARGS(cxn));
         aim_free(data);
         ind_controller_disconnect(cxn->controller);
     }
@@ -1188,9 +1163,9 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
         if (auxiliary_id != 0) {
-            LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
-                      CXN_FMT_ARGS(*cxn), 
-                      CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
+            AIM_LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
+                          CXN_FMT_ARGS(*cxn), 
+                          CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
             auxiliary_id = 0;
             *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
             if (ind_cxn_accepts_async_message(*cxn) == 0) {
@@ -1201,8 +1176,8 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         }
     } 
 
-    LOG_TRACE("Selected aux_id: %d, cxn: " CXN_FMT " for async %s message", auxiliary_id,
-              CXN_FMT_ARGS(*cxn), of_object_id_str[obj->object_id]);
+    AIM_LOG_TRACE("Selected aux_id: %d, cxn: " CXN_FMT " for async %s message", auxiliary_id,
+                  CXN_FMT_ARGS(*cxn), of_object_id_str[obj->object_id]);
  
     return 1; 
 }
@@ -1242,8 +1217,8 @@ indigo_cxn_send_async_message(of_object_t *obj)
     if (first_cxn_id != INDIGO_CXN_ID_UNSPECIFIED) {
         indigo_cxn_send_controller_message(first_cxn_id, obj);
     } else {
-        LOG_VERBOSE("Dropping async %s message, no interested connections",
-                    of_object_id_str[obj->object_id]);
+        AIM_LOG_VERBOSE("Dropping async %s message, no interested connections",
+                        of_object_id_str[obj->object_id]);
         of_object_delete(obj);
     }
 }
@@ -1272,10 +1247,10 @@ indigo_cxn_status_change_register(indigo_cxn_status_change_f handler,
 {
     int idx;
 
-    LOG_TRACE("Register status callback %p, cookie %p",
-              handler, cookie);
+    AIM_LOG_TRACE("Register status callback %p, cookie %p",
+                  handler, cookie);
     if (handler == NULL) {
-        LOG_ERROR("Cannot register NULL status change fn");
+        AIM_LOG_INTERNAL("Cannot register NULL status change fn");
         return INDIGO_ERROR_PARAM;
     }
     for (idx = 0; idx < MAX_STATUS_CHANGE_CALLBACKS; ++idx) {
@@ -1286,7 +1261,7 @@ indigo_cxn_status_change_register(indigo_cxn_status_change_f handler,
         }
     }
 
-    LOG_ERROR("Could not find free slot for status change callback");
+    AIM_LOG_INTERNAL("Could not find free slot for status change callback");
     return INDIGO_ERROR_RESOURCE;
 }
 
@@ -1305,8 +1280,8 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
     indigo_cxn_status_change_f fn;
     void *ck;
 
-    LOG_TRACE("Unregister status callback %p, cookie %p",
-              handler, cookie);
+    AIM_LOG_TRACE("Unregister status callback %p, cookie %p",
+                  handler, cookie);
     FOREACH_STATUS_CALLBACK(idx, fn, ck) {
         if ((fn == handler) && (ck == cookie)) {
             status_change[idx].callback = NULL;
@@ -1314,7 +1289,7 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
         }
     }
 
-    LOG_TRACE("Did not find status change callback fn");
+    AIM_LOG_TRACE("Did not find status change callback fn");
     return INDIGO_ERROR_NONE;
 }
 
@@ -1334,10 +1309,10 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
 indigo_error_t
 ind_cxn_init(ind_cxn_config_t *config)
 {
-    LOG_TRACE("Cxn init called");
+    AIM_LOG_TRACE("Cxn init called");
 
     if (config == NULL) {
-        LOG_ERROR("NULL configuration paremeter");
+        AIM_LOG_INTERNAL("NULL configuration parameter");
         return INDIGO_ERROR_PARAM;
     }
 
@@ -1359,19 +1334,19 @@ ind_cxn_init(ind_cxn_config_t *config)
 indigo_error_t
 ind_cxn_enable_set(int enable)
 {
-    LOG_TRACE("OF connection mgr enable called");
+    AIM_LOG_TRACE("OF connection mgr enable called");
 
     if (!init_done) {
         return INDIGO_ERROR_INIT;
     }
 
     if (enable && !module_enabled) {
-        LOG_INFO("Enabling OF connection mgr");
+        AIM_LOG_VERBOSE("Enabling OF connection mgr");
         module_enabled = 1;
     } else if (!enable && module_enabled) {
         int id;
         controller_t *ctrl;
-        LOG_INFO("Disabling OF connection mgr");
+        AIM_LOG_VERBOSE("Disabling OF connection mgr");
         /* unregister state timeout handlers */
         FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
             ind_controller_disconnect(ctrl);
@@ -1379,8 +1354,8 @@ ind_cxn_enable_set(int enable)
         module_enabled = 0;
         /* @todo Anything need to be done here? */
     } else {
-        LOG_VERBOSE("Redundant enable call.  Currently %s",
-                    module_enabled ? "enabled" : "disabled");
+        AIM_LOG_VERBOSE("Redundant enable call.  Currently %s",
+                        module_enabled ? "enabled" : "disabled");
     }
 
     return INDIGO_ERROR_NONE;
@@ -1406,7 +1381,7 @@ ind_cxn_enable_get(int *enable)
 indigo_error_t
 ind_cxn_finish(void)
 {
-    LOG_TRACE("Indigo connection manager finish");
+    AIM_LOG_TRACE("Indigo connection manager finish");
     ind_cxn_enable_set(0);
     ind_cxn_async_channel_selector_handler = NULL;
     return INDIGO_ERROR_NONE;
@@ -1440,8 +1415,8 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
 
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
     if (cxn == NULL) {
-        LOG_ERROR("Attempted to send error message to nonexistent connection " CXN_ID_FMT,
-                  CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_ERROR("Attempted to send error message to nonexistent connection " CXN_ID_FMT,
+                      CXN_ID_FMT_ARGS(cxn_id));
         return;
     }
 
@@ -1450,19 +1425,18 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
 
     xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
 
-    LOG_TRACE("Sending error msg to " CXN_FMT ". type %d. code %d.",
-              CXN_FMT_ARGS(cxn), type, code);
+    AIM_LOG_TRACE("Sending error msg to " CXN_FMT ". type %d. code %d.",
+                  CXN_FMT_ARGS(cxn), type, code);
 
     if ((msg = of_hello_failed_error_msg_new(orig->version)) == NULL) {
-        LOG_ERROR("Could not allocate error message");
-        return;
+        AIM_DIE("Could not allocate error message");
     }
 
     of_hello_failed_error_msg_xid_set(msg, xid);
     of_hello_failed_error_msg_code_set(msg, code);
 
     if (of_hello_failed_error_msg_data_set(msg, &payload) < 0) {
-        LOG_WARN("Failed to append original request to error message");
+        AIM_LOG_INTERNAL("Failed to append original request to error message");
     }
 
     /* HACK manually set the type field */
@@ -1508,17 +1482,17 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     listen_cxn = (connection_t *)cookie;
 
-    LOG_TRACE("Lcl soc %d ready, cxn %p. rd %d. wr %d. er %d",
-              socket_id, cookie, read_ready, write_ready, error_seen);
+    AIM_LOG_TRACE("Lcl soc %d ready, cxn %p. rd %d. wr %d. er %d",
+                  socket_id, cookie, read_ready, write_ready, error_seen);
 
     if (!(CXN_ID_VALID(listen_cxn->cxn_id))) {
-        LOG_ERROR("Bad cxn callback %p", listen_cxn);
+        AIM_LOG_INTERNAL("Bad cxn callback %p", listen_cxn);
         ++ind_cxn_internal_errors;
         return;
     }
 
     if (!(CXN_ACTIVE(listen_cxn))) {
-        LOG_ERROR("Socket ready callback on non active cxn %p", listen_cxn);
+        AIM_LOG_INTERNAL("Socket ready callback on non active cxn %p", listen_cxn);
         ++ind_cxn_internal_errors;
         return;
     }
@@ -1527,7 +1501,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
     INDIGO_ASSERT(listen_cxn->sd == socket_id);
 
     if (error_seen) {
-        LOG_ERROR("Error seen on connection " CXN_FMT, CXN_FMT_ARGS(listen_cxn));
+        AIM_LOG_ERROR("Error seen on connection " CXN_FMT, CXN_FMT_ARGS(listen_cxn));
         /* @todo What to do on socket error */
         ++ind_cxn_internal_errors;
         /* Close the socket? */
@@ -1536,8 +1510,8 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     /* Ready for an accept */
     if (!read_ready) {
-        LOG_ERROR("Error: read not ready for connection " CXN_FMT,
-                  CXN_FMT_ARGS(listen_cxn));
+        AIM_LOG_ERROR("Error: read not ready for connection " CXN_FMT,
+                      CXN_FMT_ARGS(listen_cxn));
         /* @todo What to do on socket error */
         ++ind_cxn_internal_errors;
         /* Close the socket? */
@@ -1550,15 +1524,15 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
                     &addrlen);
 
     if (new_sd == -1) {
-        LOG_ERROR("Error on accept for local cxn: %s", strerror(errno));
+        AIM_LOG_ERROR("Error on accept for local cxn: %s", strerror(errno));
         ++ind_cxn_internal_errors;
         return;
     }
-    LOG_VERBOSE("New cxn instance, port %d", ntohs(cxn_addr.sin_port));
+    AIM_LOG_VERBOSE("New cxn instance, port %d", ntohs(cxn_addr.sin_port));
 
     controller_id = find_free_controller();
     if (INDIGO_CONTROLLER_INVALID(controller_id)) {
-        LOG_ERROR("Could not allocate space for controller");
+        AIM_LOG_INTERNAL("Could not allocate space for controller");
         return;
     }
 
@@ -1574,7 +1548,7 @@ ind_cxn_listen_socket_ready(int socket_id, void *cookie, int read_ready,
     cxn = connection_socket_setup(ctrl->controller_id, &cxn_id, new_sd);
 
     if (cxn == NULL) {
-        LOG_ERROR("Could not set up accepted connection");
+        AIM_LOG_ERROR("Could not set up accepted connection");
         /* @fixme clean up? */
         return;
     }
@@ -1675,7 +1649,7 @@ ind_cxn_reset(indigo_cxn_id_t cxn_id)
         return;
     }
 
-    LOG_VERBOSE("Connection reset for id " CXN_ID_FMT, CXN_ID_FMT_ARGS(cxn_id));
+    AIM_LOG_VERBOSE("Connection reset for id " CXN_ID_FMT, CXN_ID_FMT_ARGS(cxn_id));
     if (cxn_id == IND_CXN_RESET_ALL) {
         /* Iterate thru active controllers and reset all but listening */
         indigo_controller_id_t id;
@@ -1828,8 +1802,8 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
     connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
 
     if (cxn == NULL) {
-        LOG_ERROR("Attempted to get auxiliary ID of nonexistent connection " CXN_ID_FMT,
-                  CXN_ID_FMT_ARGS(cxn_id));
+        AIM_LOG_INTERNAL("Attempted to get auxiliary ID of nonexistent connection " CXN_ID_FMT,
+                         CXN_ID_FMT_ARGS(cxn_id));
         return INDIGO_ERROR_NOT_FOUND;
     }
 
@@ -1847,8 +1821,10 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 void 
 ind_controller_disconnect(controller_t *ctrl)
 {
-    LOG_INFO("Controller disconnect: %s", 
-             proto_ip_string(&ctrl->protocol_params));
+    if (!ctrl->config_params.local) {
+        AIM_LOG_INFO("Disconnected from controller %s",
+                     proto_ip_string(&ctrl->protocol_params));
+    }
 
     ind_aux_connection_remove(ctrl, 0);   
 
@@ -1954,8 +1930,8 @@ indigo_cxn_barrier_notify_register(
 {
     int idx;
 
-    LOG_TRACE("Register barrier callback %p, cookie %p",
-              handler, cookie);
+    AIM_LOG_TRACE("Register barrier callback %p, cookie %p",
+                  handler, cookie);
     AIM_ASSERT(handler != NULL);
     for (idx = 0; idx < MAX_BARRIER_NOTIFY_CALLBACKS; ++idx) {
         struct barrier_notify_callback *cb = &barrier_notify_callbacks[idx];
@@ -1975,8 +1951,8 @@ indigo_cxn_barrier_notify_unregister(
 {
     int idx;
 
-    LOG_TRACE("Unregister barrier callback %p, cookie %p",
-              handler, cookie);
+    AIM_LOG_TRACE("Unregister barrier callback %p, cookie %p",
+                  handler, cookie);
     for (idx = 0; idx < MAX_BARRIER_NOTIFY_CALLBACKS; ++idx) {
         struct barrier_notify_callback *cb = &barrier_notify_callbacks[idx];
         if ((cb->callback == handler) && (cb->cookie == cookie)) {
@@ -2017,10 +1993,10 @@ parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
     int ret;
 
     if ((ret = getaddrinfo(addr, port_str, &hints, &ai)) < 0) {
-        LOG_ERROR("Could not convert %s:%d to an %s socket address: %s",
-                  addr, port,
-                  family == AF_INET ? "ipv4" : "ipv6",
-                  gai_strerror(ret));
+        AIM_LOG_ERROR("Could not convert %s:%d to an %s socket address: %s",
+                      addr, port,
+                      family == AF_INET ? "ipv4" : "ipv6",
+                      gai_strerror(ret));
         return INDIGO_ERROR_PARAM;
     }
 
@@ -2049,7 +2025,7 @@ ind_cxn_parse_sockaddr(
             sockaddr);
     }
     default:
-        LOG_ERROR("Invalid protocol %d", protocol_params->header.protocol);
+        AIM_LOG_INTERNAL("Invalid protocol %d", protocol_params->header.protocol);
         return INDIGO_ERROR_PARAM;
     }
 
