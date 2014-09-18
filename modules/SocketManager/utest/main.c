@@ -339,8 +339,8 @@ test_periodic_timer(void)
     ind_soc_timer_event_register(timer_callback_unregister_other, (void *)0, 100);
     ind_soc_timer_event_register(timer_callback_unregister_other, (void *)1, 100);
     ind_soc_select_and_run(1000);
-    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback_unregister_other, (void *)0) < 0 ||
-                  ind_soc_timer_event_unregister(timer_callback_unregister_other, (void *)1) < 0);
+    INDIGO_ASSERT((ind_soc_timer_event_unregister(timer_callback_unregister_other, (void *)0) < 0) ^
+                  (ind_soc_timer_event_unregister(timer_callback_unregister_other, (void *)1) < 0));
 }
 
 static void
@@ -656,7 +656,7 @@ test_priority(void)
 }
 
 int
-main(int argc, char* argv[])
+aim_main(int argc, char* argv[])
 {
     ind_soc_config_t config = {0};
 
