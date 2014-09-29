@@ -71,8 +71,6 @@ static int module_enabled = 0;
 
 #define INVALID_SOCKET_ID -1
 
-/* Maximum simultaneous sockets to support */
-#define SOCKET_COUNT_MAX 1024
 typedef struct soc_map_s {
     short socket_id;
     uint16_t pollfd_index;
@@ -82,14 +80,14 @@ typedef struct soc_map_s {
 } soc_map_t;
 
 /* Indexed by socket descriptor */
-static soc_map_t soc_map[SOCKET_COUNT_MAX];
+static soc_map_t soc_map[SOCKETMANAGER_CONFIG_MAX_SOCKETS];
 
 /* Dense array passed to poll(2) */
-static struct pollfd pollfds[SOCKET_COUNT_MAX];
+static struct pollfd pollfds[SOCKETMANAGER_CONFIG_MAX_SOCKETS];
 static int num_pollfds = 0;
 
 #define IS_ACTIVE_SOCKET_ID(_id) (soc_map[_id].socket_id == (_id))
-#define IS_LEGAL_SOCKET_ID(_id) (((_id) >= 0) && ((_id) < SOCKET_COUNT_MAX))
+#define IS_LEGAL_SOCKET_ID(_id) (((_id) >= 0) && ((_id) < SOCKETMANAGER_CONFIG_MAX_SOCKETS))
 #define POLLFD_INDEX(_id) soc_map[(_id)].pollfd_index
 
 enum timer_state {
@@ -178,7 +176,7 @@ static void
 soc_mgr_init(void)
 {
     int idx;
-    for (idx = 0; idx < SOCKET_COUNT_MAX; idx++) {
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_SOCKETS; idx++) {
         soc_map[idx].socket_id = INVALID_SOCKET_ID;
     }
 
@@ -225,7 +223,7 @@ ind_soc_socket_register_with_priority(int socket_id,
     soc_map[socket_id].cookie = cookie;
     soc_map[socket_id].priority = priority;
 
-    INDIGO_ASSERT(num_pollfds < SOCKET_COUNT_MAX);
+    INDIGO_ASSERT(num_pollfds < SOCKETMANAGER_CONFIG_MAX_SOCKETS);
     pfd = &pollfds[num_pollfds++];
     pfd->fd = socket_id;
     pfd->events = POLLIN;
