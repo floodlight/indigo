@@ -57,6 +57,9 @@ cdefs: &cdefs
 - SOCKETMANAGER_CONFIG_TIMER_PEEK_MS:
     doc: "Milliseconds to look ahead for the next timer"
     default: 1024
+- SOCKETMANAGER_CONFIG_MAX_SOCKETS:
+    doc: "Maximum number of sockets supported"
+    default: 1024
 
 
 definitions:

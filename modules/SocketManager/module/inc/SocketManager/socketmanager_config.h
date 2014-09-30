@@ -148,6 +148,16 @@
 #define SOCKETMANAGER_CONFIG_TIMER_PEEK_MS 1024
 #endif
 
+/**
+ * SOCKETMANAGER_CONFIG_MAX_SOCKETS
+ *
+ * Maximum number of sockets supported */
+
+
+#ifndef SOCKETMANAGER_CONFIG_MAX_SOCKETS
+#define SOCKETMANAGER_CONFIG_MAX_SOCKETS 1024
+#endif
+
 
 
 /**

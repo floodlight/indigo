@@ -94,6 +94,11 @@ socketmanager_config_settings_t socketmanager_config_settings[] =
 #else
 { SOCKETMANAGER_CONFIG_TIMER_PEEK_MS(__socketmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
+#ifdef SOCKETMANAGER_CONFIG_MAX_SOCKETS
+    { __socketmanager_config_STRINGIFY_NAME(SOCKETMANAGER_CONFIG_MAX_SOCKETS), __socketmanager_config_STRINGIFY_VALUE(SOCKETMANAGER_CONFIG_MAX_SOCKETS) },
+#else
+{ SOCKETMANAGER_CONFIG_MAX_SOCKETS(__socketmanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
     { NULL, NULL }
 };
 #undef __socketmanager_config_STRINGIFY_VALUE
