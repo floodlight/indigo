@@ -321,21 +321,6 @@ indigo_port_interface_list_destroy(indigo_port_info_t *list)
 {
 }
 
-/**
- * Notify forwarding of changes in expiration processing behavior
- */
-indigo_error_t indigo_fwd_expiration_enable_set(int is_enabled)
-{
-    AIM_LOG_VERBOSE("fwd expiration set: %d", is_enabled);
-    return INDIGO_ERROR_NONE;
-}
-
-indigo_error_t indigo_fwd_expiration_enable_get(int *is_enabled)
-{
-    AIM_LOG_VERBOSE("fwd expiration get");
-    return INDIGO_ERROR_NONE;
-}
-
 indigo_error_t indigo_port_desc_stats_get(
     of_port_desc_stats_reply_t *port_desc_stats_reply)
 {
