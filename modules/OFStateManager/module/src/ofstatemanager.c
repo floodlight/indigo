@@ -44,11 +44,6 @@
 #include "listener.h"
 #include "table.h"
 
-static void
-process_flow_removal(ft_entry_t *entry,
-                     indigo_fi_flow_stats_t *final_stats,
-                     indigo_fi_flow_removed_t reason);
-
 /**
  * @brief Core configuration for the module
  */
@@ -191,7 +186,6 @@ send_flow_removed_message(ft_entry_t *entry,
     of_flow_removed_duration_nsec_set(msg, nsecs);
 
     if (final_stats != NULL) {
-        INDIGO_ASSERT(final_stats->flow_id == entry->id);
         packets = final_stats->packets;
         bytes = final_stats->bytes;
     } else {
@@ -621,9 +615,6 @@ ind_core_init(ind_core_config_t *config)
 /**
  * @brief Do the necessary processing to delete a flow entry
  *
- * Assumes the entry still exists in forwarding.  If not, use the
- * call indigo_core_flow_removed.
- *
  * Mark the entry deleted in the flow table.  If the entry is
  * stable (no op pending) then actually process the deletion here by
  * calling into forwarding.
@@ -635,8 +626,6 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
 {
     indigo_error_t rv;
     indigo_fi_flow_stats_t flow_stats = {
-        .flow_id = entry->id,
-        .duration_ns = 0,
         .packets = -1,
         .bytes = -1,
     };
@@ -657,26 +646,13 @@ ind_core_flow_entry_delete(ft_entry_t *entry, indigo_fi_flow_removed_t reason,
         /* Ignoring failure */
     }
 
-    process_flow_removal(entry, &flow_stats, reason);
-}
-
-/**
- * @brief Process a flow removal from the local flow table
- */
-
-static void
-process_flow_removal(ft_entry_t *entry,
-                     indigo_fi_flow_stats_t *final_stats,
-                     indigo_fi_flow_removed_t reason)
-{
     if (entry->flags & OF_FLOW_MOD_FLAG_SEND_FLOW_REM) {
         /* See OF spec 1.0.1, section 3.5, page 6 */
         if (reason != INDIGO_FLOW_REMOVED_OVERWRITE) {
-            send_flow_removed_message(entry, reason, final_stats);
+            send_flow_removed_message(entry, reason, &flow_stats);
         }
     }
 
-    ind_core_table_t *table = ind_core_table_get(entry->table_id);
     if (table != NULL) {
         table->num_flows -= 1;
     }
@@ -687,42 +663,6 @@ process_flow_removal(ft_entry_t *entry,
                   ind_core_ft->current_count);
 }
 
-/**
- * @brief Handle the async notice (from fwding) that a flow was removed
- *
- * @param reason The reason the flow was removed
- * @param stats Pointer to final stats which includes the flow ID
- */
-
-void
-indigo_core_flow_removed(indigo_fi_flow_removed_t reason,
-                         indigo_fi_flow_stats_t *stats)
-{
-    ft_entry_t *entry;
-
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    AIM_LOG_TRACE("Async flow removed. reason %d. id "
-                  INDIGO_FLOW_ID_PRINTF_FORMAT, reason,
-                  INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
-
-    /* After entry look up, this looks like ind_core_flow_entry_delete */
-    entry = ft_lookup(ind_core_ft, stats->flow_id);
-    if (entry == NULL) {
-        AIM_LOG_TRACE("Async flow removed: did not find entry in SM table. id "
-                      INDIGO_FLOW_ID_PRINTF_FORMAT,
-                      INDIGO_FLOW_ID_PRINTF_ARG((indigo_cookie_t) stats->flow_id));
-        return;
-    }
-
-    process_flow_removal(entry, stats, reason);
-}
-
-#define CORE_EXPIRES_FLOWS(_cfg) \
-    ((_cfg)->expire_flows && ((_cfg)->stats_check_ms > 0))
-
 indigo_error_t
 ind_core_enable_set(int enable)
 {
@@ -732,17 +672,13 @@ ind_core_enable_set(int enable)
 
     if (enable && !ind_core_module_enabled) {
         AIM_LOG_VERBOSE("Enabling OF state mgr");
-        if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
-            ind_soc_timer_event_register_with_priority(
-                ind_core_expiration_timer, NULL,
-                ind_core_config.stats_check_ms, IND_SOC_LOW_PRIORITY);
-        }
+        ind_soc_timer_event_register_with_priority(
+            ind_core_expiration_timer, NULL,
+            ind_core_config.stats_check_ms, IND_SOC_LOW_PRIORITY);
         ind_core_module_enabled = 1;
     } else if (!enable && ind_core_module_enabled) {
         AIM_LOG_VERBOSE("Disabling OF state mgr");
-        if (CORE_EXPIRES_FLOWS(&ind_core_config)) {
-            ind_soc_timer_event_unregister(ind_core_expiration_timer, NULL);
-        }
+        ind_soc_timer_event_unregister(ind_core_expiration_timer, NULL);
         ind_core_module_enabled = 0;
     } else {
         AIM_LOG_VERBOSE("Redundant enable call.  Currently %s",
@@ -991,16 +927,6 @@ indigo_core_connection_count_notify(int new_count)
     }
 
     ind_core_connection_count = new_count;
-
-    if (new_count == 0) {
-        if (ind_core_config.disconnected_mode ==
-                INDIGO_CORE_DISCONNECTED_MODE_STICKY) {
-            /* Notify forwarding of change in behavior */
-            indigo_fwd_expiration_enable_set(0);
-        }
-    } else {
-        indigo_fwd_expiration_enable_set(1);
-    }
 }
 
 

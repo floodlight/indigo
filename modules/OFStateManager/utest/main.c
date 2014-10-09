@@ -1452,7 +1452,6 @@ aim_main(int argc, char* argv[])
 
     /* Init Core */
     MEMSET(&core, 0, sizeof(core));
-    core.expire_flows = 1;
     core.stats_check_ms = 1000;
     core.max_flowtable_entries = 1024;
 
