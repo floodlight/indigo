@@ -106,7 +106,6 @@ struct ft_public_s {
     list_head_t all_list;          /* Single list of all current entries */
 
     bighash_table_t *strict_match_hashtable;
-    bighash_table_t *flow_id_hashtable;
     list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 
     ft_table_t tables[FT_MAX_TABLES];
@@ -215,16 +214,6 @@ void ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add);
 indigo_error_t ft_strict_match(ft_instance_t instance,
                                of_meta_match_t *query,
                                ft_entry_t **entry_ptr);
-
-/**
- * Look up a flow by ID
- *
- * @param ft The flow table instance
- * @param id The flow ID being checked
- */
-
-ft_entry_t *
-ft_lookup(ft_instance_t ft, indigo_flow_id_t id);
 
 /**
  * Resize the checksum buckets array for a table
