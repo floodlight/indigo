@@ -327,12 +327,10 @@ ind_cxn_status_change(connection_t *cxn)
     if (!CXN_LOCAL(cxn)) {
         if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CONNECTING) {
             ++remote_connection_count;
-            indigo_core_connection_count_notify(remote_connection_count);
         } if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_HANDSHAKE_COMPLETE) {
             ind_cxn_status_notify();
         } else if (CONNECTION_STATE(cxn) == INDIGO_CXN_S_CLOSING) {
             --remote_connection_count;
-            indigo_core_connection_count_notify(remote_connection_count);
             ind_cxn_status_notify();
         }
     }

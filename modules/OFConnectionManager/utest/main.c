@@ -43,12 +43,6 @@
 
 #define OK(op)  INDIGO_ASSERT((op) == INDIGO_ERROR_NONE)
 
-void
-indigo_core_connection_count_notify(int new_count)
-{
-    printf("Connection count is %d\n", new_count);
-}
-
 
 static ind_cxn_config_t cm_config;
 
