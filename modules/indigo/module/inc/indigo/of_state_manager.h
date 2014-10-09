@@ -318,17 +318,11 @@ void indigo_core_message_listener_unregister(indigo_core_message_listener_f fn);
  *
  * Flowtable registration
  *
- * Instead of implementing indigo_flow_*, the Forwarding module can
- * use this interface to register individual tables. The advantage
- * is that the Forwarding module doesn't need to do the dispatch
- * to the table implementation itself. In the future, indigo_flow_*
- * will be removed. At that point indigo_fwd_table_stats_get and
- * the (currently unimplemented) table features stats will be
- * replaced with additional per-table methods.
- *
- * If Forwarding uses this interface exclusively then it does not
- * need to maintain a hashtable keyed on flow ID. The only API that
- * still uses the flow ID is indigo_core_flow_removed.
+ * The Forwarding implementation uses these interfaces to tell
+ * OFStateManager which flowtables exist. When OFStateManager
+ * needs to create a flow, get stats, etc, it uses the function
+ * pointers passed to indigo_core_table_register to call into
+ * Forwarding.
  *
  * This is intended to be used in conjunction with the Indigo
  * forwarding pipeline interface. When indigo_fwd_pipeline_set is
