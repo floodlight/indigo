@@ -54,54 +54,6 @@ indigo_port_extended_stats_get(
 }
 
 WEAK indigo_error_t
-indigo_fwd_flow_create(
-    indigo_cookie_t flow_id,
-    of_flow_add_t *flow_add,
-    uint8_t *table_id)
-{
-    return INDIGO_ERROR_BAD_TABLE_ID;
-}
-
-WEAK indigo_error_t
-indigo_fwd_flow_modify(
-    indigo_cookie_t flow_id,
-    of_flow_modify_t *flow_modify)
-{
-    return INDIGO_ERROR_BAD_TABLE_ID;
-}
-
-WEAK indigo_error_t
-indigo_fwd_flow_delete(
-    indigo_cookie_t flow_id,
-    indigo_fi_flow_stats_t *flow_stats)
-{
-    return INDIGO_ERROR_BAD_TABLE_ID;
-}
-
-WEAK indigo_error_t
-indigo_fwd_flow_stats_get(
-    indigo_cookie_t flow_id,
-    indigo_fi_flow_stats_t *flow_stats)
-{
-    return INDIGO_ERROR_BAD_TABLE_ID;
-}
-
-WEAK indigo_error_t
-indigo_fwd_flow_hit_status_get(
-    indigo_cookie_t flow_id,
-    bool *hit_status)
-{
-    return INDIGO_ERROR_BAD_TABLE_ID;
-}
-
-WEAK indigo_error_t
-indigo_fwd_table_stats_get(of_table_stats_request_t *table_stats_request,
-                           of_table_stats_reply_t **table_stats_reply_ptr)
-{
-    return INDIGO_ERROR_NOT_SUPPORTED;
-}
-
-WEAK indigo_error_t
 indigo_fwd_group_add(uint32_t id, uint8_t group_type, of_list_bucket_t *buckets)
 {
     return INDIGO_ERROR_NOT_SUPPORTED;

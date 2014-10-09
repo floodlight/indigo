@@ -157,15 +157,6 @@ static indigo_core_table_ops_t test_ops = {
 };
 
 indigo_error_t
-indigo_fwd_table_stats_get(of_table_stats_request_t *request,
-                           of_table_stats_reply_t **reply)
-{
-    AIM_LOG_VERBOSE("table stats get called\n");
-    *reply = of_table_stats_reply_new(request->version);
-    return INDIGO_ERROR_NONE;
-}
-
-indigo_error_t
 indigo_fwd_packet_out(of_packet_out_t *of_packet_out)
 {
     AIM_LOG_VERBOSE("packet out called\n");
