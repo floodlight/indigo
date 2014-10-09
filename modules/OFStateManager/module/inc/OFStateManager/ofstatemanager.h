@@ -49,7 +49,6 @@
 
 typedef struct ind_core_config_s {
     int stats_check_ms; /**< How frequently to check stats for expire, etc */
-    int max_flowtable_entries; /**< Maximum number of entries in the flowtable */
 } ind_core_config_t;
 
 

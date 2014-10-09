@@ -543,12 +543,6 @@ ind_core_init(ind_core_config_t *config)
     INIT_STR(ind_core_of_config.desc_stats.serial_num,
              IND_CORE_SERIAL_NUM_DEFAULT);
 
-    /* Create flow table */
-    if (config->max_flowtable_entries == 0) {
-        /* Default value */
-        config->max_flowtable_entries = 16384;
-    }
-
     if ((ind_core_ft = ft_create()) == NULL) {
         AIM_DIE("Failed to allocate flow table");
     }
