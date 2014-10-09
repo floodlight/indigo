@@ -109,12 +109,10 @@ expire_flow(ft_entry_t *entry, int reason)
 
         /* Get hit status for idle timeouts */
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
-        if (table != NULL) {
-            rv = table->ops->entry_hit_status_get(table->priv, INDIGO_CXN_ID_UNSPECIFIED,
-                                                  entry->priv, &hit);
-        } else {
-            rv = indigo_fwd_flow_hit_status_get(entry->id, &hit);
-        }
+        AIM_ASSERT(table != NULL);
+
+        rv = table->ops->entry_hit_status_get(table->priv, INDIGO_CXN_ID_UNSPECIFIED,
+                                              entry->priv, &hit);
 
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_INTERNAL("Failed to get hit status for flow "
