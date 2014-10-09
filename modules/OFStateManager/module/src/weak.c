@@ -53,26 +53,4 @@ indigo_port_extended_stats_get(
     /* All counters default to -1 */
 }
 
-WEAK indigo_error_t
-indigo_fwd_group_add(uint32_t id, uint8_t group_type, of_list_bucket_t *buckets)
-{
-    return INDIGO_ERROR_NOT_SUPPORTED;
-}
-
-WEAK indigo_error_t
-indigo_fwd_group_modify(uint32_t id, of_list_bucket_t *buckets)
-{
-    return INDIGO_ERROR_NOT_SUPPORTED;
-}
-
-WEAK void
-indigo_fwd_group_delete(uint32_t id)
-{
-}
-
-WEAK void
-indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry)
-{
-}
-
 #endif
