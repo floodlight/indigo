@@ -88,6 +88,9 @@ int test_group_table(void);
  */
 static int outstanding_op_cnt;
 
+/* Used by populate_table and depopulate_table to track entry pointers */
+static ft_entry_t *entries[TEST_FLOW_COUNT];
+
 /****************************************************************
  * Stubs
  ****************************************************************/
@@ -406,6 +409,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
         TEST_OK(of_flow_add_match_set(flow_add, match));
         minimatch_init(&minimatch, match);
         TEST_INDIGO_OK(ft_add(ft, TEST_KEY(idx), flow_add, &minimatch, &entry));
+        entries[idx] = entry;
         of_object_delete(flow_add);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
@@ -428,8 +432,7 @@ depopulate_table(ft_instance_t ft)
 
     count = ft->current_count;
     for (idx = 0; idx < count; ++idx) {
-        entry = ft_lookup(ft, TEST_KEY(idx));
-        TEST_ASSERT(entry != NULL);
+        entry = entries[idx];
 
         of_match_t match;
         minimatch_expand(&entry->minimatch, &match);
@@ -457,7 +460,6 @@ check_bucket_counts(ft_instance_t ft, int expected)
 
     /* Check the buckets */
     TEST_ASSERT(bighash_entry_count(ft->strict_match_hashtable) == expected);
-    TEST_ASSERT(bighash_entry_count(ft->flow_id_hashtable) == expected);
 
     return 0;
 }
@@ -556,7 +558,6 @@ test_ft_hash(void)
 
     TEST_ASSERT(ft->current_count == 2);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
-    entry = ft_lookup(ft, TEST_ENT_ID);
     ft_destroy(ft);
     of_object_delete(flow_add);
 
@@ -575,11 +576,6 @@ test_ft_hash(void)
     TEST_INDIGO_OK(ft_add(ft, TEST_ENT_ID, flow_add, &minimatch, &entry));
     TEST_ASSERT(ft->current_count == 1);
     TEST_ASSERT(check_table_entry_states(ft) == 0);
-    entry = ft_lookup(ft, TEST_ENT_ID);
-
-    /* Should not find next id */
-    lookup_entry = ft_lookup(ft, TEST_ENT_ID + 1);
-    TEST_ASSERT(lookup_entry == NULL);
 
     /* Set up the query structure */
     INDIGO_MEM_SET(&query, 0, sizeof(query));

@@ -54,12 +54,6 @@ ft_strict_match_hash(ft_instance_t ft,
 }
 
 static int
-ft_flow_id_hash(ft_instance_t ft, indigo_flow_id_t flow_id)
-{
-    return murmur_hash(&flow_id, sizeof(flow_id), FT_HASH_SEED);
-}
-
-static int
 ft_cookie_to_bucket_index(ft_instance_t ft, uint64_t cookie)
 {
     return cookie >> (64-FT_COOKIE_PREFIX_LEN);
@@ -79,7 +73,6 @@ ft_create(void)
 
     /* Allocate and init buckets for each search type */
     ft->strict_match_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
-    ft->flow_id_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
 
     bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
     ft->cookie_buckets = aim_zmalloc(bytes);
@@ -117,10 +110,6 @@ ft_destroy(ft_instance_t ft)
         bighash_table_destroy(ft->strict_match_hashtable, NULL);
         ft->strict_match_hashtable = NULL;
     }
-    if (ft->flow_id_hashtable != NULL) {
-        bighash_table_destroy(ft->flow_id_hashtable, NULL);
-        ft->flow_id_hashtable = NULL;
-    }
     if (ft->cookie_buckets != NULL) {
         aim_free(ft->cookie_buckets);
         ft->cookie_buckets = NULL;
@@ -142,12 +131,6 @@ ft_add(ft_instance_t ft, indigo_flow_id_t id,
     indigo_error_t rv;
 
     AIM_LOG_TRACE("Adding flow " INDIGO_FLOW_ID_PRINTF_FORMAT, id);
-
-    /* If flow ID already exists, error. */
-    if (ft_lookup(ft, id) != NULL) {
-        minimatch_cleanup(minimatch);
-        return INDIGO_ERROR_EXISTS;
-    }
 
     if ((rv = ft_entry_create(id, flow_add, minimatch, &entry)) < 0) {
         return rv;
@@ -224,25 +207,6 @@ ft_strict_match(ft_instance_t instance,
     }
 
     return INDIGO_ERROR_NOT_FOUND;
-}
-
-ft_entry_t *
-ft_lookup(ft_instance_t ft, indigo_flow_id_t id)
-{
-    uint32_t hash;
-    bighash_entry_t *hash_entry;
-
-    hash = ft_flow_id_hash(ft, id);
-
-    for (hash_entry = bighash_first(ft->flow_id_hashtable, hash);
-         hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
-        ft_entry_t *entry = container_of(hash_entry, flow_id_hash_entry, ft_entry_t);
-        if (entry->id == id) {
-            return entry;
-        }
-    }
-
-    return NULL;
 }
 
 indigo_error_t
@@ -546,12 +510,6 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
         &entry->strict_match_hash_entry,
         ft_strict_match_hash(ft, &entry->minimatch, entry->priority));
 
-    /* Flow ID hash */
-    bighash_insert(
-        ft->flow_id_hashtable,
-        &entry->flow_id_hash_entry,
-        ft_flow_id_hash(ft, entry->id));
-
     if (ft->cookie_buckets) { /* Cookie prefix */
         idx = ft_cookie_to_bucket_index(ft, entry->cookie);
         list_push(&ft->cookie_buckets[idx], &entry->cookie_links);
@@ -589,9 +547,6 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 
     /* Strict match hash */
     bighash_remove(ft->strict_match_hashtable, &entry->strict_match_hash_entry);
-
-    /* Flow ID hash */
-    bighash_remove(ft->flow_id_hashtable, &entry->flow_id_hash_entry);
 
     if (ft->cookie_buckets) { /* Cookie prefix */
         INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
