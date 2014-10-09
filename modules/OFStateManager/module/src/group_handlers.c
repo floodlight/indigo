@@ -92,15 +92,14 @@ ind_core_group_delete_one(ind_core_group_t *group, indigo_cxn_id_t cxn_id, uint1
     }
 
     ind_core_group_table_t *table = group_table_for_id(group->id);
-    if (table) {
-        indigo_error_t rv = table->ops->entry_delete(table->priv, cxn_id, group->priv);
-        if (rv < 0) {
-            *err_code = OF_GROUP_MOD_FAILED_EPERM;
-            return rv;
-        }
-    } else {
-        indigo_fwd_group_delete(group->id);
+    AIM_ASSERT(table != NULL);
+
+    indigo_error_t rv = table->ops->entry_delete(table->priv, cxn_id, group->priv);
+    if (rv < 0) {
+        *err_code = OF_GROUP_MOD_FAILED_EPERM;
+        return rv;
     }
+
     of_object_delete(group->buckets);
     bighash_remove(ind_core_group_hashtable, &group->hash_entry);
     aim_free(group);
@@ -159,24 +158,16 @@ ind_core_group_modify(ind_core_group_t *group, uint8_t type,
                       of_list_bucket_t *buckets, indigo_cxn_id_t cxn_id)
 {
     ind_core_group_table_t *table = group_table_for_id(group->id);
+    AIM_ASSERT(table != NULL);
     indigo_error_t result;
 
     if (group->type == type) {
-        if (table) {
-            result = table->ops->entry_modify(table->priv, cxn_id, group->priv, buckets);
-        } else {
-            result = indigo_fwd_group_modify(group->id, buckets);
-        }
+        result = table->ops->entry_modify(table->priv, cxn_id, group->priv, buckets);
     } else {
         /* Type change is implemented as delete+add */
-        if (table) {
-            (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
-            result = table->ops->entry_create(table->priv, cxn_id, group->id,
-                                              type, buckets, &group->priv);
-        } else {
-            indigo_fwd_group_delete(group->id);
-            result = indigo_fwd_group_add(group->id, type, buckets);
-        }
+        (void) table->ops->entry_delete(table->priv, cxn_id, group->priv);
+        result = table->ops->entry_create(table->priv, cxn_id, group->id,
+                                          type, buckets, &group->priv);
     }
 
     if (result < 0) {
@@ -215,6 +206,12 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         group = ind_core_group_lookup(id);
     }
 
+    ind_core_group_table_t *table = group_table_for_id(id);
+    if (table == NULL) {
+        err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
+        goto error;
+    }
+
     if (group != NULL) {
         /*
          * Convert duplicate add to a modify
@@ -235,12 +232,7 @@ ind_core_group_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         goto error;
     }
 
-    ind_core_group_table_t *table = group_table_for_id(id);
-    if (table) {
-        result = table->ops->entry_create(table->priv, cxn_id, id, type, &buckets, &entry_priv);
-    } else {
-        result = indigo_fwd_group_add(id, type, &buckets);
-    }
+    result = table->ops->entry_create(table->priv, cxn_id, id, type, &buckets, &entry_priv);
 
     if (result < 0) {
         err_code = OF_GROUP_MOD_FAILED_INVALID_GROUP;
@@ -355,11 +347,9 @@ ind_core_group_stats_entry_populate(of_group_stats_entry_t *entry,
     of_group_stats_entry_ref_count_set(entry, group->refcount);
 
     ind_core_group_table_t *table = group_table_for_id(group->id);
-    if (table) {
-        table->ops->entry_stats_get(table->priv, group->priv, entry);
-    } else {
-        indigo_fwd_group_stats_get(group->id, entry);
-    }
+    AIM_ASSERT(table != NULL);
+
+    table->ops->entry_stats_get(table->priv, group->priv, entry);
 }
 
 /* TODO segment long replies */

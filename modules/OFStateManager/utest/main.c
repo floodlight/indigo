@@ -94,68 +94,67 @@ static ft_entry_t *entries[TEST_FLOW_COUNT];
 /****************************************************************
  * Stubs
  ****************************************************************/
-indigo_error_t
-indigo_fwd_flow_modify(indigo_cookie_t flow_id,
-                       of_flow_modify_t *flow_modify)
-{
-    AIM_LOG_VERBOSE("flow modify called\n");
-    return INDIGO_ERROR_NONE;
-}
 
 indigo_error_t create_error = INDIGO_ERROR_NONE;
+indigo_error_t delete_error = INDIGO_ERROR_NONE;
 
 #define CHECK_FLOW_COUNT(ft, count) \
    if (create_error == INDIGO_ERROR_NONE) \
        TEST_ASSERT((ft)->current_count == (count))
 
-indigo_error_t
-indigo_fwd_flow_create(indigo_cookie_t flow_id,
-                       of_flow_add_t *flow_add,
-                       uint8_t *table_id)
+/* Table operations */
+
+static indigo_error_t
+op_entry_create(void *table_priv, indigo_cxn_id_t cxn_id,
+                of_flow_add_t *obj, indigo_cookie_t flow_id, void **entry_priv)
 {
-    AIM_LOG_VERBOSE("flow create called\n");
-    *table_id = 0;
+    AIM_LOG_VERBOSE("flow create called");
+    *entry_priv = NULL;
     return INDIGO_ERROR_NONE;
 }
 
-
-indigo_error_t
-indigo_fwd_table_stats_get(of_table_stats_request_t *request,
-                           of_table_stats_reply_t **reply)
+static indigo_error_t
+op_entry_modify(void *table_priv, indigo_cxn_id_t cxn_id,
+                void *entry_priv, of_flow_modify_t *obj)
 {
-    AIM_LOG_VERBOSE("table stats get called\n");
-    *reply = of_table_stats_reply_new(request->version);
+    AIM_LOG_VERBOSE("flow modify called");
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t delete_error = INDIGO_ERROR_NONE;
-
-indigo_error_t
-indigo_fwd_flow_delete(indigo_cookie_t flow_id,
-                       indigo_fi_flow_stats_t *flow_stats)
+static indigo_error_t
+op_entry_delete(void *table_priv, indigo_cxn_id_t cxn_id,
+                void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
 {
-    AIM_LOG_VERBOSE("flow delete called\n");
+    AIM_LOG_VERBOSE("flow delete called");
     memset(flow_stats, 0, sizeof(*flow_stats));
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t indigo_fwd_flow_stats_get(
-    indigo_cookie_t flow_id,
-    indigo_fi_flow_stats_t *flow_stats)
+static indigo_error_t
+op_entry_stats_get(void *table_priv, indigo_cxn_id_t cxn_id,
+                   void *entry_priv, indigo_fi_flow_stats_t *flow_stats)
 {
-    AIM_LOG_VERBOSE("flow stats get called\n");
+    AIM_LOG_VERBOSE("flow stats get called");
     memset(flow_stats, 0, sizeof(*flow_stats));
     return INDIGO_ERROR_NONE;
 }
 
-indigo_error_t
-indigo_fwd_flow_hit_status_get(indigo_cookie_t flow_id,
-                               bool *is_hit)
+static indigo_error_t
+op_entry_hit_status_get(void *table_priv, indigo_cxn_id_t cxn_id,
+                        void *entry_priv, bool *hit_status)
 {
-    AIM_LOG_VERBOSE("flow hit status get called\n");
-    *is_hit = 0;
+    AIM_LOG_VERBOSE("flow hit status get called");
+    *hit_status = false;
     return INDIGO_ERROR_NONE;
 }
+
+static indigo_core_table_ops_t test_ops = {
+    op_entry_create,
+    op_entry_modify,
+    op_entry_delete,
+    op_entry_stats_get,
+    op_entry_hit_status_get,
+};
 
 indigo_error_t
 indigo_fwd_packet_out(of_packet_out_t *of_packet_out)
@@ -1453,6 +1452,8 @@ aim_main(int argc, char* argv[])
 
     TRY(ind_core_init(&core));
     TRY(ind_core_enable_set(1));
+
+    indigo_core_table_register(0, "test", &test_ops, NULL);
 
     RUN_TEST(hello);
     RUN_TEST(packet_out);

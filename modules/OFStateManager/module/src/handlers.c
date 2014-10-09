@@ -374,11 +374,8 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             /* Overwrite existing flow */
             AIM_LOG_TRACE("Overwriting existing flow");
             ind_core_table_t *table = ind_core_table_get(entry->table_id);
-            if (table != NULL) {
-                rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
-            } else {
-                rv = indigo_fwd_flow_modify(entry->id, obj);
-            }
+            AIM_ASSERT(table != NULL);
+            rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
 
             if (rv == INDIGO_ERROR_NONE) {
                 ft_overwrite(ind_core_ft, entry, obj);
@@ -411,8 +408,7 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         rv = table->ops->entry_create(table->priv, cxn_id,
                                       obj, flow_id, &entry->priv);
     } else {
-        uint8_t ignored_table_id;
-        rv = indigo_fwd_flow_create(flow_id, (of_flow_add_t *)obj, &ignored_table_id);
+        rv = INDIGO_ERROR_BAD_TABLE_ID;
     }
 
     if (rv == INDIGO_ERROR_NONE) {
@@ -557,12 +553,9 @@ modify_iter_cb(void *cookie, ft_entry_t *entry)
         indigo_error_t rv;
         state->num_matched++;
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
-        if (table != NULL) {
-            rv = table->ops->entry_modify(table->priv, state->cxn_id,
-                                          entry->priv, state->request);
-        } else {
-            rv = indigo_fwd_flow_modify(entry->id, state->request);
-        }
+        AIM_ASSERT(table != NULL);
+        rv = table->ops->entry_modify(table->priv, state->cxn_id,
+                                      entry->priv, state->request);
         if (rv == INDIGO_ERROR_NONE) {
             ft_entry_modify_effects(ind_core_ft, entry, state->request);
         } else {
@@ -659,11 +652,9 @@ ind_core_flow_modify_strict_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     }
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
-    if (table != NULL) {
-        rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
-    } else {
-        rv = indigo_fwd_flow_modify(entry->id, obj);
-    }
+    AIM_ASSERT(table != NULL);
+
+    rv = table->ops->entry_modify(table->priv, cxn_id, entry->priv, obj);
 
     if (rv == INDIGO_ERROR_NONE) {
         ft_entry_modify_effects(ind_core_ft, entry, obj);
@@ -837,12 +828,10 @@ ind_core_flow_stats_iter(void *cookie, ft_entry_t *entry)
     };
 
     ind_core_table_t *table = ind_core_table_get(entry->table_id);
-    if (table != NULL) {
-        rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
-                                         entry->priv, &flow_stats);
-    } else {
-        rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
-    }
+    AIM_ASSERT(table != NULL);
+
+    rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                     entry->priv, &flow_stats);
 
     if (rv != INDIGO_ERROR_NONE) {
         AIM_LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
@@ -992,12 +981,10 @@ ind_core_aggregate_stats_iter(void *cookie, ft_entry_t *entry)
         };
 
         ind_core_table_t *table = ind_core_table_get(entry->table_id);
-        if (table != NULL) {
-            rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
-                                             entry->priv, &flow_stats);
-        } else {
-            rv = indigo_fwd_flow_stats_get(entry->id, &flow_stats);
-        }
+        AIM_ASSERT(table != NULL);
+
+        rv = table->ops->entry_stats_get(table->priv, state->cxn_id,
+                                         entry->priv, &flow_stats);
 
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_ERROR("Failed to get stats for flow "INDIGO_FLOW_ID_PRINTF_FORMAT": %s",
@@ -1128,59 +1115,48 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 {
     of_table_stats_request_t *obj = _obj;
     of_table_stats_request_t *reply = NULL;
-    indigo_error_t rv;
+    of_version_t version = obj->version;
 
-    if (ind_core_num_tables_registered == 0) {
-        rv = indigo_fwd_table_stats_get(obj, &reply);
-        if (rv < 0) {
-            AIM_LOG_ERROR("Table stats failed: %s", indigo_strerror(rv));
-            /* TODO send error */
-            return;
+    reply = of_table_stats_reply_new(version);
+    AIM_TRUE_OR_DIE(reply != NULL);
+
+    uint32_t xid;
+    of_table_stats_request_xid_get(obj, &xid);
+    of_table_stats_reply_xid_set(reply, xid);
+
+    of_list_table_stats_entry_t list[1];
+    of_table_stats_reply_entries_bind(reply, list);
+
+    int i;
+    for (i = 0; i < 256; i++) {
+        ind_core_table_t *table = ind_core_table_get(i);
+
+        if (table == NULL) {
+            continue;
         }
-    } else {
-        of_version_t version = obj->version;
 
-        reply = of_table_stats_reply_new(version);
-        AIM_TRUE_OR_DIE(reply != NULL);
+        indigo_fi_table_stats_t table_stats;
+        memset(&table_stats, -1, sizeof(table_stats));
 
-        uint32_t xid;
-        of_table_stats_request_xid_get(obj, &xid);
-        of_table_stats_reply_xid_set(reply, xid);
-
-        of_list_table_stats_entry_t list[1];
-        of_table_stats_reply_entries_bind(reply, list);
-
-        int i;
-        for (i = 0; i < 256; i++) {
-            ind_core_table_t *table = ind_core_table_get(i);
-
-            if (table == NULL) {
-                continue;
-            }
-
-            indigo_fi_table_stats_t table_stats;
-            memset(&table_stats, -1, sizeof(table_stats));
-
-            if (table->ops->table_stats_get) {
-                (void) table->ops->table_stats_get(table->priv, cxn_id, &table_stats);
-            }
-
-            of_table_stats_entry_t entry[1];
-            of_table_stats_entry_init(entry, version, -1, 1);
-            (void) of_list_table_stats_entry_append_bind(list, entry);
-
-            of_table_stats_entry_table_id_set(entry, i);
-            if (version < OF_VERSION_1_3) {
-                of_table_stats_entry_name_set(entry, table->name);
-                of_table_stats_entry_max_entries_set(entry, table_stats.max_entries);
-            }
-            if (version < OF_VERSION_1_2) {
-                of_table_stats_entry_wildcards_set(entry, 0x3fffff); /* All wildcards */
-            }
-            of_table_stats_entry_active_count_set(entry, table->num_flows);
-            of_table_stats_entry_lookup_count_set(entry, table_stats.lookup_count);
-            of_table_stats_entry_matched_count_set(entry, table_stats.matched_count);
+        if (table->ops->table_stats_get) {
+            (void) table->ops->table_stats_get(table->priv, cxn_id, &table_stats);
         }
+
+        of_table_stats_entry_t entry[1];
+        of_table_stats_entry_init(entry, version, -1, 1);
+        (void) of_list_table_stats_entry_append_bind(list, entry);
+
+        of_table_stats_entry_table_id_set(entry, i);
+        if (version < OF_VERSION_1_3) {
+            of_table_stats_entry_name_set(entry, table->name);
+            of_table_stats_entry_max_entries_set(entry, table_stats.max_entries);
+        }
+        if (version < OF_VERSION_1_2) {
+            of_table_stats_entry_wildcards_set(entry, 0x3fffff); /* All wildcards */
+        }
+        of_table_stats_entry_active_count_set(entry, table->num_flows);
+        of_table_stats_entry_lookup_count_set(entry, table_stats.lookup_count);
+        of_table_stats_entry_matched_count_set(entry, table_stats.matched_count);
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);

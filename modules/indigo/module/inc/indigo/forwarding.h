@@ -56,90 +56,6 @@ extern indigo_error_t indigo_fwd_forwarding_features_get(
     of_features_reply_t *features_reply);
 
 /**
- * @brief Flow create
- * @param of_flow_add The original LOCI request
- * @param [out] table_id Table inserted into (ignored)
- *
- * Create a flow for the forwarding engine.
- *
- * Ownership of the flow_add LOXI object is maintained by the
- * caller (OF state manager).
- */
-
-extern indigo_error_t indigo_fwd_flow_create(
-    indigo_cookie_t flow_id,
-    of_flow_add_t *flow_add,
-    uint8_t *table_id);
-
-/**
- * @brief Modify an existing flow.
- * @param flow_id Flow identifier
- * @param flow_modify The original LOCI message indicating the modification
- * @return Return code from operation
- *
- * @fixme Consider adding parameters to indicate modification that
- * should be done:  modify_effects, modify_cookie or clear_counters.
- *
- * Ownership of the flow_modify LOXI object is maintained by the
- * caller (OF state manager).
- */
-
-extern indigo_error_t indigo_fwd_flow_modify(
-    indigo_cookie_t flow_id,
-    of_flow_modify_t *flow_modify);
-
-/**
- * @brief Flow delete
- * @param flow_id Flow identifier
- * @param [out] flow_stats Statistics for flow
- *
- * Delete a flow from the forwarding engine.
- */
-
-extern indigo_error_t indigo_fwd_flow_delete(
-    indigo_cookie_t flow_id,
-    indigo_fi_flow_stats_t *flow_stats);
-
-/**
- * @brief Flow stats
- * @param flow_id The ID of the flow whose stats are to be retrieved
- * @param [out] flow_stats Statistics for flow
- *
- * Get the stats structure from an existing flow. The flow_stats object MUST
- * contain the flow ID.
- */
-
-extern indigo_error_t indigo_fwd_flow_stats_get(
-    indigo_cookie_t flow_id,
-    indigo_fi_flow_stats_t *flow_stats);
-
-/**
- * @brief Flow hit status
- * @param flow_id The ID of the flow whose hit status is to be retrieved
- * @param [out] hit_status True if entry hit since last time API was called
- *
- * Get the hit status of an existing flow.
- */
-
-extern indigo_error_t indigo_fwd_flow_hit_status_get(
-    indigo_cookie_t flow_id,
-    bool *hit_status);
-
-/**
- * @brief Table stats
- * @param table_stats_request The LOXI request
- * @param [out] table_stats_reply The LOXI reply
- * @return Return code from operation
- *
- * Ownership of the table_stats_request LOXI object is maintained by the
- * caller (OF state manager).
- */
-
-extern indigo_error_t indigo_fwd_table_stats_get(
-    of_table_stats_request_t *table_stats_request,
-    of_table_stats_reply_t **table_stats_reply);
-
-/**
  * @brief VLAN stats
  * @param vlan_vid The ID of the VLAN whose stats are to be retrieved
  * @param [out] vlan_stats Statistics for the VLAN
@@ -177,46 +93,6 @@ extern indigo_error_t indigo_fwd_packet_out(
 extern indigo_error_t indigo_fwd_experimenter(
     of_experimenter_t *experimenter,
     indigo_cxn_id_t cxn_id);
-
-/**
- * Group management
- *
- * These interfaces largely map to the OpenFlow group-mod message, but with a
- * few differences for easier Forwarding implementation:
- *
- *  - Delete of OFPG_ALL is turned into a series of deletes of single groups.
- *  - Modify with a changed type is turned into a delete and add.
- */
-
-/**
- * @brief Add a group
- * @param id Group ID
- * @param group_type OpenFlow group type
- * @param buckets LOCI bucket list
- */
-indigo_error_t indigo_fwd_group_add(uint32_t id, uint8_t group_type, of_list_bucket_t *buckets);
-
-/**
- * @brief Modify an existing group
- * @param id Group ID
- * @param buckets LOCI bucket list
- */
-indigo_error_t indigo_fwd_group_modify(uint32_t id, of_list_bucket_t *buckets);
-
-/**
- * @brief Delete an existing group
- * @param id Group ID
- */
-void indigo_fwd_group_delete(uint32_t id);
-
-/**
- * @brief Retrieve stats for a group
- * @param id Group ID
- * @param entry LOCI of_group_stats_entry_t to be filled in with stats
- *
- * Forwarding should set the packet_count, byte_count, and bucket_stats fields.
- */
-void indigo_fwd_group_stats_get(uint32_t id, of_group_stats_entry_t *entry);
 
 /**
  * Switch pipeline management
