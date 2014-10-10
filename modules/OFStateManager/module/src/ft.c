@@ -167,11 +167,14 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 void
 ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
 {
+    uint16_t flags;
+
     ft_checksum_subtract(ft, entry);
     ft_entry_unlink(ft, entry);
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
-    of_flow_add_flags_get(flow_add, &entry->flags);
+    of_flow_add_flags_get(flow_add, &flags);
+    entry->flags = flags; /* Only 4 bits currently used, truncate to 8 bits */
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
@@ -577,6 +580,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
 {
     indigo_error_t err;
     ft_entry_t *entry;
+    uint16_t flags;
 
     entry = aim_zmalloc(sizeof(*entry));
 
@@ -586,7 +590,8 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
     of_flow_add_priority_get(flow_add, &entry->priority);
-    of_flow_add_flags_get(flow_add, &entry->flags);
+    of_flow_add_flags_get(flow_add, &flags);
+    entry->flags = flags; /* Only 4 bits currently used, truncate to 8 bits */
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 

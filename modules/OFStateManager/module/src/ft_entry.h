@@ -34,60 +34,57 @@
 /**
  * The data in a flow table entry
  *
- * @param id The externally determined flow ID; primary key
- * @param match The match structure recorded from the original add
+ * @param id The externally determined unique flow ID
+ * @param minimatch The compressed match structure recorded from the original add
  * @param priority The priority, from the original add
  * @param idle_timeout The idle_timeout, from the original add
  * @param hard_timeout The hard_timeout, from the original add
  * @param flags The flags, from the original add
+ * @param table_id The table id, from the original add
  * @param priv Opaque data returned by the entry_create operation
  * @param cookie The cookie, from the original or as updated
  * @param effects The actions or instructions from the add or as updated.
  * See below.
  * @param insert_time The timestamp when the entry was inserted
- * @param packets Number of packets matched by the entry
- * @param bytes Number of bytes matched by the entry
  * @param last_counter_change Last update when counters changed
  * @param table_links For iterating across the flow table
- * @param prio_links Search by priority
- * @param match_links Search by strict match
- * @param flow_id_links Search by flow id
+ * @param strict_match_hash_entry Search by strict match
+ * @param cookie_links Search by cookie
+ * @param expiration_links Linked into expiration_queue if a timeout was specified
+ * @param iterators List of ft_iterator_t objects pointing to this entry
  *
  * The effects (actions or instructions) are tied to a specific OpenFlow
  * version. For example, a flow may be added using OpenFlow 1.0 but
  * modified using OpenFlow 1.3. Either union member may be used to check
  * the version and LOCI object type.
  *
- * The match, priority, timeouts and flags are invariant once the entry
- * has been added to the table.  The cookie and effects may be updated by
- * modify commands.
+ * The match, priority, and table-id are invariant once the entry has been
+ * added to the table. The timeouts and flags may be updated by overwriting the
+ * entry with a flow-add. The cookie and effects may be updated by a flow-modify.
  */
 
 typedef struct ft_entry_s {
-    /* Key */
-    indigo_flow_id_t     id;
-
-    /* Invariant */
+    indigo_flow_id_t id;
     minimatch_t minimatch;
     uint16_t priority;
     uint16_t idle_timeout;
     uint16_t hard_timeout;
-    uint16_t flags;
+    uint8_t flags;
+    uint8_t table_id;
     void *priv;
 
-    /* Modifiable thru API calls */
+    /* May be changed by flow-modify */
     uint64_t cookie;
-    union { /* May not be maintained by some implementations */
+    union {
         of_list_action_t *actions;
         of_list_instruction_t *instructions;
     } effects;
 
     /* Updated by implementation */
-    uint8_t table_id;
     indigo_time_t insert_time;
     indigo_time_t last_counter_change;
 
-    /* For linked list maintance */
+    /* Datastructure links */
     list_links_t table_links;      /* For iterating across the flow table */
     bighash_entry_t strict_match_hash_entry;  /* Search by strict match */
     list_links_t cookie_links;     /* Search by cookie */
