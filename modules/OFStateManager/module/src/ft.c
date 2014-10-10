@@ -74,10 +74,10 @@ ft_create(void)
     /* Allocate and init buckets for each search type */
     ft->strict_match_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
 
-    bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
+    bytes = sizeof(ft->cookie_buckets[0]) * (1 << FT_COOKIE_PREFIX_LEN);
     ft->cookie_buckets = aim_zmalloc(bytes);
     for (idx = 0; idx < (1 << FT_COOKIE_PREFIX_LEN); idx++) {
-        list_init(&ft->cookie_buckets[idx]);
+        list_init(&ft->cookie_buckets[idx].head);
     }
 
     for (idx = 0; idx < FT_MAX_TABLES; idx++) {
@@ -427,7 +427,7 @@ ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query)
 
     if (query && (query->cookie_mask & FT_COOKIE_PREFIX_MASK) == FT_COOKIE_PREFIX_MASK) {
         /* Using cookie bucket */
-        iter->head = &ft->cookie_buckets[ft_cookie_to_bucket_index(ft, query->cookie)];
+        iter->head = &ft->cookie_buckets[ft_cookie_to_bucket_index(ft, query->cookie)].head;
         iter->links_offset = offsetof(ft_entry_t, cookie_links);
     } else {
         iter->head = &ft->all_list;
@@ -512,7 +512,7 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
 
     if (ft->cookie_buckets) { /* Cookie prefix */
         idx = ft_cookie_to_bucket_index(ft, entry->cookie);
-        list_push(&ft->cookie_buckets[idx], &entry->cookie_links);
+        list_push(&ft->cookie_buckets[idx].head, &entry->cookie_links);
     }
 
     list_init(&entry->iterators);
@@ -550,7 +550,7 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 
     if (ft->cookie_buckets) { /* Cookie prefix */
         INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
-            entry->cookie)]));
+            entry->cookie)].head));
         list_remove(&entry->cookie_links);
     }
 
