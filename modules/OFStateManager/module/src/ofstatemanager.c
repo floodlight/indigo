@@ -76,14 +76,6 @@ debug_counter_t ft_modify_counter;
 debug_counter_t ft_forwarding_add_error_counter;
 
 
-/**
- * Maintain the current connection count.
- *
- * In case the disconnect mode configuration changes, we may need to change the
- * system behavior because of its current state.
- */
-static int ind_core_connection_count;
-
 #define INIT_CHECK do {                         \
         if (!ind_core_init_done) {              \
             AIM_LOG_INTERNAL("Not initialized");\
@@ -551,17 +543,9 @@ ind_core_init(ind_core_config_t *config)
     INIT_STR(ind_core_of_config.desc_stats.serial_num,
              IND_CORE_SERIAL_NUM_DEFAULT);
 
-    /* Create flow table */
-    if (config->max_flowtable_entries == 0) {
-        /* Default value */
-        config->max_flowtable_entries = 16384;
-    }
-
     if ((ind_core_ft = ft_create()) == NULL) {
         AIM_DIE("Failed to allocate flow table");
     }
-
-    ind_core_connection_count = 0;
 
     ind_core_group_init();
 
@@ -864,67 +848,6 @@ ind_core_serial_num_get(of_serial_num_t serial_num)
                     OF_SERIAL_NUM_LEN);
 
     return INDIGO_ERROR_NONE;
-}
-
-
-/**
- * Set/get the disconnected mode
- */
-indigo_error_t
-indigo_core_disconnected_mode_set(indigo_core_disconnected_mode_t mode)
-{
-    if (!ind_core_init_done) {
-        return INDIGO_ERROR_INIT;
-    }
-
-    switch (mode) {
-    case INDIGO_CORE_DISCONNECTED_MODE_STICKY:
-    case INDIGO_CORE_DISCONNECTED_MODE_CLOSED:
-        break;
-    default:
-        AIM_LOG_ERROR("Bad disconnect mode set; %d", mode);
-        return INDIGO_ERROR_PARAM;
-    }
-
-    if (mode == ind_core_config.disconnected_mode) {
-        return INDIGO_ERROR_NONE;
-    }
-
-    /* @FIXME: If mode change and this would affect current state, update */
-    AIM_LOG_TRACE("Setting disconnect mode to %d", mode);
-    ind_core_config.disconnected_mode = mode;
-
-    return INDIGO_ERROR_NONE;
-}
-
-indigo_error_t
-indigo_core_disconnected_mode_get(indigo_core_disconnected_mode_t *mode)
-{
-    if (!ind_core_init_done) {
-        return INDIGO_ERROR_INIT;
-    }
-
-    if (mode == NULL) {
-        return INDIGO_ERROR_PARAM;
-    }
-
-    *mode = ind_core_config.disconnected_mode;
-
-    return INDIGO_ERROR_NONE;
-}
-
-
-/**
- * Notify state manager of a change in remote connection count
- */
-void
-indigo_core_connection_count_notify(int new_count)
-{
-    if (!ind_core_init_done) {
-        return;
-    }
-
-    ind_core_connection_count = new_count;
 }
 
 

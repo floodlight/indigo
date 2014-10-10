@@ -38,30 +38,6 @@
 #include <indigo/fi.h>
 
 /****************************************************************
- * Remote disconnect modes (formerly fail open, closed, etc).
- ****************************************************************/
-
-/**
- * Representations of fail (disconnected) modes.  Determines what the
- * switch should do on the loss of all remote connections.
- *
- * STICKY:      Keep flowtable, stop processing expires
- * CLOSED:      Keep flowtable, but continue expires
- * DISABLED:    Clear flowtable
- * LOCKDOWN:    Clear flowtable, disable ports
- * LOCAL:       Enable local controller
- */
-
-typedef enum indigo_core_disconnected_e {
-    INDIGO_CORE_DISCONNECTED_MODE_STICKY     = 0,
-    INDIGO_CORE_DISCONNECTED_MODE_CLOSED     = 1,
-    INDIGO_CORE_DISCONNECTED_MODE_DISABLED   = 2,
-    INDIGO_CORE_DISCONNECTED_MODE_LOCKDOWN   = 3,
-    INDIGO_CORE_DISCONNECTED_MODE_LOCAL      = 4,
-    IND_CORE_DISCONNECTED_MODE_COUNT         = 5   /* Last entry */
-} indigo_core_disconnected_mode_t;
-
-/****************************************************************
  * Forwarding Interface functions provided by the state manager
  ****************************************************************/
 
@@ -129,31 +105,8 @@ extern indigo_error_t indigo_core_dpid_get(of_dpid_t *dpid);
 extern void indigo_core_port_status_update(of_port_status_t *port_status);
 
 /****************************************************************
- * Asynchronous connection manager notification, disconnection mode
+ * Miscellaneous stats
  ****************************************************************/
-
-/**
- * Set/get the disconnected mode
- */
-extern indigo_error_t
-indigo_core_disconnected_mode_set(indigo_core_disconnected_mode_t mode);
-
-extern indigo_error_t
-indigo_core_disconnected_mode_get(indigo_core_disconnected_mode_t *mode);
-
-/**
- * @brief Notify state manager that the remote connection count has changed
- * @param new_count The new connection count
- *
- * This call is made from the connection manager to the state manager
- * to indicate that the number of connections to controllers has
- * changed.  This is intended to provide the state to core in order to
- * invoke the necessary changes to implement the configured disconnect mode.
- */
-
-extern void indigo_core_connection_count_notify(
-    int new_count);
-
 
 /**
  * @brief Returns state manager statistics.
