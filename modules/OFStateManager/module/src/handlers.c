@@ -248,12 +248,6 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
         query->check_priority = 1;
         of_flow_add_priority_get(obj, &(query->priority));
     }
-    if (force_wildcard_port) {
-        query->out_port = OF_PORT_DEST_WILDCARD;
-    } else {
-        /* Could check object_id is delete or delete_strict */
-        of_flow_add_out_port_get(obj, &(query->out_port));
-    }
     if (obj->version >= OF_VERSION_1_1) {
         of_flow_add_cookie_get(obj, &query->cookie);
         of_flow_add_cookie_mask_get(obj, &query->cookie_mask);
@@ -896,7 +890,6 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         return;
     }
     minimatch_init(&query.minimatch, &match);
-    of_flow_stats_request_out_port_get(obj, &(query.out_port));
     of_flow_stats_request_table_id_get(obj, &(query.table_id));
     if (obj->version >= OF_VERSION_1_1) {
         of_flow_stats_request_cookie_get(obj, &query.cookie);
@@ -1002,7 +995,6 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
         return;
     }
     minimatch_init(&query.minimatch, &match);
-    of_aggregate_stats_request_out_port_get(obj, &(query.out_port));
     of_aggregate_stats_request_table_id_get(obj, &(query.table_id));
     if (obj->version >= OF_VERSION_1_1) {
         of_aggregate_stats_request_cookie_get(obj, &query.cookie);

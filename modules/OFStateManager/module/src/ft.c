@@ -35,7 +35,6 @@ static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
-static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
 static void ft_checksum_add(ft_instance_t ft, ft_entry_t *entry);
 static void ft_checksum_subtract(ft_instance_t ft, ft_entry_t *entry);
 
@@ -280,21 +279,11 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         if (!minimatch_more_specific(&entry->minimatch, &query->minimatch)) {
             break;
         }
-        if (query->out_port != OF_PORT_DEST_WILDCARD) {
-            if (!ft_entry_has_out_port(entry, query->out_port)) {
-                break;
-            }
-        }
         rv = 1;
         break;
     case OF_MATCH_STRICT:
         if (!minimatch_equal(&entry->minimatch, &query->minimatch)) {
             break;
-        }
-        if (query->out_port != OF_PORT_DEST_WILDCARD) {
-            if (!ft_entry_has_out_port(entry, query->out_port)) {
-                break;
-            }
         }
         rv = 1;
         break;
@@ -648,65 +637,6 @@ ft_entry_set_effects(ft_entry_t *entry,
     }
 
     return INDIGO_ERROR_NONE;
-}
-
-static int
-action_list_has_out_port(of_list_action_t *actions, of_port_no_t port)
-{
-    of_action_t act;
-    int loop_rv;
-    of_port_no_t out_port;
-
-    OF_LIST_ACTION_ITER(actions, &act, loop_rv) {
-        if (act.header.object_id == OF_ACTION_OUTPUT) {
-            of_action_output_port_get(&act.output, &out_port);
-            if (out_port == port) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-static int
-instruction_list_has_out_port(of_list_instruction_t *instructions, of_port_no_t port)
-{
-    of_instruction_t inst;
-    int loop_rv;
-
-    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
-            if (action_list_has_out_port(&actions, port)) {
-                return 1;
-            }
-        } else if (inst.header.object_id == OF_INSTRUCTION_WRITE_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_write_actions_actions_bind(&inst.write_actions, &actions);
-            if (action_list_has_out_port(&actions, port)) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Determine if the given entry has port as an output port
- */
-static int
-ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
-{
-    if (entry->effects.actions->version == OF_VERSION_1_0) {
-        return action_list_has_out_port(entry->effects.actions, port);
-    } else {
-        return instruction_list_has_out_port(entry->effects.instructions, port);
-    }
-
-    return 0;
 }
 
 static void

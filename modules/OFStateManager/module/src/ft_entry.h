@@ -153,7 +153,6 @@ typedef struct of_meta_match_s {
     uint64_t cookie_mask;   /* If 0, do not match cookie */
     uint16_t priority;
     int check_priority;     /* Boolean; should priority be checked */
-    of_port_no_t out_port;  /* OFPP_ANY means do not match */
     uint8_t table_id;       /* Set to TABLE_ID_ANY to wildcard */
 } of_meta_match_t;
 
