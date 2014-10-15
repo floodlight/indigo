@@ -298,12 +298,6 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         }
         rv = 1;
         break;
-    case OF_MATCH_OVERLAP:
-        if (!minimatch_overlap(&entry->minimatch, &query->minimatch)) {
-            break;
-        }
-        rv = 1;
-        break;
     default:
         /* Internal error */
         AIM_LOG_INTERNAL("Unknown flowtable query mode %d", query->mode);

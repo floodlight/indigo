@@ -138,7 +138,6 @@ typedef struct ft_entry_s {
 typedef enum of_match_mode_e {
     OF_MATCH_NON_STRICT,    /* FS(Mq) contains FS(Me) */
     OF_MATCH_STRICT,        /* Strict match as per spec */
-    OF_MATCH_OVERLAP,       /* Check for overlap */
 } of_match_mode_t;
 
 /**
@@ -154,7 +153,6 @@ typedef struct of_meta_match_s {
     uint64_t cookie_mask;   /* If 0, do not match cookie */
     uint16_t priority;
     int check_priority;     /* Boolean; should priority be checked */
-    int check_overlap;      /* Boolean, for adds */
     of_port_no_t out_port;  /* OFPP_ANY means do not match */
     uint8_t table_id;       /* Set to TABLE_ID_ANY to wildcard */
 } of_meta_match_t;

@@ -244,7 +244,7 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
     }
     minimatch_init(&query->minimatch, &match);
     query->mode = query_mode;
-    if ((query_mode == OF_MATCH_STRICT) || (query_mode == OF_MATCH_OVERLAP)) {
+    if ((query_mode == OF_MATCH_STRICT)) {
         query->check_priority = 1;
         of_flow_add_priority_get(obj, &(query->priority));
     }
@@ -254,44 +254,12 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
         /* Could check object_id is delete or delete_strict */
         of_flow_add_out_port_get(obj, &(query->out_port));
     }
-    if (query_mode != OF_MATCH_OVERLAP && obj->version >= OF_VERSION_1_1) {
+    if (obj->version >= OF_VERSION_1_1) {
         of_flow_add_cookie_get(obj, &query->cookie);
         of_flow_add_cookie_mask_get(obj, &query->cookie_mask);
     }
 
     return INDIGO_ERROR_NONE;
-}
-
-/**
- * @brief Check if overlap is found with the flow modify object
- *
- * Return 1 if overlap found, 0 if not found, <0 on error
- */
-
-static int
-overlap_found(of_flow_modify_t *obj)
-{
-    ft_entry_t *entry;
-    list_links_t *cur, *next;
-    of_meta_match_t query;
-    indigo_error_t rv;
-
-    rv = flow_mod_setup_query(obj, &query, OF_MATCH_OVERLAP, 1);
-    if (rv < 0) {
-        AIM_LOG_INTERNAL("Failed to setup query in overlap_found: %s", indigo_strerror(rv));
-        return rv;
-    }
-
-    FT_ITER(ind_core_ft, entry, cur, next) {
-        if (ft_entry_meta_match(&query, entry)) {
-            metamatch_cleanup(&query);
-            return 1;
-        }
-    }
-
-    metamatch_cleanup(&query);
-
-    return 0;
 }
 
 static indigo_flow_id_t
@@ -335,14 +303,12 @@ ind_core_flow_add_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     of_flow_modify_hard_timeout_get(obj, &hard_timeout);
 
     if (flags & OF_FLOW_MOD_FLAG_CHECK_OVERLAP_BY_VERSION(ver)) {
-        if (overlap_found(obj)) {
-            AIM_LOG_TRACE("Overlap found when adding flow");
-            indigo_cxn_send_error_reply(
-                    cxn_id, obj,
-                    OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
-                    OF_FLOW_MOD_FAILED_OVERLAP_BY_VERSION(ver));
-            return;
-        }
+        AIM_LOG_WARN("Flow-mod overlap flag not supported");
+        indigo_cxn_send_error_reply(
+                cxn_id, obj,
+                OF_ERROR_TYPE_FLOW_MOD_FAILED_BY_VERSION(ver),
+                OF_FLOW_MOD_FAILED_BAD_FLAGS_BY_VERSION(ver));
+        return;
     }
 
     if ((flags & OF_FLOW_MOD_FLAG_EMERG_BY_VERSION(ver)) &&
@@ -937,7 +903,7 @@ ind_core_flow_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_flow_stats_request_cookie_mask_get(obj, &query.cookie_mask);
     }
 
-    /* Non strict; do not check priority or overlap */
+    /* Non strict; do not check priority */
     query.mode = OF_MATCH_NON_STRICT;
 
     state = aim_malloc(sizeof(*state));
@@ -1043,7 +1009,7 @@ ind_core_aggregate_stats_request_handler(of_object_t *_obj,
         of_aggregate_stats_request_cookie_mask_get(obj, &query.cookie_mask);
     }
 
-    /* Non strict; do not check priority or overlap */
+    /* Non strict; do not check priority */
     query.mode = OF_MATCH_NON_STRICT;
 
     state = aim_malloc(sizeof(*state));

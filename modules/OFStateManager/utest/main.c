@@ -569,7 +569,6 @@ test_ft_hash(void)
 
     /* These don't change */
     query.check_priority                = 1;
-    query.check_overlap                 = 1;
     query.cookie                        = orig_cookie;
     query.priority                      = orig_prio;
 
