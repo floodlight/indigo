@@ -136,13 +136,9 @@ typedef struct ft_entry_s {
  * Mq is match for query; Me is match for entry
  */
 typedef enum of_match_mode_e {
-    OF_MATCH_NON_STRICT = 0,
-    OF_MATCH_SUPER_SET = 0,     /* FS(Mq) contains FS(Me);
-                                   Same as non-strict match */
-    OF_MATCH_STRICT = 1,        /* Strict match as per spec */
-    OF_MATCH_EQUAL = 1,         /* FS(Mq) == FS(Me) */
-    OF_MATCH_COOKIE_ONLY = 2,   /* Matching only on cookie */
-    OF_MATCH_OVERLAP = 3        /* Check for overlap */
+    OF_MATCH_NON_STRICT,    /* FS(Mq) contains FS(Me) */
+    OF_MATCH_STRICT,        /* Strict match as per spec */
+    OF_MATCH_OVERLAP,       /* Check for overlap */
 } of_match_mode_t;
 
 /**
