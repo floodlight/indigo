@@ -78,6 +78,10 @@ typedef struct ft_public_s ft_public_t;
 
 typedef ft_public_t *ft_instance_t;
 
+typedef struct ft_cookie_bucket_s {
+    list_head_t head;
+} ft_cookie_bucket_t;
+
 /**
  * Per-table bookkeeping
  *
@@ -106,7 +110,7 @@ struct ft_public_s {
     list_head_t all_list;          /* Single list of all current entries */
 
     bighash_table_t *strict_match_hashtable;
-    list_head_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
+    ft_cookie_bucket_t *cookie_buckets;   /* Array of cookie (prefix) based buckets */
 
     ft_table_t tables[FT_MAX_TABLES];
 };

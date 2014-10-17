@@ -35,7 +35,6 @@ static void ft_entry_destroy(ft_instance_t ft, ft_entry_t *entry);
 static indigo_error_t ft_entry_set_effects(ft_entry_t *entry, of_flow_modify_t *flow_mod);
 static void ft_entry_link(ft_instance_t ft, ft_entry_t *entry);
 static void ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry);
-static int ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port);
 static void ft_checksum_add(ft_instance_t ft, ft_entry_t *entry);
 static void ft_checksum_subtract(ft_instance_t ft, ft_entry_t *entry);
 
@@ -74,10 +73,10 @@ ft_create(void)
     /* Allocate and init buckets for each search type */
     ft->strict_match_hashtable = bighash_table_create(BIGHASH_AUTOGROW);
 
-    bytes = sizeof(list_head_t) * (1 << FT_COOKIE_PREFIX_LEN);
+    bytes = sizeof(ft->cookie_buckets[0]) * (1 << FT_COOKIE_PREFIX_LEN);
     ft->cookie_buckets = aim_zmalloc(bytes);
     for (idx = 0; idx < (1 << FT_COOKIE_PREFIX_LEN); idx++) {
-        list_init(&ft->cookie_buckets[idx]);
+        list_init(&ft->cookie_buckets[idx].head);
     }
 
     for (idx = 0; idx < FT_MAX_TABLES; idx++) {
@@ -167,11 +166,14 @@ ft_delete(ft_instance_t ft, ft_entry_t *entry)
 void
 ft_overwrite(ft_instance_t ft, ft_entry_t *entry, of_flow_add_t *flow_add)
 {
+    uint16_t flags;
+
     ft_checksum_subtract(ft, entry);
     ft_entry_unlink(ft, entry);
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
-    of_flow_add_flags_get(flow_add, &entry->flags);
+    of_flow_add_flags_get(flow_add, &flags);
+    entry->flags = flags; /* Only 4 bits currently used, truncate to 8 bits */
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
@@ -277,30 +279,10 @@ ft_entry_meta_match(of_meta_match_t *query, ft_entry_t *entry)
         if (!minimatch_more_specific(&entry->minimatch, &query->minimatch)) {
             break;
         }
-        if (query->out_port != OF_PORT_DEST_WILDCARD) {
-            if (!ft_entry_has_out_port(entry, query->out_port)) {
-                break;
-            }
-        }
         rv = 1;
         break;
     case OF_MATCH_STRICT:
         if (!minimatch_equal(&entry->minimatch, &query->minimatch)) {
-            break;
-        }
-        if (query->out_port != OF_PORT_DEST_WILDCARD) {
-            if (!ft_entry_has_out_port(entry, query->out_port)) {
-                break;
-            }
-        }
-        rv = 1;
-        break;
-    case OF_MATCH_COOKIE_ONLY:
-        /* Checked cookie above */
-        rv = 1;
-        break;
-    case OF_MATCH_OVERLAP:
-        if (!minimatch_overlap(&entry->minimatch, &query->minimatch)) {
             break;
         }
         rv = 1;
@@ -427,7 +409,7 @@ ft_iterator_init(ft_iterator_t *iter, ft_instance_t ft, of_meta_match_t *query)
 
     if (query && (query->cookie_mask & FT_COOKIE_PREFIX_MASK) == FT_COOKIE_PREFIX_MASK) {
         /* Using cookie bucket */
-        iter->head = &ft->cookie_buckets[ft_cookie_to_bucket_index(ft, query->cookie)];
+        iter->head = &ft->cookie_buckets[ft_cookie_to_bucket_index(ft, query->cookie)].head;
         iter->links_offset = offsetof(ft_entry_t, cookie_links);
     } else {
         iter->head = &ft->all_list;
@@ -512,7 +494,7 @@ ft_entry_link(ft_instance_t ft, ft_entry_t *entry)
 
     if (ft->cookie_buckets) { /* Cookie prefix */
         idx = ft_cookie_to_bucket_index(ft, entry->cookie);
-        list_push(&ft->cookie_buckets[idx], &entry->cookie_links);
+        list_push(&ft->cookie_buckets[idx].head, &entry->cookie_links);
     }
 
     list_init(&entry->iterators);
@@ -550,7 +532,7 @@ ft_entry_unlink(ft_instance_t ft, ft_entry_t *entry)
 
     if (ft->cookie_buckets) { /* Cookie prefix */
         INDIGO_ASSERT(!list_empty(&ft->cookie_buckets[ft_cookie_to_bucket_index(ft,
-            entry->cookie)]));
+            entry->cookie)].head));
         list_remove(&entry->cookie_links);
     }
 
@@ -577,6 +559,7 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
 {
     indigo_error_t err;
     ft_entry_t *entry;
+    uint16_t flags;
 
     entry = aim_zmalloc(sizeof(*entry));
 
@@ -586,7 +569,8 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
 
     of_flow_add_cookie_get(flow_add, &entry->cookie);
     of_flow_add_priority_get(flow_add, &entry->priority);
-    of_flow_add_flags_get(flow_add, &entry->flags);
+    of_flow_add_flags_get(flow_add, &flags);
+    entry->flags = flags; /* Only 4 bits currently used, truncate to 8 bits */
     of_flow_add_idle_timeout_get(flow_add, &entry->idle_timeout);
     of_flow_add_hard_timeout_get(flow_add, &entry->hard_timeout);
 
@@ -653,65 +637,6 @@ ft_entry_set_effects(ft_entry_t *entry,
     }
 
     return INDIGO_ERROR_NONE;
-}
-
-static int
-action_list_has_out_port(of_list_action_t *actions, of_port_no_t port)
-{
-    of_action_t act;
-    int loop_rv;
-    of_port_no_t out_port;
-
-    OF_LIST_ACTION_ITER(actions, &act, loop_rv) {
-        if (act.header.object_id == OF_ACTION_OUTPUT) {
-            of_action_output_port_get(&act.output, &out_port);
-            if (out_port == port) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-static int
-instruction_list_has_out_port(of_list_instruction_t *instructions, of_port_no_t port)
-{
-    of_instruction_t inst;
-    int loop_rv;
-
-    OF_LIST_INSTRUCTION_ITER(instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_APPLY_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_apply_actions_actions_bind(&inst.apply_actions, &actions);
-            if (action_list_has_out_port(&actions, port)) {
-                return 1;
-            }
-        } else if (inst.header.object_id == OF_INSTRUCTION_WRITE_ACTIONS) {
-            of_list_action_t actions;
-            of_instruction_write_actions_actions_bind(&inst.write_actions, &actions);
-            if (action_list_has_out_port(&actions, port)) {
-                return 1;
-            }
-        }
-    }
-
-    return 0;
-}
-
-/**
- * Determine if the given entry has port as an output port
- */
-static int
-ft_entry_has_out_port(ft_entry_t *entry, of_port_no_t port)
-{
-    if (entry->effects.actions->version == OF_VERSION_1_0) {
-        return action_list_has_out_port(entry->effects.actions, port);
-    } else {
-        return instruction_list_has_out_port(entry->effects.instructions, port);
-    }
-
-    return 0;
 }
 
 static void

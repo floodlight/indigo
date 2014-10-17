@@ -569,12 +569,10 @@ test_ft_hash(void)
 
     /* These don't change */
     query.check_priority                = 1;
-    query.check_overlap                 = 1;
     query.cookie                        = orig_cookie;
     query.priority                      = orig_prio;
 
     /* Test success on non-strict match */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = orig_eth_type;
     match.masks.eth_type                = 0xffff;
@@ -586,7 +584,6 @@ test_ft_hash(void)
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
 
     /* Test success on strict match */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
     match.fields.eth_type               = orig_eth_type;
     match.masks.eth_type                = 0xffff;
@@ -597,20 +594,7 @@ test_ft_hash(void)
     TEST_INDIGO_OK(ft_strict_match(ft, &query, &lookup_entry));
     TEST_ASSERT(lookup_entry->id == TEST_ENT_ID);
 
-    /* Test fail lookup for port, strict */
-    query.out_port                      = 1;
-    query.mode                          = OF_MATCH_STRICT;
-    match.fields.eth_type               = orig_eth_type;
-    match.masks.eth_type                = 0xffff;
-    minimatch_cleanup(&query.minimatch);
-    minimatch_init(&query.minimatch, &match);
-
-    TEST_ASSERT(count_matching(ft, &query) == 0);
-    TEST_ASSERT(ft_strict_match(ft, &query, &lookup_entry) ==
-                INDIGO_ERROR_NOT_FOUND);
-
     /* Test fail lookup for strict value */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
     match.fields.eth_type               = orig_eth_type + 1;
     match.masks.eth_type                = 0xffff;
@@ -622,7 +606,6 @@ test_ft_hash(void)
                 INDIGO_ERROR_NOT_FOUND);
 
     /* Test fail lookup for non-strict value */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = orig_eth_type + 1;
     match.masks.eth_type                = 0xffff;
@@ -632,7 +615,6 @@ test_ft_hash(void)
     TEST_ASSERT(count_matching(ft, &query) == 0);
 
     /* Test fail lookup for strict mask */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_STRICT;
     match.fields.eth_type               = orig_eth_type;
     match.masks.eth_type                = 0;
@@ -644,7 +626,6 @@ test_ft_hash(void)
                 INDIGO_ERROR_NOT_FOUND);
 
     /* Test success for non-strict with varying mask */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = orig_eth_type;
     match.masks.eth_type                = 0;
@@ -668,7 +649,6 @@ test_ft_hash(void)
     orig_eth_type = match.fields.eth_type; /* Last ethtype added */
 
     /* Query table and expect to get all results */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = 0;
     match.masks.eth_type                = 0;
@@ -678,7 +658,6 @@ test_ft_hash(void)
     TEST_ASSERT(count_matching(ft, &query) == TEST_FLOW_COUNT);
 
     /* Query table and expect to get one match */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = orig_eth_type;
     match.masks.eth_type                = 0xffff;
@@ -688,7 +667,6 @@ test_ft_hash(void)
     TEST_ASSERT(count_matching(ft, &query) == 1);
 
     /* Query table and expect to get 50 matches (every other one) */
-    query.out_port                      = OF_PORT_DEST_WILDCARD;
     query.mode                          = OF_MATCH_NON_STRICT;
     match.fields.eth_type               = 0x1;
     match.masks.eth_type                = 0x1;
@@ -702,7 +680,6 @@ test_ft_hash(void)
 
     /* Query table for each individual flow with exact match */
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
-        query.out_port                      = OF_PORT_DEST_WILDCARD;
         query.mode                          = OF_MATCH_STRICT;
         match.fields.eth_type               = TEST_ETH_TYPE(idx);
         match.masks.eth_type                = 0xffff;
@@ -866,7 +843,6 @@ test_ft_iterator(void)
         query.mode = OF_MATCH_NON_STRICT;
         query.cookie = 0;
         query.cookie_mask = 0xfffffffffffffffeULL;
-        query.out_port = OF_PORT_DEST_WILDCARD;
         query.table_id = TABLE_ID_ANY;
         ft_iterator_init(&iter, ft, &query);
         memset(results, 0, sizeof(results));
@@ -1067,7 +1043,6 @@ delete_all_entries(ft_instance_t ft)
     INDIGO_MEM_CLEAR(&match, sizeof(match));
     flow_del = of_flow_delete_new(OF_VERSION_1_0);
     TEST_ASSERT(flow_del != NULL);
-    of_flow_delete_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
     TEST_OK(of_flow_delete_match_set(flow_del, &match));
     handle_message(flow_del);
     TEST_INDIGO_OK(do_barrier());
@@ -1129,7 +1104,6 @@ test_exact_add_del(void)
         of_flow_add_priority_get(flow_add_keep[idx], &prio);
         flow_del = of_flow_delete_strict_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_del != NULL);
-        of_flow_delete_strict_out_port_set(flow_del, OF_PORT_DEST_WILDCARD);
         of_flow_delete_strict_priority_set(flow_del, prio);
         TEST_OK(of_flow_delete_strict_match_set(flow_del, &match));
         handle_message(flow_del);
@@ -1171,7 +1145,6 @@ test_modify(void)
         of_flow_add_priority_get(flow_add_keep[idx], &prio);
         flow_mod = of_flow_modify_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_mod != NULL);
-        of_flow_modify_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_match_set(flow_mod, &match));
         handle_message(flow_mod);
@@ -1216,7 +1189,6 @@ test_modify_strict(void)
         of_flow_add_priority_get(flow_add_keep[idx], &prio);
         flow_mod = of_flow_modify_strict_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_mod != NULL);
-        of_flow_modify_strict_out_port_set(flow_mod, OF_PORT_DEST_WILDCARD);
         of_flow_modify_strict_priority_set(flow_mod, prio);
         TEST_OK(of_flow_modify_strict_match_set(flow_mod, &match));
         handle_message(flow_mod);
