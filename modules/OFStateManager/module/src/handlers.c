@@ -244,7 +244,7 @@ flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
     }
     minimatch_init(&query->minimatch, &match);
     query->mode = query_mode;
-    if ((query_mode == OF_MATCH_STRICT)) {
+    if (query_mode == OF_MATCH_STRICT) {
         query->check_priority = 1;
         of_flow_add_priority_get(obj, &(query->priority));
     }
