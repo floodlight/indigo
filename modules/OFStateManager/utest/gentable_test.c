@@ -338,6 +338,61 @@ test_gentable_lookup(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_acquire(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(table.count_op == 0);
+
+    /* Acquire/release an entry */
+    {
+        do_add(1, mac1, 0);
+
+        of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+        of_bsn_tlv_port_value_set(tlv, 1);
+
+        void *priv = indigo_core_gentable_acquire(gentable, tlv);
+        AIM_TRUE_OR_DIE(priv == &table.entries[1]);
+
+        /* Deletion is not allowed while a reference exists to the entry */
+        memset(&table, 0, sizeof(table));
+        do_delete(1);
+        AIM_TRUE_OR_DIE(table.count_op == 0);
+
+        indigo_core_gentable_release(gentable, tlv);
+
+        /* Reference released, entry can be deleted */
+        memset(&table, 0, sizeof(table));
+        do_delete(1);
+        AIM_TRUE_OR_DIE(table.entries[1].count_delete == 1);
+        AIM_TRUE_OR_DIE(table.count_op == 1);
+
+        of_object_delete(tlv);
+    }
+
+    /* Attempt to acquire/release a nonexistent entry */
+    {
+        of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+        of_bsn_tlv_port_value_set(tlv, 1);
+
+        void *priv = indigo_core_gentable_acquire(gentable, tlv);
+        AIM_TRUE_OR_DIE(priv == NULL);
+
+        indigo_core_gentable_release(gentable, tlv);
+
+        of_object_delete(tlv);
+    }
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_unregister(gentable);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -348,6 +403,7 @@ test_gentable(void)
     RUN_TEST(gentable_entry_stats);
     RUN_TEST(gentable_long_running_task);
     RUN_TEST(gentable_lookup);
+    RUN_TEST(gentable_acquire);
     return TEST_PASS;
 }
 
