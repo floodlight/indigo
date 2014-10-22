@@ -1066,3 +1066,14 @@ ind_core_gentable_spawn_iter_task(
 
     return INDIGO_ERROR_NONE;
 }
+
+void *
+indigo_core_gentable_lookup(indigo_core_gentable_t *gentable, of_object_t *key)
+{
+    struct ind_core_gentable_entry *entry = find_entry_by_key(gentable, key);
+    if (entry == NULL) {
+        return NULL;
+    }
+
+    return entry->priv;
+}

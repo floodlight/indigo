@@ -227,6 +227,19 @@ indigo_core_gentable_register(
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
+/*
+ * @brief Lookup a gentable entry by key
+ * @param gentable
+ * @param key
+ *
+ * Returns the private data for the entry, or NULL if not found.
+ *
+ * The key can be either a single TLV or a list of TLVs.
+ */
+
+void *
+indigo_core_gentable_lookup(indigo_core_gentable_t *gentable, of_object_t *key);
+
 
 /**
  * Listener interfaces

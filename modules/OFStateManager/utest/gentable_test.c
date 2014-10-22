@@ -302,6 +302,42 @@ test_gentable_long_running_task(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_lookup(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(table.count_op == 0);
+
+    do_add(1, mac1, 0);
+
+    /* Lookup an entry */
+    {
+        of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+        of_bsn_tlv_port_value_set(tlv, 1);
+        void *priv = indigo_core_gentable_lookup(gentable, tlv);
+        AIM_TRUE_OR_DIE(priv == &table.entries[1]);
+        of_object_delete(tlv);
+    }
+
+    /* Lookup a nonexistent entry */
+    {
+        of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+        of_bsn_tlv_port_value_set(tlv, 2);
+        void *priv = indigo_core_gentable_lookup(gentable, tlv);
+        AIM_TRUE_OR_DIE(priv == NULL);
+        of_object_delete(tlv);
+    }
+
+    memset(&table, 0, sizeof(table));
+    indigo_core_gentable_unregister(gentable);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -311,6 +347,7 @@ test_gentable(void)
     RUN_TEST(gentable_clear);
     RUN_TEST(gentable_entry_stats);
     RUN_TEST(gentable_long_running_task);
+    RUN_TEST(gentable_lookup);
     return TEST_PASS;
 }
 
