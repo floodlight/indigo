@@ -1857,9 +1857,16 @@ indigo_cxn_async_channel_selector_unregister(indigo_cxn_async_channel_selector_f
 void
 indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker_t *blocker)
 {
+    connection_t *cxn;
+
     if (CXN_ID_VALID(cxn_id)) {
-        connection_t *cxn = CXN_ID_TO_CONNECTION(cxn_id);
-        AIM_ASSERT(cxn != NULL);
+        cxn = CXN_ID_TO_CONNECTION(cxn_id);
+        /* cxn may be NULL */
+    } else {
+        cxn = NULL;
+    }
+
+    if (cxn != NULL) {
         ind_cxn_block_barrier(cxn);
         blocker->cxn_id = cxn_id;
     } else {
