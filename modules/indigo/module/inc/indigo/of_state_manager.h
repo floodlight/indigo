@@ -227,6 +227,46 @@ indigo_core_gentable_register(
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
+/*
+ * @brief Lookup a gentable entry by key
+ * @param gentable
+ * @param key
+ *
+ * Returns the private data for the entry, or NULL if not found.
+ *
+ * The key can be either a single TLV or a list of TLVs.
+ */
+
+void *
+indigo_core_gentable_lookup(indigo_core_gentable_t *gentable, of_object_t *key);
+
+/*
+ * @brief Acquire a reference to a gentable entry
+ * @param gentable
+ * @param key
+ *
+ * Returns the private data for the entry, or NULL if not found.
+ *
+ * The key can be either a single TLV or a list of TLVs.
+ *
+ * Delete operations on the gentable entry will be rejected until all
+ * references to it are released.
+ */
+
+void *
+indigo_core_gentable_acquire(indigo_core_gentable_t *gentable, of_object_t *key);
+
+/*
+ * @brief Release a reference to a gentable entry
+ * @param gentable
+ * @param key
+ *
+ * The key can be either a single TLV or a list of TLVs.
+ */
+
+void
+indigo_core_gentable_release(indigo_core_gentable_t *gentable, of_object_t *key);
+
 
 /**
  * Listener interfaces

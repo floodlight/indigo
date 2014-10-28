@@ -85,6 +85,7 @@ struct ind_core_gentable_entry {
     of_list_bsn_tlv_t *key;
     of_list_bsn_tlv_t *value;
     of_checksum_128_t checksum;
+    uint32_t refcount;
 };
 
 static indigo_core_gentable_t *gentables[MAX_GENTABLES];
@@ -871,6 +872,10 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
     indigo_error_t rv;
     struct ind_core_gentable_checksum_bucket *checksum_bucket;
 
+    if (entry->refcount > 0) {
+        return INDIGO_ERROR_EXISTS;
+    }
+
     rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
     if (rv < 0) {
         return rv;
@@ -1065,4 +1070,41 @@ ind_core_gentable_spawn_iter_task(
     }
 
     return INDIGO_ERROR_NONE;
+}
+
+void *
+indigo_core_gentable_lookup(indigo_core_gentable_t *gentable, of_object_t *key)
+{
+    struct ind_core_gentable_entry *entry = find_entry_by_key(gentable, key);
+    if (entry == NULL) {
+        return NULL;
+    }
+
+    return entry->priv;
+}
+
+void *
+indigo_core_gentable_acquire(indigo_core_gentable_t *gentable, of_object_t *key)
+{
+    struct ind_core_gentable_entry *entry = find_entry_by_key(gentable, key);
+    if (entry == NULL) {
+        return NULL;
+    }
+
+    AIM_TRUE_OR_DIE(entry->refcount < UINT32_MAX);
+    entry->refcount++;
+    return entry->priv;
+}
+
+void
+indigo_core_gentable_release(indigo_core_gentable_t *gentable, of_object_t *key)
+{
+    struct ind_core_gentable_entry *entry = find_entry_by_key(gentable, key);
+    if (entry == NULL) {
+        AIM_LOG_INTERNAL("attempted to release nonexistent entry in gentable %s", gentable->name);
+        return;
+    }
+
+    AIM_ASSERT(entry->refcount >= 1);
+    entry->refcount--;
 }
