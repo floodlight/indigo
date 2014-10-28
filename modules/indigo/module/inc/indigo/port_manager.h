@@ -49,6 +49,7 @@ typedef char indigo_port_name_t[INDIGO_PORT_NAME_MAX];
  */
 typedef struct indigo_port_config_s {
     uint32_t disable_on_add; /**< Disable port on add for init sequencing */
+    uint32_t breakout;       /**< Split interface into smaller speed ones */
 } indigo_port_config_t;
 
 
