@@ -345,11 +345,11 @@ op_entry_create(void *table_priv, indigo_cxn_id_t cxn_id,
 
     of_list_instruction_t instructions;
     of_flow_add_instructions_bind(obj, &instructions);
-    of_instruction_t inst;
+    of_object_t inst;
     int loop_rv;
     OF_LIST_INSTRUCTION_ITER(&instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_METER) {
-            of_instruction_meter_meter_id_get(&inst.meter, &entry->meter);
+        if (inst.object_id == OF_INSTRUCTION_METER) {
+            of_instruction_meter_meter_id_get(&inst, &entry->meter);
         }
     }
 
@@ -376,11 +376,11 @@ op_entry_modify(void *table_priv, indigo_cxn_id_t cxn_id,
 
     of_list_instruction_t instructions;
     of_flow_add_instructions_bind(obj, &instructions);
-    of_instruction_t inst;
+    of_object_t inst;
     int loop_rv;
     OF_LIST_INSTRUCTION_ITER(&instructions, &inst, loop_rv) {
-        if (inst.header.object_id == OF_INSTRUCTION_METER) {
-            of_instruction_meter_meter_id_get(&inst.meter, &entry->meter);
+        if (inst.object_id == OF_INSTRUCTION_METER) {
+            of_instruction_meter_meter_id_get(&inst, &entry->meter);
         }
     }
 

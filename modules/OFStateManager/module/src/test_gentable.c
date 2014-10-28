@@ -83,18 +83,18 @@ struct ind_core_gentable_test_entry {
 static indigo_error_t
 parse_key(of_list_bsn_tlv_t *key, struct ind_core_gentable_test_key *out)
 {
-    of_bsn_tlv_t tlv;
+    of_object_t tlv;
     int loop_rv = 0;
     int count_vlan_vid = 0;
     int count_ipv4 = 0;
 
     OF_LIST_BSN_TLV_ITER(key, &tlv, loop_rv) {
-        if (tlv.header.object_id == OF_BSN_TLV_VLAN_VID) {
+        if (tlv.object_id == OF_BSN_TLV_VLAN_VID) {
             count_vlan_vid++;
-            of_bsn_tlv_vlan_vid_value_get(&tlv.port, &out->vlan_vid);
-        } else if (tlv.header.object_id == OF_BSN_TLV_IPV4) {
+            of_bsn_tlv_vlan_vid_value_get(&tlv, &out->vlan_vid);
+        } else if (tlv.object_id == OF_BSN_TLV_IPV4) {
             count_ipv4++;
-            of_bsn_tlv_ipv4_value_get(&tlv.port, &out->ipv4);
+            of_bsn_tlv_ipv4_value_get(&tlv, &out->ipv4);
         } else {
             return INDIGO_ERROR_NOT_SUPPORTED;
         }
@@ -112,7 +112,7 @@ parse_key(of_list_bsn_tlv_t *key, struct ind_core_gentable_test_key *out)
 static indigo_error_t
 parse_value(of_list_bsn_tlv_t *value, struct ind_core_gentable_test_value *out)
 {
-    of_bsn_tlv_t tlv;
+    of_object_t tlv;
     int loop_rv = 0;
     int count_mac = 0;
     int count_idle_notification = 0;
@@ -120,10 +120,10 @@ parse_value(of_list_bsn_tlv_t *value, struct ind_core_gentable_test_value *out)
     out->idle_notification = false;
 
     OF_LIST_BSN_TLV_ITER(value, &tlv, loop_rv) {
-        if (tlv.header.object_id == OF_BSN_TLV_MAC) {
+        if (tlv.object_id == OF_BSN_TLV_MAC) {
             count_mac++;
-            of_bsn_tlv_mac_value_get(&tlv.port, &out->mac);
-        } else if (tlv.header.object_id == OF_BSN_TLV_IDLE_NOTIFICATION) {
+            of_bsn_tlv_mac_value_get(&tlv, &out->mac);
+        } else if (tlv.object_id == OF_BSN_TLV_IDLE_NOTIFICATION) {
             count_idle_notification++;
             out->idle_notification = true;
         } else {
