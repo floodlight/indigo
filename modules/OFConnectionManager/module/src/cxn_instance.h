@@ -318,6 +318,8 @@ void ind_cxn_unblock_barrier(connection_t *cxn);
 void ind_cxn_pause(connection_t *cxn);
 void ind_cxn_resume(connection_t *cxn);
 
+void ind_cxn_process_message(connection_t *cxn, of_object_t *obj);
+
 #if 0 /* TBD */
 /**
  * Flags for a connection instance

@@ -1244,6 +1244,12 @@ process_message(connection_t *cxn)
         return;
     }
 
+    ind_cxn_process_message(cxn, obj);
+}
+
+void
+ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
+{
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn " CXN_FMT "\n",
                    CXN_FMT_ARGS(cxn));
