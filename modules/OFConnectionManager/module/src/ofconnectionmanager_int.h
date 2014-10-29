@@ -153,6 +153,12 @@ ind_cxn_parse_sockaddr(
     const indigo_cxn_protocol_params_t *protocol_params,
     struct sockaddr_storage *sockaddr);
 
+/* Bundle interfaces */
+void ind_cxn_bundle_init(connection_t *cxn);
+void ind_cxn_bundle_cleanup(connection_t *cxn);
+void ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *_obj);
+void ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *_obj);
+
 #include <OFConnectionManager/ofconnectionmanager.h>
 
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */
