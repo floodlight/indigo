@@ -109,6 +109,15 @@ typedef struct controller_s {
     indigo_cxn_id_t aux_id_to_cxn_id[MAX_AUX_CONNECTIONS+1];
 } controller_t;
 
+#define MAX_BUNDLES 4
+#define BUNDLE_ID_INVALID (-1)
+
+typedef struct bundle_s {
+    uint32_t id;
+    uint16_t flags;
+    biglist_t *head;
+} bundle_t;
+
 /* Connection control block */
 typedef struct connection_s {
     indigo_cxn_status_t status;
@@ -156,6 +165,7 @@ typedef struct connection_s {
         uint32_t period_ms;     /* keepalive period in milliseconds */
     } keepalive;
 
+    bundle_t bundles[MAX_BUNDLES];
 
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
