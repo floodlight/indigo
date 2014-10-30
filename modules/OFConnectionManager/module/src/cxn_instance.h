@@ -114,8 +114,10 @@ typedef struct controller_s {
 
 typedef struct bundle_s {
     uint32_t id;
+    uint32_t count; /* Number of messages in bundle */
+    uint32_t allocated; /* Length of msgs array */
     uint16_t flags;
-    biglist_t *head;
+    uint8_t **msgs; /* Array of pointers to raw message data */
 } bundle_t;
 
 /* Connection control block */

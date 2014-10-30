@@ -34,10 +34,13 @@
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
 static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
+static void free_bundle(bundle_t *bundle);
 
 void
 ind_cxn_bundle_init(connection_t *cxn)
 {
+    memset(&cxn->bundles, 0, sizeof(cxn->bundles));
+
     int i;
     for (i = 0; i < MAX_BUNDLES; i++) {
         cxn->bundles[i].id = BUNDLE_ID_INVALID;
@@ -50,8 +53,7 @@ ind_cxn_bundle_cleanup(connection_t *cxn)
     int i;
     for (i = 0; i < MAX_BUNDLES; i++) {
         if (cxn->bundles[i].id != BUNDLE_ID_INVALID) {
-            cxn->bundles[i].id = BUNDLE_ID_INVALID;
-            biglist_free_all(cxn->bundles[i].head, free);
+            free_bundle(&cxn->bundles[i]);
         }
     }
 }
@@ -84,7 +86,9 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
 
         bundle->id = bundle_id;
         bundle->flags = flags;
-        bundle->head = NULL;
+        AIM_ASSERT(bundle->count == 0);
+        AIM_ASSERT(bundle->allocated == 0);
+        AIM_ASSERT(bundle->msgs == NULL);
     } else if (ctrl_type == OFPBCT_CLOSE_REQUEST) {
         /* Ignored */
     } else if (ctrl_type == OFPBCT_COMMIT_REQUEST) {
@@ -95,29 +99,25 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
 
         /* TODO long running task */
 
-        while (bundle->head) {
-            /* Pop first message from the list */
-            void *data = bundle->head->data;
-            bundle->head = biglist_remove_link_free(bundle->head, bundle->head);
-
+        int i;
+        for (i = 0; i < bundle->count; i++) {
             of_object_storage_t obj_storage;
-            of_object_t *obj = parse_message(data, &obj_storage);
+            of_object_t *obj = parse_message(bundle->msgs[i], &obj_storage);
 
             ind_cxn_process_message(cxn, obj);
 
-            free(data);
+            free(bundle->msgs[i]);
+            bundle->msgs[i] = NULL;
         }
 
-        AIM_ASSERT(bundle->head == NULL);
-        bundle->id = BUNDLE_ID_INVALID;
+        free_bundle(bundle);
     } else if (ctrl_type == OFPBCT_DISCARD_REQUEST) {
         if (bundle == NULL) {
             err_code = OFPBFC_BAD_ID;
             goto error;
         }
 
-        bundle->id = BUNDLE_ID_INVALID;
-        biglist_free_all(bundle->head, free);
+        free_bundle(bundle);
     } else {
         err_code = OFPBFC_BAD_TYPE;
         goto error;
@@ -156,7 +156,14 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
         return;
     }
 
-    bundle->head = biglist_append(bundle->head, aim_memdup(data.data, data.bytes));
+    if (bundle->count == bundle->allocated) {
+        /* Resize array */
+        uint32_t new_allocated = (bundle->allocated == 0 ? 1 : bundle->allocated * 2);
+        bundle->msgs = aim_realloc(bundle->msgs, sizeof(*bundle->msgs) * new_allocated);
+        bundle->allocated = new_allocated;
+    }
+
+    bundle->msgs[bundle->count++] = aim_memdup(data.data, data.bytes);
 }
 
 static bundle_t *
@@ -177,4 +184,22 @@ parse_message(uint8_t *data, of_object_storage_t *storage)
 {
     int len = of_message_length_get(data);
     return of_object_new_from_message_preallocated(storage, data, len);
+}
+
+static void
+free_bundle(bundle_t *bundle)
+{
+    int i;
+    for (i = 0; i < bundle->count; i++) {
+        free(bundle->msgs[i]);
+    }
+
+    free(bundle->msgs);
+
+    bundle->id = BUNDLE_ID_INVALID;
+    bundle->msgs = NULL;
+    bundle->count = 0;
+    bundle->allocated = 0;
+    bundle->flags = 0;
+
 }
