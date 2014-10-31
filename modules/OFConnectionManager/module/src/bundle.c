@@ -38,6 +38,9 @@
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
 static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
 static void free_bundle(bundle_t *bundle);
+static int compare_message(const void *_a, const void *_b);
+
+static indigo_cxn_bundle_comparator_t comparator;
 
 void
 ind_cxn_bundle_init(connection_t *cxn)
@@ -99,6 +102,10 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
         if (bundle == NULL) {
             err_code = OFPBFC_BAD_ID;
             goto error;
+        }
+
+        if (comparator && !(bundle->flags & OFPBF_ORDERED)) {
+            qsort(bundle->msgs, bundle->count, sizeof(bundle->msgs[0]), compare_message);
         }
 
         /* TODO long running task */
@@ -228,4 +235,26 @@ free_bundle(bundle_t *bundle)
     bundle->bytes = 0;
     bundle->flags = 0;
 
+}
+
+void
+indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn)
+{
+    comparator = fn;
+}
+
+static int
+compare_message(const void *_a, const void *_b)
+{
+    of_object_storage_t obj_a_storage;
+    of_object_t *obj_a = parse_message(*(uint8_t * const *)_a, &obj_a_storage);
+
+    of_object_storage_t obj_b_storage;
+    of_object_t *obj_b = parse_message(*(uint8_t * const *)_b, &obj_b_storage);
+
+    if (obj_a == NULL || obj_b == NULL) {
+        return 0;
+    }
+
+    return comparator(obj_a, obj_b);
 }

@@ -580,5 +580,18 @@ void indigo_cxn_barrier_notify_unregister(
     indigo_cxn_barrier_notify_f handler,
     void *cookie);
 
+typedef int (*indigo_cxn_bundle_comparator_t)(of_object_t *a, of_object_t *b);
+
+/**
+ * Set the bundle sort comparison function
+ *
+ * To simplify controller implementation, the switch can reorder messages in a
+ * bundle before committing them. The comparison function is similar to the one
+ * used by qsort(3) - it should return a negative number if message A should be
+ * processed before message B.
+ */
+void
+indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn);
+
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */
