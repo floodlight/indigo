@@ -890,15 +890,15 @@ ind_core_ft_dump(aim_pvs_t* pvs)
 
         if (match.version == OF_VERSION_1_0) {
             int rv;
-            of_action_t elt;
+            of_object_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
-                of_object_dump((loci_writer_f)aim_printf, pvs, &elt.header);
+                of_object_dump((loci_writer_f)aim_printf, pvs, &elt);
             }
         } else {
             int rv;
-            of_instruction_t inst;
+            of_object_t inst;
             OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
-                of_object_dump((loci_writer_f)aim_printf, pvs, &inst.header);
+                of_object_dump((loci_writer_f)aim_printf, pvs, &inst);
             }
         }
 
@@ -924,18 +924,18 @@ ind_core_ft_show(aim_pvs_t* pvs)
 
         if (match.version == OF_VERSION_1_0) {
             int rv;
-            of_action_t elt;
+            of_object_t elt;
             OF_LIST_ACTION_ITER(entry->effects.actions, &elt, rv) {
-                aim_printf(pvs, "%s(", of_object_id_str[elt.header.object_id]);
-                of_object_show((loci_writer_f)aim_printf, pvs, &elt.header);
+                aim_printf(pvs, "%s(", of_object_id_str[elt.object_id]);
+                of_object_show((loci_writer_f)aim_printf, pvs, &elt);
                 aim_printf(pvs, ") ");
             }
         } else {
             int rv;
-            of_instruction_t inst;
+            of_object_t inst;
             OF_LIST_INSTRUCTION_ITER(entry->effects.instructions, &inst, rv) {
-                aim_printf(pvs, "%s(", of_object_id_str[inst.header.object_id]);
-                of_object_show((loci_writer_f)aim_printf, pvs, &inst.header);
+                aim_printf(pvs, "%s(", of_object_id_str[inst.object_id]);
+                of_object_show((loci_writer_f)aim_printf, pvs, &inst);
                 aim_printf(pvs, ") ");
             }
         }

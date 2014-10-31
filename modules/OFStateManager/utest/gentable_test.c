@@ -521,14 +521,14 @@ do_set_buckets_size(uint32_t buckets_size)
 static void
 parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port)
 {
-    of_bsn_tlv_t tlv;
+    of_object_t tlv;
     int loop_rv = 0;
     int count = 0;
 
     OF_LIST_BSN_TLV_ITER(key, &tlv, loop_rv) {
         count++;
-        if (tlv.header.object_id == OF_BSN_TLV_PORT) {
-            of_bsn_tlv_port_value_get(&tlv.port, port);
+        if (tlv.object_id == OF_BSN_TLV_PORT) {
+            of_bsn_tlv_port_value_get(&tlv, port);
         } else {
             AIM_DIE("unexpected TLV");
         }
@@ -540,14 +540,14 @@ parse_key(of_list_bsn_tlv_t *key, of_port_no_t *port)
 static void
 parse_value(of_list_bsn_tlv_t *value, of_mac_addr_t *mac)
 {
-    of_bsn_tlv_t tlv;
+    of_object_t tlv;
     int loop_rv = 0;
     int count = 0;
 
     OF_LIST_BSN_TLV_ITER(value, &tlv, loop_rv) {
         count++;
-        if (tlv.header.object_id == OF_BSN_TLV_MAC) {
-            of_bsn_tlv_mac_value_get(&tlv.mac, mac);
+        if (tlv.object_id == OF_BSN_TLV_MAC) {
+            of_bsn_tlv_mac_value_get(&tlv, mac);
         } else {
             AIM_DIE("unexpected TLV");
         }
