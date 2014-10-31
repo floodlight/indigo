@@ -116,6 +116,7 @@ typedef struct bundle_s {
     uint32_t id;
     uint32_t count; /* Number of messages in bundle */
     uint32_t allocated; /* Length of msgs array */
+    uint32_t bytes; /* Sum of message sizes */
     uint16_t flags;
     uint8_t **msgs; /* Array of pointers to raw message data */
 } bundle_t;

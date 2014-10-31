@@ -32,6 +32,9 @@
 #include <indigo/memory.h>
 #include <indigo/assert.h>
 
+#define MAX_BUNDLE_MSGS (256*1024)
+#define MAX_BUNDLE_BYTES (50*1024*1024)
+
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
 static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
 static void free_bundle(bundle_t *bundle);
@@ -88,6 +91,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
         bundle->flags = flags;
         AIM_ASSERT(bundle->count == 0);
         AIM_ASSERT(bundle->allocated == 0);
+        AIM_ASSERT(bundle->bytes == 0);
         AIM_ASSERT(bundle->msgs == NULL);
     } else if (ctrl_type == OFPBCT_CLOSE_REQUEST) {
         /* Ignored */
@@ -156,6 +160,26 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
         return;
     }
 
+    /* Validate length */
+    if (data.bytes < OF_MESSAGE_HEADER_LENGTH || data.bytes != of_message_length_get(data.data)) {
+        indigo_cxn_send_error_reply(
+            cxn->cxn_id, obj,
+            OF_ERROR_TYPE_BUNDLE_FAILED,
+            OFPBFC_MSG_BAD_LEN);
+        AIM_LOG_WARN("Exceeded maximum number of messages in bundle %u (%u)", bundle->id, bundle->count);
+        return;
+    }
+
+    /* Limit bundle size */
+    if (bundle->count == MAX_BUNDLE_MSGS || (bundle->bytes + data.bytes) > MAX_BUNDLE_BYTES) {
+        indigo_cxn_send_error_reply(
+            cxn->cxn_id, obj,
+            OF_ERROR_TYPE_BUNDLE_FAILED,
+            OFPBFC_MSG_TOO_MANY);
+        AIM_LOG_WARN("Exceeded maximum size of messages in bundle %u (%u)", bundle->id, bundle->bytes);
+        return;
+    }
+
     if (bundle->count == bundle->allocated) {
         /* Resize array */
         uint32_t new_allocated = (bundle->allocated == 0 ? 1 : bundle->allocated * 2);
@@ -164,6 +188,7 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
     }
 
     bundle->msgs[bundle->count++] = aim_memdup(data.data, data.bytes);
+    bundle->bytes += data.bytes;
 }
 
 static bundle_t *
@@ -200,6 +225,7 @@ free_bundle(bundle_t *bundle)
     bundle->msgs = NULL;
     bundle->count = 0;
     bundle->allocated = 0;
+    bundle->bytes = 0;
     bundle->flags = 0;
 
 }
