@@ -557,7 +557,7 @@ parse_value(of_list_bsn_tlv_t *value, of_mac_addr_t *mac)
 }
 
 static indigo_error_t
-test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv)
+test_gentable_add(indigo_cxn_id_t cxn_id, void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv)
 {
     struct test_table *table = table_priv;
 
@@ -581,7 +581,7 @@ test_gentable_add(void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *v
 }
 
 static indigo_error_t
-test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value)
+test_gentable_modify(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value)
 {
     struct test_table *table = table_priv;
 
@@ -605,7 +605,7 @@ test_gentable_modify(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
 }
 
 static indigo_error_t
-test_gentable_delete(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key)
+test_gentable_delete(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key)
 {
     struct test_table *table = table_priv;
 
@@ -665,8 +665,8 @@ test_gentable_get_stats(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *k
 }
 
 static indigo_core_gentable_ops_t test_ops = {
-    test_gentable_add,
-    test_gentable_modify,
-    test_gentable_delete,
-    test_gentable_get_stats,
+    .add2 = test_gentable_add,
+    .modify2 = test_gentable_modify,
+    .del2 = test_gentable_delete,
+    .get_stats = test_gentable_get_stats,
 };

@@ -53,7 +53,7 @@ static struct ind_core_gentable_checksum_bucket *find_checksum_bucket(indigo_cor
 static void add_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
 static void subtract_checksum(of_checksum_128_t *dst, const of_checksum_128_t *src);
 static uint32_t hash_key(of_list_bsn_tlv_t *key);
-static indigo_error_t delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
+static indigo_error_t delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
 static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority, of_checksum_128_t checksum_prefix, of_checksum_128_t checksum_mask);
@@ -109,9 +109,9 @@ indigo_core_gentable_register(
 {
     int i;
 
-    AIM_TRUE_OR_DIE(ops->add != NULL);
-    AIM_TRUE_OR_DIE(ops->modify != NULL);
-    AIM_TRUE_OR_DIE(ops->del != NULL);
+    AIM_TRUE_OR_DIE(ops->add != NULL || ops->add2 != NULL);
+    AIM_TRUE_OR_DIE(ops->modify != NULL || ops->modify2 != NULL);
+    AIM_TRUE_OR_DIE(ops->del != NULL || ops->del2 != NULL);
     AIM_TRUE_OR_DIE(ops->get_stats != NULL);
 
     struct indigo_core_gentable *gentable = aim_zmalloc(sizeof(*gentable));
@@ -162,7 +162,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
          hash_entry != NULL; hash_entry = bighash_iter_next(&iter)) {
         struct ind_core_gentable_entry *entry =
             container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
-        rv = delete_entry(gentable, entry);
+        rv = delete_entry(INDIGO_CXN_ID_UNSPECIFIED, gentable, entry);
         if (rv < 0) {
             AIM_LOG_INTERNAL("Failed to delete %s gentable entry during unregister, leaking", gentable->name);
         }
@@ -209,7 +209,11 @@ ind_core_bsn_gentable_entry_add_handler(
 
     if (entry == NULL) {
         /* Adding a new entry */
-        rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
+        if (gentable->ops->add2 != NULL) {
+            rv = gentable->ops->add2(cxn_id, gentable->priv, &key, &value, &priv);
+        } else {
+            rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
+        }
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_ERROR("%s gentable add failed: %s",
                           gentable->name, indigo_strerror(rv));
@@ -227,7 +231,11 @@ ind_core_bsn_gentable_entry_add_handler(
         gentable->num_entries++;
     } else {
         /* Modifying an existing entry */
-        rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
+        if (gentable->ops->modify2 != NULL) {
+            rv = gentable->ops->modify2(cxn_id, gentable->priv, entry->priv, &key, &value);
+        } else {
+            rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
+        }
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_ERROR("%s gentable modify failed: %s",
                           gentable->name, indigo_strerror(rv));
@@ -297,7 +305,7 @@ ind_core_bsn_gentable_entry_delete_handler(
         return;
     }
 
-    rv = delete_entry(gentable, entry);
+    rv = delete_entry(cxn_id, gentable, entry);
     if (rv < 0) {
         AIM_LOG_ERROR("%s gentable delete failed: %s",
                       gentable->name, indigo_strerror(rv));
@@ -324,7 +332,7 @@ clear_iter(void *cookie, indigo_core_gentable_t *gentable,
     struct ind_core_gentable_clear_state *state = cookie;
 
     if (entry != NULL) {
-        indigo_error_t rv = delete_entry(gentable, entry);
+        indigo_error_t rv = delete_entry(state->cxn_id, gentable, entry);
         if (rv < 0) {
             state->error_count++;
         } else {
@@ -867,7 +875,8 @@ hash_key(of_list_bsn_tlv_t *key)
 }
 
 static indigo_error_t
-delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry)
+delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable,
+             struct ind_core_gentable_entry *entry)
 {
     indigo_error_t rv;
     struct ind_core_gentable_checksum_bucket *checksum_bucket;
@@ -876,7 +885,11 @@ delete_entry(indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *e
         return INDIGO_ERROR_EXISTS;
     }
 
-    rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    if (gentable->ops->del2 != NULL) {
+        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
+    } else {
+        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    }
     if (rv < 0) {
         return rv;
     }
