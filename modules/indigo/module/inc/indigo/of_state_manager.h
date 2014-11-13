@@ -194,6 +194,44 @@ typedef struct indigo_core_gentable_ops {
     void (*get_stats)(
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
         of_list_bsn_tlv_t *stats);
+
+    /**
+     * @brief Add an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param key Entry key
+     * @param value Entry value
+     * @param [out] entry_priv Opaque private data for the entry, passed back
+     *                         whenever another operation is made on the entry.
+     */
+    indigo_error_t (*add2)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
+        void **entry_priv);
+
+    /**
+     * @brief Modify an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     */
+    indigo_error_t (*modify2)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_list_bsn_tlv_t *value);
+
+    /**
+     * @brief Delete an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     */
+    indigo_error_t (*del2)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key);
 } indigo_core_gentable_ops_t;
 
 /*
