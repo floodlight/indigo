@@ -1820,8 +1820,9 @@ void
 ind_controller_disconnect(controller_t *ctrl)
 {
     if (!ctrl->config_params.local) {
-        AIM_LOG_INFO("Disconnected from controller %s",
-                     proto_ip_string(&ctrl->protocol_params));
+        AIM_SYSLOG_INFO("The switch disconnected from the specified controller.",
+                        "Disconnected from controller %s",
+                        proto_ip_string(&ctrl->protocol_params));
     }
 
     ind_aux_connection_remove(ctrl, 0);   
