@@ -50,9 +50,6 @@
  *  - Validate messages on add
  */
 
-#define MAX_BUNDLE_MSGS (256*1024)
-#define MAX_BUNDLE_BYTES (50*1024*1024)
-
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
 static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
 static void free_bundle(bundle_t *bundle);
@@ -197,22 +194,22 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
     }
 
     /* Limit number of messages in the bundle */
-    if (bundle->count >= MAX_BUNDLE_MSGS) {
+    if (bundle->count >= OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_MSGS) {
         indigo_cxn_send_error_reply(
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BUNDLE_FAILED,
             OFPBFC_MSG_TOO_MANY);
-        AIM_LOG_WARN("Exceeded maximum number (%u) of messages in bundle %u", MAX_BUNDLE_MSGS, bundle->id);
+        AIM_LOG_WARN("Exceeded maximum number (%u) of messages in bundle %u", OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_MSGS, bundle->id);
         return;
     }
 
     /* Limit amount of memory used by the bundle */
-    if ((bundle->bytes + data.bytes) > MAX_BUNDLE_BYTES) {
+    if ((bundle->bytes + data.bytes) > OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES) {
         indigo_cxn_send_error_reply(
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BUNDLE_FAILED,
             OFPBFC_MSG_TOO_MANY);
-        AIM_LOG_WARN("Exceeded maximum size (%u bytes) of messages in bundle %u", MAX_BUNDLE_BYTES, bundle->id);
+        AIM_LOG_WARN("Exceeded maximum size (%u bytes) of messages in bundle %u", OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES, bundle->id);
         return;
     }
 
