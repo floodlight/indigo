@@ -32,6 +32,24 @@
 #include <indigo/memory.h>
 #include <indigo/assert.h>
 
+/*
+ * Message bundles
+ *
+ * This feature allows the controller to queue up messages to be processed by the
+ * switch. This is useful for two reasons: first, the switch won't be left in an
+ * intermediate state if the controller disconnects while pushing flows; and
+ * second, the controller can send commit messages to every switch at close to the
+ * same instant, minimizing the amount of time the network is in an inconsistent
+ * state.
+ *
+ * This doesn't yet implement the full semantics of OF 1.4 bundles. In particular,
+ * a commit is not rolled back if executing a message fails.
+ *
+ * Still left to do:
+ *  - Commit in a long-running task
+ *  - Validate messages on add
+ */
+
 #define MAX_BUNDLE_MSGS (256*1024)
 #define MAX_BUNDLE_BYTES (50*1024*1024)
 
@@ -136,6 +154,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
 
     /* Send reply */
     of_object_t *reply = of_object_dup(obj);
+    /* Derive the reply subtype from the request */
     of_bundle_ctrl_msg_bundle_ctrl_type_set(reply, ctrl_type+1);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
     return;
@@ -173,17 +192,27 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BUNDLE_FAILED,
             OFPBFC_MSG_BAD_LEN);
-        AIM_LOG_WARN("Exceeded maximum number of messages in bundle %u (%u)", bundle->id, bundle->count);
+        AIM_LOG_WARN("Inconsistent bundled message length", bundle->id);
         return;
     }
 
-    /* Limit bundle size */
-    if (bundle->count == MAX_BUNDLE_MSGS || (bundle->bytes + data.bytes) > MAX_BUNDLE_BYTES) {
+    /* Limit number of messages in the bundle */
+    if (bundle->count >= MAX_BUNDLE_MSGS) {
         indigo_cxn_send_error_reply(
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BUNDLE_FAILED,
             OFPBFC_MSG_TOO_MANY);
-        AIM_LOG_WARN("Exceeded maximum size of messages in bundle %u (%u)", bundle->id, bundle->bytes);
+        AIM_LOG_WARN("Exceeded maximum number (%u) of messages in bundle %u", MAX_BUNDLE_MSGS, bundle->id);
+        return;
+    }
+
+    /* Limit amount of memory used by the bundle */
+    if ((bundle->bytes + data.bytes) > MAX_BUNDLE_BYTES) {
+        indigo_cxn_send_error_reply(
+            cxn->cxn_id, obj,
+            OF_ERROR_TYPE_BUNDLE_FAILED,
+            OFPBFC_MSG_TOO_MANY);
+        AIM_LOG_WARN("Exceeded maximum size (%u bytes) of messages in bundle %u", MAX_BUNDLE_BYTES, bundle->id);
         return;
     }
 
@@ -246,6 +275,8 @@ indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn)
 static int
 compare_message(const void *_a, const void *_b)
 {
+    AIM_ASSERT(comparator != NULL);
+
     of_object_storage_t obj_a_storage;
     of_object_t *obj_a = parse_message(*(uint8_t * const *)_a, &obj_a_storage);
 

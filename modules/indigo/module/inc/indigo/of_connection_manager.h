@@ -589,6 +589,23 @@ typedef int (*indigo_cxn_bundle_comparator_t)(of_object_t *a, of_object_t *b);
  * bundle before committing them. The comparison function is similar to the one
  * used by qsort(3) - it should return a negative number if message A should be
  * processed before message B.
+ *
+ * Example comparator that sorts group-adds before other messages and
+ * group-deletes after:
+ *
+ * int
+ * bundle_comparator(of_object_t *a, of_object_t *b)
+ * {
+ *     if (a->object_id == b->object_id) {
+ *         return 0;
+ *     } else if (a->object_id == OF_GROUP_ADD) {
+ *         return -1;
+ *     } else if (a->object_id == OF_GROUP_DELETE) {
+ *         return 1;
+ *     } else {
+ *         return 0;
+ *     }
+ * }
  */
 void
 indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn);
