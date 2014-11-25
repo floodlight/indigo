@@ -345,6 +345,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
                 IND_SOC_TIMER_IMMEDIATE, IND_CXN_EVENT_PRIORITY);
         }
         ind_cxn_unregister_debug_counters(cxn);
+        ind_cxn_bundle_cleanup(cxn);
         ind_cxn_disconnected_init(cxn);
         break;
 
@@ -354,6 +355,7 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
             cxn->sd, indigo_cxn_socket_ready_callback,
             cxn, IND_CXN_EVENT_PRIORITY);
         ind_cxn_register_debug_counters(cxn);
+        ind_cxn_bundle_init(cxn);
         ind_cxn_send_hello(cxn);
         if (CXN_LOCAL(cxn)) {
             /* Recursive call; transition to connected */
@@ -990,6 +992,14 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
         bsn_log_handle(cxn, obj);
         return;
 
+    case OF_BUNDLE_CTRL_MSG:
+        ind_cxn_bundle_ctrl_handle(cxn, obj);
+        return;
+
+    case OF_BUNDLE_ADD_MSG:
+        ind_cxn_bundle_add_handle(cxn, obj);
+        return;
+
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
     case OF_FLOW_DELETE:
@@ -1235,6 +1245,12 @@ process_message(connection_t *cxn)
         return;
     }
 
+    ind_cxn_process_message(cxn, obj);
+}
+
+void
+ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
+{
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn " CXN_FMT "\n",
                    CXN_FMT_ARGS(cxn));

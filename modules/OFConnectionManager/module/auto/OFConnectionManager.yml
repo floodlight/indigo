@@ -57,6 +57,12 @@ cdefs: &cdefs
 - OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION:
     doc: "OpenFlow version to use for asynchronous message when no controller is connected."
     default: OF_VERSION_1_3
+- OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_MSGS:
+    doc: "Maximum number of OpenFlow messages to allow in a bundle"
+    default: 256*1024
+- OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES:
+    doc: "Maximum cumulative size of OpenFlow messages to allow in a bundle"
+    default: 50*1024*1024
 
 ofconnectionmanager_log_types: &ofconnectionmanager_log_types
 - local

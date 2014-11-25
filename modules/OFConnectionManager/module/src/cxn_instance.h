@@ -109,6 +109,18 @@ typedef struct controller_s {
     indigo_cxn_id_t aux_id_to_cxn_id[MAX_AUX_CONNECTIONS+1];
 } controller_t;
 
+#define MAX_BUNDLES 4
+#define BUNDLE_ID_INVALID (-1)
+
+typedef struct bundle_s {
+    uint32_t id;    /* Supplied by the controller when the bundle is opened */
+    uint32_t count; /* Number of messages in bundle */
+    uint32_t allocated; /* Length of msgs array */
+    uint32_t bytes; /* Sum of message sizes */
+    uint16_t flags; /* Copied from the flags field in the bundle-open request */
+    uint8_t **msgs; /* Array of pointers to raw message data */
+} bundle_t;
+
 /* Connection control block */
 typedef struct connection_s {
     indigo_cxn_status_t status;
@@ -156,6 +168,7 @@ typedef struct connection_s {
         uint32_t period_ms;     /* keepalive period in milliseconds */
     } keepalive;
 
+    bundle_t bundles[MAX_BUNDLES];
 
     /* Message Tracing */
     aim_pvs_t* trace_pvs;
@@ -317,6 +330,8 @@ void ind_cxn_unblock_barrier(connection_t *cxn);
 
 void ind_cxn_pause(connection_t *cxn);
 void ind_cxn_resume(connection_t *cxn);
+
+void ind_cxn_process_message(connection_t *cxn, of_object_t *obj);
 
 #if 0 /* TBD */
 /**
