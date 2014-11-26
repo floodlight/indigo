@@ -383,7 +383,8 @@ cxn_state_set(connection_t *cxn, indigo_cxn_state_t new_state)
         }
 
         if (!CXN_LOCAL(cxn) && cxn->auxiliary_id == 0) {
-            AIM_SYSLOG_INFO("The switch successfully connected to the specified controller.",
+            AIM_SYSLOG_INFO("Connected to controller <ip-address>:<port>",
+                            "The switch successfully connected to the specified controller.",
                             "Connected to controller %s",
                             proto_ip_string(get_connection_params(cxn)));
         }
