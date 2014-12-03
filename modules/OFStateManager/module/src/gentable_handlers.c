@@ -1121,3 +1121,9 @@ indigo_core_gentable_release(indigo_core_gentable_t *gentable, of_object_t *key)
     AIM_ASSERT(entry->refcount >= 1);
     entry->refcount--;
 }
+
+uint16_t
+indigo_core_gentable_id(indigo_core_gentable_t *gentable)
+{
+    return gentable->table_id;
+}

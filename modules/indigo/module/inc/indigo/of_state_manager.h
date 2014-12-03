@@ -305,6 +305,16 @@ indigo_core_gentable_acquire(indigo_core_gentable_t *gentable, of_object_t *key)
 void
 indigo_core_gentable_release(indigo_core_gentable_t *gentable, of_object_t *key);
 
+/*
+ * @brief Get the table ID of a gentable
+ * @param gentable
+ *
+ * Returns the table ID assigned to the given gentable.
+ */
+
+uint16_t
+indigo_core_gentable_id(indigo_core_gentable_t *gentable);
+
 
 /**
  * Listener interfaces
