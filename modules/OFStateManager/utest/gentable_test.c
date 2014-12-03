@@ -86,6 +86,7 @@ test_gentable_entry_add(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     memset(&table, 0, sizeof(table));
@@ -120,6 +121,7 @@ test_gentable_entry_delete(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     memset(&table, 0, sizeof(table));
@@ -155,6 +157,7 @@ test_gentable_entry_modify(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     do_add(1, mac1, 0);
@@ -183,6 +186,7 @@ test_gentable_clear(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     do_add(1, mac1, 0);
@@ -212,6 +216,7 @@ test_gentable_entry_stats(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     do_add(1, mac1, 0);
@@ -242,6 +247,7 @@ test_gentable_long_running_task(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 4, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     /* Two entries per checksum bucket */
@@ -310,6 +316,7 @@ test_gentable_lookup(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     do_add(1, mac1, 0);
@@ -346,6 +353,7 @@ test_gentable_acquire(void)
 
     memset(&table, 0, sizeof(table));
     indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id(gentable) == TABLE_ID);
     AIM_TRUE_OR_DIE(table.count_op == 0);
 
     /* Acquire/release an entry */
