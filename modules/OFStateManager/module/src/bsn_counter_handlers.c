@@ -34,6 +34,8 @@
 /* TODO move into LOXI */
 #define OF_BSN_VLAN_ALL 0xffff
 
+static indigo_fi_vlan_stats_t zero_vlan_stats;
+
 static void
 append_uint64(of_list_uint64_t *list, uint64_t value)
 {
@@ -55,7 +57,8 @@ truncate_of_object(of_object_t *obj)
     obj->wbuf->current_bytes = obj->length;
 }
 
-static void
+/* Returns true if the entry should be sent to the controller */
+static bool
 ind_core_bsn_vlan_counter_stats_entry_populate(of_bsn_vlan_counter_stats_entry_t *entry,
                                                uint16_t vlan_vid)
 {
@@ -67,6 +70,10 @@ ind_core_bsn_vlan_counter_stats_entry_populate(of_bsn_vlan_counter_stats_entry_t
 
     indigo_fwd_vlan_stats_get(vlan_vid, &stats);
 
+    if (!memcmp(&stats, &zero_vlan_stats, sizeof(stats))) {
+        return false;
+    }
+
     of_bsn_vlan_counter_stats_entry_vlan_vid_set(entry, vlan_vid);
     of_bsn_vlan_counter_stats_entry_values_bind(entry, &values);
 
@@ -74,6 +81,8 @@ ind_core_bsn_vlan_counter_stats_entry_populate(of_bsn_vlan_counter_stats_entry_t
     append_uint64(&values, stats.rx_packets);
     append_uint64(&values, stats.tx_bytes);
     append_uint64(&values, stats.tx_packets);
+
+    return true;
 }
 
 void
@@ -109,7 +118,9 @@ ind_core_bsn_vlan_counter_stats_request_handler(of_object_t *_obj,
 
     if (vlan_vid == OF_BSN_VLAN_ALL) {
         for (vlan_vid = 1; vlan_vid < 4096; vlan_vid++) {
-            ind_core_bsn_vlan_counter_stats_entry_populate(entry, vlan_vid);
+            if (!ind_core_bsn_vlan_counter_stats_entry_populate(entry, vlan_vid)) {
+                continue;
+            }
 
             if (of_list_append(&entries, entry) < 0) {
                 /* This entry didn't fit, send out the current message and
