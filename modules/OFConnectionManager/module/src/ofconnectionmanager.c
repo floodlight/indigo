@@ -114,7 +114,7 @@ static controller_t controllers[MAX_CONTROLLERS];
          ++idx, cxn = &connection[idx])                                 \
         if (CXN_ACTIVE(cxn) && !CXN_LOCAL(cxn))
 
-/* All remote main connections which completed hand-shake and with 
+/* All remote main connections which completed hand-shake and with
  * requested role */
 #define FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(idx, cxn, cxn_role)      \
     for (idx = 0, cxn = &connection[0];                                 \
@@ -156,7 +156,7 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
     for (id = 0, ctrl = &controllers[0];                                 \
          id < MAX_CONTROLLERS;                                          \
          ++id, ctrl = &controllers[id])                                  \
-        if (CONTROLLER_ACTIVE(ctrl))                                                           
+        if (CONTROLLER_ACTIVE(ctrl))
 
 /* Only remote controllers */
 #define FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl)                      \
@@ -443,7 +443,7 @@ listen_cxn_init(connection_t *cxn)
     AIM_LOG_VERBOSE("Initializing listening socket");
 
     protocol_params = get_connection_params(cxn);
-    INDIGO_ASSERT(protocol_params != NULL); 
+    INDIGO_ASSERT(protocol_params != NULL);
 
     if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
         return INDIGO_ERROR_UNKNOWN;
@@ -489,7 +489,7 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 {
     int soc_flags;
     connection_t *cxn;
-    controller_t *ctrl;   
+    controller_t *ctrl;
     struct sockaddr_storage sockaddr;
 
     cxn = find_free_connection();
@@ -568,8 +568,8 @@ connection_socket_setup(indigo_controller_id_t controller_id,
 /* Add a connection instance */
 
 static indigo_error_t
-ind_cxn_connection_add(indigo_controller_id_t controller_id, 
-                       uint8_t auxiliary_id, indigo_cxn_id_t *cxn_id) 
+ind_cxn_connection_add(indigo_controller_id_t controller_id,
+                       uint8_t auxiliary_id, indigo_cxn_id_t *cxn_id)
 {
     connection_t *cxn = NULL;
     indigo_error_t rv = INDIGO_ERROR_NONE;
@@ -599,7 +599,7 @@ ind_cxn_connection_add(indigo_controller_id_t controller_id,
 
             /* Aux cxns have a different echo frequency than main connection */
             if (auxiliary_id != 0) {
-                cxn->keepalive.period_ms = IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT;            
+                cxn->keepalive.period_ms = IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT;
             }
         }
     }
@@ -637,28 +637,28 @@ ind_cxn_connection_remove(indigo_cxn_id_t cxn_id)
 }
 
 /**
- * Remove extra auxiliary connections for this controller and set the new 
+ * Remove extra auxiliary connections for this controller and set the new
  * number of aux cxn's to num_aux
  *
- * If num_aux is set to zero, it would mean tear down request for all 
+ * If num_aux is set to zero, it would mean tear down request for all
  * aux cxn's associated with this controller
  */
 
 static indigo_error_t
 ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
 {
-    int idx;  
-    uint32_t num_aux_current; 
+    int idx;
+    uint32_t num_aux_current;
     indigo_error_t ret;
-    
+
     if (!CONTROLLER_ACTIVE(ctrl)) return INDIGO_ERROR_UNKNOWN;
 
     if (num_aux == ctrl->num_aux) return INDIGO_ERROR_NONE;
- 
+
     if (num_aux > ctrl->num_aux) {
         AIM_LOG_TRACE("Requested num_aux %d is greater than current aux cxn's "
                       "for controller %s", num_aux, proto_ip_string(
-                      &ctrl->protocol_params));        
+                      &ctrl->protocol_params));
         return INDIGO_ERROR_PARAM;
     }
 
@@ -674,18 +674,18 @@ ind_aux_connection_remove(controller_t *ctrl, uint32_t num_aux)
     }
 
     return INDIGO_ERROR_NONE;
-        
+
 }
 
 /**
- * Set up num_aux auxiliary connections for controller associated 
+ * Set up num_aux auxiliary connections for controller associated
  * with this main connection
- * 
+ *
  * If num_aux requested is greater than aux cxn's we already have,
- * teardown extra aux cxn's 
+ * teardown extra aux cxn's
  */
 
-int 
+int
 ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
 {
     int idx;
@@ -711,7 +711,7 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
         AIM_LOG_WARN("Aux cxn request received on non main connection " CXN_FMT ", "
                      "with aux id %d", CXN_FMT_ARGS(cxn), cxn->auxiliary_id);
         return 1;
-    } 
+    }
 
     if (num_aux == cxn->controller->num_aux) {
         AIM_LOG_TRACE("Requested num_aux %d is equal to current aux cxn's for "
@@ -720,13 +720,13 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
     } else if (num_aux < cxn->controller->num_aux) {
         AIM_LOG_TRACE("Requested num_aux %d is less than current aux cxn's %d for "
                       "controller " CXN_FMT, num_aux, cxn->controller->num_aux,
-                      CXN_FMT_ARGS(cxn));  
+                      CXN_FMT_ARGS(cxn));
 
         if (ind_aux_connection_remove(cxn->controller, num_aux) < 0) {
             return 1;
-        } 
+        }
     } else {
-        
+
         for (idx = cxn->controller->num_aux+1; idx <= num_aux; ++idx) {
             if (ind_cxn_connection_add(cxn->controller->controller_id, idx,
                                        &cxn_id) < 0) return 1;
@@ -735,14 +735,14 @@ ind_aux_connection_add(connection_t *cxn, uint32_t num_aux)
 
         AIM_LOG_VERBOSE("Number of auxiliary connections for controller " CXN_FMT " changed from %d to %d",
                         CXN_FMT_ARGS(cxn), cxn->controller->num_aux, num_aux);
-        cxn->controller->num_aux = num_aux; 
+        cxn->controller->num_aux = num_aux;
     }
-    
+
     return 0;
 }
 
-/** 
- * Add a Controller instance and create the main connection with the 
+/**
+ * Add a Controller instance and create the main connection with the
  * controller using auxiliary_id = 0
  */
 
@@ -784,8 +784,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                  config_params->listen ? "listen" : "remote",
                  config_params->version);
 
-    ctrl = ID_TO_CONTROLLER(*controller_id);   
-    
+    ctrl = ID_TO_CONTROLLER(*controller_id);
+
     /* Initialize controller structure */
     INDIGO_MEM_COPY(&ctrl->protocol_params, protocol_params,
                     sizeof(*protocol_params));
@@ -793,13 +793,13 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                     sizeof(*config_params));
 
     /* Create the main connection with auxiliary id = 0 */
-    rv = ind_cxn_connection_add(*controller_id, 0, &cxn_id); 
-    if (rv < 0) return rv; 
+    rv = ind_cxn_connection_add(*controller_id, 0, &cxn_id);
+    if (rv < 0) return rv;
 
     ctrl->active = 1;
     ctrl->aux_id_to_cxn_id[0] = cxn_id;
     ctrl->ephemeral = 0;
- 
+
     return rv;
 }
 
@@ -809,15 +809,15 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
  * i.e. both the main connection and any auxiliary connections available
  */
 
-indigo_error_t 
+indigo_error_t
 indigo_controller_remove(indigo_controller_id_t controller_id)
 {
     indigo_error_t rv = INDIGO_ERROR_NONE;
     controller_t *ctrl = NULL;
 
-    if (!CONTROLLER_ID_VALID(controller_id) || 
+    if (!CONTROLLER_ID_VALID(controller_id) ||
         !CONTROLLER_ID_ACTIVE(controller_id)) {
-        AIM_LOG_INTERNAL("Remove controller id %d invalid or not active", 
+        AIM_LOG_INTERNAL("Remove controller id %d invalid or not active",
                          controller_id);
         return INDIGO_ERROR_PARAM;
     }
@@ -829,15 +829,15 @@ indigo_controller_remove(indigo_controller_id_t controller_id)
     rv = ind_aux_connection_remove(ctrl, 0);
     if (rv < 0) {
         return rv;
-    }   
- 
+    }
+
     /* Remove the main connection */
     rv = ind_cxn_connection_remove(ctrl->aux_id_to_cxn_id[0]);
     if (rv < 0) {
         return rv;
     }
 
-    ctrl->aux_id_to_cxn_id[0] = INVALID_ID; 
+    ctrl->aux_id_to_cxn_id[0] = INVALID_ID;
     ctrl->active = 0;
     return rv;
 }
@@ -858,7 +858,7 @@ indigo_cxn_connection_config_get(
 
     INDIGO_ASSERT(cxn->controller != NULL);
 
-    INDIGO_MEM_COPY(config, &cxn->controller->config_params, sizeof(*config)); 
+    INDIGO_MEM_COPY(config, &cxn->controller->config_params, sizeof(*config));
 
     return INDIGO_ERROR_NONE;
 }
@@ -922,15 +922,15 @@ ind_controller_change_master(indigo_controller_id_t master_id)
 
     FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
         if (ctrl->controller_id == master_id) {
-            AIM_LOG_INFO("Upgrading controller %s role to master", 
+            AIM_LOG_INFO("Upgrading controller %s role to master",
                          proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_MASTER;
         } else if (ctrl->role == INDIGO_CXN_R_MASTER) {
-            AIM_LOG_INFO("Downgrading controller %s role to slave", 
+            AIM_LOG_INFO("Downgrading controller %s role to slave",
                          proto_ip_string(&ctrl->protocol_params));
             ctrl->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(
-                CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]), 
+                CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]),
                 OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
         }
     }
@@ -941,7 +941,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 {
     int idx;
     connection_t *cxn;
-    indigo_cxn_protocol_params_t *protocol_params; 
+    indigo_cxn_protocol_params_t *protocol_params;
     FOREACH_REMOTE_ACTIVE_CXN(idx, cxn) {
         of_bsn_controller_connection_t entry;
         of_desc_str_t uri;
@@ -1135,34 +1135,34 @@ ind_cxn_accepts_async_message(const connection_t *cxn)
  * Check whether the given controller is interested in the message.
  */
 int
-ind_controller_accepts_async_message(const controller_t *ctrl, 
-                                     const of_object_t *obj, 
+ind_controller_accepts_async_message(const controller_t *ctrl,
+                                     const of_object_t *obj,
                                      connection_t **cxn)
 {
     uint8_t auxiliary_id = 0;
 
     /* Only send certain async messages to the slave */
-    if (ctrl->role == INDIGO_CXN_R_SLAVE && 
+    if (ctrl->role == INDIGO_CXN_R_SLAVE &&
         obj->object_id != OF_PORT_STATUS &&
         obj->object_id != OF_BSN_CONTROLLER_CONNECTIONS_REPLY) {
         return 0;
-    }    
+    }
 
     if (ind_cxn_async_channel_selector_handler != NULL) {
-        (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux, 
-                                                  &auxiliary_id); 
+        (*ind_cxn_async_channel_selector_handler)(obj, ctrl->num_aux,
+                                                  &auxiliary_id);
     }
 
     INDIGO_ASSERT(auxiliary_id <= ctrl->num_aux);
 
-    /* If there is no selector for this application or the selected 
-       channel is not ready for communication, then we should just try 
+    /* If there is no selector for this application or the selected
+       channel is not ready for communication, then we should just try
        to send on the main controller connection */
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
         if (auxiliary_id != 0) {
             AIM_LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
-                          CXN_FMT_ARGS(*cxn), 
+                          CXN_FMT_ARGS(*cxn),
                           CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
             auxiliary_id = 0;
             *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
@@ -1172,12 +1172,12 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
         } else {
             return 0;
         }
-    } 
+    }
 
     AIM_LOG_TRACE("Selected aux_id: %d, cxn: " CXN_FMT " for async %s message", auxiliary_id,
                   CXN_FMT_ARGS(*cxn), of_object_id_str[obj->object_id]);
- 
-    return 1; 
+
+    return 1;
 }
 
 /**
@@ -1199,8 +1199,8 @@ indigo_cxn_send_async_message(of_object_t *obj)
     indigo_cxn_id_t first_cxn_id = INDIGO_CXN_ID_UNSPECIFIED;
 
     FOREACH_REMOTE_ACTIVE_CONTROLLER(id, ctrl) {
-        if (ind_controller_accepts_async_message(ctrl, obj, &cxn) && 
-            (cxn->status.negotiated_version == obj->version)) {  
+        if (ind_controller_accepts_async_message(ctrl, obj, &cxn) &&
+            (cxn->status.negotiated_version == obj->version)) {
             if (first_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
                 first_cxn_id = cxn->cxn_id;
             } else {
@@ -1321,7 +1321,7 @@ ind_cxn_init(ind_cxn_config_t *config)
 
     init_done = 1;
 
-    ind_cxn_async_channel_selector_handler = NULL;   
+    ind_cxn_async_channel_selector_handler = NULL;
 
     return INDIGO_ERROR_NONE;
 }
@@ -1583,13 +1583,13 @@ indigo_controller_list(indigo_controller_info_t** list)
     controller_t *ctrl;
     FOREACH_ACTIVE_CONTROLLER(id, ctrl) {
         indigo_controller_info_t* entry = aim_malloc(sizeof(*entry));
-        AIM_TRUE_OR_DIE(entry != NULL); 
+        AIM_TRUE_OR_DIE(entry != NULL);
         entry->controller_id = id;
         entry->role = ctrl->role;
         entry->protocol_params = ctrl->protocol_params;
-        entry->config_params = ctrl->config_params; 
+        entry->config_params = ctrl->config_params;
         entry->num_aux = ctrl->num_aux;
-        entry->main_cxn_id = ctrl->aux_id_to_cxn_id[0]; 
+        entry->main_cxn_id = ctrl->aux_id_to_cxn_id[0];
         entry->next = head;
         head = entry;
     }
@@ -1696,14 +1696,14 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    CXN_FMT_ARGS(cxn));
         aim_printf(pvs, "    Id: %d.\n", cxn->cxn_id);
         aim_printf(pvs, "    Auxiliary Id: %d.\n", cxn->auxiliary_id);
-        aim_printf(pvs, "    Controller Id: %d.\n", 
+        aim_printf(pvs, "    Controller Id: %d.\n",
                    cxn->controller->controller_id);
         aim_printf(pvs, "    State: %s.\n", CXN_HANDSHAKE_COMPLETE(cxn) ?
                    "Connected" : "Not connected");
-        aim_printf(pvs, "    Keepalive timeout: %d ms.\n", 
+        aim_printf(pvs, "    Keepalive timeout: %d ms.\n",
                    cxn->keepalive.period_ms);
         aim_printf(pvs, "    Threshold: %d.\n", cxn->keepalive.threshold);
-        aim_printf(pvs, "    Outstanding Echo Count: %d.\n", 
+        aim_printf(pvs, "    Outstanding Echo Count: %d.\n",
                    cxn->keepalive.outstanding_echo_cnt);
 
         aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
@@ -1812,11 +1812,11 @@ indigo_cxn_get_auxiliary_id(indigo_cxn_id_t cxn_id, uint8_t *auxiliary_id)
 }
 
 /**
- * Remove all the auxiliary connections associated with this controller and 
+ * Remove all the auxiliary connections associated with this controller and
  * disconnect the main connection
  */
 
-void 
+void
 ind_controller_disconnect(controller_t *ctrl)
 {
     if (!ctrl->config_params.local) {
@@ -1826,7 +1826,7 @@ ind_controller_disconnect(controller_t *ctrl)
                         proto_ip_string(&ctrl->protocol_params));
     }
 
-    ind_aux_connection_remove(ctrl, 0);   
+    ind_aux_connection_remove(ctrl, 0);
 
     connection_t *main_cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]);
     if (main_cxn != NULL) {
@@ -1839,11 +1839,11 @@ ind_controller_disconnect(controller_t *ctrl)
 }
 
 void
-indigo_cxn_async_channel_selector_register(indigo_cxn_async_channel_selector_f fn) 
+indigo_cxn_async_channel_selector_register(indigo_cxn_async_channel_selector_f fn)
 {
-    ind_cxn_async_channel_selector_handler = fn; 
+    ind_cxn_async_channel_selector_handler = fn;
 }
-  
+
 void
 indigo_cxn_async_channel_selector_unregister(indigo_cxn_async_channel_selector_f fn)
 {
