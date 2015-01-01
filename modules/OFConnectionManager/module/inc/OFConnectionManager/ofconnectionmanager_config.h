@@ -201,6 +201,9 @@ int ofconnectionmanager_config_show(struct aim_pvs_s* pvs);
 
 /* <auto.end.cdefs(OFCONNECTIONMANAGER_CONFIG_HEADER).header> */
 
-
+/**
+ * @brief Commit connection manager staged configuration.
+ */
+void ofconnectionmanager_config_commit(void);
 
 #endif /* __OFCONNECTIONMANAGER_CONFIG_H__ */
