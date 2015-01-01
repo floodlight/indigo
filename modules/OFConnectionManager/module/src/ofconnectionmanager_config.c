@@ -343,7 +343,12 @@ static void
 ind_cxn_cfg_commit(void)
 {
     aim_log_t *lobj;
-    int i;
+    int i, enable;
+
+    /* Commit config only if connection manager is enabled. */
+    (void) ind_cxn_enable_get(&enable);
+    if (!enable)
+        return;
 
     if ((lobj = aim_log_find("ofconnectionmanager")) == NULL) {
         AIM_LOG_WARN("Could not find log module");
@@ -383,6 +388,12 @@ ind_cxn_cfg_commit(void)
 
     /* Save config so we can diff the controllers next time */
     current_config = staged_config;
+}
+
+void
+ofconnectionmanager_config_commit(void)
+{
+    ind_cxn_cfg_commit();
 }
 
 const struct ind_cfg_ops ind_cxn_cfg_ops = {

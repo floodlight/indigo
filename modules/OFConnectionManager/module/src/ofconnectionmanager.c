@@ -1341,6 +1341,7 @@ ind_cxn_enable_set(int enable)
     if (enable && !module_enabled) {
         AIM_LOG_VERBOSE("Enabling OF connection mgr");
         module_enabled = 1;
+        ofconnectionmanager_config_commit();
     } else if (!enable && module_enabled) {
         int id;
         controller_t *ctrl;
