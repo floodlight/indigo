@@ -111,6 +111,7 @@ cleanup_disconnect(connection_t *cxn)
 
     /* Increment the generation ID for this connection */
     cxn->cxn_id += (1 << CXN_ID_GENERATION_SHIFT);
+    cxn->cxn_id &= 0x7fffffff; /* force non-negative */
     cxn->controller->aux_id_to_cxn_id[cxn->auxiliary_id] = cxn->cxn_id;
 
     /* @fixme Is it possible there's a message that should be processed? */
