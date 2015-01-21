@@ -849,3 +849,39 @@ ind_soc_select_and_run(int run_for_ms)
 
     return INDIGO_ERROR_NONE;
 }
+
+
+/* utility functions for unit test only */
+int
+unit_test_soc_timer_event_count_get(void)
+{
+    int idx;
+    int count = 0;
+
+    FOREACH_TIMER_EVENT(idx) {
+        AIM_LOG_VERBOSE("timer %d callback %p state %d", 
+                        idx, timer_event[idx].callback, 
+                        timer_event[idx].state);
+        if (timer_event[idx].state != TIMER_STATE_FREE) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
+int
+unit_test_soc_socket_count_get(void)
+{
+    int idx;
+    int count = 0;
+
+    for (idx = 0; idx < SOCKETMANAGER_CONFIG_MAX_SOCKETS; idx++) {
+        if (IS_ACTIVE_SOCKET_ID(idx)) {
+            count++;
+        }
+    }
+
+    return count;
+}
+
