@@ -1424,7 +1424,8 @@ indigo_controller_list(indigo_controller_info_t** list)
         entry->protocol_params = controller->protocol_params;
         entry->config_params = controller->config_params;
         entry->num_aux = controller->num_aux;
-        entry->main_cxn_id = controller->cxns[0]->cxn_id;
+        entry->main_cxn_id = controller->cxns[0]? 
+            controller->cxns[0]->cxn_id: INDIGO_CXN_ID_UNSPECIFIED;
         entry->next = head;
         head = entry;
     }
