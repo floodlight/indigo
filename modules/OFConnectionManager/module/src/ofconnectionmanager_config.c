@@ -146,6 +146,7 @@ static struct config {
     int keepalive_period_ms;
     int num_controllers;
     struct controller controllers[MAX_CONTROLLERS];
+    int valid;
 } staged_config, current_config;
 
 /* Parse a controller string like "tcp:127.0.0.1:6633". */
@@ -336,6 +337,8 @@ ind_cxn_cfg_stage(cJSON *config)
         staged_config.controllers[i].config.reset_echo_count = 3; /* @FIXME */
     }
 
+    staged_config.valid = true;
+
     return INDIGO_ERROR_NONE;
 }
 
@@ -344,6 +347,9 @@ ind_cxn_cfg_commit(void)
 {
     aim_log_t *lobj;
     int i, enable;
+
+    if (staged_config.valid != true)
+        return;
 
     /* Commit config only if connection manager is enabled. */
     (void) ind_cxn_enable_get(&enable);
@@ -388,6 +394,7 @@ ind_cxn_cfg_commit(void)
 
     /* Save config so we can diff the controllers next time */
     current_config = staged_config;
+    staged_config.valid = false;
 }
 
 void
