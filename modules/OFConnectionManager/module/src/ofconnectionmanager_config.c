@@ -153,7 +153,9 @@ static struct config {
 static indigo_error_t
 parse_controller(struct controller *controller, cJSON *root)
 {
-    indigo_cxn_params_tcp_over_ipv4_t *proto;
+    indigo_cxn_protocol_t proto;
+    indigo_cxn_params_tcp_over_ipv4_t *params4;
+    indigo_cxn_params_tcp_over_ipv6_t *params6;
     char *proto_str, *ip;
     int port;
     int listen;
@@ -170,6 +172,11 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
+    /*
+     * WARNING: no validity checks for IP address.
+     * Instead, they are performed by the cli front-end.
+     */
+
     err = ind_cfg_lookup_string(root, "protocol", &proto_str);
     if (err == INDIGO_ERROR_NOT_FOUND) {
         /* Allow default protocol value */
@@ -181,8 +188,11 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
-    /* @TODO support more protocol types */
-    if (strcmp(proto_str, "tcp")) {
+    if (strcmp(proto_str, "tcp") == 0) {
+        proto = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
+    } else if (strcmp(proto_str, "tcp6") == 0) {
+        proto = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
+    } else {
         AIM_LOG_ERROR("Config: Invalid controller protocol: %s", proto_str);
         return INDIGO_ERROR_PARAM;
     }
@@ -223,12 +233,24 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
-    /* TODO validate IP */
+    switch (proto) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        params4 = &controller->proto.tcp_over_ipv4;
+        params4->protocol = proto;
+        strncpy(params4->controller_ip, ip, sizeof(params4->controller_ip));
+        params4->controller_port = port;
+        break;
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        params6 = &controller->proto.tcp_over_ipv6;
+        params6->protocol = proto;
+        strncpy(params6->controller_ip, ip, sizeof(params6->controller_ip));
+        params6->controller_port = port;
+        break;
+    default:
+        AIM_LOG_INTERNAL("Config: Invalid controller protocol: %d", proto);
+        return INDIGO_ERROR_UNKNOWN;
+    }
 
-    proto = &controller->proto.tcp_over_ipv4;
-    proto->protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
-    strncpy(proto->controller_ip, ip, sizeof(proto->controller_ip));
-    proto->controller_port = port;
     controller->config.listen = listen;
     controller->config.cxn_priority = prio;
     controller->config.local = 0;
