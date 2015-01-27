@@ -153,12 +153,15 @@ static struct config {
 static indigo_error_t
 parse_controller(struct controller *controller, cJSON *root)
 {
-    indigo_cxn_params_tcp_over_ipv4_t *proto;
+    indigo_cxn_params_tcp_over_ipv4_t *proto4;
+    indigo_cxn_params_tcp_over_ipv6_t *proto6;
     char *proto_str, *ip;
     int port;
     int listen;
     int prio;
     indigo_error_t err;
+    int idx;
+    bool is_ipv6;
 
     err = ind_cfg_lookup_string(root, "ip_addr", &ip);
     if (err < 0) {
@@ -169,6 +172,11 @@ parse_controller(struct controller *controller, cJSON *root)
         }
         return err;
     }
+
+    /*
+     * WARNING: no validity checks for IP address.
+     * Instead, they are performed by the cli front-end.
+     */
 
     err = ind_cfg_lookup_string(root, "protocol", &proto_str);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -223,12 +231,27 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
-    /* TODO validate IP */
+    /* if the ip address contains a colon, it is considered ipv6 */
+    is_ipv6 = false;
+    for (idx = 0; idx < strlen(ip); idx++) {
+        if (ip[idx] == ':') {
+            is_ipv6 = true;
+            break;
+        }
+    }
 
-    proto = &controller->proto.tcp_over_ipv4;
-    proto->protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
-    strncpy(proto->controller_ip, ip, sizeof(proto->controller_ip));
-    proto->controller_port = port;
+    if (is_ipv6) {
+        proto6 = &controller->proto.tcp_over_ipv6;
+        proto6->protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
+        strncpy(proto6->controller_ip, ip, sizeof(proto6->controller_ip));
+        proto6->controller_port = port;
+    } else {
+        proto4 = &controller->proto.tcp_over_ipv4;
+        proto4->protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
+        strncpy(proto4->controller_ip, ip, sizeof(proto4->controller_ip));
+        proto4->controller_port = port;
+    }
+
     controller->config.listen = listen;
     controller->config.cxn_priority = prio;
     controller->config.local = 0;
