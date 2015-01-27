@@ -160,8 +160,6 @@ parse_controller(struct controller *controller, cJSON *root)
     int listen;
     int prio;
     indigo_error_t err;
-    int idx;
-    bool is_ipv6;
 
     err = ind_cfg_lookup_string(root, "ip_addr", &ip);
     if (err < 0) {
@@ -232,15 +230,7 @@ parse_controller(struct controller *controller, cJSON *root)
     }
 
     /* if the ip address contains a colon, it is considered ipv6 */
-    is_ipv6 = false;
-    for (idx = 0; idx < strlen(ip); idx++) {
-        if (ip[idx] == ':') {
-            is_ipv6 = true;
-            break;
-        }
-    }
-
-    if (is_ipv6) {
+    if (strchr(ip, ':') != NULL) {
         proto6 = &controller->proto.tcp_over_ipv6;
         proto6->protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
         strncpy(proto6->controller_ip, ip, sizeof(proto6->controller_ip));
