@@ -39,7 +39,7 @@
 #include "handlers.h"
 #include <murmur/murmur.h>
 
-#define MAX_GENTABLES 16
+#define MAX_GENTABLES 64
 
 struct ind_core_gentable_entry;
 
