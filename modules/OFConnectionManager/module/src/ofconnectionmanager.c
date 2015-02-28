@@ -1159,6 +1159,7 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
        channel is not ready for communication, then we should just try
        to send on the main controller connection */
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
+    AIM_ASSERT(*cxn != NULL);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
         if (auxiliary_id != 0) {
             AIM_LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
@@ -1166,6 +1167,7 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
                           CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
             auxiliary_id = 0;
             *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
+            AIM_ASSERT(*cxn != NULL);
             if (ind_cxn_accepts_async_message(*cxn) == 0) {
                 return 0;
             }
