@@ -102,6 +102,8 @@ void ind_controller_disconnect(controller_t *ctrl);
 
 void ind_cxn_status_notify(void);
 
+connection_t *ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id);
+
 /**
  * The OF message callback vector from state manager
  */
