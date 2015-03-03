@@ -83,7 +83,7 @@ cxn_status_change(indigo_controller_id_t controller_id,
     printf("Status for %s (id %d, aux %d), now %s\n", 
            desc, controller_id, aux_id,
            is_connected? "connected": "disconnected");
-    INDIGO_ASSERT(controller_id < MAX_CONTROLLER_CONNECTIONS);
+    INDIGO_ASSERT(controller_id < MAX_CONTROLLERS);
     INDIGO_ASSERT(aux_id < MAX_AUX_CONNECTIONS);
     cxn_is_connected[controller_id][aux_id] = is_connected;
 }
@@ -91,7 +91,7 @@ cxn_status_change(indigo_controller_id_t controller_id,
 
 #define CONTROLLER_IP "127.0.0.1"
 #define CONTROLLER_IPV6 "::1"
-/* FIXME */
+/* FIXME need to run this before unit tests */
 /* sudo ifconfig lo add fe80::b00b:4cff:fe2f:1fe3/64 */
 #define CONTROLLER_IPV6_LINKLOCAL "fe80::b00b:4cff:fe2f:1fe3%lo"
 #define CONTROLLER_LISTEN_PORT 25267
@@ -800,7 +800,6 @@ test_listener(void)
     /* connect to listener */
     sd = setup_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
     OK(ind_soc_select_and_run(1));
-
     /* send hello */
     of_send_hello(sd);
     OK(ind_soc_select_and_run(1));
@@ -817,13 +816,19 @@ test_listener(void)
 
     /* verify that we can reconnect to listener */
     sd = setup_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
-    OK(ind_soc_select_and_run(10));
+    OK(ind_soc_select_and_run(1));
     /* send hello */
     of_send_hello(sd);
     OK(ind_soc_select_and_run(1));
     /* check for hello */
     obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_HELLO);
+    of_send_features_request(sd);
+    OK(ind_soc_select_and_run(5));
+    /* check for features reply */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_FEATURES_REPLY);
+    /* close */
     close(sd);
 
     OK(indigo_controller_remove(id));
@@ -916,8 +921,71 @@ test_dual(void)
 }
 
 
+static void
+test_bad_controller(void)
+{
+    indigo_cxn_protocol_params_t protocol_params;
+    indigo_cxn_config_params_t config_params;
+    indigo_controller_id_t id;
+
+    printf("***Start %s\n", __FUNCTION__);
+
+    indigo_setup();
+
+    memset(&config_params, 0, sizeof(config_params));
+    config_params.version = OF_VERSION_1_3;
+
+    protocol_params.tcp_over_ipv4.protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
+    /* use bogus ip address */
+    sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", 
+            "192.168.0.255.0");
+    protocol_params.tcp_over_ipv4.controller_port = CONTROLLER_PORT1;
+
+    INDIGO_ASSERT(indigo_controller_add(&protocol_params, &config_params, &id)
+                  != INDIGO_ERROR_NONE);
+
+    indigo_teardown();
+
+    printf("***Stop %s\n", __FUNCTION__);
+}
+
+
+static void
+test_bad_listener(void)
+{
+    indigo_cxn_protocol_params_t protocol_params;
+    indigo_cxn_config_params_t config_params;
+    indigo_controller_id_t id;
+
+    printf("***Start %s\n", __FUNCTION__);
+
+    indigo_setup();
+
+    memset(&config_params, 0, sizeof(config_params));
+    config_params.version = OF_VERSION_1_3;
+    config_params.local = 1;
+    config_params.listen = 1;
+
+    protocol_params.tcp_over_ipv4.protocol = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
+    /* use bogus ip address */
+    sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", 
+            "192.168.0.255.0");
+    protocol_params.tcp_over_ipv4.controller_port = CONTROLLER_LISTEN_PORT;
+
+    INDIGO_ASSERT(indigo_controller_add(&protocol_params, &config_params, &id)
+                  != INDIGO_ERROR_NONE);
+
+    indigo_teardown();
+
+    printf("***Stop %s\n", __FUNCTION__);
+}
+
+
 int main(int argc, char* argv[])
 {
+    test_bad_controller();
+    test_bad_listener();
+
     test_normal(AF_INET, CONTROLLER_IP);
     test_normal(AF_INET6, CONTROLLER_IPV6);
     test_normal(AF_INET6, CONTROLLER_IPV6_LINKLOCAL);

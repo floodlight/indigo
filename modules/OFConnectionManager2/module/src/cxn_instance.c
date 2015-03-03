@@ -69,7 +69,7 @@
 /* Forward declaractions */
 static void
 cxn_state_set(connection_t *cxn, cxn_state_t new_state);
-static int
+static indigo_error_t
 cxn_try_to_connect(connection_t *cxn);
 
 
@@ -80,7 +80,7 @@ cxn_try_to_connect(connection_t *cxn);
 /**
  * Connection control blocks, indexed by connection index
  */
-static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
+static connection_t connection[MAX_CONNECTIONS];
 
 /****************************************************************
  * Connection instance bookkeeping
@@ -88,7 +88,7 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
 
 #define ITERATE_OVER_ALL_CXNS(_idx, _cxn)                               \
     for (_idx = 0, _cxn = &connection[0];                               \
-         _idx < MAX_CONTROLLER_CONNECTIONS;                             \
+         _idx < MAX_CONNECTIONS;                                        \
          ++_idx, _cxn = &connection[_idx])
 
 /* Includes local connection */
@@ -108,13 +108,13 @@ static connection_t connection[MAX_CONTROLLER_CONNECTIONS];
     if (CXN_ACTIVE(_cxn) && !CXN_LOCAL(_cxn) &&                         \
         (_cxn->aux_id == 0) &&                                          \
         (_cxn->controller->role == _cxn_role) &&                        \
-        cxn_is_handshake_complete(_cxn))
+        ind_cxn_is_handshake_complete(_cxn))
 
 
 static connection_t *
 find_free_connection(void) {
     int idx;
-    for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
+    for (idx = 0; idx < MAX_CONNECTIONS; ++idx) {
         if (!connection[idx].active) {
             return &connection[idx];
         }
@@ -127,25 +127,25 @@ static void
 init_single_instance(connection_t *cxn, indigo_cxn_id_t cxn_id)
 {
     INDIGO_MEM_CLEAR(cxn, sizeof(connection_t));
-    cxn->cxn_id = (indigo_cxn_id_t)cxn_id;
+    cxn->cxn_id = cxn_id;
     cxn->write_queue = bigring_create(WRITE_QUEUE_SIZE, NULL);
 }
 
 void
-cxn_init_instances(void)
+ind_cxn_init_instances(void)
 {
     int idx;
 
-    for (idx = 0; idx < MAX_CONTROLLER_CONNECTIONS; ++idx) {
+    for (idx = 0; idx < MAX_CONNECTIONS; ++idx) {
         /* implicitly zero generation id */
         init_single_instance(&connection[idx], (indigo_cxn_id_t) idx);
     }
 }
 
 connection_t *
-cxn_id_to_connection(indigo_cxn_id_t cxn_id)
+ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id)
 {
-    AIM_ASSERT(CXN_ID_TO_INDEX(cxn_id) < MAX_CONTROLLER_CONNECTIONS,
+    AIM_ASSERT(CXN_ID_TO_INDEX(cxn_id) < MAX_CONNECTIONS,
                "invalid connection id %d", cxn_id);
     connection_t *cxn = &connection[CXN_ID_TO_INDEX(cxn_id)];
     if (cxn->cxn_id != cxn_id) {
@@ -160,7 +160,7 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
  * Debug counter handling
  *------------------------------------------------------------*/
 
-void
+static void
 cxn_register_debug_counters(connection_t *cxn)
 {
     int i;
@@ -192,10 +192,10 @@ cxn_register_debug_counters(connection_t *cxn)
         debug_counter_register(&cxn->tx_counters[i], aim_strdup(name), description);
     }
 
-    cxn->has_debug_counters = 1;
+    cxn->has_debug_counters = true;
 }
 
-void
+static void
 cxn_unregister_debug_counters(connection_t *cxn)
 {
     int i;
@@ -224,7 +224,7 @@ cxn_unregister_debug_counters(connection_t *cxn)
         aim_free(name);
     }
 
-    cxn->has_debug_counters = 0;
+    cxn->has_debug_counters = false;
 }
 
 
@@ -245,7 +245,6 @@ cxn_send_hello(connection_t *cxn)
     LOG_TRACE(cxn, "Sending hello");
     
     config_params = get_connection_config(cxn);
-    INDIGO_ASSERT(config_params != NULL);
 
     if ((hello = of_hello_new(config_params->version)) == NULL) {
         AIM_DIE("Could not allocate hello object");
@@ -286,7 +285,6 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
                     obj->version);
         
         indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
-        INDIGO_ASSERT(config_params != NULL);
         
         cxn->status.negotiated_version = aim_imin(config_params->version,
                                                   obj->version);
@@ -299,21 +297,24 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
 }
 
 
-int cxn_is_handshake_complete(const connection_t *cxn)
+bool
+ind_cxn_is_handshake_complete(const connection_t *cxn)
 {
     return (CXN_ACTIVE(cxn) &&
-            (cxn->state == CXN_S_HANDSHAKE_COMPLETE));
+            (cxn->state == CXN_S_HANDSHAKE_COMPLETE))? true: false;
 }
 
 
-int cxn_is_closed(const connection_t *cxn)
+bool
+ind_cxn_is_closed(const connection_t *cxn)
 {
     return (CXN_ACTIVE(cxn) &&
-            (cxn->state == CXN_S_CLOSED));
+            (cxn->state == CXN_S_CLOSED))? true: false;
 }
 
 
-void cxn_notify_features_reply_sent(connection_t *cxn)
+void 
+ind_cxn_notify_features_reply_sent(connection_t *cxn)
 {
     if (cxn->state == CXN_S_HANDSHAKING) {
         cxn_state_set(cxn, CXN_S_HANDSHAKE_COMPLETE);
@@ -469,8 +470,8 @@ barrier_request_handle(connection_t *cxn, of_object_t *_obj)
     LOG_TRACE(cxn, "Outstanding op count %d", cxn->outstanding_op_cnt);
 
     /* Pause the socket and mark a barrier is pending */
-    cxn_pause(cxn);
-    cxn->barrier.pendingf = 1;
+    ind_cxn_pause(cxn);
+    cxn->barrier.pendingf = true;
 
     /* Notify other modules to finish their delayed processing and unblock the
      * barrier */
@@ -667,7 +668,7 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
  
     LOG_VERBOSE(cxn, "Request for %d aux cxns", num_aux);
 
-    status = ind_add_aux_cxns(cxn, num_aux);  
+    status = ind_cxn_add_aux_cxns(cxn, num_aux);  
     of_bsn_set_aux_cxns_reply_num_aux_set(reply, num_aux);
     of_bsn_set_aux_cxns_reply_status_set(reply, status);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
@@ -735,7 +736,7 @@ ind_cxn_block_barrier(connection_t *cxn)
 void
 ind_cxn_unblock_barrier(connection_t *cxn)
 {
-    INDIGO_ASSERT(cxn->outstanding_op_cnt > 0);
+    AIM_ASSERT(cxn->outstanding_op_cnt > 0);
     cxn->outstanding_op_cnt -= 1;
 
     LOG_TRACE(cxn, "Op count %d", cxn->outstanding_op_cnt);
@@ -748,8 +749,8 @@ ind_cxn_unblock_barrier(connection_t *cxn)
         } else if (cxn->barrier.pendingf) {
             LOG_TRACE(cxn, "Op count 0, sending barrier reply");
             send_barrier_reply(cxn);
-            cxn->barrier.pendingf = 0;
-            cxn_resume(cxn);
+            cxn->barrier.pendingf = false;
+            ind_cxn_resume(cxn);
         }
     }
 }
@@ -897,7 +898,7 @@ read_from_cxn(connection_t *cxn)
     cxn_data_hexdump(&cxn->read_buffer[cxn->read_bytes], bytes_in);
 #endif
 
-    INDIGO_ASSERT((int)bytes_in <= cxn->bytes_needed);
+    AIM_ASSERT((int)bytes_in <= cxn->bytes_needed);
     cxn->read_bytes += bytes_in;
     cxn->bytes_needed -= bytes_in;
 
@@ -935,8 +936,8 @@ read_message(connection_t *cxn)
     }
 
     if (READING_HEADER(cxn)) {
-        INDIGO_ASSERT(cxn->bytes_needed + cxn->read_bytes ==
-                      OF_MESSAGE_HEADER_LENGTH);
+        AIM_ASSERT(cxn->bytes_needed + cxn->read_bytes == 
+                   OF_MESSAGE_HEADER_LENGTH);
         if ((rv = read_from_cxn(cxn)) < 0) {
             return rv;
         }
@@ -1070,7 +1071,7 @@ ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
         aim_printf(cxn->trace_pvs, "**\n\n");
     }
 
-    if (cxn_is_handshake_complete(cxn)) {
+    if (ind_cxn_is_handshake_complete(cxn)) {
         /* We have a message from the controller.  Reset keepalive timeout */
         cxn->keepalive.outstanding_echo_cnt = 0;
 
@@ -1213,7 +1214,7 @@ cxn_process_write_buffer(connection_t *cxn)
                 cxn->write_queue_head_offset = 0;
             } else {
                 /* Partial write */
-                INDIGO_ASSERT(bytes_out < to_write);
+                AIM_ASSERT(bytes_out < to_write);
                 cxn->write_queue_head_offset += bytes_out;
                 break;
             }
@@ -1229,8 +1230,8 @@ cxn_process_write_buffer(connection_t *cxn)
 
     if (cxn->pkts_enqueued == 0) {
         LOG_TRACE(cxn, "No more data to write");
-        INDIGO_ASSERT(cxn->bytes_enqueued == 0);
-        INDIGO_ASSERT(bigring_count(cxn->write_queue) == 0);
+        AIM_ASSERT(cxn->bytes_enqueued == 0);
+        AIM_ASSERT(bigring_count(cxn->write_queue) == 0);
         ind_soc_data_out_clear(cxn->sd);
     }
 
@@ -1249,8 +1250,8 @@ cxn_process_write_buffer(connection_t *cxn)
  * Takes ownership of data unless an error is returned.
  */
 
-int
-cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
+indigo_error_t
+ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
 {
     int msg_len;
 
@@ -1286,8 +1287,8 @@ cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     cxn->pkts_enqueued += 1;
 
     /* Indicate data is ready to the socket manager */
-    INDIGO_ASSERT(cxn->bytes_enqueued > 0);
-    INDIGO_ASSERT(cxn->pkts_enqueued > 0);
+    AIM_ASSERT(cxn->bytes_enqueued > 0);
+    AIM_ASSERT(cxn->pkts_enqueued > 0);
     ind_soc_data_out_ready(cxn->sd);
 
     return INDIGO_ERROR_NONE;
@@ -1305,7 +1306,7 @@ cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
  * @param write_ready Was write-ready signaled by select
  * @param error_seen Was an error signaled by select
  */
-void
+static void
 cxn_socket_ready(
     int socket_id,
     void *cookie,
@@ -1314,7 +1315,7 @@ cxn_socket_ready(
     int error_seen)
 {
     connection_t *cxn;
-    int rv;
+    indigo_error_t rv;
 
     cxn = (connection_t *)cookie;
     AIM_LOG_TRACE("Soc %d ready, cxn %p, controller %p. rd %d. wr %d. er %d",
@@ -1331,8 +1332,8 @@ cxn_socket_ready(
         return;
     }
 
-    INDIGO_ASSERT(cxn->controller != NULL);
-    INDIGO_ASSERT(cxn->sd == socket_id);
+    AIM_ASSERT(cxn->controller != NULL);
+    AIM_ASSERT(cxn->sd == socket_id);
 
     if (error_seen) {
         int socket_error = 0;
@@ -1358,14 +1359,12 @@ cxn_socket_ready(
 
     if (write_ready) {
         if (cxn->state == CXN_S_INIT && !CXN_LISTEN(cxn)) {
-            int rv;
             rv = cxn_try_to_connect(cxn);
-            if (rv == 0) {
+            if (rv == INDIGO_ERROR_NONE) {
                 /* success, move to next state */
                 cxn_state_set(cxn, CXN_S_HANDSHAKING);
-            } else if (rv == 1) {
-                /* in-flight connection, but should not get here */
-                INDIGO_ASSERT(0);
+            } else if (rv == INDIGO_ERROR_PENDING) {
+                AIM_DIE("In-flight connection cannot be write ready");
             } else {
                 LOG_INTERNAL(cxn, "Error trying to connect, resetting");
                 controller_disconnect(cxn->controller);
@@ -1465,7 +1464,7 @@ cxn_state_timeout(void *cookie)
     case CXN_S_INIT:  /* fall-through */
     case CXN_S_HANDSHAKING:  /* fall-through */
     case CXN_S_CLOSING:
-        cxn_stop(cxn);
+        ind_cxn_stop(cxn);
         break;
     default:
         AIM_DIE("Timeout in state %s should not occur",
@@ -1544,7 +1543,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
     switch (new_state) {
     case CXN_S_INIT:
         /* this should never happen */
-        INDIGO_ASSERT("Error: transitioned to INIT");
+        AIM_DIE("Error: transitioned to INIT");
         break;
 
     case CXN_S_HANDSHAKING:
@@ -1588,7 +1587,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         cxn_unregister_debug_counters(cxn);
         ind_cxn_bundle_cleanup(cxn);
 
-        INDIGO_ASSERT(cxn->sd >= 0);
+        AIM_ASSERT(cxn->sd >= 0);
         LOG_VERBOSE(cxn, "Closing socket %d", cxn->sd);
         ind_soc_socket_unregister(cxn->sd);
         close(cxn->sd);
@@ -1600,8 +1599,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         break;
 
     default:
-        LOG_INTERNAL(cxn, "Unknown state %d", new_state);
-        break;
+        AIM_DIE("cxn %s: Unknown state %d", cxn->desc, new_state);
     }
 }
 
@@ -1616,7 +1614,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
  * Typically, sd is >= 0 when this comes from an accept call.
  */
 connection_t *
-cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
+ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
 {
     indigo_cxn_id_t saved_cxn_id;
     int soc_flags;
@@ -1693,7 +1691,7 @@ cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
                     cxn->sd, cxn->controller);
     }
 
-    cxn->active = 1;
+    cxn->active = true;
 
     return cxn;
 
@@ -1711,11 +1709,11 @@ cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
  * @param cxn Connection to be freed
  */
 void
-cxn_free(connection_t *cxn)
+ind_cxn_free(connection_t *cxn)
 {
     uint8_t *data;
 
-    INDIGO_ASSERT(cxn->sd == -1);
+    AIM_ASSERT(cxn->sd == -1);
 
     /* Increment the generation ID for this connection */
     cxn->cxn_id += (1 << CXN_ID_GENERATION_SHIFT);
@@ -1734,16 +1732,18 @@ cxn_free(connection_t *cxn)
     cxn->pkts_enqueued = 0;
     cxn->write_queue_head_offset = 0;
 
-    cxn->active = 0;
+    cxn->active = false;
 }
 
 
 /**
  * Attempt to connect() to the specified controller.
- * Returns -1 on error, 0 on success, 1 on in-flight connections.
+ * Returns INDIGO_ERROR_PARAM or INDIGO_ERROR_UNKNOWN on error,
+ * INDIGO_ERROR_NONE on success,
+ * INDIGO_ERROR_PENDING on in-flight connection.
  * Caller's responsibility to clean up on error.
  */
-static int
+static indigo_error_t
 cxn_try_to_connect(connection_t *cxn)
 {
     int rv;
@@ -1752,25 +1752,26 @@ cxn_try_to_connect(connection_t *cxn)
     if (ind_cxn_parse_sockaddr(&cxn->controller->protocol_params, &sockaddr)
         != INDIGO_ERROR_NONE) {
         LOG_INTERNAL(cxn, "Failed to parse address");
-        return -1;
+        return INDIGO_ERROR_PARAM;
     }
 
     rv = connect(cxn->sd, (struct sockaddr *) &sockaddr, sizeof(sockaddr));
     if ((rv == 0) ||
         ((rv == -1) && errno == EISCONN)) {
-        return 0;
+        return INDIGO_ERROR_NONE;
     } else if ((rv == -1) &&
                (errno == EAGAIN || errno == EALREADY || 
                 errno == EINPROGRESS)) {
-        /* mark socket for writing so that second connect() call can be made */
+        /* mark socket for writing so that second connect() call can be made,
+         * because nonblocking socket may return EINPROGRESS */
         ind_soc_data_out_ready(cxn->sd);
-        return 1;
+        return INDIGO_ERROR_PENDING;
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
         if (cxn->aux_id == 0) {
             cxn->controller->fail_count++;
         }
-        return -1;
+        return INDIGO_ERROR_UNKNOWN;
     }
 }
 
@@ -1779,32 +1780,34 @@ cxn_try_to_connect(connection_t *cxn)
  * Start the specified connection.
  */
 void
-cxn_start(connection_t *cxn)
+ind_cxn_start(connection_t *cxn)
 {
-    int rv;
+    indigo_error_t rv;
 
     LOG_TRACE(cxn, "Starting cxn %p", cxn);
 
-    INDIGO_ASSERT(cxn->state == CXN_S_INIT);
+    AIM_ASSERT(cxn->state == CXN_S_INIT);
 
-    /* Register with socket manager */
+    /* register with socket manager to catch socket-writeable event,
+     * so that connect() can successfully complete;
+     * see comment in cxn_try_to_connect():EINPROGRESS handling */
     ind_soc_socket_register_with_priority(cxn->sd, cxn_socket_ready,
                                           cxn, IND_CXN_EVENT_PRIORITY);
 
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
-    if (rv == 0) {
+    if (rv == INDIGO_ERROR_NONE) {
         /* success, move to next state;
          * connections started from the listener will also return 0 */
         cxn_state_set(cxn, CXN_S_HANDSHAKING);
-    } else if (rv == 1) {
+    } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
         ind_soc_timer_event_register_with_priority(
             cxn_state_timeout, cxn, cxn_state_timeouts[CXN_S_INIT],
             IND_CXN_EVENT_PRIORITY);
     } else {
         LOG_INTERNAL(cxn, "Error trying to connect when starting, closing");
-        cxn_stop(cxn);
+        ind_cxn_stop(cxn);
     }
 }
 
@@ -1813,7 +1816,7 @@ cxn_start(connection_t *cxn)
  * Force a connection to start the disconnection process
  */
 void 
-cxn_stop(connection_t *cxn)
+ind_cxn_stop(connection_t *cxn)
 {
     LOG_VERBOSE(cxn, "Stopping");
 
@@ -1829,7 +1832,7 @@ cxn_stop(connection_t *cxn)
 
 
 void
-cxn_pause(connection_t *cxn)
+ind_cxn_pause(connection_t *cxn)
 {
     AIM_ASSERT(!cxn->paused);
     if (ind_soc_data_in_pause(cxn->sd) < 0) {
@@ -1840,7 +1843,7 @@ cxn_pause(connection_t *cxn)
 }
 
 void
-cxn_resume(connection_t *cxn)
+ind_cxn_resume(connection_t *cxn)
 {
     AIM_ASSERT(cxn->paused);
     (void)ind_soc_data_in_resume(cxn->sd);
@@ -1966,7 +1969,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
             break;
         }
 
-        if (cxn_is_handshake_complete(cxn)) {
+        if (ind_cxn_is_handshake_complete(cxn)) {
             of_bsn_controller_connection_state_set(&entry, 1);
         } else {
             of_bsn_controller_connection_state_set(&entry, 0);
@@ -1995,7 +1998,6 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
         memset(uri, 0, sizeof(uri));
 
         protocol_params = get_connection_params(cxn);
-        INDIGO_ASSERT(protocol_params != NULL);
 
         if (protocol_params->header.protocol ==
             INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
@@ -2044,7 +2046,7 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "    Auxiliary Id: %d\n", cxn->aux_id);
         aim_printf(pvs, "    Controller Id: %d\n", 
                    cxn->controller->controller_id);
-        aim_printf(pvs, "    State: %s\n", cxn_is_handshake_complete(cxn)?
+        aim_printf(pvs, "    State: %s\n", ind_cxn_is_handshake_complete(cxn)?
                    "Connected" : "Not connected");
         aim_printf(pvs, "    Keepalive timeout: %d ms\n", 
                    cxn->keepalive.period_ms);

@@ -69,7 +69,7 @@
 /**
  * Maximum connections including remote and local across all controllers
  */
-#define MAX_CONTROLLER_CONNECTIONS 32
+#define MAX_CONNECTIONS 32
 
 /**
  * Maximum auxiliary connections possible per controller 
@@ -88,7 +88,7 @@
 #define CXN_ID_TO_GENERATION(cxn_id) ((cxn_id) >> CXN_ID_GENERATION_SHIFT)
 
 #define CXN_ID_VALID(cxn_id)                                            \
-    (((cxn_id) >= 0) && (CXN_ID_TO_INDEX(cxn_id) < MAX_CONTROLLER_CONNECTIONS))
+    (((cxn_id) >= 0) && (CXN_ID_TO_INDEX(cxn_id) < MAX_CONNECTIONS))
 #define CXN_TO_CXN_ID(cxn) ((cxn)->cxn_id)
 
 
@@ -106,9 +106,9 @@ typedef struct controller_s {
     indigo_cxn_config_params_t config_params;
     indigo_cxn_role_t role;
 
-    int active; /* Has this controller instance been configured? */
-    int restartable; /* Should this controller be restarted when its main cxn 
-                      * is disconnected? */
+    bool active; /* Has this controller instance been configured? */
+    bool restartable; /* Should this controller be restarted when its main cxn 
+                       * is disconnected? */
     uint32_t fail_count;  /* Increments each time a main cxn attempt fails;
                            * cleared when TCP connection is established */
     indigo_controller_id_t controller_id;
@@ -176,7 +176,7 @@ typedef struct connection_s {
     cxn_state_t state;
     indigo_cxn_status_t status;
 
-    int active; /* Has this connection instance been configured? */
+    bool active; /* Has this connection instance been configured? */
     indigo_cxn_id_t cxn_id; /* For back tracking */
 
     int sd; /* The socket descriptor */
@@ -199,7 +199,7 @@ typedef struct connection_s {
     int pkts_enqueued;      /* Total pkts queued */
 
     /* Additional debug info */
-    int has_debug_counters;
+    bool has_debug_counters;
     debug_counter_t tx_drop_counter;
     debug_counter_t rx_counters[OF_MESSAGE_OBJECT_COUNT];
     debug_counter_t tx_counters[OF_MESSAGE_OBJECT_COUNT];
@@ -207,8 +207,8 @@ typedef struct connection_s {
     /* Barrier */
     int outstanding_op_cnt; /* Number of outstanding operations */
     struct {
-        unsigned char pendingf;           /* Barrier reply pending flag */
-        uint32_t      xid;                /* XID of barrier request */
+        bool pendingf;  /* Barrier reply pending flag */
+        uint32_t xid;   /* XID of barrier request */
     } barrier;
 
     /* Echo */
@@ -277,57 +277,48 @@ typedef struct connection_s {
 static inline indigo_cxn_config_params_t*
 get_connection_config(connection_t *cxn)
 {
-    if (cxn && cxn->controller) {
-        return (&cxn->controller->config_params);
-    } else {
-        return NULL;
-    }
+    AIM_ASSERT(cxn && cxn->controller);
+    return (&cxn->controller->config_params);
 } 
 
 static inline indigo_cxn_protocol_params_t*
 get_connection_params(connection_t *cxn)
 {
-    if (cxn && cxn->controller) {
-        return (&cxn->controller->protocol_params);
-    } else {
-        return NULL;
-    }
+    AIM_ASSERT(cxn && cxn->controller);
+    return (&cxn->controller->protocol_params);
 }
 
 
 extern void
-cxn_init_instances(void);
+ind_cxn_init_instances(void);
 
 extern connection_t *
-cxn_id_to_connection(indigo_cxn_id_t cxn_id);
+ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id);
 
 extern connection_t *
-cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id);
+ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id);
 extern void
-cxn_start(connection_t *cxn);
+ind_cxn_start(connection_t *cxn);
 extern void
-cxn_stop(connection_t *cxn);
+ind_cxn_stop(connection_t *cxn);
 extern void
-cxn_free(connection_t *cxn);
+ind_cxn_free(connection_t *cxn);
 
-extern int
-cxn_is_handshake_complete(const connection_t *cxn);
-extern int
-cxn_is_closed(const connection_t *cxn);
+extern bool
+ind_cxn_is_handshake_complete(const connection_t *cxn);
+extern bool
+ind_cxn_is_closed(const connection_t *cxn);
 
-extern int
-cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len);
+extern indigo_error_t
+ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len);
 
-extern indigo_error_t 
-cxn_send_echo_request(connection_t *cxn);
-
-void cxn_notify_features_reply_sent(connection_t *cxn);
+void ind_cxn_notify_features_reply_sent(connection_t *cxn);
 
 void ind_cxn_block_barrier(connection_t *cxn);
 void ind_cxn_unblock_barrier(connection_t *cxn);
 
-void cxn_pause(connection_t *cxn);
-void cxn_resume(connection_t *cxn);
+void ind_cxn_pause(connection_t *cxn);
+void ind_cxn_resume(connection_t *cxn);
 
 void ind_cxn_process_message(connection_t *cxn, of_object_t *obj);
 
