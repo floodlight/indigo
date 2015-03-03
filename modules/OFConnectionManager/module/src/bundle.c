@@ -307,10 +307,9 @@ bundle_task(void *cookie)
     connection_t *cxn = ind_cxn_id_to_connection(state->cxn_id);
 
     while (state->offset < state->count) {
-        of_object_storage_t obj_storage;
-        of_object_t *obj = parse_message(state->msgs[state->offset], &obj_storage);
-
         if (cxn) {
+            of_object_storage_t obj_storage;
+            of_object_t *obj = parse_message(state->msgs[state->offset], &obj_storage);
             ind_cxn_process_message(cxn, obj);
         } else {
             /* Connection went away. Drop remaining messages. */
