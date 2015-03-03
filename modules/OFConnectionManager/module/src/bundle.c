@@ -46,14 +46,22 @@
  * a commit is not rolled back if executing a message fails.
  *
  * Still left to do:
- *  - Commit in a long-running task
  *  - Validate messages on add
  */
+
+struct bundle_task_state {
+    indigo_cxn_id_t cxn_id;
+    uint32_t id; /* Bundle ID */
+    uint32_t count; /* Length of msgs array */
+    uint32_t offset; /* Current position in msgs array */
+    uint8_t **msgs; /* Array of pointers to raw message data */
+};
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
 static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
 static void free_bundle(bundle_t *bundle);
 static int compare_message(const void *_a, const void *_b);
+static ind_soc_task_status_t bundle_task(void *cookie);
 
 static indigo_cxn_bundle_comparator_t comparator;
 
@@ -123,18 +131,22 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
             qsort(bundle->msgs, bundle->count, sizeof(bundle->msgs[0]), compare_message);
         }
 
-        /* TODO long running task */
+        struct bundle_task_state *state = aim_zmalloc(sizeof(*state));
+        state->cxn_id = cxn->cxn_id;
+        state->id = bundle->id;
+        state->count = bundle->count;
+        state->offset = 0;
+        state->msgs = bundle->msgs;
 
-        int i;
-        for (i = 0; i < bundle->count; i++) {
-            of_object_storage_t obj_storage;
-            of_object_t *obj = parse_message(bundle->msgs[i], &obj_storage);
-
-            ind_cxn_process_message(cxn, obj);
-
-            free(bundle->msgs[i]);
-            bundle->msgs[i] = NULL;
+        if (ind_soc_task_register(bundle_task, state, IND_SOC_NORMAL_PRIORITY) < 0) {
+            AIM_DIE("Failed to create long running task for bundle");
         }
+
+        ind_cxn_pause(cxn);
+
+        /* Transfer ownership of msgs to task */
+        bundle->msgs = NULL;
+        bundle->count = 0;
 
         free_bundle(bundle);
     } else if (ctrl_type == OFPBCT_DISCARD_REQUEST) {
@@ -285,4 +297,39 @@ compare_message(const void *_a, const void *_b)
     }
 
     return comparator(obj_a, obj_b);
+}
+
+static ind_soc_task_status_t
+bundle_task(void *cookie)
+{
+    struct bundle_task_state *state = cookie;
+
+    connection_t *cxn = ind_cxn_id_to_connection(state->cxn_id);
+
+    while (state->offset < state->count) {
+        of_object_storage_t obj_storage;
+        of_object_t *obj = parse_message(state->msgs[state->offset], &obj_storage);
+
+        if (cxn) {
+            ind_cxn_process_message(cxn, obj);
+        } else {
+            /* Connection went away. Drop remaining messages. */
+        }
+
+        free(state->msgs[state->offset]);
+        state->msgs[state->offset] = NULL;
+        state->offset++;
+
+        if (ind_soc_should_yield()) {
+            return IND_SOC_TASK_CONTINUE;
+        }
+    }
+
+    free(state);
+
+    if (cxn) {
+        ind_cxn_resume(cxn);
+    }
+
+    return IND_SOC_TASK_FINISHED;
 }

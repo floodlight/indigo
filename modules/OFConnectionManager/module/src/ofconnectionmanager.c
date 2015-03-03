@@ -143,6 +143,12 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
     return cxn;
 }
 
+connection_t *
+ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id)
+{
+    return cxn_id_to_connection(cxn_id);
+}
+
 /****************************************************************
  * Controller instance bookkeeping
  ****************************************************************/
