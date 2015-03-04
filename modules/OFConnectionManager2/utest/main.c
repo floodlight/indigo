@@ -93,6 +93,7 @@ cxn_status_change(indigo_controller_id_t controller_id,
 #define CONTROLLER_IPV6 "::1"
 /* FIXME need to run this before unit tests */
 /* sudo ifconfig lo add fe80::b00b:4cff:fe2f:1fe3/64 */
+/* sudo ip addr add fe80::b00b:4cff:fe2f:1fe3/64 dev lo */
 #define CONTROLLER_IPV6_LINKLOCAL "fe80::b00b:4cff:fe2f:1fe3%lo"
 #define CONTROLLER_LISTEN_PORT 25267
 #define CONTROLLER_PORT1 12345
@@ -921,6 +922,7 @@ test_dual(void)
 }
 
 
+/* provide bad non-listener parameters to indigo_controller_add() */
 static void
 test_bad_controller(void)
 {
@@ -950,6 +952,7 @@ test_bad_controller(void)
 }
 
 
+/* provide bad listener parameters to indigo_controller_add() */
 static void
 test_bad_listener(void)
 {
@@ -981,10 +984,38 @@ test_bad_listener(void)
 }
 
 
+/* send valid parameters to indigo_controller_add(), 
+ * but do not set up a controller in the first place */
+static void
+test_no_controller(void)
+{
+    indigo_controller_id_t id;
+
+    printf("***Start %s\n", __FUNCTION__);
+
+    indigo_setup();
+
+    id = setup_cxn(CONTROLLER_IP, CONTROLLER_PORT1);
+    INDIGO_ASSERT(id >= 0);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
+    OK(ind_soc_select_and_run(2500));
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+
+    OK(indigo_controller_remove(id));
+    OK(ind_soc_select_and_run(1));
+
+    indigo_teardown();
+
+    printf("***Stop %s\n", __FUNCTION__);
+}
+
+
 int main(int argc, char* argv[])
 {
     test_bad_controller();
     test_bad_listener();
+    test_no_controller();
 
     test_normal(AF_INET, CONTROLLER_IP);
     test_normal(AF_INET6, CONTROLLER_IPV6);

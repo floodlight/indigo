@@ -605,11 +605,6 @@ controller_disconnect(controller_t *controller)
     AIM_LOG_TRACE("Controller disconnect %s(%p)", 
                   controller->desc, controller);
 
-    if (!controller->config_params.local) {
-        AIM_LOG_INFO("Disconnected from controller %s",
-                     controller->desc);
-    }
-
     remove_aux_cxns(controller, 0);
 
     main_cxn = controller->cxns[0];

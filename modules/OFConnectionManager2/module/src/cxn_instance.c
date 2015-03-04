@@ -1447,7 +1447,6 @@ cxn_state_timeouts[] = {
     CXN_S_DESCS
 #undef cxn_s_desc
 };
-#define CXN_STATE_TIMEOUT(cxn) cxn_state_names[cxn->state]
 
 
 /**
@@ -1494,10 +1493,10 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         return;
     }
 
-    LOG_INFO(cxn, "%s->%s (id "CXN_ID_FMT")",
-             cxn_state_names[old_state],
-             cxn_state_names[new_state],
-             CXN_ID_FMT_ARGS(cxn->cxn_id));
+    LOG_VERBOSE(cxn, "%s->%s (id "CXN_ID_FMT")",
+                cxn_state_names[old_state],
+                cxn_state_names[new_state],
+                CXN_ID_FMT_ARGS(cxn->cxn_id));
 
     /* Verify pre-conditions */
     switch (new_state) {
@@ -1522,6 +1521,14 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         /* local connections do not have a timeout */
         if (!CXN_LOCAL(cxn)) {
             ind_soc_timer_event_unregister(cxn_state_timeout, (void *)cxn);
+        }
+        break;
+    case CXN_S_HANDSHAKE_COMPLETE:
+        if (!CXN_LOCAL(cxn) && cxn->aux_id == 0) {
+            AIM_SYSLOG_INFO("Disconnected from controller <ip-address>:<port>",
+                            "The switch disconnected from the specified controller.",
+                            "Disconnected from controller %s",
+                            cxn->desc);
         }
         break;
     default:
