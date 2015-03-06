@@ -113,6 +113,7 @@ indigo_core_gentable_register(
     AIM_TRUE_OR_DIE(ops->modify != NULL || ops->modify2 != NULL);
     AIM_TRUE_OR_DIE(ops->del != NULL || ops->del2 != NULL);
     AIM_TRUE_OR_DIE(ops->get_stats != NULL);
+    AIM_TRUE_OR_DIE(buckets_size > 1);
 
     struct indigo_core_gentable *gentable = aim_zmalloc(sizeof(*gentable));
 
