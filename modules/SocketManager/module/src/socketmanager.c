@@ -668,6 +668,7 @@ indigo_error_t
 ind_soc_finish(void)
 {
     AIM_LOG_VERBOSE("Shutting down socket manager");
+    ind_cfg_unregister(&ind_soc_cfg_ops);
     soc_mgr_init();
     timer_wheel_destroy(timer_wheel);
     timer_wheel = NULL;

@@ -78,6 +78,12 @@ ind_cfg_register(const struct ind_cfg_ops *ops)
     cfg_registration_list = biglist_append(cfg_registration_list, (void *)ops);
 }
 
+void 
+ind_cfg_unregister(const struct ind_cfg_ops *ops)
+{
+    cfg_registration_list = biglist_remove(cfg_registration_list, (void *)ops);
+}
+
 /*
  * Given the start of a string containing newlines and another pointer
  * inside that string, return the line and column number of that position.

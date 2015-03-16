@@ -333,7 +333,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
 {
     connection_t *listen_cxn;
     socklen_t addrlen;
-    struct sockaddr_in cxn_addr;
+    struct sockaddr cxn_addr;
     int new_sd;
     connection_t *cxn;
     indigo_controller_id_t controller_id;
@@ -376,14 +376,22 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     /* Accept the new client */
     addrlen = sizeof(cxn_addr);
-    new_sd = accept(listen_cxn->sd, (struct sockaddr *)&cxn_addr,
-                    &addrlen);
+    new_sd = accept(listen_cxn->sd, &cxn_addr, &addrlen);
     if (new_sd == -1) {
         AIM_LOG_ERROR("Accept on listen %s: %s",
                       listen_cxn->desc, strerror(errno));
         return;
     }
-    AIM_LOG_VERBOSE("Accepted cxn on port %d", ntohs(cxn_addr.sin_port));
+    if (cxn_addr.sa_family == AF_INET) {
+        struct sockaddr_in *sa = (struct sockaddr_in*) &cxn_addr;
+        AIM_LOG_VERBOSE("Accepted cxn from %{ipv4a}:%d", 
+                        ntohl(sa->sin_addr.s_addr), ntohs(sa->sin_port));
+    } else if (cxn_addr.sa_family == AF_INET6) {
+        struct sockaddr_in6 *sa6 = (struct sockaddr_in6*) &cxn_addr;
+        /* FIXME use AIM datatype when available */
+        AIM_LOG_VERBOSE("Accepted cxn from [IPv6addr]:%d",
+                        ntohs(sa6->sin6_port));
+    }
 
     controller_id = find_free_controller();
     if (INDIGO_CONTROLLER_INVALID(controller_id)) {
@@ -404,6 +412,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
     if (cxn == NULL) {
         AIM_LOG_ERROR("Could not set up accepted connection");
         controller->active = false;
+        close(new_sd);
         return;
     }
 
@@ -519,12 +528,16 @@ main_cxn_restart_handler(void *cookie)
 
     cxn = controller_add_cxn(controller, 0);
     if (cxn == NULL) {
+        indigo_error_t rv;
         AIM_LOG_INTERNAL("Error allocating controller %s, "
                          "rescheduling for %d ms", 
                          controller->desc, controller_retry_ms(controller));
-        ind_soc_timer_event_register_with_priority(
+        rv = ind_soc_timer_event_register_with_priority(
             main_cxn_restart_handler, controller,
             controller_retry_ms(controller), IND_CXN_EVENT_PRIORITY);
+        AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                   "Failed to register main_cxn_restart_handler for %s",
+                   controller->desc);
     }
 }
 
@@ -543,11 +556,15 @@ cxn_closed_handler(void *cookie)
     /* only restart the main connection */
     if (aux_id == 0) {
         if (controller->restartable) {
+            indigo_error_t rv;
             AIM_LOG_VERBOSE("Main cxn for controller %s rescheduled for %d ms",
                             controller->desc, controller_retry_ms(controller));
-            ind_soc_timer_event_register_with_priority(
+            rv = ind_soc_timer_event_register_with_priority(
                 main_cxn_restart_handler, controller,
                 controller_retry_ms(controller), IND_CXN_EVENT_PRIORITY);
+            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                       "Failed to register main_cxn_restart_handler for %s",
+                       controller->desc);
         } else {
             AIM_LOG_VERBOSE("Controller %s marked inactive",
                             controller->desc);
@@ -560,14 +577,19 @@ cxn_closed_handler(void *cookie)
 void
 ind_cxn_notify_closed(connection_t *cxn)
 {
+    indigo_error_t rv;
+
     AIM_LOG_TRACE("%s: notifying for %s(%p), fail count %d",
                   __FUNCTION__, cxn->desc, cxn,
                   cxn->controller->fail_count);
 
     /* use immediate timer to yield */
-    ind_soc_timer_event_register_with_priority(cxn_closed_handler, cxn,
+    rv = ind_soc_timer_event_register_with_priority(cxn_closed_handler, cxn,
                                                IND_SOC_TIMER_IMMEDIATE,
                                                IND_CXN_EVENT_PRIORITY);
+    AIM_ASSERT(rv == INDIGO_ERROR_NONE, 
+               "Failed to register cxn_closed_handler for %s",
+               cxn->desc);
 }
 
 
@@ -681,7 +703,7 @@ remove_aux_cxns(controller_t *controller, uint32_t num_aux)
  * the extra aux cxns will be removed.
  */
 int
-ind_cxn_add_aux_cxns(connection_t *main_cxn, uint32_t num_aux)
+ind_cxn_set_aux_cxns(connection_t *main_cxn, uint32_t num_aux)
 {
     int idx;
 
@@ -1369,6 +1391,7 @@ ind_cxn_finish(void)
 {
     AIM_LOG_TRACE("Indigo connection manager finish");
     ind_cxn_enable_set(0);
+    ind_cfg_unregister(&ind_cxn_cfg_ops);
     ind_cxn_async_channel_selector_handler = NULL;
     return INDIGO_ERROR_NONE;
 }

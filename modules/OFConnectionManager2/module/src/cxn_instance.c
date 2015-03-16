@@ -128,7 +128,6 @@ init_single_instance(connection_t *cxn, indigo_cxn_id_t cxn_id)
 {
     INDIGO_MEM_CLEAR(cxn, sizeof(connection_t));
     cxn->cxn_id = cxn_id;
-    cxn->write_queue = bigring_create(WRITE_QUEUE_SIZE, NULL);
 }
 
 void
@@ -668,7 +667,7 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
  
     LOG_VERBOSE(cxn, "Request for %d aux cxns", num_aux);
 
-    status = ind_cxn_add_aux_cxns(cxn, num_aux);  
+    status = ind_cxn_set_aux_cxns(cxn, num_aux);  
     of_bsn_set_aux_cxns_reply_num_aux_set(reply, num_aux);
     of_bsn_set_aux_cxns_reply_status_set(reply, status);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
@@ -1077,9 +1076,13 @@ ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
 
 #if OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION == 1
         if (cxn->keepalive.period_ms > 0) {
-            ind_soc_timer_event_register_with_priority(
+            indigo_error_t rv;
+            rv = ind_soc_timer_event_register_with_priority(
                 periodic_keepalive, (void *)cxn,
                 cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
+            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                       "Failed to register periodic keepalive for %s",
+                       cxn->desc);
         }
 #endif
     }
@@ -1562,18 +1565,26 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
             /* Recursive call; transition to connected */
             cxn_state_set(cxn, CXN_S_HANDSHAKE_COMPLETE);
         } else {
-            ind_soc_timer_event_register_with_priority(
+            indigo_error_t rv;
+            rv = ind_soc_timer_event_register_with_priority(
                 cxn_state_timeout, (void *)cxn,
                 cxn_state_timeouts[new_state], IND_CXN_EVENT_PRIORITY);
+            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                       "Failed to register HANDSHAKING state timeout for %s",
+                       cxn->desc);
         }
         break;
 
     case CXN_S_HANDSHAKE_COMPLETE:
         if (cxn->keepalive.period_ms > 0) {
+            indigo_error_t rv;
             /* Set up periodic echo request */
-            ind_soc_timer_event_register_with_priority(
+            rv = ind_soc_timer_event_register_with_priority(
                 periodic_keepalive, (void *)cxn,
                 cxn->keepalive.period_ms, IND_CXN_EVENT_PRIORITY);
+            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                       "Failed to register periodic keepalive for %s",
+                       cxn->desc);
         }
 
         if (!CXN_LOCAL(cxn) && cxn->aux_id == 0) {
@@ -1588,9 +1599,15 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         if (cxn->keepalive.period_ms > 0) {
             ind_soc_timer_event_unregister(periodic_keepalive, (void *)cxn);
         }
-        ind_soc_timer_event_register_with_priority(
-            cxn_state_timeout, (void *)cxn,
-            cxn_state_timeouts[new_state], IND_CXN_EVENT_PRIORITY);
+        {
+            indigo_error_t rv;
+            rv = ind_soc_timer_event_register_with_priority(
+                cxn_state_timeout, (void *)cxn,
+                cxn_state_timeouts[new_state], IND_CXN_EVENT_PRIORITY);
+            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                       "Failed to register CLOSING state timeout for %s",
+                       cxn->desc);
+        }
         cxn_unregister_debug_counters(cxn);
         ind_cxn_bundle_cleanup(cxn);
 
@@ -1640,7 +1657,8 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
 
     /* Initialize connection structure */
     init_single_instance(cxn, saved_cxn_id);
-
+    cxn->write_queue = bigring_create(WRITE_QUEUE_SIZE, 
+                                      bigring_aim_free_entry);
     cxn->controller = controller;
     cxn->aux_id = aux_id;
     snprintf(cxn->desc, sizeof(cxn->desc), "%s:%d", controller->desc, aux_id);
@@ -1703,9 +1721,12 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
     return cxn;
 
  error:
-    if (cxn && cxn->sd >= 0) {
-        close(cxn->sd);
-        cxn->sd = -1;
+    if (cxn) {
+        if (cxn->sd >= 0) {
+            close(cxn->sd);
+            cxn->sd = -1;
+        }
+        ind_cxn_free(cxn);
     }
     return NULL;
 }
@@ -1718,8 +1739,6 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
 void
 ind_cxn_free(connection_t *cxn)
 {
-    uint8_t *data;
-
     AIM_ASSERT(cxn->sd == -1);
 
     /* Increment the generation ID for this connection */
@@ -1729,11 +1748,8 @@ ind_cxn_free(connection_t *cxn)
     LOG_VERBOSE(cxn, "Closing connection with %d bytes in read buf",
                 cxn->read_bytes);
     cxn->read_bytes = 0;
-    /* Clear write queue */
-    while ((data = bigring_shift(cxn->write_queue))) {
-        LOG_TRACE(cxn, "Freeing outgoing msg %p", data);
-        aim_free(data);
-    }
+
+    bigring_destroy(cxn->write_queue);
 
     cxn->bytes_enqueued = 0;
     cxn->pkts_enqueued = 0;
@@ -1798,8 +1814,10 @@ ind_cxn_start(connection_t *cxn)
     /* register with socket manager to catch socket-writeable event,
      * so that connect() can successfully complete;
      * see comment in cxn_try_to_connect():EINPROGRESS handling */
-    ind_soc_socket_register_with_priority(cxn->sd, cxn_socket_ready,
-                                          cxn, IND_CXN_EVENT_PRIORITY);
+    rv = ind_soc_socket_register_with_priority(cxn->sd, cxn_socket_ready,
+                                               cxn, IND_CXN_EVENT_PRIORITY);
+    AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+               "Unable to register socket for %s", cxn->desc);
 
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
@@ -1809,9 +1827,12 @@ ind_cxn_start(connection_t *cxn)
         cxn_state_set(cxn, CXN_S_HANDSHAKING);
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
-        ind_soc_timer_event_register_with_priority(
+        rv = ind_soc_timer_event_register_with_priority(
             cxn_state_timeout, cxn, cxn_state_timeouts[CXN_S_INIT],
             IND_CXN_EVENT_PRIORITY);
+        AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                   "Failed to register INIT state timeout for %s",
+                   cxn->desc);
     } else {
         LOG_INTERNAL(cxn, "Error trying to connect when starting, closing");
         ind_cxn_stop(cxn);

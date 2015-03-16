@@ -67,7 +67,7 @@ uint32_t ind_cxn_xid_get(void);
 
 void ind_controller_change_master(indigo_cxn_id_t master_id);
 
-int ind_cxn_add_aux_cxns(connection_t *main_cxn, uint32_t num_aux);
+int ind_cxn_set_aux_cxns(connection_t *main_cxn, uint32_t num_aux);
 
 void controller_disconnect(controller_t *controller);
 

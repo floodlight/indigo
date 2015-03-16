@@ -26,6 +26,7 @@
  *****************************************************************************/
 
 
+#include <AIM/aim.h>
 #include <OFConnectionManager/ofconnectionmanager_config.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
 #include <stdio.h>
@@ -238,6 +239,7 @@ of_sendmsg(int sd, of_object_t *obj)
     of_object_wire_buffer_steal(obj, &data);
     write(sd, data, of_message_length_get(data));
     aim_free(data);
+    of_object_delete(obj);
 }
 
 
@@ -324,6 +326,7 @@ setup_server(int domain, char *ip, uint16_t port)
     snprintf(port_str, sizeof(port_str), "%u", port);
     INDIGO_ASSERT(getaddrinfo(ip, port_str, &hints, &result) == 0);
     INDIGO_ASSERT(bind(lsd, result->ai_addr, result->ai_addrlen) == 0);
+    freeaddrinfo(result);
 
     INDIGO_ASSERT(listen(lsd, listen_backlog) == 0);
 
@@ -338,8 +341,6 @@ server_accept(int lsd)
     int sd;
     struct sockaddr fromaddr;
     socklen_t fromaddrlen;
-    struct sockaddr_in addr4;
-    struct sockaddr_in6 addr6;
     int flag;
     int i = 0;
 
@@ -348,17 +349,16 @@ server_accept(int lsd)
         sd = accept(lsd, (struct sockaddr*) &fromaddr, &fromaddrlen);
         i++;
     } while (i < 256 && sd == -1 && errno == EAGAIN);
-    if (sd == -1) {
-        printf("accept failed: %s\n", strerror(errno));
-    }
+    INDIGO_ASSERT(sd != -1, "accept failed: %s", strerror(errno));
 
-    /* FIXME refactor */
     if (fromaddr.sa_family == AF_INET) {
-        memcpy(&addr4, &fromaddr, sizeof(addr4));
-        printf("accepted from port %d\n", addr4.sin_port);
-    } else {
-        memcpy(&addr6, &fromaddr, sizeof(addr6));
-        printf("accepted from port %d\n", addr6.sin6_port);
+        struct sockaddr_in *sa = (struct sockaddr_in*) &fromaddr;
+        printf("accepted from [IPv4addr]:%d\n",
+               ntohs(sa->sin_port));
+    } if (fromaddr.sa_family == AF_INET6) {
+        struct sockaddr_in6 *sa6 = (struct sockaddr_in6*) &fromaddr;
+        printf("accepted from [IPv6addr]:%d",
+               ntohs(sa6->sin6_port));
     }
 
     INDIGO_ASSERT(sd >= 0);
@@ -390,7 +390,7 @@ advance_to_handshake_complete(int controller_id, int aux_id, int lsd)
     obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_HELLO, "did not receive OF_HELLO");
     of_send_features_request(sd);
-    OK(ind_soc_select_and_run(10));
+    OK(ind_soc_select_and_run(50));
     INDIGO_ASSERT(cxn_is_connected[controller_id][aux_id], 
                   "controller_id %d, aux_id %d should be connected after features_req sent",
                   controller_id, aux_id);
@@ -494,7 +494,7 @@ test_normal(int domain, char *addr)
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(indigo_controller_remove(id));
-    OK(ind_soc_select_and_run(1));
+    OK(ind_soc_select_and_run(5));
 
     indigo_teardown();
 
@@ -553,7 +553,7 @@ test_no_hello(void)
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(indigo_controller_remove(id));
-    OK(ind_soc_select_and_run(1));
+    OK(ind_soc_select_and_run(5));
 
     indigo_teardown();
 
@@ -613,7 +613,7 @@ test_no_features_request(void)
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(indigo_controller_remove(id));
-    OK(ind_soc_select_and_run(1));
+    OK(ind_soc_select_and_run(5));
 
     indigo_teardown();
 
@@ -657,7 +657,7 @@ test_aux3(int delta)
 
     printf("Start aux connections\n");
     of_send_aux_cxn_req(sd, num_aux);
-    OK(ind_soc_select_and_run(10));
+    OK(ind_soc_select_and_run(50));
 
     /* check for aux cxns reply */
     i = 0;
@@ -681,7 +681,7 @@ test_aux3(int delta)
         printf("Handle delta of %d\n", delta);
 
         of_send_aux_cxn_req(sd, num_aux + delta);
-        OK(ind_soc_select_and_run(5));
+        OK(ind_soc_select_and_run(50));
 
         i = 0;
         do {
@@ -703,7 +703,7 @@ test_aux3(int delta)
             }
         } else {
             /* just give some time to clean up */
-            OK(ind_soc_select_and_run(5));
+            OK(ind_soc_select_and_run(50));
         }
     }
 
@@ -722,7 +722,7 @@ test_aux3(int delta)
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(indigo_controller_remove(id));
-    OK(ind_soc_select_and_run(1));
+    OK(ind_soc_select_and_run(5));
 
     indigo_teardown();
 
@@ -754,6 +754,8 @@ setup_client(char *ip, uint16_t port)
 
     INDIGO_ASSERT(connect(sd, result->ai_addr, result->ai_addrlen) == 0,
                   "error connecting: %s", strerror(errno));
+
+    freeaddrinfo(result);
 
     return sd;
 }
@@ -808,7 +810,7 @@ test_listener(void)
     obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_HELLO);
     of_send_features_request(sd);
-    OK(ind_soc_select_and_run(5));
+    OK(ind_soc_select_and_run(50));
     /* check for features reply */
     obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_FEATURES_REPLY);
@@ -835,7 +837,7 @@ test_listener(void)
     OK(indigo_controller_remove(id));
     /* increased time to allow second controller/connection pair to be
      * removed */
-    OK(ind_soc_select_and_run(5));
+    OK(ind_soc_select_and_run(50));
 
     indigo_teardown();
 
@@ -1003,7 +1005,7 @@ test_no_controller(void)
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(indigo_controller_remove(id));
-    OK(ind_soc_select_and_run(1));
+    OK(ind_soc_select_and_run(50));
 
     indigo_teardown();
 
@@ -1011,7 +1013,7 @@ test_no_controller(void)
 }
 
 
-int main(int argc, char* argv[])
+int aim_main(int argc, char* argv[])
 {
     test_bad_controller();
     test_bad_listener();
