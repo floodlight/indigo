@@ -182,8 +182,9 @@ typedef struct connection_s {
     /* Pointer to the Controller clock to which this connection belongs */
     controller_t *controller;
 
-    /* If set, don't read any messages for this connection */
-    bool paused;
+    /* If nonzero, don't read any messages for this connection */
+    /* Used as a refcount by bundles and barriers */
+    int paused;
 } connection_t;
 
 /**
