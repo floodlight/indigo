@@ -1117,7 +1117,7 @@ read_message(connection_t *cxn)
     int rv = INDIGO_ERROR_NONE;
 
     /* Break out of message processing loop after a barrier */
-    if (cxn->paused) {
+    if (cxn->pause_refcount > 0) {
         return INDIGO_ERROR_PENDING;
     }
 
@@ -1642,7 +1642,7 @@ ind_cxn_disconnected_init(connection_t *cxn)
     cxn->status.messages_out = 0;
     cxn->fail_count = 0;
     cxn->hello_time = 0;
-    cxn->paused = 0;
+    cxn->pause_refcount = 0;
 }
 
 /**
@@ -1742,7 +1742,7 @@ ind_cxn_unregister_debug_counters(connection_t *cxn)
 void
 ind_cxn_pause(connection_t *cxn)
 {
-    if (cxn->paused++ == 0) {
+    if (cxn->pause_refcount++ == 0) {
         if (ind_soc_data_in_pause(cxn->sd) < 0) {
             LOG_INTERNAL(cxn, "Error pausing connection");
             return;
@@ -1753,8 +1753,8 @@ ind_cxn_pause(connection_t *cxn)
 void
 ind_cxn_resume(connection_t *cxn)
 {
-    AIM_ASSERT(cxn->paused > 0);
-    if (--cxn->paused == 0) {
+    AIM_ASSERT(cxn->pause_refcount > 0);
+    if (--cxn->pause_refcount == 0) {
         (void)ind_soc_data_in_resume(cxn->sd);
     }
 }

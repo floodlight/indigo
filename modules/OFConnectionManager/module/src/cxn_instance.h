@@ -184,7 +184,7 @@ typedef struct connection_s {
 
     /* If nonzero, don't read any messages for this connection */
     /* Used as a refcount by bundles and barriers */
-    int paused;
+    int pause_refcount;
 } connection_t;
 
 /**
