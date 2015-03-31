@@ -111,6 +111,7 @@ cleanup_disconnect(connection_t *cxn)
 
     /* Increment the generation ID for this connection */
     cxn->cxn_id += (1 << CXN_ID_GENERATION_SHIFT);
+    cxn->cxn_id &= 0x7fffffff; /* force non-negative */
     cxn->controller->aux_id_to_cxn_id[cxn->auxiliary_id] = cxn->cxn_id;
 
     /* @fixme Is it possible there's a message that should be processed? */
@@ -1116,7 +1117,7 @@ read_message(connection_t *cxn)
     int rv = INDIGO_ERROR_NONE;
 
     /* Break out of message processing loop after a barrier */
-    if (cxn->paused) {
+    if (cxn->pause_refcount > 0) {
         return INDIGO_ERROR_PENDING;
     }
 
@@ -1641,7 +1642,7 @@ ind_cxn_disconnected_init(connection_t *cxn)
     cxn->status.messages_out = 0;
     cxn->fail_count = 0;
     cxn->hello_time = 0;
-    cxn->paused = false;
+    cxn->pause_refcount = 0;
 }
 
 /**
@@ -1741,18 +1742,19 @@ ind_cxn_unregister_debug_counters(connection_t *cxn)
 void
 ind_cxn_pause(connection_t *cxn)
 {
-    AIM_ASSERT(!cxn->paused);
-    if (ind_soc_data_in_pause(cxn->sd) < 0) {
-        LOG_INTERNAL(cxn, "Error pausing connection");
-        return;
+    if (cxn->pause_refcount++ == 0) {
+        if (ind_soc_data_in_pause(cxn->sd) < 0) {
+            LOG_INTERNAL(cxn, "Error pausing connection");
+            return;
+        }
     }
-    cxn->paused = true;
 }
 
 void
 ind_cxn_resume(connection_t *cxn)
 {
-    AIM_ASSERT(cxn->paused);
-    (void)ind_soc_data_in_resume(cxn->sd);
-    cxn->paused = false;
+    AIM_ASSERT(cxn->pause_refcount > 0);
+    if (--cxn->pause_refcount == 0) {
+        (void)ind_soc_data_in_resume(cxn->sd);
+    }
 }

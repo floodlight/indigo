@@ -143,6 +143,12 @@ cxn_id_to_connection(indigo_cxn_id_t cxn_id)
     return cxn;
 }
 
+connection_t *
+ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id)
+{
+    return cxn_id_to_connection(cxn_id);
+}
+
 /****************************************************************
  * Controller instance bookkeeping
  ****************************************************************/
@@ -895,6 +901,10 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
     /* Master -> slave is currently the only possible case */
     INDIGO_ASSERT(cxn->controller->role == INDIGO_CXN_R_SLAVE);
 
+    /* The BSN backport and the standard message use the same reason values */
+    AIM_ASSERT(reason == OFPCRR_MASTER_REQUEST);
+    AIM_ASSERT(OFPCRR_MASTER_REQUEST == OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
+
     if (cxn->status.negotiated_version == OF_VERSION_1_3) {
         of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
         if (msg == NULL) {
@@ -903,6 +913,15 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
         of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
         of_bsn_role_status_reason_set(msg, reason);
         of_bsn_role_status_generation_id_set(msg, ind_cxn_generation_id);
+        indigo_cxn_send_controller_message(cxn->cxn_id, msg);
+    } else if (cxn->status.negotiated_version >= OF_VERSION_1_4) {
+        of_role_status_t *msg = of_role_status_new(cxn->status.negotiated_version);
+        if (msg == NULL) {
+            AIM_DIE("Failed to allocate role status message");
+        }
+        of_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
+        of_role_status_reason_set(msg, reason);
+        of_role_status_generation_id_set(msg, ind_cxn_generation_id);
         indigo_cxn_send_controller_message(cxn->cxn_id, msg);
     }
 }
@@ -931,7 +950,7 @@ ind_controller_change_master(indigo_controller_id_t master_id)
             ctrl->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(
                 CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[0]),
-                OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
+                OFPCRR_MASTER_REQUEST);
         }
     }
 }
@@ -1159,6 +1178,7 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
        channel is not ready for communication, then we should just try
        to send on the main controller connection */
     *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
+    AIM_ASSERT(*cxn != NULL);
     if (ind_cxn_accepts_async_message(*cxn) == 0) {
         if (auxiliary_id != 0) {
             AIM_LOG_TRACE("cxn: " CXN_FMT " state: %s, not ready, try on main cxn",
@@ -1166,6 +1186,7 @@ ind_controller_accepts_async_message(const controller_t *ctrl,
                           CXN_STATE_NAME(CONNECTION_STATE(*cxn)));
             auxiliary_id = 0;
             *cxn = CXN_ID_TO_CONNECTION(ctrl->aux_id_to_cxn_id[auxiliary_id]);
+            AIM_ASSERT(*cxn != NULL);
             if (ind_cxn_accepts_async_message(*cxn) == 0) {
                 return 0;
             }
