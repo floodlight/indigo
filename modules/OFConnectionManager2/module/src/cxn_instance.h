@@ -72,9 +72,9 @@
 #define MAX_CONNECTIONS 32
 
 /**
- * Maximum auxiliary connections possible per controller 
+ * Maximum auxiliary connections possible per controller
  */
-#define MAX_AUX_CONNECTIONS 8       
+#define MAX_AUX_CONNECTIONS 8
 
 /**
  * The connection ID is split into two fields. The lower 16 bits are the index
@@ -107,7 +107,7 @@ typedef struct controller_s {
     indigo_cxn_role_t role;
 
     bool active; /* Has this controller instance been configured? */
-    bool restartable; /* Should this controller be restarted when its main cxn 
+    bool restartable; /* Should this controller be restarted when its main cxn
                        * is disconnected? */
     uint32_t fail_count;  /* Increments each time a main cxn attempt fails;
                            * cleared when TCP connection is established */
@@ -232,8 +232,9 @@ typedef struct connection_s {
     /* Pointer to the controller to which this connection belongs */
     controller_t *controller;
 
-    /* If set, don't read any messages for this connection */
-    bool paused;
+    /* If nonzero, don't read any messages for this connection */
+    /* Used as a refcount by bundles and barriers */
+    int pause_refcount;
 
     char desc[MAX_CONTROLLER_DESC_LEN+MAX_AUX_ID_DESC_LEN];  /* For logging */
 } connection_t;
@@ -279,7 +280,7 @@ get_connection_config(connection_t *cxn)
 {
     AIM_ASSERT(cxn && cxn->controller);
     return (&cxn->controller->config_params);
-} 
+}
 
 static inline indigo_cxn_protocol_params_t*
 get_connection_params(connection_t *cxn)

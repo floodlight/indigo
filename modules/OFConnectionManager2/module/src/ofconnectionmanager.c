@@ -773,8 +773,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                       indigo_controller_id_t *controller_id)
 {
     indigo_error_t rv = INDIGO_ERROR_NONE;
-    controller_t *controller;
-    connection_t *cxn;
+    controller_t *controller = NULL;
+    connection_t *cxn = NULL;
 
     AIM_ASSERT(protocol_params != NULL);
     AIM_ASSERT(config_params != NULL);
@@ -949,6 +949,10 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
     /* Master -> slave is currently the only possible case */
     AIM_ASSERT(cxn->controller->role == INDIGO_CXN_R_SLAVE);
 
+    /* The BSN backport and the standard message use the same reason values */
+    AIM_ASSERT(reason == OFPCRR_MASTER_REQUEST);
+    AIM_ASSERT(OFPCRR_MASTER_REQUEST == OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
+
     if (cxn->status.negotiated_version == OF_VERSION_1_3) {
         of_bsn_role_status_t *msg = of_bsn_role_status_new(OF_VERSION_1_3);
         if (msg == NULL) {
@@ -957,6 +961,15 @@ ind_cxn_send_role_status(connection_t *cxn, int reason)
         of_bsn_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
         of_bsn_role_status_reason_set(msg, reason);
         of_bsn_role_status_generation_id_set(msg, ind_cxn_generation_id);
+        indigo_cxn_send_controller_message(cxn->cxn_id, msg);
+    } else if (cxn->status.negotiated_version >= OF_VERSION_1_4) {
+        of_role_status_t *msg = of_role_status_new(cxn->status.negotiated_version);
+        if (msg == NULL) {
+            AIM_DIE("Failed to allocate role status message");
+        }
+        of_role_status_role_set(msg, OF_CONTROLLER_ROLE_SLAVE);
+        of_role_status_reason_set(msg, reason);
+        of_role_status_generation_id_set(msg, ind_cxn_generation_id);
         indigo_cxn_send_controller_message(cxn->cxn_id, msg);
     }
 }
@@ -984,7 +997,7 @@ ind_controller_change_master(indigo_controller_id_t master_id)
                          controller->desc);
             controller->role = INDIGO_CXN_R_SLAVE;
             ind_cxn_send_role_status(controller->cxns[0],
-                OFP_BSN_CONTROLLER_ROLE_REASON_MASTER_REQUEST);
+                                     OFPCRR_MASTER_REQUEST);
         }
     }
 }
