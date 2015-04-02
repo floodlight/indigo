@@ -1366,6 +1366,9 @@ cxn_socket_ready(
             if (rv == INDIGO_ERROR_NONE) {
                 /* success, move to next state */
                 cxn_state_set(cxn, CXN_S_HANDSHAKING);
+                rv = ind_soc_data_in_resume(cxn->sd);
+                AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                           "Failed to resume socket for %s", cxn->desc);
             } else if (rv == INDIGO_ERROR_PENDING) {
                 AIM_DIE("In-flight connection cannot be write ready");
             } else {
@@ -1819,12 +1822,20 @@ ind_cxn_start(connection_t *cxn)
     AIM_ASSERT(rv == INDIGO_ERROR_NONE,
                "Unable to register socket for %s", cxn->desc);
 
+    /* block reads until connect() has completed */
+    rv = ind_soc_data_in_pause(cxn->sd);
+    AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+               "Failed to pause socket for %s", cxn->desc);
+
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
     if (rv == INDIGO_ERROR_NONE) {
         /* success, move to next state;
          * connections started from the listener will also return 0 */
         cxn_state_set(cxn, CXN_S_HANDSHAKING);
+        rv = ind_soc_data_in_resume(cxn->sd);
+        AIM_ASSERT(rv == INDIGO_ERROR_NONE,
+                   "Failed to resume socket for %s", cxn->desc);
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
         rv = ind_soc_timer_event_register_with_priority(
