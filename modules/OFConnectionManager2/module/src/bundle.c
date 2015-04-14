@@ -324,6 +324,7 @@ bundle_task(void *cookie)
         }
     }
 
+    free(state->msgs);
     free(state);
 
     if (cxn) {

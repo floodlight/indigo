@@ -339,7 +339,7 @@ static int
 server_accept(int lsd)
 {
     int sd;
-    struct sockaddr fromaddr;
+    struct sockaddr_storage fromaddr;
     socklen_t fromaddrlen;
     int flag;
     int i = 0;
@@ -351,11 +351,11 @@ server_accept(int lsd)
     } while (i < 256 && sd == -1 && errno == EAGAIN);
     INDIGO_ASSERT(sd != -1, "accept failed: %s", strerror(errno));
 
-    if (fromaddr.sa_family == AF_INET) {
+    if (fromaddr.ss_family == AF_INET) {
         struct sockaddr_in *sa = (struct sockaddr_in*) &fromaddr;
         printf("accepted from [IPv4addr]:%d\n",
                ntohs(sa->sin_port));
-    } if (fromaddr.sa_family == AF_INET6) {
+    } if (fromaddr.ss_family == AF_INET6) {
         struct sockaddr_in6 *sa6 = (struct sockaddr_in6*) &fromaddr;
         printf("accepted from [IPv6addr]:%d",
                ntohs(sa6->sin6_port));

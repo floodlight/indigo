@@ -333,7 +333,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
 {
     connection_t *listen_cxn;
     socklen_t addrlen;
-    struct sockaddr cxn_addr;
+    struct sockaddr_storage cxn_addr;
     int new_sd;
     connection_t *cxn;
     indigo_controller_id_t controller_id;
@@ -376,17 +376,17 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
 
     /* Accept the new client */
     addrlen = sizeof(cxn_addr);
-    new_sd = accept(listen_cxn->sd, &cxn_addr, &addrlen);
+    new_sd = accept(listen_cxn->sd, (struct sockaddr*) &cxn_addr, &addrlen);
     if (new_sd == -1) {
         AIM_LOG_ERROR("Accept on listen %s: %s",
                       listen_cxn->desc, strerror(errno));
         return;
     }
-    if (cxn_addr.sa_family == AF_INET) {
+    if (cxn_addr.ss_family == AF_INET) {
         struct sockaddr_in *sa = (struct sockaddr_in*) &cxn_addr;
         AIM_LOG_VERBOSE("Accepted cxn from %{ipv4a}:%d", 
                         ntohl(sa->sin_addr.s_addr), ntohs(sa->sin_port));
-    } else if (cxn_addr.sa_family == AF_INET6) {
+    } else if (cxn_addr.ss_family == AF_INET6) {
         struct sockaddr_in6 *sa6 = (struct sockaddr_in6*) &cxn_addr;
         /* FIXME use AIM datatype when available */
         AIM_LOG_VERBOSE("Accepted cxn from [IPv6addr]:%d",

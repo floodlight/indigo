@@ -266,9 +266,6 @@ cxn_send_hello(connection_t *cxn)
  *
  * Before doing anything else, a connection must exchange a hello
  * to negotiate the version to use for the interaction.
- *
- * Since this is only being called if the version is not
- * set, this routine takes ownership of the object obj.
  */
 static inline int
 check_for_hello(connection_t *cxn, of_object_t *obj)
