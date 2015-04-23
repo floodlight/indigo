@@ -118,6 +118,7 @@ typedef struct indigo_fi_port_stats {
     uint64_t rx_length_errors;
     uint64_t rx_overflow_errors;
     uint64_t tx_carrier_errors;
+    uint64_t rx_bad_vlan;
 } indigo_fi_port_stats_t;
 
 #endif /* _INDIGO_FI_H_ */
