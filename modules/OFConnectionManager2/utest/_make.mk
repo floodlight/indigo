@@ -21,13 +21,13 @@
 #
 #  /utest/_make.mk
 #
-#  OFConnectionManager Unit Testing Definitions
+#  OFConnectionManager2 Unit Testing Definitions
 #
 ###############################################################################
 
 
 
-UMODULE := OFConnectionManager
+UMODULE := OFConnectionManager2
 UMODULE_SUBDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(BUILDER)/utest.mk
 

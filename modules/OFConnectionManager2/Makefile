@@ -18,7 +18,7 @@
 ################################################################
 include ../../init.mk
 
-MODULE :=  OFConnectionManager
-AUTOMODULE :=  OFConnectionManager
+MODULE :=  OFConnectionManager2
+AUTOMODULE :=  OFConnectionManager2
 
 include $(BUILDER)/definemodule.mk

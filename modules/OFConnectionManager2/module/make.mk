@@ -21,13 +21,13 @@
 #
 #  /module/make.mk
 #
-#  OFConnectionManager public includes are defined here
+#  OFConnectionManager2 public includes are defined here
 #
 ###############################################################################
 THISDIR := $(dir $(lastword $(MAKEFILE_LIST)))
-OFConnectionManager_INCLUDES := -I $(THISDIR)inc
-OFConnectionManager_INTERNAL_INCLUDES := -I $(THISDIR)src
-OFConnectionManager_DEPENDMODULE_ENTRIES += init:ofconnectionmanager
-OFConnectionManager_DEPENDMODULE_ENTRIES += ucli:ofconnectionmanager
+OFConnectionManager2_INCLUDES := -I $(THISDIR)inc
+OFConnectionManager2_INTERNAL_INCLUDES := -I $(THISDIR)src
+OFConnectionManager2_DEPENDMODULE_ENTRIES += init:ofconnectionmanager
+OFConnectionManager2_DEPENDMODULE_ENTRIES += ucli:ofconnectionmanager
 
 

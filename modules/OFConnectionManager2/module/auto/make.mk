@@ -21,6 +21,6 @@
 #
 #
 ###############################################################################
-OFConnectionManager_AUTO_DEFS=module/auto/OFConnectionManager.yml
-OFConnectionManager_AUTO_DIRS=module/inc/OFConnectionManager module/src
+OFConnectionManager2_AUTO_DEFS=module/auto/OFConnectionManager.yml
+OFConnectionManager2_AUTO_DIRS=module/inc/OFConnectionManager module/src
 -include $(BUILDER)/auto.mk

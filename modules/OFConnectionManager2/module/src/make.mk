@@ -21,12 +21,12 @@
 #
 #  /module/src/make.mk
 #
-#  OFConnectionManager Builder Information
+#  OFConnectionManager2 Builder Information
 #
 ###############################################################################
 
 
-LIBRARY := OFConnectionManager
+LIBRARY := OFConnectionManager2
 $(LIBRARY)_SUBDIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(BUILDER)/lib.mk
 
