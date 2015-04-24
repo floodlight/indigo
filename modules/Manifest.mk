@@ -14,7 +14,8 @@ OFStateManager_BASEDIR := $(BASEDIR)OFStateManager
 SocketManager_BASEDIR := $(BASEDIR)SocketManager
 indigo_BASEDIR := $(BASEDIR)indigo
 loci_BASEDIR := $(BASEDIR)loci
+locitest_BASEDIR := $(BASEDIR)locitest
 minimatch_BASEDIR := $(BASEDIR)minimatch
 
 
-ALL_MODULES := $(ALL_MODULES) Configuration OFConnectionManager OFConnectionManager2 OFStateManager SocketManager indigo loci minimatch
+ALL_MODULES := $(ALL_MODULES) Configuration OFConnectionManager OFConnectionManager2 OFStateManager SocketManager indigo loci locitest minimatch
