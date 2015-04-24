@@ -193,12 +193,13 @@ ind_core_bsn_port_counter_stats_entry_populate(of_bsn_port_counter_stats_entry_t
     append_uint64(&values, stats.tx_late_collisions);
     append_uint64(&values, stats.tx_deferred);
     append_uint64(&values, stats.tx_pause_output);
-    
+
     append_uint64(&values, stats.rx_packets);
     append_uint64(&values, stats.tx_packets);
     append_uint64(&values, stats.rx_length_errors);
     append_uint64(&values, stats.rx_overflow_errors);
     append_uint64(&values, stats.tx_carrier_errors);
+    append_uint64(&values, stats.rx_bad_vlan);
 }
 
 void
