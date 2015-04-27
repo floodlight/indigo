@@ -34,6 +34,8 @@
 #include <indigo/error.h>
 #include <indigo/types.h>
 
+#include <dependmodules.x>
+
 
 /****************************************************************
  *
@@ -187,6 +189,7 @@ typedef struct indigo_cxn_config_params_s {
  *
  ****************************************************************/
 
+/* FIXME deprecated */
 /**
  * Connection state values
  *    INDIGO_CXN_S_DISCONNECTED  Not connected
@@ -218,6 +221,30 @@ typedef enum indigo_cxn_role_e {
     INDIGO_CXN_R_COUNT                  = 4
 } indigo_cxn_role_t;
 
+#ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
+/**
+ * Status of a connection instance.
+ *    is_connected True if the handshake has completed
+ *    negotiated_version If connected, the version used by the connection
+ *    disconnect_count Number of times controller has disconnected from switch
+ *    forced_disconnect_count Number of times the switch disconnected
+ *    bytes_in Number of bytes read in since last connect
+ *    bytes_out Number of bytes written in since last connect
+ *    messages_in Number of messages received since last connect
+ *    messages_out Number of messages sent to controller since last connect
+ */
+
+typedef struct indigo_cxn_status_s {
+    bool is_connected;
+    of_version_t negotiated_version;
+    uint32_t disconnect_count;
+    uint32_t forced_disconnect_count;
+    uint64_t bytes_in;
+    uint64_t bytes_out;
+    uint64_t messages_in;
+    uint64_t messages_out;
+} indigo_cxn_status_t;
+#else
 /**
  * Status of a connection instance.
  *    state The current connection state (see indigo_cxn_state_t)
@@ -241,6 +268,7 @@ typedef struct indigo_cxn_status_s {
     uint64_t messages_in;
     uint64_t messages_out;
 } indigo_cxn_status_t;
+#endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 
 /****************************************************************
  *
@@ -289,6 +317,26 @@ extern indigo_error_t indigo_cxn_connection_status_get(
     indigo_cxn_id_t cxn_id,
     indigo_cxn_status_t *status);
 
+
+#ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
+/**
+ * Connection status change handler callback prototype
+ * @param controller_id The descriptor of the controller that has changed
+ * @param aux_id The connection's auxiliary identifier
+ * @param cxn_proto_params Protocol parameters associated with the controller
+ * @param is_connected True if the connection has completed handshake
+ * @param cookie Passed in to register function
+ *
+ * For complete information, do a status_get on the connection
+ */
+
+typedef void (*indigo_cxn_status_change_f)(
+    indigo_controller_id_t       controller_id,
+    uint8_t                      aux_id,
+    indigo_cxn_protocol_params_t *cxn_proto_params,
+    bool                         is_connected,
+    void                         *cookie);
+#else
 /**
  * Connection status change handler callback prototype
  * @param cxn_id The descriptor of the connection that has changed
@@ -303,6 +351,7 @@ typedef void (*indigo_cxn_status_change_f)(
     indigo_cxn_protocol_params_t *cxn_proto_params,
     indigo_cxn_state_t           state,
     void                         *cookie);
+#endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 
 /**
  * Connection status change handler registration function

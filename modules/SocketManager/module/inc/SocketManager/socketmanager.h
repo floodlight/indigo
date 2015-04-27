@@ -378,5 +378,13 @@ extern indigo_error_t ind_soc_enable_get(int *enable);
 
 extern indigo_error_t ind_soc_finish(void);
 
+
+/**
+ *  utility functions for unit test only
+ */
+extern int unit_test_soc_timer_event_count_get(void);
+extern int unit_test_soc_socket_count_get(void);
+
+
 #endif /* __SOCKETMANAGER_H__ */
 /* @} */

@@ -1,0 +1,28 @@
+###############################################################################
+#
+#  /README
+#
+#  OFConnectionManager README
+#
+###############################################################################
+
+
+This module provides the services related to configuring, invoking and
+maintaining OpenFlow protocol connections.  Most of the interfaces are
+defined from the Indigo-2 OF Connection Manager component.  The only
+additional interfaces provided are the usual implementation specific
+init, enable and finish interfaces; and message tracing interfaces.
+
+A simple state machine for the connection is described in the file
+module/src/cxn_instance.c.
+
+The module differentiates between listen and connect (aka active)
+connections.  OpenFlow normally connects from the switch to the
+controller.  Listen allows a listen connection, for example to support
+a dpctl style connection.
+
+Support is also provided for a local connection.  Again, this is
+primarily to support dpctl style connections which do not expect to
+complete a features request handshake before executing other 
+operations.
+

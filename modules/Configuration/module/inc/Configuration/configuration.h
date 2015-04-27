@@ -97,6 +97,11 @@ struct ind_cfg_ops {
 extern void ind_cfg_register(const struct ind_cfg_ops *ops);
 
 /**
+ * Unregister previously registered stage/commit operations
+ */
+extern void ind_cfg_unregister(const struct ind_cfg_ops *ops);
+
+/**
  * Load a new configuration from a file
  *
  * The file to use is configured with ind_cfg_filename_set().

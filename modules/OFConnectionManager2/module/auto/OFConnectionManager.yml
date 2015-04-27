@@ -1,0 +1,83 @@
+################################################################
+#
+#        Copyright 2013, Big Switch Networks, Inc. 
+# 
+# Licensed under the Eclipse Public License, Version 1.0 (the
+# "License"); you may not use this file except in compliance
+# with the License. You may obtain a copy of the License at
+# 
+#        http://www.eclipse.org/legal/epl-v10.html
+# 
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied. See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+################################################################
+
+###############################################################################
+#
+# OFConnectionManager Autogeneration Definitions.
+#
+###############################################################################
+
+cdefs: &cdefs
+- OFCONNECTIONMANAGER_CONFIG_INCLUDE_LOGGING:
+    doc: "Include or exclude logging."
+    default: 1
+- OFCONNECTIONMANAGER_CONFIG_LOG_OPTIONS_DEFAULT:
+    doc: "Default enabled log options."
+    default: AIM_LOG_OPTIONS_DEFAULT
+- OFCONNECTIONMANAGER_CONFIG_LOG_BITS_DEFAULT:
+    doc: "Default enabled log bits."
+    default: AIM_LOG_BITS_DEFAULT
+- OFCONNECTIONMANAGER_CONFIG_LOG_CUSTOM_BITS_DEFAULT:
+    doc: "Default enabled custom log bits."
+    default: 0
+- OFCONNECTIONMANAGER_CONFIG_PORTING_STDLIB:
+    doc: "Default all porting macros to use the C standard libraries."
+    default: 1
+- OFCONNECTIONMANAGER_CONFIG_PORTING_INCLUDE_STDLIB_HEADERS:
+    doc: "Include standard library headers for stdlib porting macros."
+    default: OFCONNECTIONMANAGER_CONFIG_PORTING_STDLIB
+- OFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI:
+    doc: "Include generic uCli support."
+    default: 0
+- OFCONNECTIONMANAGER_CONFIG_ECHO_OPTIMIZATION:
+    doc: "Optimize echo requests based on controller activity. Otherwise echo requests are sent periodically regardless of other activity."
+    default: 0
+- OFCONNECTIONMANAGER_CONFIG_OF_VERSION:
+    doc: "OpenFlow version to be advertised in HELLO message"
+    default: OF_VERSION_1_0
+- OFCONNECTIONMANAGER_CONFIG_MAX_MSGS_PER_TICK:
+    doc: "Maximum number of OpenFlow messages to process per socket in one tick of the event loop."
+    default: 10
+- OFCONNECTIONMANAGER_CONFIG_ASYNC_MSG_OF_VERSION:
+    doc: "OpenFlow version to use for asynchronous message when no controller is connected."
+    default: OF_VERSION_1_3
+- OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_MSGS:
+    doc: "Maximum number of OpenFlow messages to allow in a bundle"
+    default: 256*1024
+- OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES:
+    doc: "Maximum cumulative size of OpenFlow messages to allow in a bundle"
+    default: 50*1024*1024
+
+definitions:
+  cdefs:
+    OFCONNECTIONMANAGER_CONFIG_HEADER:
+      defs: *cdefs
+      basename: ofconnectionmanager_config
+
+  portingmacro:
+    OFCONNECTIONMANAGER:
+      macros:
+        - malloc
+        - free
+        - memset
+        - memcpy
+        - strncpy
+        - vsnprintf
+        - snprintf
+        - strlen
