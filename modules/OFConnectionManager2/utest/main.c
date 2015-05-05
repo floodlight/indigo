@@ -264,6 +264,21 @@ of_send_aux_cxn_req(int sd, int num_aux)
     of_sendmsg(sd, obj);
 }
 
+static void
+of_send_controller_connections_request(int sd)
+{
+    of_sendmsg(sd, of_bsn_controller_connections_request_new(of_version));
+}
+
+static void
+of_send_role_request(int sd, indigo_cxn_role_t newrole, uint64_t genid)
+{
+    of_role_request_t *req = of_role_request_new(of_version);
+    of_role_request_role_set(req, newrole);
+    of_role_request_generation_id_set(req, genid);
+    of_sendmsg(sd, req);
+}
+
 
 static of_object_t *
 of_recvmsg(int sd, uint8_t buf[], int buflen,
@@ -376,7 +391,7 @@ advance_to_handshake_complete(int controller_id, int aux_id, int lsd)
     int sd;
     of_object_t *obj;
     of_object_storage_t storage;
-    uint8_t buf[256];  /* may need to be increaed */
+    uint8_t buf[256];  /* may need to be increased */
 
     sd = server_accept(lsd);
     OK(ind_soc_select_and_run(1));
@@ -451,11 +466,35 @@ indigo_teardown(void)
 
 
 static void
+check_connection_list(of_object_t *obj, uint32_t expectedrole)
+{
+    int rv;
+    of_bsn_controller_connections_reply_t *reply = obj;
+    of_list_bsn_controller_connection_t list;
+    of_bsn_controller_connection_t entry;
+
+    of_bsn_controller_connections_reply_connections_bind(reply, &list);
+    OF_LIST_BSN_CONTROLLER_CONNECTION_ITER(&list, &entry, rv) {
+        uint8_t state;
+        uint32_t role;
+        of_bsn_controller_connection_state_get(&entry, &state);
+        of_bsn_controller_connection_role_get(&entry, &role);
+        INDIGO_ASSERT(state == 1, "expected state to be connected");
+        INDIGO_ASSERT(role == expectedrole,
+                      "expected role to be %d, got %d", expectedrole, role);
+    }
+}
+
+
+static void
 test_normal(int domain, char *addr)
 {
     indigo_controller_id_t id;
     int lsd;
     int sd;
+    of_object_t *obj;
+    of_object_storage_t storage;
+    uint8_t buf[512];  /* may need to be increased */
 
     printf("***Start %s, domain %s, addr %s\n", __FUNCTION__, 
            domain == AF_INET? "ipv4": "ipv6", addr);
@@ -481,14 +520,53 @@ test_normal(int domain, char *addr)
     sd = advance_to_handshake_complete(id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
+    /* on handshake complete, unsolicited controller_connections_reply is sent */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
+
+    /* change role to master */
+    of_send_role_request(sd, OF_CONTROLLER_ROLE_MASTER, 1);
+    OK(ind_soc_select_and_run(50));
+
+    /* on role change, unsolicited controller_connections_reply is sent */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_MASTER);
+    OK(ind_soc_select_and_run(50));
+
+    /* check for role reply */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_ROLE_REPLY,
+                  "did not receive OF_ROLE_REPLY, got %d", obj->object_id);
+
+    /* once more for fun */
+    of_send_controller_connections_request(sd);
+    OK(ind_soc_select_and_run(10));
+    /* check for controller_connections_reply */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_MASTER);
+
     close(sd);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
 
     /* check that the client reconnected */
     OK(ind_soc_select_and_run(10));
-    sd = server_accept(lsd);
-    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    sd = advance_to_handshake_complete(id, 0, lsd);
+    INDIGO_ASSERT(unit_test_connection_count_get() == 1);
+
+    OK(ind_soc_select_and_run(10));
+    /* check for controller_connections_reply */
+    obj = of_recvmsg(sd, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
+
     close(sd);
 
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
