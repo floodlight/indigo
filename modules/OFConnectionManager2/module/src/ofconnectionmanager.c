@@ -557,6 +557,9 @@ cxn_closed_handler(void *cookie)
     if (aux_id == 0) {
         if (controller->restartable) {
             indigo_error_t rv;
+
+            controller->role = INDIGO_CXN_R_EQUAL;
+
             AIM_LOG_VERBOSE("Main cxn for controller %s rescheduled for %d ms",
                             controller->desc, controller_retry_ms(controller));
             rv = ind_soc_timer_event_register_with_priority(
