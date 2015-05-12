@@ -56,12 +56,19 @@
 #include <indigo/memory.h>
 #include <AIM/aim_list.h>
 #include <timer_wheel/timer_wheel.h>
+#include <debug_counter/debug_counter.h>
 
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <limits.h>
+
+DEBUG_COUNTER(latency10, "socman.latency10", "Returned to event loop in less than 10 ms");
+DEBUG_COUNTER(latency20, "socman.latency20", "Returned to event loop in less than 20 ms");
+DEBUG_COUNTER(latency50, "socman.latency50", "Returned to event loop in less than 50 ms");
+DEBUG_COUNTER(latency100, "socman.latency100", "Returned to event loop in less than 100 ms");
+DEBUG_COUNTER(latency_high, "socman.latency_high", "Returned to event loop after 100 ms");
 
 static void before_callback(void);
 static void after_callback(void);
@@ -792,6 +799,22 @@ find_highest_ready_priority(void)
     return priority;
 }
 
+static void
+update_latency_counters(indigo_time_t process_time)
+{
+    if (process_time < 10) {
+        debug_counter_inc(&latency10);
+    } else if (process_time < 20) {
+        debug_counter_inc(&latency20);
+    } else if (process_time < 50) {
+        debug_counter_inc(&latency50);
+    } else if (process_time < 100) {
+        debug_counter_inc(&latency100);
+    } else {
+        debug_counter_inc(&latency_high);
+    }
+}
+
 /*
  * Run timer events, select and make callbacks for sockets marked ready
  *
@@ -836,6 +859,8 @@ ind_soc_select_and_run(int run_for_ms)
         priority = find_highest_ready_priority();
         AIM_LOG_TRACE("processing priority %d", priority);
 
+        indigo_time_t process_start = INDIGO_CURRENT_TIME;
+
         process_sockets(priority);
         process_timers(priority);
         process_tasks(priority);
@@ -845,6 +870,7 @@ ind_soc_select_and_run(int run_for_ms)
         }
 
         current = INDIGO_CURRENT_TIME;
+        update_latency_counters(INDIGO_TIME_DIFF_ms(process_start, current));
         elapsed = INDIGO_TIME_DIFF_ms(start, current);
     } while ((run_for_ms < 0) || ((run_for_ms > 0) && (elapsed < run_for_ms)));
 
