@@ -455,6 +455,12 @@ listen_cxn_init(connection_t *cxn)
         return INDIGO_ERROR_UNKNOWN;
     }
 
+    {
+        int flag = 1;
+        (void) setsockopt(cxn->sd, SOL_SOCKET, SO_REUSEADDR,
+                          (char *) &flag, sizeof(int));
+    }
+
     /* bind the socket to the port number */
     if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
         AIM_LOG_ERROR("Could not bind to socket for local cxn: %s", strerror(errno));
