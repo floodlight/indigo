@@ -1527,13 +1527,14 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
         }
         break;
     case CXN_S_HANDSHAKE_COMPLETE:
+        cxn->status.is_connected = false;
         if (!CXN_LOCAL(cxn) && cxn->aux_id == 0) {
             AIM_SYSLOG_INFO("Disconnected from controller <ip-address>:<port>",
                             "The switch disconnected from the specified controller.",
                             "Disconnected from controller %s",
                             cxn->desc);
+            ind_cxn_syslog_active_controllers();
         }
-        cxn->status.is_connected = false;
         break;
     default:
         break;
@@ -1594,6 +1595,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
                             "The switch successfully connected to the specified controller.",
                             "Connected to controller %s",
                             cxn->desc);
+            ind_cxn_syslog_active_controllers();
         }
         break;
 

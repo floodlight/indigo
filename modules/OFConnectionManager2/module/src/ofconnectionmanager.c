@@ -229,6 +229,35 @@ ind_cxn_send_cxn_list(void)
 
 
 /*
+ * To help debug controller-switch connection issues,
+ * syslog a space-separated list of connected controllers.
+ */
+void
+ind_cxn_syslog_active_controllers(void)
+{
+    int id;
+    controller_t *controller;
+    /* +1 for space between controller descriptions */
+    char buf[MAX_CONTROLLERS*(MAX_CONTROLLER_DESC_LEN+1)] = { 0 };
+    int count = 0;
+
+    FOREACH_REMOTE_ACTIVE_CONTROLLER(id, controller) {
+        connection_t *maincxn = controller->cxns[0];
+        if (maincxn && maincxn->status.is_connected) {
+            strcat(buf, " ");
+            strncat(buf, controller->desc, MAX_CONTROLLER_DESC_LEN);
+            count++;
+        }
+    }
+
+    AIM_SYSLOG_INFO("Connected controllers: <count>: <ip-address>:<port> ...",
+                    "Space-separated listing of connected controllers.",
+                    "Connected controllers: %d:%s", 
+                    count, count > 0? buf: " None");
+}
+
+
+/*
  * populate destbuf with useful connection identifying info.
  * destbuf has maximum length destbuflen.
  */
