@@ -73,6 +73,8 @@ void controller_disconnect(controller_t *controller);
 
 void ind_cxn_notify_closed(connection_t *cxn);
 
+void ind_cxn_syslog_active_controllers(void);
+
 void ind_cxn_send_cxn_list(void);
 
 void ind_cxn_status_change(connection_t *cxn);
