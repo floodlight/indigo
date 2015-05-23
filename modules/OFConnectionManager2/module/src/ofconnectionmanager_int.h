@@ -93,9 +93,9 @@ void ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id);
 
 /* Parse the protocol params into a struct sockaddr */
 indigo_error_t
-ind_cxn_parse_sockaddr(
-    const indigo_cxn_protocol_params_t *protocol_params,
-    struct sockaddr_storage *sockaddr);
+ind_cxn_parse_sockaddr(const indigo_cxn_protocol_params_t *protocol_params,
+                       struct sockaddr_storage *sockaddr,
+                       socklen_t *sockaddrlen);
 
 /* Bundle interfaces */
 void ind_cxn_bundle_init(connection_t *cxn);

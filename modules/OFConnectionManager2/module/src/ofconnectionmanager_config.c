@@ -156,26 +156,12 @@ parse_controller(struct controller *controller, cJSON *root)
     indigo_cxn_protocol_t proto;
     indigo_cxn_params_tcp_over_ipv4_t *params4;
     indigo_cxn_params_tcp_over_ipv6_t *params6;
-    char *proto_str, *ip;
+    indigo_cxn_params_unix_t *params_unix;
+    char *proto_str, *ip, *unix_path;
     int port;
     int listen;
     int prio;
     indigo_error_t err;
-
-    err = ind_cfg_lookup_string(root, "ip_addr", &ip);
-    if (err < 0) {
-        if (err == INDIGO_ERROR_PARAM) {
-            AIM_LOG_ERROR("Config: 'ip_addr' must be a string");
-        } else if (err == INDIGO_ERROR_NOT_FOUND) {
-            AIM_LOG_ERROR("Config: Missing 'ip_addr' in controller spec");
-        }
-        return err;
-    }
-
-    /*
-     * WARNING: no validity checks for IP address.
-     * Instead, they are performed by the cli front-end.
-     */
 
     err = ind_cfg_lookup_string(root, "protocol", &proto_str);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -192,26 +178,61 @@ parse_controller(struct controller *controller, cJSON *root)
         proto = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
     } else if (strcmp(proto_str, "tcp6") == 0) {
         proto = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
+    } else if (strcmp(proto_str, "unix") == 0) {
+        proto = INDIGO_CXN_PROTO_UNIX;
     } else {
         AIM_LOG_ERROR("Config: Invalid controller protocol: %s", proto_str);
         return INDIGO_ERROR_PARAM;
     }
 
-    err = ind_cfg_lookup_int(root, "port", &port);
-    if (err == INDIGO_ERROR_NOT_FOUND) {
-        /* Allow default protocol value */
-        port = 6633;
-    } else if (err < 0) {
-        if (err == INDIGO_ERROR_PARAM) {
-            AIM_LOG_ERROR("Config: 'port' must be an integer");
+    switch(proto) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        err = ind_cfg_lookup_string(root, "ip_addr", &ip);
+        if (err < 0) {
+            if (err == INDIGO_ERROR_PARAM) {
+                AIM_LOG_ERROR("Config: 'ip_addr' must be a string");
+            } else if (err == INDIGO_ERROR_NOT_FOUND) {
+                AIM_LOG_ERROR("Config: Missing 'ip_addr' in controller spec");
+            }
+            return err;
         }
-        return err;
-    }
+        /*
+         * WARNING: no validity checks for IP address.
+         * Instead, they are performed by the cli front-end.
+         */
 
-    if (port < 0 || port >= 0xffff) {
-        AIM_LOG_ERROR("Config: Invalid controller port: %d", port);
-        return INDIGO_ERROR_PARAM;
-    }
+        err = ind_cfg_lookup_int(root, "port", &port);
+        if (err == INDIGO_ERROR_NOT_FOUND) {
+            /* Allow default protocol value */
+            port = 6633;
+        } else if (err < 0) {
+            if (err == INDIGO_ERROR_PARAM) {
+                AIM_LOG_ERROR("Config: 'port' must be an integer");
+            }
+            return err;
+        }
+        if (port < 0 || port >= 0xffff) {
+            AIM_LOG_ERROR("Config: Invalid controller port: %d", port);
+            return INDIGO_ERROR_PARAM;
+        }
+
+        break;
+
+    case INDIGO_CXN_PROTO_UNIX:
+        err = ind_cfg_lookup_string(root, "unix_path", &unix_path);
+        if (err < 0) {
+            if (err == INDIGO_ERROR_PARAM) {
+                AIM_LOG_ERROR("Config: 'unix_path' must be a string");
+            } else if (err == INDIGO_ERROR_NOT_FOUND) {
+                AIM_LOG_ERROR("Config: Missing 'unix_path' in controller spec");
+            }
+            return err;
+        }
+
+    default:
+        AIM_DIE("Config: No handling for protocol %d", proto);
+    }        
 
     err = ind_cfg_lookup_bool(root, "listen", &listen);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -233,6 +254,7 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
+    /* populate 'controller' struct */
     switch (proto) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
         params4 = &controller->proto.tcp_over_ipv4;
@@ -246,9 +268,12 @@ parse_controller(struct controller *controller, cJSON *root)
         strncpy(params6->controller_ip, ip, sizeof(params6->controller_ip));
         params6->controller_port = port;
         break;
+    case INDIGO_CXN_PROTO_UNIX:
+        params_unix = &controller->proto.unx;
+        strncpy(params_unix->unix_path, unix_path, INDIGO_CXN_UNIX_PATH_LEN);
+        break;
     default:
-        AIM_LOG_INTERNAL("Config: Invalid controller protocol: %d", proto);
-        return INDIGO_ERROR_UNKNOWN;
+        AIM_DIE("Config: No handling for protocol %d", proto);
     }
 
     controller->config.listen = listen;
