@@ -902,7 +902,7 @@ setup_unix_client(char *addr)
                   strerror(errno));
 
     sun.sun_family = AF_UNIX;
-    snprintf(sun.sun_path, sizeof(sun.sun_path), addr);
+    snprintf(sun.sun_path, sizeof(sun.sun_path), "%s", addr);
     INDIGO_ASSERT(connect(sd, (struct sockaddr *) &sun, sizeof(sun)) == 0,
                   "error connecting: %s", strerror(errno));
 
