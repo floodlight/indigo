@@ -426,8 +426,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
         AIM_LOG_VERBOSE("Accepted cxn from [IPv6addr]:%d",
                         ntohs(sa6->sin6_port));
     } else if (cxn_addr.ss_family == AF_UNIX) {
-        struct sockaddr_un *sun = (struct sockaddr_un*) &cxn_addr;
-        AIM_LOG_VERBOSE("Accepted cxn from %s", sun->sun_path);
+        AIM_LOG_VERBOSE("Accepted unix domain cxn");
     }
 
     controller_id = find_free_controller();
