@@ -157,7 +157,7 @@ parse_controller(struct controller *controller, cJSON *root)
     indigo_cxn_params_tcp_over_ipv4_t *params4;
     indigo_cxn_params_tcp_over_ipv6_t *params6;
     indigo_cxn_params_unix_t *params_unix;
-    char *proto_str, *ip, *unix_path;
+    char *proto_str = NULL, *ip = NULL, *unix_path = NULL;
     int port;
     int listen;
     int prio;
