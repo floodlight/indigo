@@ -1648,6 +1648,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
     int soc_flags;
     connection_t *cxn;
     struct sockaddr_storage sockaddr;
+    socklen_t sockaddrlen;
 
     cxn = find_free_connection();
     if (cxn == NULL) {
@@ -1686,7 +1687,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
     if (sock_id == -1) {
         /* Parse the protocol params just to get the family */
         if (ind_cxn_parse_sockaddr(&controller->protocol_params,
-                                   &sockaddr) < 0) {
+                                   &sockaddr, &sockaddrlen) < 0) {
             goto error;
         }
 
@@ -1775,14 +1776,15 @@ cxn_try_to_connect(connection_t *cxn)
 {
     int rv;
     struct sockaddr_storage sockaddr;
+    socklen_t sockaddrlen;
 
-    if (ind_cxn_parse_sockaddr(&cxn->controller->protocol_params, &sockaddr)
-        != INDIGO_ERROR_NONE) {
+    if (ind_cxn_parse_sockaddr(&cxn->controller->protocol_params,
+                               &sockaddr, &sockaddrlen) != INDIGO_ERROR_NONE) {
         LOG_INTERNAL(cxn, "Failed to parse address");
         return INDIGO_ERROR_PARAM;
     }
 
-    rv = connect(cxn->sd, (struct sockaddr *) &sockaddr, sizeof(sockaddr));
+    rv = connect(cxn->sd, (struct sockaddr *) &sockaddr, sockaddrlen);
     if ((rv == 0) ||
         ((rv == -1) && errno == EISCONN)) {
         return INDIGO_ERROR_NONE;

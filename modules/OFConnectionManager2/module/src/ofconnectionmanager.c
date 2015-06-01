@@ -33,6 +33,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
@@ -271,13 +272,17 @@ proto_ip_string(indigo_cxn_protocol_params_t *params,
     switch (params->header.protocol) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
         len = snprintf(destbuf, destbuflen, "%s:%d",
-                 params->tcp_over_ipv4.controller_ip,
-                 params->tcp_over_ipv4.controller_port);
+                       params->tcp_over_ipv4.controller_ip,
+                       params->tcp_over_ipv4.controller_port);
         break;
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
         len = snprintf(destbuf, destbuflen, "%s:%d",
-                 params->tcp_over_ipv6.controller_ip,
-                 params->tcp_over_ipv6.controller_port);
+                       params->tcp_over_ipv6.controller_ip,
+                       params->tcp_over_ipv6.controller_port);
+        break;
+    case INDIGO_CXN_PROTO_UNIX:
+        len = snprintf(destbuf, destbuflen, "%s",
+                       params->unx.unix_path);
         break;
     case INDIGO_CXN_PROTO_INVALID:  /* fall-through */
     default:
@@ -420,6 +425,8 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
         /* FIXME use AIM datatype when available */
         AIM_LOG_VERBOSE("Accepted cxn from [IPv6addr]:%d",
                         ntohs(sa6->sin6_port));
+    } else if (cxn_addr.ss_family == AF_UNIX) {
+        AIM_LOG_VERBOSE("Accepted unix domain cxn");
     }
 
     controller_id = find_free_controller();
@@ -464,6 +471,7 @@ static indigo_error_t
 listen_cxn_init(connection_t *cxn)
 {
     struct sockaddr_storage cxn_addr;
+    socklen_t cxn_addr_len;
     indigo_error_t rv;
     indigo_cxn_protocol_params_t *protocol_params;
 
@@ -471,7 +479,8 @@ listen_cxn_init(connection_t *cxn)
 
     protocol_params = get_connection_params(cxn);
 
-    if (ind_cxn_parse_sockaddr(protocol_params, &cxn_addr) < 0) {
+    if (ind_cxn_parse_sockaddr(protocol_params,
+                               &cxn_addr, &cxn_addr_len) < 0) {
         return INDIGO_ERROR_PARAM;
     }
 
@@ -481,8 +490,14 @@ listen_cxn_init(connection_t *cxn)
                           (char *) &flag, sizeof(int));
     }
 
+    if (cxn_addr.ss_family == AF_UNIX) {
+        /* remove unix domain socket so bind does not fail */
+        struct sockaddr_un *sun = (struct sockaddr_un *) &cxn_addr;
+        unlink(sun->sun_path);
+    }
+
     /* bind the socket to the port number */
-    if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, sizeof(cxn_addr)) == -1) {
+    if (bind(cxn->sd, (struct sockaddr *) &cxn_addr, cxn_addr_len) == -1) {
         AIM_LOG_INTERNAL("Could not bind socket for listen cxn: %s",
                          strerror(errno));
         return INDIGO_ERROR_UNKNOWN;
@@ -828,7 +843,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
     }
 
     if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4 &&
-        protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6 &&
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_UNIX) {
         AIM_LOG_INTERNAL("Unsupported protocol for connection add: %d",
                          protocol_params->header.protocol);
         rv = INDIGO_ERROR_NOT_SUPPORTED;
@@ -1756,7 +1772,8 @@ ind_cxn_barrier_notify(indigo_cxn_id_t cxn_id)
 
 static indigo_error_t
 parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
-                           struct sockaddr_storage *sockaddr)
+                           struct sockaddr_storage *sockaddr, 
+                           socklen_t *sockaddrlen)
 {
     char port_str[8];
     snprintf(port_str, sizeof(port_str), "%u", port);
@@ -1780,15 +1797,27 @@ parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
     }
 
     memcpy(sockaddr, ai->ai_addr, ai->ai_addrlen);
+    *sockaddrlen = ai->ai_addrlen;
     freeaddrinfo(ai);
     return INDIGO_ERROR_NONE;
 }
 
+static indigo_error_t
+parse_sockaddr_unix(const char *path,
+                    struct sockaddr_storage *sockaddr,
+                    socklen_t *sockaddrlen)
+{
+    struct sockaddr_un *sun = (struct sockaddr_un *) sockaddr;
+    sun->sun_family = AF_UNIX;
+    snprintf(sun->sun_path, sizeof(sun->sun_path), "%s", path);
+    *sockaddrlen = sizeof(*sun);
+    return INDIGO_ERROR_NONE;
+}
 
 indigo_error_t
-ind_cxn_parse_sockaddr(
-    const indigo_cxn_protocol_params_t *protocol_params,
-    struct sockaddr_storage *sockaddr)
+ind_cxn_parse_sockaddr(const indigo_cxn_protocol_params_t *protocol_params,
+                       struct sockaddr_storage *sockaddr,
+                       socklen_t *sockaddrlen)
 {
     switch (protocol_params->header.protocol) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
@@ -1796,13 +1825,16 @@ ind_cxn_parse_sockaddr(
             AF_INET,
             protocol_params->tcp_over_ipv4.controller_ip,
             protocol_params->tcp_over_ipv4.controller_port,
-            sockaddr);
+            sockaddr, sockaddrlen);
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
         return parse_sockaddr_getaddrinfo(
             AF_INET6,
             protocol_params->tcp_over_ipv6.controller_ip,
             protocol_params->tcp_over_ipv6.controller_port,
-            sockaddr);
+            sockaddr, sockaddrlen);
+    case INDIGO_CXN_PROTO_UNIX:
+        return parse_sockaddr_unix(protocol_params->unx.unix_path,
+                                   sockaddr, sockaddrlen);
     default:
         AIM_LOG_INTERNAL("Invalid protocol %d",
                          protocol_params->header.protocol);

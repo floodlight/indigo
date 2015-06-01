@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/un.h>
 #include <netdb.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -99,6 +100,7 @@ cxn_status_change(indigo_controller_id_t controller_id,
 #define CONTROLLER_LISTEN_PORT 25267
 #define CONTROLLER_PORT1 12345
 #define CONTROLLER_PORT2 12444
+#define CONTROLLER_UNIX "/tmp/controller_unix"
 
 
 static int
@@ -144,6 +146,25 @@ setup_cxn_v6(char *controller_ip, int controller_port)
     return id;
 }
 
+static int
+setup_cxn_unix(char *unix_path)
+{
+    indigo_cxn_protocol_params_t protocol_params;
+    indigo_cxn_config_params_t config_params;
+    indigo_controller_id_t id;
+
+    memset(&config_params, 0, sizeof(config_params));
+    config_params.version = OF_VERSION_1_3;
+
+    protocol_params.unx.protocol = INDIGO_CXN_PROTO_UNIX;
+    snprintf(protocol_params.unx.unix_path, sizeof(protocol_params.unx.unix_path), "%s", unix_path);
+
+    OK(indigo_controller_add(&protocol_params, &config_params, &id));
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+
+    return id;
+}
 
 static void
 cxn_msg_rx(indigo_cxn_id_t cxn_id, of_object_t *obj)
@@ -310,12 +331,10 @@ of_recvmsg(int sd, uint8_t buf[], int buflen,
 
 /* returns listening socket */
 static int
-setup_server(int domain, char *ip, uint16_t port)
+setup_server(int domain, char *addr, uint16_t port)
 {
     int lsd;
     const int listen_backlog = 5;
-    struct addrinfo hints;
-    struct addrinfo *result;
     int flag;
     char port_str[16];
 
@@ -329,19 +348,31 @@ setup_server(int domain, char *ip, uint16_t port)
     flag = 1;
     setsockopt(lsd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(int));
 
-    memset(&hints, 0, sizeof(struct addrinfo));
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
-    hints.ai_protocol = 0;          /* Any protocol */
-    hints.ai_canonname = NULL;
-    hints.ai_addr = NULL;
-    hints.ai_next = NULL;
+    if (domain == AF_UNIX) {
+        struct sockaddr_un sun;
+        sun.sun_family = AF_UNIX;
+        snprintf(sun.sun_path, sizeof(sun.sun_path), "%s", addr);
 
-    snprintf(port_str, sizeof(port_str), "%u", port);
-    INDIGO_ASSERT(getaddrinfo(ip, port_str, &hints, &result) == 0);
-    INDIGO_ASSERT(bind(lsd, result->ai_addr, result->ai_addrlen) == 0);
-    freeaddrinfo(result);
+        unlink(addr);
+        INDIGO_ASSERT(bind(lsd, (struct sockaddr *) &sun, sizeof(sun)) == 0);
+    } else {
+        struct addrinfo hints;
+        struct addrinfo *result;
+
+        memset(&hints, 0, sizeof(struct addrinfo));
+        hints.ai_family = AF_UNSPEC;
+        hints.ai_socktype = SOCK_STREAM;
+        hints.ai_flags = AI_PASSIVE;    /* For wildcard IP address */
+        hints.ai_protocol = 0;          /* Any protocol */
+        hints.ai_canonname = NULL;
+        hints.ai_addr = NULL;
+        hints.ai_next = NULL;
+
+        snprintf(port_str, sizeof(port_str), "%u", port);
+        INDIGO_ASSERT(getaddrinfo(addr, port_str, &hints, &result) == 0);
+        INDIGO_ASSERT(bind(lsd, result->ai_addr, result->ai_addrlen) == 0);
+        freeaddrinfo(result);
+    }
 
     INDIGO_ASSERT(listen(lsd, listen_backlog) == 0);
 
@@ -485,6 +516,20 @@ check_connection_list(of_object_t *obj, uint32_t expectedrole)
     }
 }
 
+static char*
+get_domain_name(int domain)
+{
+    switch(domain) {
+    case AF_UNIX:
+        return "unix";
+    case AF_INET:
+        return "ipv4";
+    case AF_INET6:
+        return "ipv6";
+    default:
+        return "unknown";
+    }
+}
 
 static void
 test_normal(int domain, char *addr)
@@ -497,7 +542,7 @@ test_normal(int domain, char *addr)
     uint8_t buf[512];  /* may need to be increased */
 
     printf("***Start %s, domain %s, addr %s\n", __FUNCTION__, 
-           domain == AF_INET? "ipv4": "ipv6", addr);
+           get_domain_name(domain), addr);
 
     /* set up listening socket */
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
@@ -506,12 +551,19 @@ test_normal(int domain, char *addr)
 
     if (domain == AF_INET) {
         id = setup_cxn(addr, CONTROLLER_PORT1);
-    } else {
+    } else if (domain == AF_INET6) {
         id = setup_cxn_v6(addr, CONTROLLER_PORT1);
+    } else if (domain == AF_UNIX) {
+        id = setup_cxn_unix(addr);
+    } else {
+        AIM_DIE("unknown domain %d", domain);
     }
 
     INDIGO_ASSERT(id >= 0);
-    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
+    INDIGO_ASSERT(((domain == AF_INET || domain == AF_INET6) &&
+                   unit_test_cxn_state_get(id, 0) == CXN_S_INIT) || 
+                  ((domain == AF_UNIX) &&
+                   unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING));
 
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
@@ -579,7 +631,7 @@ test_normal(int domain, char *addr)
     close(lsd);
 
     printf("***Stop %s, domain %s, addr %s\n", __FUNCTION__, 
-           domain == AF_INET? "ipv4": "ipv6", addr);
+           get_domain_name(domain), addr);
 }
 
 
@@ -812,7 +864,7 @@ test_aux3(int delta)
 
 /* returns connected socket */
 static int
-setup_client(char *ip, uint16_t port)
+setup_ipv4_client(char *ip, uint16_t port)
 {
     int sd;
     struct addrinfo hints;
@@ -838,9 +890,27 @@ setup_client(char *ip, uint16_t port)
     return sd;
 }
 
+/* returns connected socket */
+static int
+setup_unix_client(char *addr)
+{
+    int sd;
+    struct sockaddr_un sun;
+
+    sd = socket(AF_UNIX, SOCK_STREAM, 0);
+    INDIGO_ASSERT(sd > 0, "error creating client socket: %s",
+                  strerror(errno));
+
+    sun.sun_family = AF_UNIX;
+    snprintf(sun.sun_path, sizeof(sun.sun_path), "%s", addr);
+    INDIGO_ASSERT(connect(sd, (struct sockaddr *) &sun, sizeof(sun)) == 0,
+                  "error connecting: %s", strerror(errno));
+
+    return sd;
+}
 
 static int
-setup_listener(char *ip, int controller_port)
+setup_ipv4_listener(char *ip, int controller_port)
 {
     indigo_cxn_protocol_params_t protocol_params;
     indigo_cxn_config_params_t config_params;
@@ -860,9 +930,30 @@ setup_listener(char *ip, int controller_port)
     return id;
 }
 
+static int
+setup_unix_listener(char *path)
+{
+    indigo_cxn_protocol_params_t protocol_params;
+    indigo_cxn_config_params_t config_params;
+    indigo_controller_id_t id;
+
+    memset(&config_params, 0, sizeof(config_params));
+    config_params.version = OF_VERSION_1_3;
+    config_params.local = 1;
+    config_params.listen = 1;
+
+    protocol_params.unx.protocol = INDIGO_CXN_PROTO_UNIX;
+    snprintf(protocol_params.unx.unix_path,
+             sizeof(protocol_params.unx.unix_path), "%s", path);
+
+    OK(indigo_controller_add(&protocol_params, &config_params, &id));
+
+    return id;
+}
+
 
 static void
-test_listener(void)
+test_listener(int domain)
 {
     indigo_controller_id_t id;
     int sd;
@@ -870,16 +961,25 @@ test_listener(void)
     of_object_storage_t storage;
     uint8_t buf[256];  /* may need to be increaed */
 
-    printf("***Start %s\n", __FUNCTION__);
+    printf("***Start %s, domain %s\n", __FUNCTION__,
+           get_domain_name(domain));
 
     indigo_setup();
 
     /* set up connection manager listening connection */
-    id = setup_listener(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    if (domain == AF_UNIX) {
+        id = setup_unix_listener(CONTROLLER_UNIX);
+    } else {
+        id = setup_ipv4_listener(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    }
     OK(ind_soc_select_and_run(1));
 
     /* connect to listener */
-    sd = setup_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    if (domain == AF_UNIX) {
+        sd = setup_unix_client(CONTROLLER_UNIX);
+    } else {
+        sd = setup_ipv4_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    }
     OK(ind_soc_select_and_run(1));
     /* send hello */
     of_send_hello(sd);
@@ -896,7 +996,11 @@ test_listener(void)
     close(sd);
 
     /* verify that we can reconnect to listener */
-    sd = setup_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    if (domain == AF_UNIX) {
+        sd = setup_unix_client(CONTROLLER_UNIX);
+    } else {
+        sd = setup_ipv4_client(CONTROLLER_IP, CONTROLLER_LISTEN_PORT);
+    }
     OK(ind_soc_select_and_run(1));
     /* send hello */
     of_send_hello(sd);
@@ -921,7 +1025,8 @@ test_listener(void)
 
     close(sd);
 
-    printf("***Stop %s\n", __FUNCTION__);
+    printf("***Stop %s, domain %s\n", __FUNCTION__,
+           get_domain_name(domain));
 }
 
 
@@ -1101,6 +1206,7 @@ int aim_main(int argc, char* argv[])
     test_normal(AF_INET6, CONTROLLER_IPV6);
     /* disable linklocal test; address is currently hardcoded */
     /* test_normal(AF_INET6, CONTROLLER_IPV6_LINKLOCAL); */
+    test_normal(AF_UNIX, CONTROLLER_UNIX);
 
     test_no_hello();
     test_no_features_request();
@@ -1111,7 +1217,8 @@ int aim_main(int argc, char* argv[])
 
     test_dual();
 
-    test_listener();
+    test_listener(AF_INET);
+    test_listener(AF_UNIX);
 
     return 0;
 }
