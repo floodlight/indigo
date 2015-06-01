@@ -603,5 +603,40 @@ void indigo_core_group_release(uint32_t group_id);
  */
 void *indigo_core_group_lookup(uint32_t group_id);
 
+
+/****************************************************************
+ * Port/Queue registration
+ ****************************************************************/
+
+/* Opaque handle for a port */
+struct ind_core_port;
+
+/* Opaque handle for a queue */
+struct ind_core_queue;
+
+/**
+ * Register a port
+ */
+void
+indigo_core_port_register(of_port_no_t port_no, struct ind_core_port **handle);
+
+/**
+ * Unregister a port
+ */
+void
+indigo_core_port_unregister(struct ind_core_port *handle);
+
+/**
+ * Register a queue
+ */
+void
+indigo_core_queue_register(of_port_no_t port_no, uint32_t queue_id, struct ind_core_queue **handle);
+
+/**
+ * Unregister a queue
+ */
+void
+indigo_core_queue_unregister(struct ind_core_queue *handle);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */

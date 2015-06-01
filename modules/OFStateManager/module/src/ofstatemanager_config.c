@@ -79,6 +79,16 @@ ofstatemanager_config_settings_t ofstatemanager_config_settings[] =
 #else
 { OFSTATEMANAGER_CONFIG_DPID_DEFAULT(__ofstatemanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
+#ifdef OFSTATEMANAGER_CONFIG_MAX_PORTS
+    { __ofstatemanager_config_STRINGIFY_NAME(OFSTATEMANAGER_CONFIG_MAX_PORTS), __ofstatemanager_config_STRINGIFY_VALUE(OFSTATEMANAGER_CONFIG_MAX_PORTS) },
+#else
+{ OFSTATEMANAGER_CONFIG_MAX_PORTS(__ofstatemanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
+#ifdef OFSTATEMANAGER_CONFIG_MAX_QUEUES
+    { __ofstatemanager_config_STRINGIFY_NAME(OFSTATEMANAGER_CONFIG_MAX_QUEUES), __ofstatemanager_config_STRINGIFY_VALUE(OFSTATEMANAGER_CONFIG_MAX_QUEUES) },
+#else
+{ OFSTATEMANAGER_CONFIG_MAX_QUEUES(__ofstatemanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
     { NULL, NULL }
 };
 #undef __ofstatemanager_config_STRINGIFY_VALUE

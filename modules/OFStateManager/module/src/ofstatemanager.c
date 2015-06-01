@@ -43,6 +43,7 @@
 #include "expiration.h"
 #include "listener.h"
 #include "table.h"
+#include "port.h"
 
 /**
  * @brief Core configuration for the module
@@ -550,6 +551,8 @@ ind_core_init(ind_core_config_t *config)
     ind_core_group_init();
 
     ind_core_test_gentable_init();
+
+    ind_core_port_init();
 
     debug_counter_register(
         &ind_core_flow_mod_counter,
