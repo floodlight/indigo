@@ -39,6 +39,7 @@
 #include "handlers.h"
 #include "ft.h"
 #include "table.h"
+#include "port.h"
 
 static void
 flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
@@ -1143,7 +1144,34 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
 
     of_port_desc_stats_request_xid_get(obj, &xid);
     of_port_desc_stats_reply_xid_set(reply, xid);
-    indigo_port_desc_stats_get(reply);
+
+    if (ind_core_ports_registered > 0) {
+        of_port_desc_t *port_desc = of_port_desc_new(reply->version);
+
+        of_list_port_desc_t entries;
+        of_port_desc_stats_reply_entries_bind(reply, &entries);
+
+        struct slot_allocator_iter iter;
+        slot_allocator_iter_init(ind_core_port_allocator, &iter);
+        uint32_t slot;
+        while ((slot = slot_allocator_iter_next(&iter)) != SLOT_INVALID) {
+            struct ind_core_port *port = &ind_core_ports[slot];
+            of_object_truncate(port_desc);
+            indigo_error_t rv = indigo_port_desc_stats_get_one(port->port_no, port_desc);
+            if (rv) {
+                AIM_LOG_ERROR("Failed to get port desc stats for port %u: %s",
+                              port->port_no, indigo_strerror(rv));
+            } else {
+                if (of_list_port_desc_append(&entries, port_desc) < 0) {
+                    AIM_LOG_ERROR("Failed to append port desc stats");
+                    break;
+                }
+            }
+        }
+        of_port_desc_delete(port_desc);
+    } else if (indigo_port_desc_stats_get) {
+        indigo_port_desc_stats_get(reply);
+    }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
