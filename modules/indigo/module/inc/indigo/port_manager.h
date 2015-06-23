@@ -237,7 +237,20 @@ extern indigo_error_t indigo_port_queue_config_get(
 
 extern indigo_error_t indigo_port_queue_stats_get(
     of_queue_stats_request_t *queue_stats_request,
-    of_queue_stats_reply_t **queue_stats_reply);
+    of_queue_stats_reply_t **queue_stats_reply) AIM_COMPILER_ATTR_WEAK;
+
+/**
+ * @brief Get queue stats for a single queue
+ * @param port_no Port number
+ * @param queue_id Queue ID
+ * @param queue_stats LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_queue_stats_get_one(
+    of_port_no_t port_no,
+    uint32_t queue_id,
+    of_queue_stats_entry_t *queue_stats) AIM_COMPILER_ATTR_WEAK;
 
 
 /**
