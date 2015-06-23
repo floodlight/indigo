@@ -182,7 +182,18 @@ indigo_error_t indigo_port_desc_stats_get_one(
 
 extern indigo_error_t indigo_port_stats_get(
     of_port_stats_request_t *port_stats_request,
-    of_port_stats_reply_t **port_stats_reply);
+    of_port_stats_reply_t **port_stats_reply) AIM_COMPILER_ATTR_WEAK;
+
+/**
+ * @brief Get port stats for a single port
+ * @param port_no Port number
+ * @param port_stats LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_stats_get_one(
+    of_port_no_t port_no,
+    of_port_stats_entry_t *port_stats) AIM_COMPILER_ATTR_WEAK;
 
 /**
  * @brief Process an extended port stats request
