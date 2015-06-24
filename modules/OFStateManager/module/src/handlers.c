@@ -160,10 +160,20 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             if (rv) {
                 AIM_LOG_ERROR("Failed to get port stats for port %u: %s",
                               port->port_no, indigo_strerror(rv));
-            } else {
+            } else if (of_list_port_stats_entry_append(&entries, port_stats) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_port_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_port_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate port_stats reply message");
+                }
+
+                of_port_stats_reply_xid_set(reply, xid);
+                of_port_stats_reply_entries_bind(reply, &entries);
+
                 if (of_list_port_stats_entry_append(&entries, port_stats) < 0) {
-                    AIM_LOG_ERROR("Failed to append port stats");
-                    break;
+                    AIM_DIE("Unexpectedly failed to append port stats");
                 }
             }
         }
@@ -278,10 +288,20 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
             if (rv) {
                 AIM_LOG_ERROR("Failed to get queue stats for port %u queue %u: %s",
                               queue->port_no, queue->queue_id, indigo_strerror(rv));
-            } else {
+            } else if (of_list_queue_stats_entry_append(&entries, queue_stats) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_queue_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_queue_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate queue_stats reply message");
+                }
+
+                of_queue_stats_reply_xid_set(reply, xid);
+                of_queue_stats_reply_entries_bind(reply, &entries);
+
                 if (of_list_queue_stats_entry_append(&entries, queue_stats) < 0) {
-                    AIM_LOG_ERROR("Failed to append queue stats");
-                    break;
+                    AIM_DIE("Unexpectedly failed to append queue stats");
                 }
             }
         }
@@ -1246,10 +1266,20 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
             if (rv) {
                 AIM_LOG_ERROR("Failed to get port desc stats for port %u: %s",
                               port->port_no, indigo_strerror(rv));
-            } else {
+            } else if (of_list_port_desc_append(&entries, port_desc) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_port_desc_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate port_desc_stats reply message");
+                }
+
+                of_port_desc_stats_reply_xid_set(reply, xid);
+                of_port_desc_stats_reply_entries_bind(reply, &entries);
+
                 if (of_list_port_desc_append(&entries, port_desc) < 0) {
-                    AIM_LOG_ERROR("Failed to append port desc stats");
-                    break;
+                    AIM_DIE("Unexpectedly failed to append port desc stats");
                 }
             }
         }

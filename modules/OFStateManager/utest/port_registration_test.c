@@ -32,20 +32,30 @@
 #include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
 
+#define QUEUES_PER_PORT OFSTATEMANAGER_CONFIG_MAX_QUEUES/OFSTATEMANAGER_CONFIG_MAX_PORTS
+
 struct port_counters {
     int stats;
     int desc_stats;
-    int queue_stats[10];
+    int queue_stats[QUEUES_PER_PORT];
 };
 
 extern void handle_message(of_object_t *obj);
 extern int do_barrier(void);
 
-struct port_counters port_counters[10];
+struct port_counters port_counters[OFSTATEMANAGER_CONFIG_MAX_PORTS];
 
 indigo_error_t
 indigo_port_desc_stats_get_one(of_port_no_t port_no, of_port_desc_t *port_desc)
 {
+    of_object_t props;
+    of_object_t prop;
+    of_port_desc_properties_bind(port_desc, &props);
+    of_port_desc_prop_ethernet_init(&prop, props.version, -1, 1);
+    if (of_list_port_desc_prop_append_bind(&props, &prop) < 0) {
+        AIM_DIE("unexpected error appending to port desc stats properties");
+    }
+
     port_counters[port_no].desc_stats++;
     return INDIGO_ERROR_NONE;
 }
@@ -53,6 +63,14 @@ indigo_port_desc_stats_get_one(of_port_no_t port_no, of_port_desc_t *port_desc)
 indigo_error_t
 indigo_port_stats_get_one(of_port_no_t port_no, of_port_stats_entry_t *port_stats)
 {
+    of_object_t props;
+    of_object_t prop;
+    of_port_stats_entry_properties_bind(port_stats, &props);
+    of_port_stats_prop_ethernet_init(&prop, props.version, -1, 1);
+    if (of_list_port_stats_prop_append_bind(&props, &prop) < 0) {
+        AIM_DIE("unexpected error appending to port stats properties");
+    }
+
     port_counters[port_no].stats++;
     return INDIGO_ERROR_NONE;
 }
@@ -194,11 +212,104 @@ test_queue_stats(void)
     return TEST_PASS;
 }
 
+static int
+test_port_desc_stats_multipart(void)
+{
+    int i;
+    struct ind_core_port *port_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS];
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_register(i, &port_handles[i]);
+    }
+
+    memset(port_counters, 0, sizeof(port_counters));
+    of_port_desc_stats_request_t *obj = of_port_desc_stats_request_new(OF_VERSION_1_4);
+    handle_message(obj);
+    do_barrier();
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        AIM_TRUE_OR_DIE(port_counters[i].desc_stats == 1);
+    }
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_unregister(port_handles[i]);
+    }
+
+    return TEST_PASS;
+}
+
+static int
+test_port_stats_multipart(void)
+{
+    int i;
+    struct ind_core_port *port_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS];
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_register(i, &port_handles[i]);
+    }
+
+    memset(port_counters, 0, sizeof(port_counters));
+    of_port_stats_request_t *obj = of_port_stats_request_new(OF_VERSION_1_4);
+    of_port_stats_request_port_no_set(obj, OF_PORT_DEST_WILDCARD);
+    handle_message(obj);
+    do_barrier();
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        AIM_TRUE_OR_DIE(port_counters[i].stats == 1);
+    }
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_unregister(port_handles[i]);
+    }
+
+    return TEST_PASS;
+}
+
+static int
+test_queue_stats_multipart(void)
+{
+    int i, j;
+    struct ind_core_port *port_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS];
+    struct ind_core_queue *queue_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS][QUEUES_PER_PORT];
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_register(i, &port_handles[i]);
+        for (j = 0; j < QUEUES_PER_PORT; j++) {
+            indigo_core_queue_register(i, j, &queue_handles[i][j]);
+        }
+    }
+
+    memset(port_counters, 0, sizeof(port_counters));
+    of_queue_stats_request_t *obj = of_queue_stats_request_new(OF_VERSION_1_4);
+    of_queue_stats_request_port_no_set(obj, OF_PORT_DEST_WILDCARD);
+    of_queue_stats_request_queue_id_set(obj, OF_QUEUE_ALL);
+    handle_message(obj);
+    do_barrier();
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        for (j = 0; j < QUEUES_PER_PORT; j++) {
+            AIM_TRUE_OR_DIE(port_counters[i].queue_stats[j] == 1);
+        }
+    }
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        for (j = 0; j < QUEUES_PER_PORT; j++) {
+            indigo_core_queue_unregister(queue_handles[i][j]);
+        }
+        indigo_core_port_unregister(port_handles[i]);
+    }
+
+    return TEST_PASS;
+}
+
 int
 test_port_registration(void)
 {
     RUN_TEST(port_desc_stats);
     RUN_TEST(port_stats);
     RUN_TEST(queue_stats);
+    RUN_TEST(port_desc_stats_multipart);
+    RUN_TEST(port_stats_multipart);
+    RUN_TEST(queue_stats_multipart);
     return TEST_PASS;
 }
