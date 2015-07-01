@@ -119,6 +119,26 @@
 #define OFSTATEMANAGER_CONFIG_DPID_DEFAULT 55930
 #endif
 
+/**
+ * OFSTATEMANAGER_CONFIG_MAX_PORTS
+ *
+ * Maximum number of ports supported */
+
+
+#ifndef OFSTATEMANAGER_CONFIG_MAX_PORTS
+#define OFSTATEMANAGER_CONFIG_MAX_PORTS 1024
+#endif
+
+/**
+ * OFSTATEMANAGER_CONFIG_MAX_QUEUES
+ *
+ * Maximum number of queues supported */
+
+
+#ifndef OFSTATEMANAGER_CONFIG_MAX_QUEUES
+#define OFSTATEMANAGER_CONFIG_MAX_QUEUES 16384
+#endif
+
 
 
 /**

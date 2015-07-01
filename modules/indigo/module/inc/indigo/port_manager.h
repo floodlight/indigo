@@ -35,6 +35,7 @@
 #include <indigo/error.h>
 #include <indigo/types.h>
 #include <indigo/fi.h>
+#include <AIM/aim_compiler.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,7 +71,7 @@ extern indigo_error_t indigo_port_features_get(
  * Ownership of the port_desc_stats_reply object is maintained by the caller
  */
 extern indigo_error_t indigo_port_desc_stats_get(
-    of_port_desc_stats_reply_t *port_desc_stats_reply);
+    of_port_desc_stats_reply_t *port_desc_stats_reply) AIM_COMPILER_ATTR_WEAK;
 
 
 /****************************************************************
@@ -160,6 +161,16 @@ void indigo_port_interface_list_destroy(indigo_port_info_t* list);
 extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
 
 /**
+ * @brief Get port description for a single port
+ * @param port_no Port number
+ * @param port_desc LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_desc_stats_get_one(
+    of_port_no_t port_no, of_port_desc_t *port_desc) AIM_COMPILER_ATTR_WEAK;
+
+/**
  * @brief Process an OF port status request
  * @param port_stats_request The LOXI request message
  * @param [out] port_stats_reply The LOXI reply message
@@ -171,7 +182,18 @@ extern indigo_error_t indigo_port_modify(of_port_mod_t *port_mod);
 
 extern indigo_error_t indigo_port_stats_get(
     of_port_stats_request_t *port_stats_request,
-    of_port_stats_reply_t **port_stats_reply);
+    of_port_stats_reply_t **port_stats_reply) AIM_COMPILER_ATTR_WEAK;
+
+/**
+ * @brief Get port stats for a single port
+ * @param port_no Port number
+ * @param port_stats LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_stats_get_one(
+    of_port_no_t port_no,
+    of_port_stats_entry_t *port_stats) AIM_COMPILER_ATTR_WEAK;
 
 /**
  * @brief Process an extended port stats request
@@ -215,7 +237,20 @@ extern indigo_error_t indigo_port_queue_config_get(
 
 extern indigo_error_t indigo_port_queue_stats_get(
     of_queue_stats_request_t *queue_stats_request,
-    of_queue_stats_reply_t **queue_stats_reply);
+    of_queue_stats_reply_t **queue_stats_reply) AIM_COMPILER_ATTR_WEAK;
+
+/**
+ * @brief Get queue stats for a single queue
+ * @param port_no Port number
+ * @param queue_id Queue ID
+ * @param queue_stats LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_queue_stats_get_one(
+    of_port_no_t port_no,
+    uint32_t queue_id,
+    of_queue_stats_entry_t *queue_stats) AIM_COMPILER_ATTR_WEAK;
 
 
 /**

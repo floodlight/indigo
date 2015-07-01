@@ -48,6 +48,12 @@ cdefs: &cdefs
 - OFSTATEMANAGER_CONFIG_DPID_DEFAULT:
     doc: "Default DPID for OpenFlow datapath"
     default: 0xda7a
+- OFSTATEMANAGER_CONFIG_MAX_PORTS:
+    doc: "Maximum number of ports supported"
+    default: 1024
+- OFSTATEMANAGER_CONFIG_MAX_QUEUES:
+    doc: "Maximum number of queues supported"
+    default: 16384
 
 
 definitions:

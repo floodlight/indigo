@@ -39,6 +39,7 @@
 #include "handlers.h"
 #include "ft.h"
 #include "table.h"
+#include "port.h"
 
 static void
 flow_mod_err_msg_send(indigo_error_t indigo_err, of_version_t ver,
@@ -132,22 +133,76 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_error_t rv;
     uint32_t xid = 0;
 
-    rv = indigo_port_stats_get(obj, &reply);
-    if (rv == INDIGO_ERROR_NONE) {
-        /* Set the XID to match the request */
+    if (ind_core_ports_registered > 0) {
+        reply = of_port_stats_reply_new(obj->version);
+        of_port_stats_entry_t *port_stats = of_port_stats_entry_new(reply->version);
+
         of_port_stats_request_xid_get(obj, &xid);
         of_port_stats_reply_xid_set(reply, xid);
 
-        indigo_cxn_send_controller_message(cxn_id, reply);
-    } else {
+        of_list_port_stats_entry_t entries;
+        of_port_stats_reply_entries_bind(reply, &entries);
+
         of_port_no_t port_no;
         of_port_stats_request_port_no_get(obj, &port_no);
+        bool all_ports = port_no == OF_PORT_DEST_WILDCARD;
 
-        AIM_LOG_ERROR("Failed to get stats for port %u: %s",
-                      port_no, indigo_strerror(rv));
-        /* @todo sending type 0, code 0 error message */
-        indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        struct slot_allocator_iter iter;
+        slot_allocator_iter_init(ind_core_port_allocator, &iter);
+        uint32_t slot;
+        while ((slot = slot_allocator_iter_next(&iter)) != SLOT_INVALID) {
+            struct ind_core_port *port = &ind_core_ports[slot];
+            if (!all_ports && port->port_no != port_no) {
+                continue;
+            }
+            of_object_truncate(port_stats);
+            indigo_error_t rv = indigo_port_stats_get_one(port->port_no, port_stats);
+            if (rv) {
+                AIM_LOG_ERROR("Failed to get port stats for port %u: %s",
+                              port->port_no, indigo_strerror(rv));
+            } else if (of_list_port_stats_entry_append(&entries, port_stats) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_port_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_port_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate port_stats reply message");
+                }
+
+                of_port_stats_reply_xid_set(reply, xid);
+                of_port_stats_reply_entries_bind(reply, &entries);
+
+                if (of_list_port_stats_entry_append(&entries, port_stats) < 0) {
+                    AIM_DIE("Unexpectedly failed to append port stats");
+                }
+            }
+
+            if (!all_ports) {
+                break;
+            }
+        }
+
+        of_port_stats_entry_delete(port_stats);
+        indigo_cxn_send_controller_message(cxn_id, reply);
+    } else if (indigo_port_stats_get) {
+        rv = indigo_port_stats_get(obj, &reply);
+        if (rv == INDIGO_ERROR_NONE) {
+            /* Set the XID to match the request */
+            of_port_stats_request_xid_get(obj, &xid);
+            of_port_stats_reply_xid_set(reply, xid);
+
+            indigo_cxn_send_controller_message(cxn_id, reply);
+        } else {
+            of_port_no_t port_no;
+            of_port_stats_request_port_no_get(obj, &port_no);
+
+            AIM_LOG_ERROR("Failed to get stats for port %u: %s",
+                          port_no, indigo_strerror(rv));
+            /* @todo sending type 0, code 0 error message */
+            indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        }
     }
+
 }
 
 /****************************************************************/
@@ -203,23 +258,78 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     uint32_t xid;
     indigo_error_t rv;
 
-    of_queue_stats_request_xid_get(obj, &xid);
+    if (ind_core_ports_registered > 0) {
+        reply = of_queue_stats_reply_new(obj->version);
+        of_queue_stats_entry_t *queue_stats = of_queue_stats_entry_new(reply->version);
 
-    rv = indigo_port_queue_stats_get(obj, &reply);
-    if (rv == INDIGO_ERROR_NONE) {
-        /* Set the XID to match the request */
+        of_queue_stats_request_xid_get(obj, &xid);
         of_queue_stats_reply_xid_set(reply, xid);
 
-        indigo_cxn_send_controller_message(cxn_id, reply);
-    } else {
+        of_list_queue_stats_entry_t entries;
+        of_queue_stats_reply_entries_bind(reply, &entries);
+
         of_port_no_t port_no;
-        uint32_t queue_id;
         of_queue_stats_request_port_no_get(obj, &port_no);
+        bool all_ports = port_no == OF_PORT_DEST_WILDCARD;
+
+        uint32_t queue_id;
         of_queue_stats_request_queue_id_get(obj, &queue_id);
-        AIM_LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
-                      queue_id, port_no, indigo_strerror(rv));
-        /* @todo sending type 0, code 0 error message */
-        indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        bool all_queues = queue_id == OF_QUEUE_ALL;
+
+        struct slot_allocator_iter iter;
+        slot_allocator_iter_init(ind_core_queue_allocator, &iter);
+        uint32_t slot;
+        while ((slot = slot_allocator_iter_next(&iter)) != SLOT_INVALID) {
+            struct ind_core_queue *queue = &ind_core_queues[slot];
+            if (!all_ports && queue->port_no != port_no) {
+                continue;
+            } else if (!all_queues && queue->queue_id != queue_id) {
+                continue;
+            }
+            of_object_truncate(queue_stats);
+            indigo_error_t rv = indigo_port_queue_stats_get_one(
+                queue->port_no, queue->queue_id, queue_stats);
+            if (rv) {
+                AIM_LOG_ERROR("Failed to get queue stats for port %u queue %u: %s",
+                              queue->port_no, queue->queue_id, indigo_strerror(rv));
+            } else if (of_list_queue_stats_entry_append(&entries, queue_stats) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_queue_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_queue_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate queue_stats reply message");
+                }
+
+                of_queue_stats_reply_xid_set(reply, xid);
+                of_queue_stats_reply_entries_bind(reply, &entries);
+
+                if (of_list_queue_stats_entry_append(&entries, queue_stats) < 0) {
+                    AIM_DIE("Unexpectedly failed to append queue stats");
+                }
+            }
+        }
+
+        of_queue_stats_entry_delete(queue_stats);
+        indigo_cxn_send_controller_message(cxn_id, reply);
+    } else if (indigo_port_queue_stats_get) {
+        rv = indigo_port_queue_stats_get(obj, &reply);
+        if (rv == INDIGO_ERROR_NONE) {
+            /* Set the XID to match the request */
+            of_queue_stats_request_xid_get(obj, &xid);
+            of_queue_stats_reply_xid_set(reply, xid);
+
+            indigo_cxn_send_controller_message(cxn_id, reply);
+        } else {
+            of_port_no_t port_no;
+            uint32_t queue_id;
+            of_queue_stats_request_port_no_get(obj, &port_no);
+            of_queue_stats_request_queue_id_get(obj, &queue_id);
+            AIM_LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
+                        queue_id, port_no, indigo_strerror(rv));
+            /* @todo sending type 0, code 0 error message */
+            indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        }
     }
 }
 
@@ -1143,7 +1253,44 @@ ind_core_port_desc_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_
 
     of_port_desc_stats_request_xid_get(obj, &xid);
     of_port_desc_stats_reply_xid_set(reply, xid);
-    indigo_port_desc_stats_get(reply);
+
+    if (ind_core_ports_registered > 0) {
+        of_port_desc_t *port_desc = of_port_desc_new(reply->version);
+
+        of_list_port_desc_t entries;
+        of_port_desc_stats_reply_entries_bind(reply, &entries);
+
+        struct slot_allocator_iter iter;
+        slot_allocator_iter_init(ind_core_port_allocator, &iter);
+        uint32_t slot;
+        while ((slot = slot_allocator_iter_next(&iter)) != SLOT_INVALID) {
+            struct ind_core_port *port = &ind_core_ports[slot];
+            of_object_truncate(port_desc);
+            indigo_error_t rv = indigo_port_desc_stats_get_one(port->port_no, port_desc);
+            if (rv) {
+                AIM_LOG_ERROR("Failed to get port desc stats for port %u: %s",
+                              port->port_no, indigo_strerror(rv));
+            } else if (of_list_port_desc_append(&entries, port_desc) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_port_desc_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_port_desc_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate port_desc_stats reply message");
+                }
+
+                of_port_desc_stats_reply_xid_set(reply, xid);
+                of_port_desc_stats_reply_entries_bind(reply, &entries);
+
+                if (of_list_port_desc_append(&entries, port_desc) < 0) {
+                    AIM_DIE("Unexpectedly failed to append port desc stats");
+                }
+            }
+        }
+        of_port_desc_delete(port_desc);
+    } else if (indigo_port_desc_stats_get) {
+        indigo_port_desc_stats_get(reply);
+    }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
