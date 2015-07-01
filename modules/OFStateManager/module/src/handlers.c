@@ -176,6 +176,10 @@ ind_core_port_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
                     AIM_DIE("Unexpectedly failed to append port stats");
                 }
             }
+
+            if (!all_ports) {
+                break;
+            }
         }
 
         of_port_stats_entry_delete(port_stats);
