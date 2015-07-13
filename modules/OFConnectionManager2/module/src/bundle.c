@@ -296,6 +296,11 @@ compare_message(const void *_a, const void *_b)
         return 0;
     }
 
+    if (obj_a->object_id == OF_BARRIER_REQUEST) {
+        /* Barriers go to the end of the bundle */
+        return 1;
+    }
+
     return comparator(obj_a, obj_b);
 }
 
