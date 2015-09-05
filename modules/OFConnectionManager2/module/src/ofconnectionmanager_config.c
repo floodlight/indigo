@@ -178,6 +178,10 @@ parse_controller(struct controller *controller, cJSON *root)
         proto = INDIGO_CXN_PROTO_TCP_OVER_IPV4;
     } else if (strcmp(proto_str, "tcp6") == 0) {
         proto = INDIGO_CXN_PROTO_TCP_OVER_IPV6;
+    } else if (strcmp(proto_str, "tls") == 0) {
+        proto = INDIGO_CXN_PROTO_TLS_OVER_IPV4;
+    } else if (strcmp(proto_str, "tls6") == 0) {
+        proto = INDIGO_CXN_PROTO_TLS_OVER_IPV6;
     } else if (strcmp(proto_str, "unix") == 0) {
         proto = INDIGO_CXN_PROTO_UNIX;
     } else {
@@ -187,7 +191,9 @@ parse_controller(struct controller *controller, cJSON *root)
 
     switch(proto) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
         err = ind_cfg_lookup_string(root, "ip_addr", &ip);
         if (err < 0) {
             if (err == INDIGO_ERROR_PARAM) {
@@ -256,13 +262,15 @@ parse_controller(struct controller *controller, cJSON *root)
 
     /* populate 'controller' struct */
     switch (proto) {
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
         params4 = &controller->proto.tcp_over_ipv4;
         params4->protocol = proto;
         strncpy(params4->controller_ip, ip, sizeof(params4->controller_ip));
         params4->controller_port = port;
         break;
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
         params6 = &controller->proto.tcp_over_ipv6;
         params6->protocol = proto;
         strncpy(params6->controller_ip, ip, sizeof(params6->controller_ip));
@@ -414,6 +422,7 @@ ind_cxn_cfg_commit(void)
         const struct controller *old_controller;
         int rv;
         indigo_cxn_params_tcp_over_ipv4_t *proto = &c->proto.tcp_over_ipv4;
+        /* KHC FIXME print protocol */
         AIM_LOG_INFO("controller %d: %s:%hu", i,
                      proto->controller_ip, proto->controller_port);
 

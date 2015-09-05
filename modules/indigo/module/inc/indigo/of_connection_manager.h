@@ -90,6 +90,8 @@ typedef enum indigo_cxn_protocol_e {
     INDIGO_CXN_PROTO_TCP_OVER_IPV6      = 1,
 #ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
     INDIGO_CXN_PROTO_UNIX               = 2,
+    INDIGO_CXN_PROTO_TLS_OVER_IPV4      = 3,
+    INDIGO_CXN_PROTO_TLS_OVER_IPV6      = 4,
 #endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 } indigo_cxn_protocol_t;
 

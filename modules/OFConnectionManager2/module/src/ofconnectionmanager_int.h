@@ -48,6 +48,9 @@
  */
 #define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
 
+/* SSL error buffer length */
+#define IND_SSL_ERR_LEN 128
+
 /**
  * Module error counters
  */

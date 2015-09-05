@@ -33,6 +33,7 @@
 #include <BigList/biglist.h>
 #include <debug_counter/debug_counter.h>
 #include <BigRing/bigring.h>
+#include <openssl/ssl.h>
 
 #define READ_BUFFER_SIZE (64 * 1024)
 
@@ -119,6 +120,8 @@ typedef struct controller_s {
     struct connection_s *cxns[MAX_AUX_CONNECTIONS+1];
 
     char desc[MAX_CONTROLLER_DESC_LEN];  /* For logging */
+
+    SSL_CTX *ssl_ctx;  /* TLS configuration parameters */
 } controller_t;
 
 
@@ -143,11 +146,12 @@ typedef struct controller_s {
  */
 #define CXN_S_DESCS                                                     \
     cxn_s_desc(0, CXN_S_INIT, "Initialized", 5000)                      \
-    cxn_s_desc(1, CXN_S_HANDSHAKING, "Handshaking", 5000)               \
-    cxn_s_desc(2, CXN_S_HANDSHAKE_COMPLETE, "Handshake Complete", 0)    \
-    cxn_s_desc(3, CXN_S_CLOSING, "Closing", 5000)                       \
-    cxn_s_desc(4, CXN_S_CLOSED, "Closed", 0)                            \
-    cxn_s_desc(5, CXN_S_COUNT, "COUNT", 0) /* last value */
+    cxn_s_desc(1, CXN_S_TLS_HANDSHAKING, "TLS Handshaking", 5000)       \
+    cxn_s_desc(2, CXN_S_HANDSHAKING, "Handshaking", 5000)               \
+    cxn_s_desc(3, CXN_S_HANDSHAKE_COMPLETE, "Handshake Complete", 0)    \
+    cxn_s_desc(4, CXN_S_CLOSING, "Closing", 5000)                       \
+    cxn_s_desc(5, CXN_S_CLOSED, "Closed", 0)                            \
+    cxn_s_desc(6, CXN_S_COUNT, "COUNT", 0) /* last value */
 
 typedef enum cxn_state_e {
 #define cxn_s_desc(_val, _id, _name, _timeout) _id = _val,
@@ -237,6 +241,8 @@ typedef struct connection_s {
     int pause_refcount;
 
     char desc[MAX_CONTROLLER_DESC_LEN+MAX_AUX_ID_DESC_LEN];  /* For logging */
+
+    SSL *ssl;  /* TLS connection */
 } connection_t;
 
 /**

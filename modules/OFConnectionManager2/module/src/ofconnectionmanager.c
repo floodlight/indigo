@@ -42,6 +42,10 @@
 #include <netinet/tcp.h>
 #include <netdb.h>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+#include <openssl/evp.h>
+
 #include "ofconnectionmanager_int.h"
 
 
@@ -271,12 +275,22 @@ proto_ip_string(indigo_cxn_protocol_params_t *params,
 
     switch (params->header.protocol) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
-        len = snprintf(destbuf, destbuflen, "%s:%d",
+        len = snprintf(destbuf, destbuflen, "tcp:%s:%d",
+                       params->tcp_over_ipv4.controller_ip,
+                       params->tcp_over_ipv4.controller_port);
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
+        len = snprintf(destbuf, destbuflen, "tls:%s:%d",
                        params->tcp_over_ipv4.controller_ip,
                        params->tcp_over_ipv4.controller_port);
         break;
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
-        len = snprintf(destbuf, destbuflen, "%s:%d",
+        len = snprintf(destbuf, destbuflen, "tcp6:%s:%d",
+                       params->tcp_over_ipv6.controller_ip,
+                       params->tcp_over_ipv6.controller_port);
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
+        len = snprintf(destbuf, destbuflen, "tls6:%s:%d",
                        params->tcp_over_ipv6.controller_ip,
                        params->tcp_over_ipv6.controller_port);
         break;
@@ -314,6 +328,41 @@ controller_t_init(controller_t *controller,
                     sizeof(controller->config_params));
     proto_ip_string(&controller->protocol_params,
                     controller->desc, sizeof(controller->desc));
+}
+
+
+/*------------------------------------------------------------
+ * SSL_CTX handling
+ *------------------------------------------------------------*/
+
+static SSL_CTX *
+ssl_ctx_alloc(void)
+{
+    SSL_CTX *ctx;
+
+    ctx = SSL_CTX_new(TLSv1_2_client_method());
+    if (ctx == NULL) {
+        char buf[IND_SSL_ERR_LEN];
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("ssl_ctx alloc: %s", buf);
+        return NULL;
+    }
+    /* KHC FIXME make configurable */
+    if (SSL_CTX_set_cipher_list(ctx, "HIGH") != 1) {
+        char buf[IND_SSL_ERR_LEN];
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("ssl_ctx alloc: %s", buf);
+        SSL_CTX_free(ctx);
+        return NULL;
+    }
+
+    return ctx;
+}
+
+static void
+ssl_ctx_free(SSL_CTX *ctx)
+{
+    SSL_CTX_free(ctx);
 }
 
 
@@ -369,6 +418,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
     socklen_t addrlen;
     struct sockaddr_storage cxn_addr;
     int new_sd;
+    indigo_cxn_protocol_params_t *protocol_params;
     connection_t *cxn;
     indigo_controller_id_t controller_id;
     controller_t *controller;
@@ -436,17 +486,35 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
         return;
     }
 
+    protocol_params = &listen_cxn->controller->protocol_params;
     controller = ID_TO_CONTROLLER(controller_id);
-    controller_t_init(controller, controller_id,
-                      &listen_cxn->controller->protocol_params,
+    controller_t_init(controller, controller_id, protocol_params,
                       &listen_cxn->controller->config_params);
     AIM_LOG_VERBOSE("Allocated controller %d(%p) for %s",
                     controller_id, controller, controller->desc);
+
+    /* Set up SSL context for controller;
+     * this must happen before the connection is allocated so that 
+     * SSL can be set up on the connection */
+    if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
+        protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
+        controller->ssl_ctx = ssl_ctx_alloc();
+        if (controller->ssl_ctx == NULL) {
+            AIM_LOG_ERROR("Could not set up SSL context for controller");
+            controller->active = false;
+            close(new_sd);
+            return;
+        }
+    }
 
     /* Add the new connection with the socket */
     cxn = ind_cxn_alloc(controller, 0, new_sd);
     if (cxn == NULL) {
         AIM_LOG_ERROR("Could not set up accepted connection");
+        if (controller->ssl_ctx) {
+            ssl_ctx_free(controller->ssl_ctx);
+            controller->ssl_ctx = NULL;
+        }
         controller->active = false;
         close(new_sd);
         return;
@@ -622,6 +690,10 @@ cxn_closed_handler(void *cookie)
             AIM_LOG_VERBOSE("Controller %s marked inactive",
                             controller->desc);
             controller->active = false;
+            if (controller->ssl_ctx) {
+                ssl_ctx_free(controller->ssl_ctx);
+                controller->ssl_ctx = NULL;
+            }
         }
     }
 }
@@ -844,7 +916,9 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
 
     if (protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV4 &&
         protocol_params->header.protocol != INDIGO_CXN_PROTO_TCP_OVER_IPV6 &&
-        protocol_params->header.protocol != INDIGO_CXN_PROTO_UNIX) {
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_UNIX &&
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_TLS_OVER_IPV4 &&
+        protocol_params->header.protocol != INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
         AIM_LOG_INTERNAL("Unsupported protocol for connection add: %d",
                          protocol_params->header.protocol);
         rv = INDIGO_ERROR_NOT_SUPPORTED;
@@ -867,6 +941,14 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
                  controller->desc,
                  config_params->listen ? "listen" : "remote",
                  config_params->version);
+
+    if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
+        protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
+        controller->ssl_ctx = ssl_ctx_alloc();
+        if (controller->ssl_ctx == NULL) {
+            goto error;
+        }
+    }
 
     if (!config_params->listen) {
         /* Create the main connection (aux_id 0) */
@@ -904,6 +986,10 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
         }
         if (controller) {
             controller->active = false;
+            if (controller->ssl_ctx) {
+                ssl_ctx_free(controller->ssl_ctx);
+                controller->ssl_ctx = NULL;
+            }
         }
     }
 
@@ -1359,6 +1445,23 @@ indigo_cxn_status_change_unregister(indigo_cxn_status_change_f handler,
  * Implementation specific functions
  ****************************************************************/
 
+static void
+tls_init(void)
+{
+    SSL_library_init();
+    SSL_load_error_strings();
+}
+
+static void
+tls_deinit(void)
+{
+    /* 88 bytes in 3 blocks are still reachable */
+    ERR_free_strings();
+    EVP_cleanup();
+    CRYPTO_cleanup_all_ex_data();
+}
+
+
 /*
  * Configure the connection manager
  * @param core The functions provided by core
@@ -1396,6 +1499,8 @@ ind_cxn_init(ind_cxn_config_t *config)
                     ind_cxn_generation_id);
 
     ind_cxn_async_channel_selector_handler = NULL;
+
+    tls_init();
 
     init_done = 1;
 
@@ -1460,6 +1565,7 @@ ind_cxn_finish(void)
     ind_cxn_enable_set(0);
     ind_cfg_unregister(&ind_cxn_cfg_ops);
     ind_cxn_async_channel_selector_handler = NULL;
+    tls_deinit();
     return INDIGO_ERROR_NONE;
 }
 
@@ -1820,13 +1926,15 @@ ind_cxn_parse_sockaddr(const indigo_cxn_protocol_params_t *protocol_params,
                        socklen_t *sockaddrlen)
 {
     switch (protocol_params->header.protocol) {
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
         return parse_sockaddr_getaddrinfo(
             AF_INET,
             protocol_params->tcp_over_ipv4.controller_ip,
             protocol_params->tcp_over_ipv4.controller_port,
             sockaddr, sockaddrlen);
-    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
         return parse_sockaddr_getaddrinfo(
             AF_INET6,
             protocol_params->tcp_over_ipv6.controller_ip,
