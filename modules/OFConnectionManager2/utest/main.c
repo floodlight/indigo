@@ -308,6 +308,7 @@ of_send_aux_cxn_req(bool is_tls, intptr_t tl, int num_aux)
 static void
 of_send_controller_connections_request(bool is_tls, intptr_t tl)
 {
+    printf("sending controller connections request\n");
     of_sendmsg(is_tls, tl,
                of_bsn_controller_connections_request_new(of_version));
 }
@@ -821,9 +822,32 @@ test_normal(bool use_tls, int domain, char *addr)
     INDIGO_ASSERT(obj->object_id == OF_ROLE_REPLY,
                   "did not receive OF_ROLE_REPLY, got %d", obj->object_id);
 
+    /* force rehandshake */
+    if (use_tls) {
+        int rv;
+        int i;
+        printf("start renegotiate\n");
+        rv = SSL_renegotiate((SSL*)tl);
+        INDIGO_ASSERT(rv == 1, "SSL_renegotiate returns rv %d", rv);
+        rv = SSL_do_handshake((SSL*)tl);
+        INDIGO_ASSERT(rv == 1, "first SSL_do_handshake returns rv %d", rv);
+        OK(ind_soc_select_and_run(10));
+        ((SSL*)tl)->state = SSL_ST_ACCEPT;
+        i = 0;
+        do {
+            OK(ind_soc_select_and_run(1));
+            rv = SSL_do_handshake((SSL*)tl);
+            i++;
+        } while (i < 256 && rv == -1 && 
+                 SSL_get_error((SSL*)tl, rv) == SSL_ERROR_WANT_READ);
+        INDIGO_ASSERT(rv == 1, "second SSL_do_handshake returns rv %d", rv);
+        printf("end renegotiate\n");
+        OK(ind_soc_select_and_run(10));
+    }
+
     /* once more for fun */
     of_send_controller_connections_request(use_tls, tl);
-    OK(ind_soc_select_and_run(10));
+    OK(ind_soc_select_and_run(100));
     /* check for controller_connections_reply */
     obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
