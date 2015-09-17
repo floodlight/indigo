@@ -233,6 +233,66 @@ cxn_unregister_debug_counters(connection_t *cxn)
 
 
 /*------------------------------------------------------------
+ * Connection read/write event management
+ *------------------------------------------------------------*/
+
+/* FIXME can we get rid of the TLS_HANDSHAKING state? */
+
+#define IS_TLS_HANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_renegotiate_pending(cxn->ssl))
+
+#define FORCE_SET_READ_READY(cxn) set_read_event__(cxn, true)
+#define FORCE_CLEAR_READ_READY(cxn) clear_read_event__(cxn, true)
+#define FORCE_SET_WRITE_READY(cxn) set_write_event__(cxn, true)
+#define FORCE_CLEAR_WRITE_READY(cxn) clear_write_event__(cxn, true)
+
+#define SET_READ_READY(cxn) set_read_event__(cxn, false)
+#define CLEAR_READ_READY(cxn) clear_read_event__(cxn, false)
+#define SET_WRITE_READY(cxn) set_write_event__(cxn, false)
+#define CLEAR_WRITE_READY(cxn) clear_write_event__(cxn, false)
+
+static void
+set_read_event__(connection_t *cxn, bool force)
+{
+    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+        int rv = ind_soc_data_in_resume(cxn->sd);
+        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                      "Cannot set read event on socket %d", cxn->sd);
+    }
+}
+
+static void
+clear_read_event__(connection_t *cxn, bool force)
+{
+    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+        int rv = ind_soc_data_in_pause(cxn->sd);
+        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                      "Cannot clear read event on socket %d", cxn->sd);
+    }
+}
+
+static void
+set_write_event__(connection_t *cxn, bool force)
+{
+    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+        int rv = ind_soc_data_out_ready(cxn->sd);
+        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                      "Cannot set write event on socket %d", cxn->sd);
+    }
+}
+
+static void
+clear_write_event__(connection_t *cxn, bool force)
+{
+    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+        int rv = ind_soc_data_out_clear(cxn->sd);
+        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                      "Cannot clear write event on socket %d", cxn->sd);
+    }
+}
+
+
+/*------------------------------------------------------------
  * Connection instance read buffer management
  *------------------------------------------------------------*/
 
@@ -871,10 +931,8 @@ read_from_cxn(connection_t *cxn)
     inbuf_start = &cxn->read_buffer[cxn->read_bytes];
 
     if (cxn->ssl) {
-        LOG_VERBOSE(cxn, "read_from_cxn, renegotiate_pending %d", SSL_renegotiate_pending(cxn->ssl));
         ERR_clear_error();
         bytes_in = SSL_read(cxn->ssl, inbuf_start, cxn->bytes_needed);
-        LOG_VERBOSE(cxn, "read_from_cxn, bytes_in %d, renegotiate_pending %d", bytes_in, SSL_renegotiate_pending(cxn->ssl));
         if (bytes_in <= 0) {
             if (bytes_in == 0) {
                 LOG_VERBOSE(cxn, "Connection closed");
@@ -883,13 +941,11 @@ read_from_cxn(connection_t *cxn)
                 switch(SSL_get_error(cxn->ssl, bytes_in)) {
                 case SSL_ERROR_WANT_READ:
                     /* do nothing */
-                    /* KHC FIXME refactor to launch handshake if necessary */
                     LOG_VERBOSE(cxn, "SSL_read returns WANT_READ");
-                    return INDIGO_ERROR_NONE;
+                    return INDIGO_ERROR_PENDING;
                     break;
                 case SSL_ERROR_WANT_WRITE:
-                    /* KHC FIXME refactor to launch handshake if necessary */
-                    LOG_WARN(cxn, "SSL_read returns WANT_WRITE; KHC FIXME launch handshake");
+                    LOG_VERBOSE(cxn, "SSL_read returns WANT_WRITE");
                     return INDIGO_ERROR_PENDING;
                     break;
                 case SSL_ERROR_SYSCALL:
@@ -977,10 +1033,7 @@ read_message(connection_t *cxn)
     if (READING_HEADER(cxn)) {
         AIM_ASSERT(cxn->bytes_needed + cxn->read_bytes == 
                    OF_MESSAGE_HEADER_LENGTH);
-        LOG_VERBOSE(cxn, "read_from_cxn reading header\n");
         if ((rv = read_from_cxn(cxn)) < 0) {
-            // KHC FIXME demote/remove
-            LOG_VERBOSE(cxn, "read_from_cxn reading header returns rv %d\n", rv);
             return rv;
         }
 
@@ -1006,10 +1059,7 @@ read_message(connection_t *cxn)
     }
 
     /* Read the rest of the message; return if error */
-    LOG_VERBOSE(cxn, "read_from_cxn reading restofmessage\n");
     if ((rv = read_from_cxn(cxn)) < 0) {
-        // KHC FIXME demote/remove
-        LOG_VERBOSE(cxn, "read_from_cxn reading restofmessage returns rv %d\n", rv);
         return rv;
     }
     if (cxn->bytes_needed == 0) { /* Read full message, return ready */
@@ -1195,10 +1245,8 @@ ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
 
     for (i = 0; i < iovcnt; i++) {
         const struct iovec *curr = iov + i;
-        LOG_VERBOSE(cxn, "ssl_writev");
         ERR_clear_error();
         written = SSL_write(cxn->ssl, curr->iov_base, curr->iov_len);
-        LOG_VERBOSE(cxn, "ssl_writev written %d\n", written);
         if (written == 0) {
             if (SSL_get_error(cxn->ssl, 0) == SSL_ERROR_ZERO_RETURN) {
                 LOG_VERBOSE(cxn, "Connection closed");
@@ -1209,13 +1257,12 @@ ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
         } else if (written < 0) {
             switch(SSL_get_error(cxn->ssl, written)) {
             case SSL_ERROR_WANT_READ:
-                /* KHC FIXME refactor to launch handshake if necessary */
-                LOG_WARN(cxn, "SSL_write returns WANT_READ; KHC FIXME launch handshake");
+                /* do nothing */
+                LOG_VERBOSE(cxn, "SSL_write returns WANT_READ");
                 return total;
                 break;
             case SSL_ERROR_WANT_WRITE:
                 /* do nothing */
-                /* KHC FIXME refactor to launch handshake if necessary */
                 LOG_VERBOSE(cxn, "SSL_write returns WANT_WRITE");
                 return total;
                 break;
@@ -1346,8 +1393,7 @@ cxn_process_write_buffer(connection_t *cxn)
         LOG_TRACE(cxn, "No more data to write");
         AIM_ASSERT(cxn->bytes_enqueued == 0);
         AIM_ASSERT(bigring_count(cxn->write_queue) == 0);
-        /* KHC FIXME revisit: is this ok? */
-        ind_soc_data_out_clear(cxn->sd);
+        CLEAR_WRITE_READY(cxn);
     }
 
     return INDIGO_ERROR_NONE;
@@ -1404,8 +1450,7 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     /* Indicate data is ready to the socket manager */
     AIM_ASSERT(cxn->bytes_enqueued > 0);
     AIM_ASSERT(cxn->pkts_enqueued > 0);
-    /* KHC FIXME revisit: do we need to additionally qualify? */
-    ind_soc_data_out_ready(cxn->sd);
+    SET_WRITE_READY(cxn);
 
     return INDIGO_ERROR_NONE;
 }
@@ -1483,6 +1528,24 @@ cxn_socket_ready(
         return;
     }
 
+    /* handle rehandshaking if necessary */
+    if (IS_TLS_HANDSHAKING(cxn)) {
+        LOG_VERBOSE(cxn, "handle TLS handshaking");
+        switch (cxn_try_to_tls_handshake(cxn)) {
+        case INDIGO_ERROR_NONE:
+            /* done; wait for next iteration */
+            break;
+        case INDIGO_ERROR_PENDING:
+            /* do nothing, wait for next iteration of cxn_socket_ready */
+            break;
+        default:
+            /* something bad happened, close connection */
+            /* transition to closing */
+            cxn_state_set(cxn, CXN_S_CLOSING);
+        }
+        return;
+    }
+
     if (read_ready) {
         if ((rv = cxn_process_read_buffer(cxn)) < 0) {
             LOG_VERBOSE(cxn, "Error processing read buffer, resetting");
@@ -1500,9 +1563,7 @@ cxn_socket_ready(
                     cxn_state_set(cxn, CXN_S_TLS_HANDSHAKING);
                 } else {
                     cxn_state_set(cxn, CXN_S_HANDSHAKING);
-                    rv = ind_soc_data_in_resume(cxn->sd);
-                    AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                               "Failed to resume socket for %s", cxn->desc);
+                    FORCE_SET_READ_READY(cxn);
                 }
             } else if (rv == INDIGO_ERROR_PENDING) {
                 AIM_DIE("In-flight connection cannot be write ready");
@@ -1983,7 +2044,7 @@ cxn_try_to_connect(connection_t *cxn)
                 errno == EINPROGRESS)) {
         /* mark socket for writing so that second connect() call can be made,
          * because nonblocking socket may return EINPROGRESS */
-        ind_soc_data_out_ready(cxn->sd);
+        FORCE_SET_WRITE_READY(cxn);
         return INDIGO_ERROR_PENDING;
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
@@ -2007,38 +2068,35 @@ cxn_try_to_tls_handshake(connection_t *cxn)
 {
     int rv;
 
-    /* KHC FIXME refactor to save read and write events prior to handshaking,
-     * and restore state after handshaking has completed */
-    /* KHC FIXME potentially this would happen outside this function */
     ERR_clear_error();
     rv = SSL_do_handshake(cxn->ssl);
     if (rv == 1) {
         LOG_INFO(cxn, "TLS handshake completed, cipher %s",
                  SSL_get_cipher(cxn->ssl));
-        LOG_VERBOSE(cxn, "marked for read only");
-        rv = ind_soc_data_in_resume(cxn->sd);
-        AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                   "Failed to resume read for %s", cxn->desc);
+        LOG_VERBOSE(cxn, "restoring socket read/write state");
+        /* restore desired read/write event state */
+        if (cxn->pause_refcount) {
+            CLEAR_READ_READY(cxn);
+        } else {
+            SET_READ_READY(cxn);
+        }
+        if (cxn->pkts_enqueued) {
+            SET_WRITE_READY(cxn);
+        } else {
+            CLEAR_WRITE_READY(cxn);
+        }
         return INDIGO_ERROR_NONE;
     } else {
         int err = SSL_get_error(cxn->ssl, rv);
         if (err == SSL_ERROR_WANT_READ) {
             LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_READ");
-            rv = ind_soc_data_in_resume(cxn->sd);
-            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                       "Failed to resume read for %s", cxn->desc);
-            rv = ind_soc_data_out_clear(cxn->sd);
-            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                       "Failed to clear write for %s", cxn->desc);
+            FORCE_SET_READ_READY(cxn);
+            FORCE_CLEAR_WRITE_READY(cxn);
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_WANT_WRITE) {
             LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_WRITE");
-            rv = ind_soc_data_in_pause(cxn->sd);
-            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                       "Failed to pause read for %s", cxn->desc);
-            rv = ind_soc_data_out_ready(cxn->sd);
-            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                       "Failed to set write for %s", cxn->desc);
+            FORCE_CLEAR_READ_READY(cxn);
+            FORCE_SET_WRITE_READY(cxn);
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_ZERO_RETURN) {
             LOG_ERROR(cxn, "TLS handshake shutdown controlled");
@@ -2079,9 +2137,7 @@ ind_cxn_start(connection_t *cxn)
                "Unable to register socket for %s", cxn->desc);
 
     /* block reads until connect() has completed */
-    rv = ind_soc_data_in_pause(cxn->sd);
-    AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-               "Failed to pause socket for %s", cxn->desc);
+    FORCE_CLEAR_READ_READY(cxn);
 
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
@@ -2092,9 +2148,7 @@ ind_cxn_start(connection_t *cxn)
             cxn_state_set(cxn, CXN_S_TLS_HANDSHAKING);
         } else {
             cxn_state_set(cxn, CXN_S_HANDSHAKING);
-            rv = ind_soc_data_in_resume(cxn->sd);
-            AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                       "Failed to resume socket for %s", cxn->desc);
+            FORCE_SET_READ_READY(cxn);
         }
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
@@ -2134,10 +2188,8 @@ void
 ind_cxn_pause(connection_t *cxn)
 {
     if (cxn->pause_refcount++ == 0) {
-        if (ind_soc_data_in_pause(cxn->sd) < 0) {
-            LOG_INTERNAL(cxn, "Error pausing connection");
-            return;
-        }
+        /* FIXME were there cases where we could not clear?! */
+        CLEAR_READ_READY(cxn);
     }
 }
 
@@ -2146,7 +2198,7 @@ ind_cxn_resume(connection_t *cxn)
 {
     AIM_ASSERT(cxn->pause_refcount > 0);
     if (--cxn->pause_refcount == 0) {
-        (void)ind_soc_data_in_resume(cxn->sd);
+        SET_READ_READY(cxn);
     }
 }
 

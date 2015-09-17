@@ -594,8 +594,6 @@ do_tls_handshake(SSL *ssl)
     } while (rv != 1 && count < 256);
     INDIGO_ASSERT(rv == 1, "Failed to complete TLS handshake");
     printf("handshake complete, cipher %s\n", SSL_get_cipher(ssl));
-    printf("secure reneg is %ld\n",
-           SSL_get_secure_renegotiation_support(ssl));
 }
 
 
@@ -914,9 +912,6 @@ test_normal(bool use_tls, int domain, char *addr)
            get_domain_name(domain), addr);
 }
 
-
-/* KHC FIXME add test_no_tls_handshake */
-/* none started, or partial handshake done */
 
 static void
 test_no_hello(bool use_tls)
@@ -1606,6 +1601,12 @@ void run_all_tests(bool use_tls)
         test_listener(use_tls, AF_UNIX);
     }
 }
+
+
+/* KHC FIXME add test_no_tls_handshake */
+/* none started, or partial handshake done */
+/* KHC FIXME barrier test */
+/* KHC FIXME barrier inside of bundle */
 
 
 int aim_main(int argc, char* argv[])
