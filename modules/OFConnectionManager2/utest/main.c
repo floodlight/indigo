@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
+#include <poll.h>
 
 #include <indigo/of_connection_manager.h>
 #include <indigo/of_state_manager.h>
@@ -104,9 +106,18 @@ cxn_status_change(indigo_controller_id_t controller_id,
 #define CONTROLLER_PORT2 12444
 #define CONTROLLER_UNIX "/tmp/controller_unix"
 
+
 /* SSL configuration */
-#define CERTIFICATE_FILE "/tmp/server.crt"
-#define PRIVATE_KEY_FILE "/tmp/server.key"
+#define TEST_FS "%s/../../../../../../modules/%s/utest/%s"
+/* FIXME this should be defined somewhere */
+#define MOD_NAME "OFConnectionManager2"
+#define CA_CERT_FILE "ca.cert"
+#define CONTROLLER_CERT_FILE "controller.cert"
+#define CONTROLLER_PRIV_KEY_FILE "controller.key"
+#define SWITCH_CERT_FILE "switch.cert"
+#define SWITCH_PRIV_KEY_FILE "switch.key"
+/* concatenate with the appropriate file name */
+char *basedir;
 
 
 static int
@@ -267,6 +278,7 @@ of_sendmsg(bool is_tls, intptr_t tl, of_object_t *obj)
     of_object_xid_set(obj, xid_get());
     of_object_wire_buffer_steal(obj, &data);
     if (is_tls) {
+        ERR_clear_error();
         int rv = SSL_write((SSL*)tl, data, of_message_length_get(data));
         if (rv != of_message_length_get(data)) {
             if (rv == -1) {
@@ -361,6 +373,7 @@ tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
     int i = 0;
 
     do {
+        ERR_clear_error();
         ret = SSL_read(ssl, buf, header_bytes);
         i++;
     } while (i < 256 && ret == -1 && 
@@ -374,6 +387,7 @@ tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
     INDIGO_ASSERT(msglen <= buflen, "message len %d exceeds buffer len %d",
                   msglen, buflen);
     if (msglen - header_bytes > 0) {
+        ERR_clear_error();
         ret = SSL_read(ssl, buf+header_bytes, msglen-header_bytes);
         INDIGO_ASSERT(ret == msglen-header_bytes, 
                       "body read %d bytes, expected %d",
@@ -494,6 +508,7 @@ tls_attach(int sd)
 {
     SSL_CTX *ctx;
     SSL *ssl;
+    char filename[256];
 
     ctx = SSL_CTX_new(TLSv1_2_server_method());
     if (ctx == NULL) {
@@ -508,13 +523,18 @@ tls_attach(int sd)
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    if (SSL_CTX_use_certificate_file(ctx, CERTIFICATE_FILE,
-                                     SSL_FILETYPE_PEM) != 1) {
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, CA_CERT_FILE);
+    if (SSL_CTX_load_verify_locations(ctx, filename, NULL) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    if (SSL_CTX_use_PrivateKey_file(ctx, PRIVATE_KEY_FILE,
-                                    SSL_FILETYPE_PEM) != 1) {
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, CONTROLLER_CERT_FILE);
+    if (SSL_CTX_use_certificate_file(ctx, filename, SSL_FILETYPE_PEM) != 1) {
+        ERR_print_errors_fp(stderr);
+        assert(0);
+    }
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, CONTROLLER_PRIV_KEY_FILE);
+    if (SSL_CTX_use_PrivateKey_file(ctx, filename, SSL_FILETYPE_PEM) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
     }
@@ -522,7 +542,8 @@ tls_attach(int sd)
         fprintf(stderr, "private key does not match public certificate\n");
         assert(0);
     }
-
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                       NULL);
     ssl = SSL_new(ctx);
     if (ssl == NULL) {
         ERR_print_errors_fp(stderr);
@@ -543,34 +564,7 @@ static void
 tls_detach(SSL *ssl)
 {
     SSL_CTX *ctx = SSL_get_SSL_CTX(ssl);
-    int rv;
     int sd;
-
-    /* send closure alert */
-    rv = SSL_shutdown(ssl);
-    if (rv == 1) {
-        /* do nothing */
-    } else if (rv == 0) {
-        rv = SSL_shutdown(ssl);
-        if (rv == 1) {
-            /* do nothing */
-        } else if (rv == 0) {
-            INDIGO_ASSERT(0, "Should not be here");
-        } else {
-            int err = SSL_get_error(ssl, rv);
-            fprintf(stderr, "Second SSL shutdown got %d\n", err);
-            if (err == SSL_ERROR_SYSCALL) {
-                fprintf(stderr, "Syscall: %s\n", strerror(errno));
-            }
-        }
-    } else {
-        int err = SSL_get_error(ssl, rv);
-        fprintf(stderr, "First SSL shutdown got %d\n", err);
-        if (err == SSL_ERROR_SYSCALL) {
-            fprintf(stderr, "Syscall: %s\n", strerror(errno));
-        }
-        INDIGO_ASSERT(rv != -1, "Got error on first SSL_shutdown");
-    }
 
     sd = SSL_get_fd(ssl);
     close(sd);
@@ -587,6 +581,7 @@ do_tls_handshake(SSL *ssl)
     int count = 0;
     do {
         OK(ind_soc_select_and_run(1));
+        ERR_clear_error();
         rv = SSL_do_handshake(ssl);
         printf("do_handshake returns %d\n", rv);
         if (rv == 0) {
@@ -677,13 +672,27 @@ tl_close(bool use_tls, intptr_t tl)
 static void
 indigo_setup(void)
 {
+    char ca_cert_filename[256];
+    char switch_cert_filename[256];
+    char switch_priv_key_filename[256];
     ind_soc_config_t config; /* Currently ignored */
+
+    sprintf(ca_cert_filename, TEST_FS, basedir, MOD_NAME, CA_CERT_FILE);
+    sprintf(switch_cert_filename, TEST_FS, basedir, MOD_NAME,
+            SWITCH_CERT_FILE);
+    sprintf(switch_priv_key_filename, TEST_FS, basedir, MOD_NAME,
+            SWITCH_PRIV_KEY_FILE);
 
     INDIGO_MEM_CLEAR(&config, sizeof(config));
     OK(ind_soc_init(&config));
     OK(ind_cxn_init(&cm_config));
 
     OK(indigo_cxn_status_change_register(cxn_status_change, NULL));
+
+    indigo_cxn_config_tls("HIGH",
+                          ca_cert_filename,
+                          switch_cert_filename,
+                          switch_priv_key_filename);
 
     OK(ind_soc_enable_set(1));
     OK(ind_cxn_enable_set(1));
@@ -800,6 +809,9 @@ test_normal(bool use_tls, int domain, char *addr)
     tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
     /* on handshake complete, unsolicited controller_connections_reply is sent */
     obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
@@ -822,27 +834,43 @@ test_normal(bool use_tls, int domain, char *addr)
     INDIGO_ASSERT(obj->object_id == OF_ROLE_REPLY,
                   "did not receive OF_ROLE_REPLY, got %d", obj->object_id);
 
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
     /* force rehandshake */
     if (use_tls) {
         int rv;
+        int err;
         int i;
         printf("start renegotiate\n");
+        ERR_clear_error();
         rv = SSL_renegotiate((SSL*)tl);
         INDIGO_ASSERT(rv == 1, "SSL_renegotiate returns rv %d", rv);
+        ERR_clear_error();
         rv = SSL_do_handshake((SSL*)tl);
         INDIGO_ASSERT(rv == 1, "first SSL_do_handshake returns rv %d", rv);
-        OK(ind_soc_select_and_run(10));
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+        OK(ind_soc_select_and_run(100));
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
         ((SSL*)tl)->state = SSL_ST_ACCEPT;
         i = 0;
         do {
-            OK(ind_soc_select_and_run(1));
+            printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+            OK(ind_soc_select_and_run(10));
+            printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+            ERR_clear_error();
             rv = SSL_do_handshake((SSL*)tl);
+            err = SSL_get_error((SSL*)tl, rv);
             i++;
-        } while (i < 256 && rv == -1 && 
-                 SSL_get_error((SSL*)tl, rv) == SSL_ERROR_WANT_READ);
-        INDIGO_ASSERT(rv == 1, "second SSL_do_handshake returns rv %d", rv);
+        } while (i < 256 && rv == -1 && err == SSL_ERROR_WANT_READ);
+        if (rv == -1) {
+            ERR_print_errors_fp(stderr);
+        }
+        INDIGO_ASSERT(rv == 1, "second SSL_do_handshake returns rv %d, err %d", rv, err);
         printf("end renegotiate\n");
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
         OK(ind_soc_select_and_run(10));
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
     }
 
     /* once more for fun */
@@ -859,7 +887,7 @@ test_normal(bool use_tls, int domain, char *addr)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
 
     /* check that the client reconnected */
-    OK(ind_soc_select_and_run(10));
+    OK(ind_soc_select_and_run(100));
     tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
@@ -1583,6 +1611,8 @@ void run_all_tests(bool use_tls)
 int aim_main(int argc, char* argv[])
 {
     bool use_tls;
+
+    basedir = dirname(argv[0]);
 
     use_tls = false;
     run_all_tests(use_tls);

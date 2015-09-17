@@ -912,3 +912,8 @@ unit_test_soc_socket_count_get(void)
     return count;
 }
 
+int
+unit_test_soc_socket_events_get(int socket_id)
+{
+    return pollfds[POLLFD_INDEX(socket_id)].events;
+}

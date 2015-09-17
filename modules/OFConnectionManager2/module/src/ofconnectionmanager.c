@@ -335,26 +335,81 @@ controller_t_init(controller_t *controller,
  * SSL_CTX handling
  *------------------------------------------------------------*/
 
+/* KHC FIXME add to configuration file handling */
+
+#define TLS_CFG_PARAM_LEN 256
+typedef struct tls_cfg_s {
+    char cipher_list[TLS_CFG_PARAM_LEN];
+    char ca_cert[TLS_CFG_PARAM_LEN];
+    char switch_cert[TLS_CFG_PARAM_LEN];
+    char switch_priv_key[TLS_CFG_PARAM_LEN];
+} tls_cfg_t;
+
+static tls_cfg_t tls_cfg;
+
+void 
+indigo_cxn_config_tls(char *cipher_list,
+                      char *ca_cert,
+                      char *switch_cert,
+                      char *switch_priv_key)
+{
+    strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
+    strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
+    strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
+    strncpy(tls_cfg.switch_priv_key, switch_priv_key,
+            sizeof(tls_cfg.switch_priv_key));
+}
+
+
 static SSL_CTX *
 ssl_ctx_alloc(void)
 {
     SSL_CTX *ctx;
 
+    /* KHC FIXME macro for buf/ERR_error_string */
     ctx = SSL_CTX_new(TLSv1_2_client_method());
     if (ctx == NULL) {
         char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("ssl_ctx alloc: %s", buf);
+        AIM_LOG_ERROR("Failed to allocate SSL_CTX: %s", buf);
         return NULL;
     }
-    /* KHC FIXME make configurable */
-    if (SSL_CTX_set_cipher_list(ctx, "HIGH") != 1) {
+    if (SSL_CTX_set_cipher_list(ctx, tls_cfg.cipher_list) != 1) {
         char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("ssl_ctx alloc: %s", buf);
+        AIM_LOG_ERROR("Failed to set cipher list: %s", buf);
         SSL_CTX_free(ctx);
         return NULL;
     }
+    if (SSL_CTX_load_verify_locations(ctx, tls_cfg.ca_cert, NULL) != 1) {
+        char buf[IND_SSL_ERR_LEN];
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("Failed to set certificate file: %s", buf);
+        SSL_CTX_free(ctx);
+        return NULL;
+    }
+    if (SSL_CTX_use_certificate_file(ctx, tls_cfg.switch_cert,
+                                     SSL_FILETYPE_PEM) != 1) {
+        char buf[IND_SSL_ERR_LEN];
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("Failed to set certificate file: %s", buf);
+        SSL_CTX_free(ctx);
+        return NULL;
+    }
+    if (SSL_CTX_use_PrivateKey_file(ctx, tls_cfg.switch_priv_key,
+                                    SSL_FILETYPE_PEM) != 1) {
+        char buf[IND_SSL_ERR_LEN];
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("Failed to set private key file: %s", buf);
+        SSL_CTX_free(ctx);
+        return NULL;
+    }
+    if (SSL_CTX_check_private_key(ctx) != 1) {
+        AIM_LOG_ERROR("private key does not match public certificate");
+        SSL_CTX_free(ctx);
+        return NULL;
+    }
+    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
 
     return ctx;
 }
@@ -1986,3 +2041,18 @@ int unit_test_controller_count_get(void)
 
     return count;
 }
+
+int unit_test_cxn_events_get(indigo_controller_id_t controller_id,
+                             uint8_t aux_id)
+{
+    controller_t *controller;
+
+    AIM_ASSERT(CONTROLLER_ID_VALID(controller_id) &&
+               CONTROLLER_ID_ACTIVE(controller_id));
+    controller = ID_TO_CONTROLLER(controller_id);
+
+    AIM_ASSERT(aux_id < MAX_AUX_CONNECTIONS);
+
+    return unit_test_soc_socket_events_get(controller->cxns[aux_id]->sd);
+}
+

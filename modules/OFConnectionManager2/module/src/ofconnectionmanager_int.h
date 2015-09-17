@@ -106,6 +106,12 @@ void ind_cxn_bundle_cleanup(connection_t *cxn);
 void ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *_obj);
 void ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *_obj);
 
+/* KHC FIXME expose as public API */
+void 
+indigo_cxn_config_tls(char *cipher_list,
+                      char *ca_cert,
+                      char *switch_cert,
+                      char *switch_priv_key);
 
 /*
  * helper functions for unit testing only; 
@@ -116,5 +122,8 @@ cxn_state_t unit_test_cxn_state_get(indigo_controller_id_t controller_id,
 
 int unit_test_controller_count_get(void);
 int unit_test_connection_count_get(void);
+
+int unit_test_cxn_events_get(indigo_controller_id_t controller_id,
+                             uint8_t aux_id);
 
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */
