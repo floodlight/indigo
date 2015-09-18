@@ -146,12 +146,11 @@ typedef struct controller_s {
  */
 #define CXN_S_DESCS                                                     \
     cxn_s_desc(0, CXN_S_INIT, "Initialized", 5000)                      \
-    cxn_s_desc(1, CXN_S_TLS_HANDSHAKING, "TLS Handshaking", 5000)       \
-    cxn_s_desc(2, CXN_S_HANDSHAKING, "Handshaking", 5000)               \
-    cxn_s_desc(3, CXN_S_HANDSHAKE_COMPLETE, "Handshake Complete", 0)    \
-    cxn_s_desc(4, CXN_S_CLOSING, "Closing", 5000)                       \
-    cxn_s_desc(5, CXN_S_CLOSED, "Closed", 0)                            \
-    cxn_s_desc(6, CXN_S_COUNT, "COUNT", 0) /* last value */
+    cxn_s_desc(1, CXN_S_HANDSHAKING, "Handshaking", 5000)               \
+    cxn_s_desc(2, CXN_S_HANDSHAKE_COMPLETE, "Handshake Complete", 0)    \
+    cxn_s_desc(3, CXN_S_CLOSING, "Closing", 5000)                       \
+    cxn_s_desc(4, CXN_S_CLOSED, "Closed", 0)                            \
+    cxn_s_desc(5, CXN_S_COUNT, "COUNT", 0) /* last value */
 
 typedef enum cxn_state_e {
 #define cxn_s_desc(_val, _id, _name, _timeout) _id = _val,

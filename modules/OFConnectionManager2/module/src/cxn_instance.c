@@ -74,8 +74,6 @@ static void
 cxn_state_set(connection_t *cxn, cxn_state_t new_state);
 static indigo_error_t
 cxn_try_to_connect(connection_t *cxn);
-static indigo_error_t
-cxn_try_to_tls_handshake(connection_t *cxn);
 
 
 /* Maximum number of messages to send per write callback */
@@ -236,25 +234,30 @@ cxn_unregister_debug_counters(connection_t *cxn)
  * Connection read/write event management
  *------------------------------------------------------------*/
 
-/* FIXME can we get rid of the TLS_HANDSHAKING state? */
-
-#define IS_TLS_HANDSHAKING(cxn) \
+#define IS_TLS_INIT_HANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_in_init(cxn->ssl))
+#define IS_TLS_REHANDSHAKING(cxn) \
     ((cxn->ssl) && SSL_renegotiate_pending(cxn->ssl))
 
-#define FORCE_SET_READ_READY(cxn) set_read_event__(cxn, true)
-#define FORCE_CLEAR_READ_READY(cxn) clear_read_event__(cxn, true)
-#define FORCE_SET_WRITE_READY(cxn) set_write_event__(cxn, true)
-#define FORCE_CLEAR_WRITE_READY(cxn) clear_write_event__(cxn, true)
+/* Forcibly set or clear connection read/write events, 
+ * ignoring TLS handshake state */
+#define FORCE_SET_READ_READY(cxn) set_read_event(cxn, true)
+#define FORCE_CLEAR_READ_READY(cxn) clear_read_event(cxn, true)
+#define FORCE_SET_WRITE_READY(cxn) set_write_event(cxn, true)
+#define FORCE_CLEAR_WRITE_READY(cxn) clear_write_event(cxn, true)
 
-#define SET_READ_READY(cxn) set_read_event__(cxn, false)
-#define CLEAR_READ_READY(cxn) clear_read_event__(cxn, false)
-#define SET_WRITE_READY(cxn) set_write_event__(cxn, false)
-#define CLEAR_WRITE_READY(cxn) clear_write_event__(cxn, false)
+/* Set or clear connection read/write events
+ * only if TLS rehandshaking is not occurring */
+#define SET_READ_READY(cxn) set_read_event(cxn, false)
+#define CLEAR_READ_READY(cxn) clear_read_event(cxn, false)
+#define SET_WRITE_READY(cxn) set_write_event(cxn, false)
+#define CLEAR_WRITE_READY(cxn) clear_write_event(cxn, false)
 
+/* Internal functions only; call macros above instead */
 static void
-set_read_event__(connection_t *cxn, bool force)
+set_read_event(connection_t *cxn, bool force)
 {
-    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
         int rv = ind_soc_data_in_resume(cxn->sd);
         INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
                       "Cannot set read event on socket %d", cxn->sd);
@@ -262,9 +265,9 @@ set_read_event__(connection_t *cxn, bool force)
 }
 
 static void
-clear_read_event__(connection_t *cxn, bool force)
+clear_read_event(connection_t *cxn, bool force)
 {
-    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
         int rv = ind_soc_data_in_pause(cxn->sd);
         INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
                       "Cannot clear read event on socket %d", cxn->sd);
@@ -272,9 +275,9 @@ clear_read_event__(connection_t *cxn, bool force)
 }
 
 static void
-set_write_event__(connection_t *cxn, bool force)
+set_write_event(connection_t *cxn, bool force)
 {
-    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
         int rv = ind_soc_data_out_ready(cxn->sd);
         INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
                       "Cannot set write event on socket %d", cxn->sd);
@@ -282,9 +285,9 @@ set_write_event__(connection_t *cxn, bool force)
 }
 
 static void
-clear_write_event__(connection_t *cxn, bool force)
+clear_write_event(connection_t *cxn, bool force)
 {
-    if (force || !IS_TLS_HANDSHAKING(cxn)) {
+    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
         int rv = ind_soc_data_out_clear(cxn->sd);
         INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
                       "Cannot clear write event on socket %d", cxn->sd);
@@ -1458,6 +1461,80 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
 
 /*----------*/
 
+/*
+ * Note on TLS support:
+ * The approach taken here is to keep calling SSL_read() or SSL_write()
+ * as usual, until SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE are returned.
+ * When this happens, call SSL_renegotiate_pending() to determine if a
+ * rehandshake is happening; if so, take over the connection's read/write
+ * events and repeatedly call SSL_do_handshake() selecting on the desired
+ * events as indicated by the WANT_READ/WANT_WRITE error codes.
+ * When the rehandshake completes, restore the connection's read/write 
+ * events and resume normal processing.
+ *
+ * See README in this directory for further details.
+ */
+
+/**
+ * Attempt to advance TLS handshake to completion on the specified connection.
+ * Returns INDIGO_ERROR_UNKNOWN on error,
+ * INDIGO_ERROR_NONE on success,
+ * INDIGO_ERROR_PENDING on in-flight connection.
+ * Caller's responsibility to clean up on error.
+ */
+static indigo_error_t
+cxn_try_to_tls_handshake(connection_t *cxn)
+{
+    int rv;
+
+    ERR_clear_error();
+    rv = SSL_do_handshake(cxn->ssl);
+    if (rv == 1) {
+        LOG_INFO(cxn, "TLS handshake completed, cipher %s",
+                 SSL_get_cipher(cxn->ssl));
+        LOG_VERBOSE(cxn, "restoring socket read/write state");
+        /* restore desired read/write event state */
+        if (cxn->pause_refcount) {
+            CLEAR_READ_READY(cxn);
+        } else {
+            SET_READ_READY(cxn);
+        }
+        if (cxn->pkts_enqueued) {
+            SET_WRITE_READY(cxn);
+        } else {
+            CLEAR_WRITE_READY(cxn);
+        }
+        return INDIGO_ERROR_NONE;
+    } else {
+        int err = SSL_get_error(cxn->ssl, rv);
+        if (err == SSL_ERROR_WANT_READ) {
+            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_READ");
+            FORCE_SET_READ_READY(cxn);
+            FORCE_CLEAR_WRITE_READY(cxn);
+            return INDIGO_ERROR_PENDING;
+        } else if (err == SSL_ERROR_WANT_WRITE) {
+            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_WRITE");
+            FORCE_CLEAR_READ_READY(cxn);
+            FORCE_SET_WRITE_READY(cxn);
+            return INDIGO_ERROR_PENDING;
+        } else if (err == SSL_ERROR_ZERO_RETURN) {
+            LOG_ERROR(cxn, "TLS handshake shutdown controlled");
+            return INDIGO_ERROR_UNKNOWN;
+        } else {
+            LOG_ERROR(cxn, "TLS handshake fatal error %d", rv);
+            if (err == SSL_ERROR_SYSCALL) {
+                LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
+            } else {
+                char buf[IND_SSL_ERR_LEN];
+                ERR_error_string(ERR_get_error(), buf);
+                LOG_ERROR(cxn, "TLS other: %s", buf);
+            }
+            return INDIGO_ERROR_UNKNOWN;
+        }
+    }    
+}
+
+
 /**
  * @brief Callback to process "socket ready"
  *
@@ -1510,26 +1587,10 @@ cxn_socket_ready(
         return;
     }
 
-    /* handle TLS handshake */
-    if (cxn->state == CXN_S_TLS_HANDSHAKING) {
-        switch (cxn_try_to_tls_handshake(cxn)) {
-        case INDIGO_ERROR_NONE:
-            /* transition to handshaking */
-            cxn_state_set(cxn, CXN_S_HANDSHAKING);
-            break;
-        case INDIGO_ERROR_PENDING:
-            /* do nothing, wait for next iteration of cxn_socket_ready */
-            break;
-        default:
-            /* something bad happened, close connection */
-            /* transition to closing */
-            cxn_state_set(cxn, CXN_S_CLOSING);
-        }
-        return;
-    }
-
-    /* handle rehandshaking if necessary */
-    if (IS_TLS_HANDSHAKING(cxn)) {
+    /* handle rehandshaking if necessary;
+     * INIT state check skips TLS handshaking until socket is connected */
+    if (cxn->state != CXN_S_INIT &&
+        (IS_TLS_INIT_HANDSHAKING(cxn) || IS_TLS_REHANDSHAKING(cxn))) {
         LOG_VERBOSE(cxn, "handle TLS handshaking");
         switch (cxn_try_to_tls_handshake(cxn)) {
         case INDIGO_ERROR_NONE:
@@ -1558,13 +1619,8 @@ cxn_socket_ready(
         if (cxn->state == CXN_S_INIT && !CXN_LISTEN(cxn)) {
             rv = cxn_try_to_connect(cxn);
             if (rv == INDIGO_ERROR_NONE) {
-                /* success, move to next state */
-                if (cxn->ssl) {
-                    cxn_state_set(cxn, CXN_S_TLS_HANDSHAKING);
-                } else {
-                    cxn_state_set(cxn, CXN_S_HANDSHAKING);
-                    FORCE_SET_READ_READY(cxn);
-                }
+                cxn_state_set(cxn, CXN_S_HANDSHAKING);
+                FORCE_SET_READ_READY(cxn);
             } else if (rv == INDIGO_ERROR_PENDING) {
                 AIM_DIE("In-flight connection cannot be write ready");
             } else {
@@ -1590,28 +1646,19 @@ cxn_socket_ready(
  * State machine for (non-listen, non-local) Connection Instance
  *
  * init: initial state --------------------------- timeout ---+
- *         |                                                  |
- *         | trigger: connect() completes                     |
- *         | action: move to TLS decision box                 |
- *         |                                                  |
- *  +---- TLS? ---+                                           |
- *  |             |                                           |
- *  | no TLS:     | yes TLS: SSL_do_handshake()               |
- *  | send        v                                           |
- *  | hello    TLS_handshaking ------------------- timeout ---+
- *  |             |                                           |
- *  |             | trigger: TLS_do_handshake() completes     |
- *  |             | action: send hello                        |
- *  v             v                                           |
- * handshaking: transport layer established ------ timeout ---+
+ *    |                                                       |
+ *    | trigger: connect() completes                          |
+ *    | action: send hello, advance to next state             |
+ *    v                                                       |
+ * handshaking: TCP connection established ------- timeout ---+
  *    |                                                       |
  *    | trigger: hello received, features_request received    |
- *    | action: send features_reply                           |
+ *    | action: send features_reply, advance to next state    |
  *    v                                                       |
  * handshake_complete: controller connection is usable        |
  *    |    periodically generate echo requests                |
  *    |                                                       |
- *    | openflow error or transport layer closed              |
+ *    | openflow error or TCP connection closed               |
  *    v                                                       |
  * closing: clean up                                   <------+
  *    |    allow outstanding_op_cnt to be decremented
@@ -1672,7 +1719,6 @@ cxn_state_timeout(void *cookie)
 
     switch (cxn->state) {
     case CXN_S_INIT:  /* fall-through */
-    case CXN_S_TLS_HANDSHAKING:  /* fall-through */
     case CXN_S_HANDSHAKING:  /* fall-through */
     case CXN_S_CLOSING:
         ind_cxn_stop(cxn);
@@ -1726,7 +1772,6 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
     /* Exit conditions for old state */
     switch (old_state) {
     case CXN_S_INIT:  /* fall-through */
-    case CXN_S_TLS_HANDSHAKING:  /* fall-through */
     case CXN_S_CLOSING:
         ind_soc_timer_event_unregister(cxn_state_timeout, (void *)cxn);
         break;
@@ -1766,23 +1811,6 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
     case CXN_S_INIT:
         /* this should never happen */
         AIM_DIE("Error: transitioned to INIT");
-        break;
-
-    case CXN_S_TLS_HANDSHAKING:
-        /* trigger TLS handshake */
-        switch (cxn_try_to_tls_handshake(cxn)) {
-        case INDIGO_ERROR_NONE:
-            /* Recursive call; transition to handshaking */
-            cxn_state_set(cxn, CXN_S_HANDSHAKING);
-            break;
-        case INDIGO_ERROR_PENDING:
-            /* do nothing, wait for next iteration of cxn_socket_ready */
-            break;
-        default:
-            /* something bad happened, close connection */
-            /* Recursive call; transition to closing */
-            cxn_state_set(cxn, CXN_S_CLOSING);
-        }
         break;
 
     case CXN_S_HANDSHAKING:
@@ -2057,66 +2085,6 @@ cxn_try_to_connect(connection_t *cxn)
 
 
 /**
- * Attempt to start and/or complete TLS handshake to the specified controller.
- * Returns INDIGO_ERROR_PARAM or INDIGO_ERROR_UNKNOWN on error,
- * INDIGO_ERROR_NONE on success,
- * INDIGO_ERROR_PENDING on in-flight connection.
- * Caller's responsibility to clean up on error.
- */
-static indigo_error_t
-cxn_try_to_tls_handshake(connection_t *cxn)
-{
-    int rv;
-
-    ERR_clear_error();
-    rv = SSL_do_handshake(cxn->ssl);
-    if (rv == 1) {
-        LOG_INFO(cxn, "TLS handshake completed, cipher %s",
-                 SSL_get_cipher(cxn->ssl));
-        LOG_VERBOSE(cxn, "restoring socket read/write state");
-        /* restore desired read/write event state */
-        if (cxn->pause_refcount) {
-            CLEAR_READ_READY(cxn);
-        } else {
-            SET_READ_READY(cxn);
-        }
-        if (cxn->pkts_enqueued) {
-            SET_WRITE_READY(cxn);
-        } else {
-            CLEAR_WRITE_READY(cxn);
-        }
-        return INDIGO_ERROR_NONE;
-    } else {
-        int err = SSL_get_error(cxn->ssl, rv);
-        if (err == SSL_ERROR_WANT_READ) {
-            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_READ");
-            FORCE_SET_READ_READY(cxn);
-            FORCE_CLEAR_WRITE_READY(cxn);
-            return INDIGO_ERROR_PENDING;
-        } else if (err == SSL_ERROR_WANT_WRITE) {
-            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_WRITE");
-            FORCE_CLEAR_READ_READY(cxn);
-            FORCE_SET_WRITE_READY(cxn);
-            return INDIGO_ERROR_PENDING;
-        } else if (err == SSL_ERROR_ZERO_RETURN) {
-            LOG_ERROR(cxn, "TLS handshake shutdown controlled");
-            return INDIGO_ERROR_UNKNOWN;
-        } else {
-            LOG_ERROR(cxn, "TLS handshake fatal error %d", rv);
-            if (err == SSL_ERROR_SYSCALL) {
-                LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
-            } else {
-                char buf[IND_SSL_ERR_LEN];
-                ERR_error_string(ERR_get_error(), buf);
-                LOG_ERROR(cxn, "TLS other: %s", buf);
-            }
-            return INDIGO_ERROR_UNKNOWN;
-        }
-    }    
-}
-
-
-/**
  * Start the specified connection.
  */
 void
@@ -2144,12 +2112,8 @@ ind_cxn_start(connection_t *cxn)
     if (rv == INDIGO_ERROR_NONE) {
         /* success, move to next state;
          * connections started from the listener will also return 0 */
-        if (cxn->ssl) {
-            cxn_state_set(cxn, CXN_S_TLS_HANDSHAKING);
-        } else {
-            cxn_state_set(cxn, CXN_S_HANDSHAKING);
-            FORCE_SET_READ_READY(cxn);
-        }
+        cxn_state_set(cxn, CXN_S_HANDSHAKING);
+        FORCE_SET_READ_READY(cxn);
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
         rv = ind_soc_timer_event_register_with_priority(

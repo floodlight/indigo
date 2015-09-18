@@ -615,15 +615,12 @@ advance_to_handshake_complete(bool use_tls,
     sd = server_accept(lsd);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[controller_id][aux_id]);
-
+    INDIGO_ASSERT(unit_test_cxn_state_get(controller_id, aux_id) ==
+                  CXN_S_HANDSHAKING);
     if (use_tls) {
-        INDIGO_ASSERT(unit_test_cxn_state_get(controller_id, aux_id) ==
-                      CXN_S_TLS_HANDSHAKING);
         tl = (intptr_t) tls_attach(sd);
         do_tls_handshake((SSL *)tl);
     } else {
-        INDIGO_ASSERT(unit_test_cxn_state_get(controller_id, aux_id) ==
-                      CXN_S_HANDSHAKING);
         tl = (intptr_t) sd;
     }
 
@@ -799,10 +796,7 @@ test_normal(bool use_tls, int domain, char *addr)
 
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-    INDIGO_ASSERT((!use_tls && 
-                   unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING) ||
-                  (use_tls &&
-                   unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING));
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
     tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
@@ -936,21 +930,16 @@ test_no_hello(bool use_tls)
 
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-    INDIGO_ASSERT((!use_tls && 
-                   unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING) ||
-                  (use_tls &&
-                   unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING));
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
     sd = server_accept(lsd);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING);
         tl = (intptr_t) tls_attach(sd);
         do_tls_handshake((SSL *)tl);
     } else {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
         tl = (intptr_t) sd;
     }
 
@@ -971,12 +960,11 @@ test_no_hello(bool use_tls)
     OK(ind_soc_select_and_run(10));
     sd = server_accept(lsd);
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING);
         tl = (intptr_t) tls_attach(sd);
         do_tls_handshake((SSL *)tl);
     } else {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
         tl = (intptr_t) sd;
     }
 
@@ -1018,21 +1006,16 @@ test_no_features_request(bool use_tls)
 
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-    INDIGO_ASSERT((!use_tls && 
-                   unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING) ||
-                  (use_tls &&
-                   unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING));
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
     sd = server_accept(lsd);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING);
         tl = (intptr_t) tls_attach(sd);
         do_tls_handshake((SSL *)tl);
     } else {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
         tl = (intptr_t) sd;
     }
 
@@ -1053,12 +1036,11 @@ test_no_features_request(bool use_tls)
     OK(ind_soc_select_and_run(10));
     sd = server_accept(lsd);
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING);
         tl = (intptr_t) tls_attach(sd);
         do_tls_handshake((SSL *)tl);
     } else {
-        INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
         tl = (intptr_t) sd;
     }
 
@@ -1109,10 +1091,7 @@ test_aux3(bool use_tls, int delta)
 
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
-    INDIGO_ASSERT((!use_tls && 
-                   unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING) ||
-                  (use_tls &&
-                   unit_test_cxn_state_get(id, 0) == CXN_S_TLS_HANDSHAKING));
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
     printf("Advance main connection to handshake complete\n");
     tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
