@@ -944,11 +944,11 @@ read_from_cxn(connection_t *cxn)
                 switch(SSL_get_error(cxn->ssl, bytes_in)) {
                 case SSL_ERROR_WANT_READ:
                     /* do nothing */
-                    LOG_VERBOSE(cxn, "SSL_read returns WANT_READ");
+                    LOG_TRACE(cxn, "SSL_read returns WANT_READ");
                     return INDIGO_ERROR_PENDING;
                     break;
                 case SSL_ERROR_WANT_WRITE:
-                    LOG_VERBOSE(cxn, "SSL_read returns WANT_WRITE");
+                    LOG_TRACE(cxn, "SSL_read returns WANT_WRITE");
                     return INDIGO_ERROR_PENDING;
                     break;
                 case SSL_ERROR_SYSCALL:
@@ -1261,12 +1261,12 @@ ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
             switch(SSL_get_error(cxn->ssl, written)) {
             case SSL_ERROR_WANT_READ:
                 /* do nothing */
-                LOG_VERBOSE(cxn, "SSL_write returns WANT_READ");
+                LOG_TRACE(cxn, "SSL_write returns WANT_READ");
                 return total;
                 break;
             case SSL_ERROR_WANT_WRITE:
                 /* do nothing */
-                LOG_VERBOSE(cxn, "SSL_write returns WANT_WRITE");
+                LOG_TRACE(cxn, "SSL_write returns WANT_WRITE");
                 return total;
                 break;
             case SSL_ERROR_SYSCALL:
@@ -1492,7 +1492,6 @@ cxn_try_to_tls_handshake(connection_t *cxn)
     if (rv == 1) {
         LOG_INFO(cxn, "TLS handshake completed, cipher %s",
                  SSL_get_cipher(cxn->ssl));
-        LOG_VERBOSE(cxn, "restoring socket read/write state");
         /* restore desired read/write event state */
         if (cxn->pause_refcount) {
             CLEAR_READ_READY(cxn);
@@ -1508,12 +1507,12 @@ cxn_try_to_tls_handshake(connection_t *cxn)
     } else {
         int err = SSL_get_error(cxn->ssl, rv);
         if (err == SSL_ERROR_WANT_READ) {
-            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_READ");
+            LOG_TRACE(cxn, "SSL_do_handshake returns WANT_READ");
             FORCE_SET_READ_READY(cxn);
             FORCE_CLEAR_WRITE_READY(cxn);
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_WANT_WRITE) {
-            LOG_VERBOSE(cxn, "SSL_do_handshake returns WANT_WRITE");
+            LOG_TRACE(cxn, "SSL_do_handshake returns WANT_WRITE");
             FORCE_CLEAR_READ_READY(cxn);
             FORCE_SET_WRITE_READY(cxn);
             return INDIGO_ERROR_PENDING;

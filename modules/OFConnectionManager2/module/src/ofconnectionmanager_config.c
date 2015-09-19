@@ -421,10 +421,10 @@ ind_cxn_cfg_commit(void)
         struct controller *c = &staged_config.controllers[i];
         const struct controller *old_controller;
         int rv;
-        indigo_cxn_params_tcp_over_ipv4_t *proto = &c->proto.tcp_over_ipv4;
-        /* KHC FIXME print protocol */
-        AIM_LOG_INFO("controller %d: %s:%hu", i,
-                     proto->controller_ip, proto->controller_port);
+        char desc[256];
+
+        ind_cxn_proto_ip_string(&c->proto, desc, sizeof(desc));
+        AIM_LOG_INFO("controller %d: %s", i, desc);
 
         /* Keep existing connections to the same controller. */
         if ((old_controller = find_controller(&current_config, &c->proto))) {
@@ -435,8 +435,8 @@ ind_cxn_cfg_commit(void)
 
         rv = indigo_controller_add(&c->proto, &c->config, &c->controller_id);
         if (rv != 0) {
-            AIM_LOG_ERROR("failed to add controller connection %d: %s:%u",
-                          i, proto->controller_ip, proto->controller_port);
+            AIM_LOG_ERROR("failed to add controller connection %d: %s",
+                          i, desc);
         }
     }
 

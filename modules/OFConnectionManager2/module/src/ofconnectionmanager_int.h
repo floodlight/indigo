@@ -106,12 +106,13 @@ void ind_cxn_bundle_cleanup(connection_t *cxn);
 void ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *_obj);
 void ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *_obj);
 
-/* KHC FIXME expose as public API */
-void 
-indigo_cxn_config_tls(char *cipher_list,
-                      char *ca_cert,
-                      char *switch_cert,
-                      char *switch_priv_key);
+/*
+ * populate destbuf with useful connection identifying info.
+ * destbuf has maximum length destbuflen.
+ */
+int
+ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
+                        char *destbuf, int destbuflen);
 
 /*
  * helper functions for unit testing only; 

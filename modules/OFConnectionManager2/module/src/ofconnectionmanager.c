@@ -268,9 +268,9 @@ ind_cxn_syslog_active_controllers(void)
  * populate destbuf with useful connection identifying info.
  * destbuf has maximum length destbuflen.
  */
-static int
-proto_ip_string(indigo_cxn_protocol_params_t *params,
-                char *destbuf, int destbuflen)
+int
+ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
+                        char *destbuf, int destbuflen)
 {
     const char inv[] = "invalid";
     int len;
@@ -328,8 +328,8 @@ controller_t_init(controller_t *controller,
     INDIGO_MEM_COPY(&controller->config_params,
                     config_params,
                     sizeof(controller->config_params));
-    proto_ip_string(&controller->protocol_params,
-                    controller->desc, sizeof(controller->desc));
+    ind_cxn_proto_ip_string(&controller->protocol_params,
+                            controller->desc, sizeof(controller->desc));
 }
 
 
@@ -337,19 +337,16 @@ controller_t_init(controller_t *controller,
  * SSL_CTX handling
  *------------------------------------------------------------*/
 
-/* KHC FIXME add to configuration file handling */
-
-#define TLS_CFG_PARAM_LEN 256
 typedef struct tls_cfg_s {
-    char cipher_list[TLS_CFG_PARAM_LEN];
-    char ca_cert[TLS_CFG_PARAM_LEN];
-    char switch_cert[TLS_CFG_PARAM_LEN];
-    char switch_priv_key[TLS_CFG_PARAM_LEN];
+    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN];
+    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
+    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
+    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
 } tls_cfg_t;
 
 static tls_cfg_t tls_cfg;
 
-void 
+indigo_error_t
 indigo_cxn_config_tls(char *cipher_list,
                       char *ca_cert,
                       char *switch_cert,
@@ -360,6 +357,7 @@ indigo_cxn_config_tls(char *cipher_list,
     strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
     strncpy(tls_cfg.switch_priv_key, switch_priv_key,
             sizeof(tls_cfg.switch_priv_key));
+    return INDIGO_ERROR_NONE;
 }
 
 
