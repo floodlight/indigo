@@ -1,0 +1,68 @@
+ConnectionManager SSL Integration
+
+SSL_read() and SSL_write() are used to receive and send data on a
+given connection.  However, if their return codes are negative, you
+are supposed to call SSL_get_error(), which can return
+SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE.
+
+The man page for SSL_read() seems to imply that whenever these errors
+are returned:
+    The calling process then must repeat the call after taking
+    appropriate action to satisfy the needs of SSL_read(). The action
+    depends on the underlying BIO. When using a non-blocking socket,
+    nothing is to be done, but select() can be used to check for the
+    required condition.
+
+The same man page also has the following warning:
+    When an SSL_read() operation has to be repeated because of
+    SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE, it must be
+    repeated with the same arguments.
+
+Additionally, the man page for SSL_get_error says:
+    SSL_ERROR_WANT_READ, SSL_ERROR_WANT_WRITE
+        The operation did not complete; the same TLS/SSL I/O
+        function should be called again later.
+
+All these all imply that we can keep reading and writing until we get
+either of these return codes.  When this happens, we need to stop
+everything, select on the right event (read ready for WANT_READ, write
+ready for WANT_WRITE), and then repeat the failing call.
+
+But this is misleading.
+
+From
+http://openssl.6102.n7.nabble.com/Interleaving-SSL-write-and-SSL-read-td46589.html:
+
+    If SSL_read returns SSL_ERROR_WANT_READ, it is perfectly
+    reasonable to go ahead and call SSL_write or the other way
+    around. Otherwise, it would be impossible to do full-duplex SSL
+    communication witSSh OpenSSL.  I recently ran into a host of similar
+    questions (and issues) and I got most of my questions clarified from
+    David Schwartz's old posts (especially, this thread:
+    http://marc.info/?l=openssl-dev&m=124297302310346&w=2) and the one I
+    posted in SO recently
+    (http://stackoverflow.com/questions/18728355/ssl-renegotiation-with-full-duplex-socket-communication).
+
+    Things become a little tricky when renegotiations are in progress, but
+    the above post talks about it.
+
+    - Karthik.
+
+In particular, when there is nothing to read, calling SSL_read() will
+return SSL_ERROR_WANT_READ, but it is still possible to call
+SSL_write() to send data.
+
+The approach taken here is to keep calling SSL_read() or SSL_write()
+as usual, until SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE are returned.
+When this happens, call SSL_renegotiate_pending() to determine if a
+rehandshake is happening; if so, take over the connection's read/write
+events and repeatedly call SSL_do_handshake(), selecting on the desired
+events as indicated by the WANT_READ/WANT_WRITE error codes.
+When the rehandshake completes, restore the connection's read/write 
+events and resume normal processing.
+
+Renegotiation still needs to be properly tested, but there are indications
+that it does not succeed when application data is being sent during the
+handshake:
+https://rt.openssl.org/Ticket/Display.html?id=2481&user=guest&pass=guest
+
