@@ -155,6 +155,8 @@ typedef union indigo_cxn_protocol_params_u {
     indigo_cxn_params_tcp_over_ipv6_t tcp_over_ipv6;
 #ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
     indigo_cxn_params_unix_t unx;
+    indigo_cxn_params_tcp_over_ipv4_t tls_over_ipv4;
+    indigo_cxn_params_tcp_over_ipv6_t tls_over_ipv6;
 #endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 } indigo_cxn_protocol_params_t;
 

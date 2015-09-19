@@ -74,16 +74,26 @@ cxn_status_change(indigo_controller_id_t controller_id,
 {
     char desc[64];
 
-    if (cxn_proto_params->header.protocol == INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
+    switch(cxn_proto_params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
         snprintf(desc, sizeof(desc), "%s:%d:%d",
                  cxn_proto_params->tcp_over_ipv4.controller_ip,
                  cxn_proto_params->tcp_over_ipv4.controller_port,
                  aux_id);
-    } else {
+        break;
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
         snprintf(desc, sizeof(desc), "%s:%d:%d",
                  cxn_proto_params->tcp_over_ipv6.controller_ip,
                  cxn_proto_params->tcp_over_ipv6.controller_port,
                  aux_id);
+        break;
+    case INDIGO_CXN_PROTO_UNIX:
+        snprintf(desc, sizeof(desc), "%s", cxn_proto_params->unx.unix_path);
+        break;
+    default:
+        snprintf(desc, sizeof(desc), "invalid");
     }
 
     printf("Status for %s (id %d, aux %d), now %s\n", 
@@ -129,7 +139,6 @@ setup_cxn(bool use_tls, char *controller_ip, int controller_port)
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
-
     protocol_params.tcp_over_ipv4.protocol = use_tls?
         INDIGO_CXN_PROTO_TLS_OVER_IPV4: INDIGO_CXN_PROTO_TCP_OVER_IPV4;
     sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", controller_ip);
@@ -333,6 +342,12 @@ of_send_role_request(bool is_tls, intptr_t tl,
     of_role_request_role_set(req, newrole);
     of_role_request_generation_id_set(req, genid);
     of_sendmsg(is_tls, tl, req);
+}
+
+static void
+of_send_barrier_request(bool is_tls, intptr_t tl)
+{
+    of_sendmsg(is_tls, tl, of_barrier_request_new(of_version));
 }
 
 
@@ -760,6 +775,44 @@ get_domain_name(int domain)
 }
 
 static void
+force_rehandshake(indigo_controller_id_t id, SSL *tl)
+{
+    int rv;
+    int err;
+    int i;
+
+    printf("start renegotiate\n");
+    ERR_clear_error();
+    rv = SSL_renegotiate(tl);
+    INDIGO_ASSERT(rv == 1, "SSL_renegotiate returns rv %d", rv);
+    ERR_clear_error();
+    rv = SSL_do_handshake(tl);
+    INDIGO_ASSERT(rv == 1, "first SSL_do_handshake returns rv %d", rv);
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    OK(ind_soc_select_and_run(100));
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    tl->state = SSL_ST_ACCEPT;
+    i = 0;
+    do {
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+        OK(ind_soc_select_and_run(10));
+        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+        ERR_clear_error();
+        rv = SSL_do_handshake(tl);
+        err = SSL_get_error(tl, rv);
+        i++;
+    } while (i < 256 && rv == -1 && err == SSL_ERROR_WANT_READ);
+    if (rv == -1) {
+        ERR_print_errors_fp(stderr);
+    }
+    INDIGO_ASSERT(rv == 1, "second SSL_do_handshake returns rv %d, err %d", rv, err);
+    printf("end renegotiate\n");
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    OK(ind_soc_select_and_run(10));
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+}
+
+static void
 test_normal(bool use_tls, int domain, char *addr)
 {
     indigo_controller_id_t id;
@@ -768,6 +821,7 @@ test_normal(bool use_tls, int domain, char *addr)
     of_object_t *obj;
     of_object_storage_t storage;
     uint8_t buf[512];  /* may need to be increased */
+    indigo_cxn_barrier_blocker_t blocker;
 
     printf("***Start %s, %s, domain %s, addr %s\n", __FUNCTION__, 
            get_tcp_tls(use_tls),
@@ -829,40 +883,35 @@ test_normal(bool use_tls, int domain, char *addr)
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
     INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
 
-    /* force rehandshake */
+    /* send barrier request and wait for barrier reply */
+    of_send_barrier_request(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+
+    /* block barrier, send barrier request */
+    indigo_cxn_block_barrier(id, &blocker);
+    of_send_barrier_request(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+
+#if 0
+    /* FIXME extend this test to see what happens if we force a renegotiation,
+     * and then send some data from the switch to the controller */
     if (use_tls) {
-        int rv;
-        int err;
-        int i;
-        printf("start renegotiate\n");
-        ERR_clear_error();
-        rv = SSL_renegotiate((SSL*)tl);
-        INDIGO_ASSERT(rv == 1, "SSL_renegotiate returns rv %d", rv);
-        ERR_clear_error();
-        rv = SSL_do_handshake((SSL*)tl);
-        INDIGO_ASSERT(rv == 1, "first SSL_do_handshake returns rv %d", rv);
-        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
-        OK(ind_soc_select_and_run(100));
-        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
-        ((SSL*)tl)->state = SSL_ST_ACCEPT;
-        i = 0;
-        do {
-            printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
-            OK(ind_soc_select_and_run(10));
-            printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
-            ERR_clear_error();
-            rv = SSL_do_handshake((SSL*)tl);
-            err = SSL_get_error((SSL*)tl, rv);
-            i++;
-        } while (i < 256 && rv == -1 && err == SSL_ERROR_WANT_READ);
-        if (rv == -1) {
-            ERR_print_errors_fp(stderr);
-        }
-        INDIGO_ASSERT(rv == 1, "second SSL_do_handshake returns rv %d, err %d", rv, err);
-        printf("end renegotiate\n");
-        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
-        OK(ind_soc_select_and_run(10));
-        printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+        force_rehandshake(id, (SSL*)tl);
+    }
+#endif
+
+    /* unblock and wait for reply */
+    indigo_cxn_unblock_barrier(&blocker);
+    OK(ind_soc_select_and_run(50));
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+
+    if (use_tls) {
+        force_rehandshake(id, (SSL*)tl);
     }
 
     /* once more for fun */
@@ -1027,6 +1076,7 @@ test_no_features_request(bool use_tls)
     INDIGO_ASSERT(obj->object_id == OF_HELLO);
 
     /* wait at least 5 seconds for timeout */
+    printf("waiting for features request timeout\n");
     OK(ind_soc_select_and_run(4*1000));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     OK(ind_soc_select_and_run(1000+10));
@@ -1580,12 +1630,6 @@ void run_all_tests(bool use_tls)
         test_listener(use_tls, AF_UNIX);
     }
 }
-
-
-/* KHC FIXME add test_no_tls_handshake */
-/* none started, or partial handshake done */
-/* KHC FIXME barrier test */
-/* KHC FIXME barrier inside of bundle */
 
 
 int aim_main(int argc, char* argv[])

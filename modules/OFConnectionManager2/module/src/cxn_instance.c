@@ -1467,7 +1467,7 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
  * as usual, until SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE are returned.
  * When this happens, call SSL_renegotiate_pending() to determine if a
  * rehandshake is happening; if so, take over the connection's read/write
- * events and repeatedly call SSL_do_handshake() selecting on the desired
+ * events and repeatedly call SSL_do_handshake(), selecting on the desired
  * events as indicated by the WANT_READ/WANT_WRITE error codes.
  * When the rehandshake completes, restore the connection's read/write 
  * events and resume normal processing.

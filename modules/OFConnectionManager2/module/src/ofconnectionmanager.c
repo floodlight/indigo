@@ -44,6 +44,8 @@
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/engine.h>
+#include <openssl/conf.h>
 #include <openssl/evp.h>
 
 #include "ofconnectionmanager_int.h"
@@ -365,53 +367,51 @@ static SSL_CTX *
 ssl_ctx_alloc(void)
 {
     SSL_CTX *ctx;
+    char buf[IND_SSL_ERR_LEN];
 
-    /* KHC FIXME macro for buf/ERR_error_string */
     ctx = SSL_CTX_new(TLSv1_2_client_method());
     if (ctx == NULL) {
-        char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to allocate SSL_CTX: %s", buf);
-        return NULL;
+        goto error;
     }
     if (SSL_CTX_set_cipher_list(ctx, tls_cfg.cipher_list) != 1) {
-        char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set cipher list: %s", buf);
-        SSL_CTX_free(ctx);
-        return NULL;
+        goto error;
     }
     if (SSL_CTX_load_verify_locations(ctx, tls_cfg.ca_cert, NULL) != 1) {
-        char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("Failed to set certificate file: %s", buf);
-        SSL_CTX_free(ctx);
-        return NULL;
+        AIM_LOG_ERROR("Failed to set CA certificate file: %s", buf);
+        goto error;
     }
     if (SSL_CTX_use_certificate_file(ctx, tls_cfg.switch_cert,
                                      SSL_FILETYPE_PEM) != 1) {
-        char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set certificate file: %s", buf);
-        SSL_CTX_free(ctx);
-        return NULL;
+        goto error;
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, tls_cfg.switch_priv_key,
                                     SSL_FILETYPE_PEM) != 1) {
-        char buf[IND_SSL_ERR_LEN];
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set private key file: %s", buf);
-        SSL_CTX_free(ctx);
-        return NULL;
+        goto error;
     }
     if (SSL_CTX_check_private_key(ctx) != 1) {
-        AIM_LOG_ERROR("private key does not match public certificate");
-        SSL_CTX_free(ctx);
-        return NULL;
+        ERR_error_string(ERR_get_error(), buf);
+        AIM_LOG_ERROR("private key does not match public certificate: %s", 
+                      buf);
+        goto error;
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
-
     return ctx;
+
+ error:
+    if (ctx) {
+        SSL_CTX_free(ctx);
+        ctx = NULL;
+    }
+    return NULL;
 }
 
 static void
@@ -1510,7 +1510,11 @@ tls_init(void)
 static void
 tls_deinit(void)
 {
-    /* 88 bytes in 3 blocks are still reachable */
+    /* note: 88 bytes in 3 blocks are still reachable 
+     * from SSL_COMP_get_compression_methods */
+    ERR_remove_thread_state(NULL);
+    ENGINE_cleanup();
+    CONF_modules_unload(1);
     ERR_free_strings();
     EVP_cleanup();
     CRYPTO_cleanup_all_ex_data();
