@@ -346,18 +346,53 @@ typedef struct tls_cfg_s {
 
 static tls_cfg_t tls_cfg;
 
-indigo_error_t
-indigo_cxn_config_tls(char *cipher_list,
-                      char *ca_cert,
-                      char *switch_cert,
-                      char *switch_priv_key)
+
+/* returns false if the certificate given by filename cannot be verified */
+/* assumes the certificate store of SSL_CTX ctx has already been configured */
+static bool
+verify_cert(SSL_CTX *ctx, const char *cert_filename)
 {
-    strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
-    strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
-    strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
-    strncpy(tls_cfg.switch_priv_key, switch_priv_key,
-            sizeof(tls_cfg.switch_priv_key));
-    return INDIGO_ERROR_NONE;
+    bool is_verified = false;
+    X509_STORE *store = SSL_CTX_get_cert_store(ctx);
+    X509_STORE_CTX *verify_ctx = X509_STORE_CTX_new();
+    if (verify_ctx == NULL) {
+        AIM_LOG_ERROR("Cannot allocate X509 store ctx for cert verification");
+        goto error;
+    }
+
+    FILE *fp_cert = fopen(cert_filename, "r");
+    if (fp_cert == NULL) {
+        AIM_LOG_ERROR("Cannot open %s for cert verification", cert_filename);
+        goto error;
+    }
+    
+    X509 *cert = PEM_read_X509(fp_cert, NULL, NULL, NULL);
+    if (fp_cert == NULL) {
+        AIM_LOG_ERROR("Cannot parse %s for cert verification", cert_filename);
+        goto error;
+    }
+
+    X509_STORE_CTX_init(verify_ctx, store, cert, NULL);
+    if (X509_verify_cert(verify_ctx) != 1) {
+        AIM_LOG_ERROR("Failed to verify certificate: %s",
+                      X509_verify_cert_error_string(verify_ctx->error));
+        goto error;
+    }
+
+    is_verified = true;
+
+ error:
+    if (cert) {
+        X509_free(cert);
+    }
+    if (fp_cert) {
+        fclose(fp_cert);
+    }
+    if (verify_ctx) {
+        X509_STORE_CTX_free(verify_ctx);
+    }
+    
+    return is_verified;
 }
 
 
@@ -397,11 +432,18 @@ ssl_ctx_alloc(void)
     }
     if (SSL_CTX_check_private_key(ctx) != 1) {
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("private key does not match public certificate: %s", 
+        AIM_LOG_ERROR("Private key does not match public certificate: %s", 
                       buf);
         goto error;
     }
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+
+    /* verify certificate chain */
+    if (!verify_cert(ctx, tls_cfg.switch_cert)) {
+        AIM_LOG_ERROR("Failed to verify certificate file");
+        goto error;
+    }
+
     return ctx;
 
  error:
@@ -416,6 +458,31 @@ static void
 ssl_ctx_free(SSL_CTX *ctx)
 {
     SSL_CTX_free(ctx);
+}
+
+
+/* public API for TLS configuration */
+indigo_error_t
+indigo_cxn_config_tls(char *cipher_list,
+                      char *ca_cert,
+                      char *switch_cert,
+                      char *switch_priv_key)
+{
+    SSL_CTX *ctx;
+
+    strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
+    strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
+    strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
+    strncpy(tls_cfg.switch_priv_key, switch_priv_key,
+            sizeof(tls_cfg.switch_priv_key));
+
+    ctx = ssl_ctx_alloc();
+    if (ctx) {
+        ssl_ctx_free(ctx);
+        return INDIGO_ERROR_NONE;
+    } else {
+        return INDIGO_ERROR_PARAM;
+    }
 }
 
 

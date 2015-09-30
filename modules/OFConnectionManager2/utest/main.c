@@ -117,10 +117,11 @@ cxn_status_change(indigo_controller_id_t controller_id,
 #define CONTROLLER_UNIX "/tmp/controller_unix"
 
 
-/* SSL configuration */
+/* SSL/TLS configuration */
 #define TEST_FS "%s/../../../../../../modules/%s/utest/%s"
 /* FIXME this should be defined somewhere */
 #define MOD_NAME "OFConnectionManager2"
+#define CIPHER_LIST "HIGH"
 #define CA_CERT_FILE "ca.cert"
 #define CONTROLLER_CERT_FILE "controller.cert"
 #define CONTROLLER_PRIV_KEY_FILE "controller.key"
@@ -534,7 +535,7 @@ tls_attach(int sd)
     SSL_CTX_set_options(ctx, SSL_OP_ALL |
                         SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
 
-    if (SSL_CTX_set_cipher_list(ctx, "HIGH") != 1) {
+    if (SSL_CTX_set_cipher_list(ctx, CIPHER_LIST) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
     }
@@ -679,19 +680,37 @@ tl_close(bool use_tls, intptr_t tl)
 }
 
 
-static void
-indigo_setup(void)
+static indigo_error_t
+tls_setup(bool use_tls,
+          char *cipher_list,
+          char *ca_cert,
+          char *switch_cert,
+          char *switch_privkey)
 {
     char ca_cert_filename[256];
     char switch_cert_filename[256];
     char switch_priv_key_filename[256];
-    ind_soc_config_t config; /* Currently ignored */
 
-    sprintf(ca_cert_filename, TEST_FS, basedir, MOD_NAME, CA_CERT_FILE);
-    sprintf(switch_cert_filename, TEST_FS, basedir, MOD_NAME,
-            SWITCH_CERT_FILE);
+    sprintf(ca_cert_filename, TEST_FS, basedir, MOD_NAME, ca_cert);
+    sprintf(switch_cert_filename, TEST_FS, basedir, MOD_NAME, switch_cert);
     sprintf(switch_priv_key_filename, TEST_FS, basedir, MOD_NAME,
-            SWITCH_PRIV_KEY_FILE);
+            switch_privkey);
+
+    return indigo_cxn_config_tls(cipher_list,
+                                 ca_cert_filename,
+                                 switch_cert_filename,
+                                 switch_priv_key_filename);
+}
+
+
+static void
+indigo_setup(bool use_tls,
+             char *cipher_list,
+             char *ca_cert,
+             char *switch_cert,
+             char *switch_privkey)
+{
+    ind_soc_config_t config; /* Currently ignored */
 
     INDIGO_MEM_CLEAR(&config, sizeof(config));
     OK(ind_soc_init(&config));
@@ -699,10 +718,12 @@ indigo_setup(void)
 
     OK(indigo_cxn_status_change_register(cxn_status_change, NULL));
 
-    indigo_cxn_config_tls("HIGH",
-                          ca_cert_filename,
-                          switch_cert_filename,
-                          switch_priv_key_filename);
+    if (use_tls) {
+        indigo_error_t err;
+        err = tls_setup(use_tls, cipher_list, ca_cert,
+                        switch_cert, switch_privkey);
+        INDIGO_ASSERT(err == INDIGO_ERROR_NONE, "tls setup failure");
+    }
 
     OK(ind_soc_enable_set(1));
     OK(ind_cxn_enable_set(1));
@@ -830,7 +851,8 @@ test_normal(bool use_tls, int domain, char *addr)
     /* set up listening socket */
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     if (domain == AF_INET) {
         id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
@@ -972,7 +994,8 @@ test_no_hello(bool use_tls)
     /* set up listening socket */
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1048,7 +1071,8 @@ test_no_features_request(bool use_tls)
     /* set up listening socket */
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1134,7 +1158,8 @@ test_aux3(bool use_tls, int delta)
     /* set up listening socket */
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1340,7 +1365,8 @@ test_listener(bool use_tls, int domain)
            get_tcp_tls(use_tls),
            get_domain_name(domain));
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     /* set up connection manager listening connection */
     if (domain == AF_UNIX) {
@@ -1461,7 +1487,8 @@ test_dual(bool use_tls)
         lsd[idx] = setup_server(AF_INET, CONTROLLER_IP, controller_ports[idx]);
     }
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     for (idx = 1; idx < num_events; idx++) {
         int con_idx = (events[idx-1] ^ events[idx]) - 1;
@@ -1521,7 +1548,8 @@ test_bad_controller(bool use_tls)
 
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
@@ -1552,7 +1580,8 @@ test_bad_listener(bool use_tls)
 
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
@@ -1584,7 +1613,8 @@ test_no_controller(bool use_tls)
 
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
-    indigo_setup();
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1);
     INDIGO_ASSERT(id >= 0);
@@ -1599,6 +1629,61 @@ test_no_controller(bool use_tls)
     indigo_teardown();
 
     printf("***Stop %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
+}
+
+
+void
+test_bad_tls_config(bool use_tls)
+{
+    ind_soc_config_t config; /* Currently ignored */
+    indigo_error_t err;
+
+    if (!use_tls) {
+        return;
+    }
+
+    INDIGO_MEM_CLEAR(&config, sizeof(config));
+    OK(ind_soc_init(&config));
+    OK(ind_cxn_init(&cm_config));
+
+    /* bad cipher list */
+    err = tls_setup(true, "nonexistentcipher:shouldfail", CA_CERT_FILE,
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+    INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
+                  "did not detect bad cipher list");
+
+    /* missing file */
+    err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
+                    "thisfiledoesnotexist", SWITCH_PRIV_KEY_FILE);
+    INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
+                  "did not detect missing file");
+
+    /* wrong file format */
+    err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
+                    SWITCH_CERT_FILE, "switch.der");
+    INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
+                  "did not detect wrong file format");
+
+    /* key does not match certificate */
+    err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
+                    SWITCH_CERT_FILE, "mismatch.key");
+    INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
+                  "did not detect mismatched key and cert");
+
+    /* switch certificate signed by different CA */
+    err = tls_setup(true, CIPHER_LIST, "different_ca.cert",
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+    INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
+                  "did not detect bad certificate chain");
+
+    /* positive case, this should just work */
+    err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+    INDIGO_ASSERT(err == INDIGO_ERROR_NONE, 
+                  "valid tls configuration unrecognized");
+
+    OK(ind_cxn_finish());
+    OK(ind_soc_finish());
 }
 
 
@@ -1618,6 +1703,7 @@ void run_all_tests(bool use_tls)
 
     test_no_hello(use_tls);
     test_no_features_request(use_tls);
+    test_bad_tls_config(use_tls);
 
     test_aux3(use_tls, 0);
     test_aux3(use_tls, 1);
