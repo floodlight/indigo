@@ -234,63 +234,65 @@ cxn_unregister_debug_counters(connection_t *cxn)
  * Connection read/write event management
  *------------------------------------------------------------*/
 
-#define IS_TLS_INIT_HANDSHAKING(cxn) \
-    ((cxn->ssl) && SSL_in_init(cxn->ssl))
-#define IS_TLS_REHANDSHAKING(cxn) \
-    ((cxn->ssl) && SSL_renegotiate_pending(cxn->ssl))
-
-/* Forcibly set or clear connection read/write events, 
- * ignoring TLS handshake state */
-#define FORCE_SET_READ_READY(cxn) set_read_event(cxn, true)
-#define FORCE_CLEAR_READ_READY(cxn) clear_read_event(cxn, true)
-#define FORCE_SET_WRITE_READY(cxn) set_write_event(cxn, true)
-#define FORCE_CLEAR_WRITE_READY(cxn) clear_write_event(cxn, true)
-
-/* Set or clear connection read/write events
- * only if TLS rehandshaking is not occurring */
-#define SET_READ_READY(cxn) set_read_event(cxn, false)
-#define CLEAR_READ_READY(cxn) clear_read_event(cxn, false)
-#define SET_WRITE_READY(cxn) set_write_event(cxn, false)
-#define CLEAR_WRITE_READY(cxn) clear_write_event(cxn, false)
-
-/* Internal functions only; call macros above instead */
+/*
+ * the following four functions are intended to be called only by 
+ * set_cxn_read_write_events or during initialization.
+ */
 static void
-set_read_event(connection_t *cxn, bool force)
+set_read_ready(connection_t *cxn)
 {
-    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
-        int rv = ind_soc_data_in_resume(cxn->sd);
-        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
-                      "Cannot set read event on socket %d", cxn->sd);
-    }
+    int rv = ind_soc_data_in_resume(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot set read event on socket %d", cxn->sd);
+}
+static void
+clear_read_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_in_pause(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot clear read event on socket %d", cxn->sd);
+}
+static void
+set_write_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_out_ready(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot set write event on socket %d", cxn->sd);
+}
+static void
+clear_write_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_out_clear(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot clear write event on socket %d", cxn->sd);
 }
 
-static void
-clear_read_event(connection_t *cxn, bool force)
-{
-    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
-        int rv = ind_soc_data_in_pause(cxn->sd);
-        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
-                      "Cannot clear read event on socket %d", cxn->sd);
-    }
-}
 
+/* set read and write events based on connection state */
 static void
-set_write_event(connection_t *cxn, bool force)
+set_cxn_read_write_events(connection_t *cxn)
 {
-    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
-        int rv = ind_soc_data_out_ready(cxn->sd);
-        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
-                      "Cannot set write event on socket %d", cxn->sd);
-    }
-}
-
-static void
-clear_write_event(connection_t *cxn, bool force)
-{
-    if (force || !IS_TLS_REHANDSHAKING(cxn)) {
-        int rv = ind_soc_data_out_clear(cxn->sd);
-        INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
-                      "Cannot clear write event on socket %d", cxn->sd);
+    switch (cxn->ssl_state) {
+    case CXN_SSL_WANT_READ:
+        set_read_ready(cxn);
+        clear_write_ready(cxn);
+        break;
+    case CXN_SSL_WANT_WRITE:
+        clear_read_ready(cxn);
+        set_write_ready(cxn);
+        break;
+    case CXN_SSL_WANT_NOTHING:  /* fall-through */
+    default:
+        if (cxn->pause_refcount) {
+            clear_read_ready(cxn);
+        } else {
+            set_read_ready(cxn);
+        }
+        if (cxn->pkts_enqueued) {
+            set_write_ready(cxn);
+        } else {
+            clear_write_ready(cxn);
+        }
     }
 }
 
@@ -1396,7 +1398,8 @@ cxn_process_write_buffer(connection_t *cxn)
         LOG_TRACE(cxn, "No more data to write");
         AIM_ASSERT(cxn->bytes_enqueued == 0);
         AIM_ASSERT(bigring_count(cxn->write_queue) == 0);
-        CLEAR_WRITE_READY(cxn);
+
+        set_cxn_read_write_events(cxn);
     }
 
     return INDIGO_ERROR_NONE;
@@ -1453,7 +1456,8 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     /* Indicate data is ready to the socket manager */
     AIM_ASSERT(cxn->bytes_enqueued > 0);
     AIM_ASSERT(cxn->pkts_enqueued > 0);
-    SET_WRITE_READY(cxn);
+
+    set_cxn_read_write_events(cxn);
 
     return INDIGO_ERROR_NONE;
 }
@@ -1492,29 +1496,17 @@ cxn_try_to_tls_handshake(connection_t *cxn)
     if (rv == 1) {
         LOG_INFO(cxn, "TLS handshake completed, cipher %s",
                  SSL_get_cipher(cxn->ssl));
-        /* restore desired read/write event state */
-        if (cxn->pause_refcount) {
-            CLEAR_READ_READY(cxn);
-        } else {
-            SET_READ_READY(cxn);
-        }
-        if (cxn->pkts_enqueued) {
-            SET_WRITE_READY(cxn);
-        } else {
-            CLEAR_WRITE_READY(cxn);
-        }
+        cxn->ssl_state = CXN_SSL_WANT_NOTHING;
         return INDIGO_ERROR_NONE;
     } else {
         int err = SSL_get_error(cxn->ssl, rv);
         if (err == SSL_ERROR_WANT_READ) {
             LOG_TRACE(cxn, "SSL_do_handshake returns WANT_READ");
-            FORCE_SET_READ_READY(cxn);
-            FORCE_CLEAR_WRITE_READY(cxn);
+            cxn->ssl_state = CXN_SSL_WANT_READ;
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_WANT_WRITE) {
             LOG_TRACE(cxn, "SSL_do_handshake returns WANT_WRITE");
-            FORCE_CLEAR_READ_READY(cxn);
-            FORCE_SET_WRITE_READY(cxn);
+            cxn->ssl_state = CXN_SSL_WANT_WRITE;
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_ZERO_RETURN) {
             LOG_ERROR(cxn, "TLS handshake shutdown controlled");
@@ -1533,6 +1525,12 @@ cxn_try_to_tls_handshake(connection_t *cxn)
     }    
 }
 
+
+/* TLS convenience macros */
+#define IS_TLS_INIT_HANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_in_init(cxn->ssl))
+#define IS_TLS_REHANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_renegotiate_pending(cxn->ssl))
 
 /**
  * @brief Callback to process "socket ready"
@@ -1603,6 +1601,7 @@ cxn_socket_ready(
             /* transition to closing */
             cxn_state_set(cxn, CXN_S_CLOSING);
         }
+        set_cxn_read_write_events(cxn);
         return;
     }
 
@@ -1619,7 +1618,7 @@ cxn_socket_ready(
             rv = cxn_try_to_connect(cxn);
             if (rv == INDIGO_ERROR_NONE) {
                 cxn_state_set(cxn, CXN_S_HANDSHAKING);
-                FORCE_SET_READ_READY(cxn);
+                set_read_ready(cxn);
             } else if (rv == INDIGO_ERROR_PENDING) {
                 AIM_DIE("In-flight connection cannot be write ready");
             } else {
@@ -2071,7 +2070,7 @@ cxn_try_to_connect(connection_t *cxn)
                 errno == EINPROGRESS)) {
         /* mark socket for writing so that second connect() call can be made,
          * because nonblocking socket may return EINPROGRESS */
-        FORCE_SET_WRITE_READY(cxn);
+        set_write_ready(cxn);
         return INDIGO_ERROR_PENDING;
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
@@ -2104,7 +2103,7 @@ ind_cxn_start(connection_t *cxn)
                "Unable to register socket for %s", cxn->desc);
 
     /* block reads until connect() has completed */
-    FORCE_CLEAR_READ_READY(cxn);
+    clear_read_ready(cxn);
 
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
@@ -2112,7 +2111,7 @@ ind_cxn_start(connection_t *cxn)
         /* success, move to next state;
          * connections started from the listener will also return 0 */
         cxn_state_set(cxn, CXN_S_HANDSHAKING);
-        FORCE_SET_READ_READY(cxn);
+        set_read_ready(cxn);
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
         rv = ind_soc_timer_event_register_with_priority(
@@ -2152,7 +2151,7 @@ ind_cxn_pause(connection_t *cxn)
 {
     if (cxn->pause_refcount++ == 0) {
         /* FIXME were there cases where we could not clear?! */
-        CLEAR_READ_READY(cxn);
+        set_cxn_read_write_events(cxn);
     }
 }
 
@@ -2161,7 +2160,7 @@ ind_cxn_resume(connection_t *cxn)
 {
     AIM_ASSERT(cxn->pause_refcount > 0);
     if (--cxn->pause_refcount == 0) {
-        SET_READ_READY(cxn);
+        set_cxn_read_write_events(cxn);
     }
 }
 

@@ -172,6 +172,14 @@ typedef struct bundle_s {
 } bundle_t;
 
 
+/* to track underlying SSL state */
+typedef enum cxn_ssl_state_e {
+    CXN_SSL_WANT_NOTHING,
+    CXN_SSL_WANT_WRITE,
+    CXN_SSL_WANT_READ,
+} cxn_ssl_state_t;
+
+
 #define MAX_AUX_ID_DESC_LEN (4)
 
 /* Connection control block */
@@ -241,6 +249,7 @@ typedef struct connection_s {
 
     char desc[MAX_CONTROLLER_DESC_LEN+MAX_AUX_ID_DESC_LEN];  /* For logging */
 
+    cxn_ssl_state_t ssl_state;  /* tracks SSL_WANT_READ/SSL_WANT_WRITE */
     SSL *ssl;  /* TLS connection */
 } connection_t;
 
