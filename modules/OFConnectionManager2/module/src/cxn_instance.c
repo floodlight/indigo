@@ -1510,6 +1510,7 @@ cxn_try_to_tls_handshake(connection_t *cxn)
             return INDIGO_ERROR_PENDING;
         } else if (err == SSL_ERROR_ZERO_RETURN) {
             LOG_ERROR(cxn, "TLS handshake shutdown controlled");
+            cxn->ssl_state = CXN_SSL_WANT_NOTHING;
             return INDIGO_ERROR_UNKNOWN;
         } else {
             LOG_ERROR(cxn, "TLS handshake fatal error %d", rv);
@@ -1520,6 +1521,7 @@ cxn_try_to_tls_handshake(connection_t *cxn)
                 ERR_error_string(ERR_get_error(), buf);
                 LOG_ERROR(cxn, "TLS other: %s", buf);
             }
+            cxn->ssl_state = CXN_SSL_WANT_NOTHING;
             return INDIGO_ERROR_UNKNOWN;
         }
     }    
@@ -1590,18 +1592,17 @@ cxn_socket_ready(
         (IS_TLS_INIT_HANDSHAKING(cxn) || IS_TLS_REHANDSHAKING(cxn))) {
         LOG_VERBOSE(cxn, "handle TLS handshaking");
         switch (cxn_try_to_tls_handshake(cxn)) {
-        case INDIGO_ERROR_NONE:
+        case INDIGO_ERROR_NONE:  /* fall-through */
             /* done; wait for next iteration */
-            break;
         case INDIGO_ERROR_PENDING:
             /* do nothing, wait for next iteration of cxn_socket_ready */
+            set_cxn_read_write_events(cxn);
             break;
         default:
             /* something bad happened, close connection */
             /* transition to closing */
             cxn_state_set(cxn, CXN_S_CLOSING);
         }
-        set_cxn_read_write_events(cxn);
         return;
     }
 
@@ -1713,7 +1714,7 @@ cxn_state_timeout(void *cookie)
 {
     connection_t *cxn = (connection_t *) cookie;
 
-    LOG_WARN(cxn, "Timeout in state %s", CXN_STATE_NAME(cxn));
+    LOG_INFO(cxn, "Timeout in state %s", CXN_STATE_NAME(cxn));
 
     switch (cxn->state) {
     case CXN_S_INIT:  /* fall-through */

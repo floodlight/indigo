@@ -520,7 +520,8 @@ server_accept(int lsd)
  * each SSL structure will have its own SSL_CTX
  */
 static SSL *
-tls_attach(int sd)
+tls_attach(int sd, char *ca_cert, 
+           char *controller_cert, char *controller_priv_key)
 {
     SSL_CTX *ctx;
     SSL *ssl;
@@ -539,17 +540,17 @@ tls_attach(int sd)
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    sprintf(filename, TEST_FS, basedir, MOD_NAME, CA_CERT_FILE);
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, ca_cert);
     if (SSL_CTX_load_verify_locations(ctx, filename, NULL) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    sprintf(filename, TEST_FS, basedir, MOD_NAME, CONTROLLER_CERT_FILE);
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, controller_cert);
     if (SSL_CTX_use_certificate_file(ctx, filename, SSL_FILETYPE_PEM) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    sprintf(filename, TEST_FS, basedir, MOD_NAME, CONTROLLER_PRIV_KEY_FILE);
+    sprintf(filename, TEST_FS, basedir, MOD_NAME, controller_priv_key);
     if (SSL_CTX_use_PrivateKey_file(ctx, filename, SSL_FILETYPE_PEM) != 1) {
         ERR_print_errors_fp(stderr);
         assert(0);
@@ -590,7 +591,8 @@ tls_detach(SSL *ssl)
 }
 
 
-static void
+/* returns true if handshake completes successfully, otherwise false */
+static bool
 do_tls_handshake(SSL *ssl)
 {
     int rv;
@@ -599,17 +601,22 @@ do_tls_handshake(SSL *ssl)
         OK(ind_soc_select_and_run(1));
         ERR_clear_error();
         rv = SSL_do_handshake(ssl);
-        printf("do_handshake returns %d\n", rv);
         if (rv == 0) {
-            fprintf(stderr, "shutdown controlled\n");
+            fprintf(stderr, "Shutdown controlled\n");
+            break;
         } else if (rv < 0) {
             fprintf(stderr, "TLS error %d\n", SSL_get_error(ssl, rv));
             ERR_print_errors_fp(stderr);
         }
         count++;
     } while (rv != 1 && count < 256);
-    INDIGO_ASSERT(rv == 1, "Failed to complete TLS handshake");
-    printf("handshake complete, cipher %s\n", SSL_get_cipher(ssl));
+
+    if (rv == 1) {
+        printf("handshake complete, cipher %s\n", SSL_get_cipher(ssl));
+        return true;
+    } else {
+        return false;
+    }
 }
 
 
@@ -634,8 +641,10 @@ advance_to_handshake_complete(bool use_tls,
     INDIGO_ASSERT(unit_test_cxn_state_get(controller_id, aux_id) ==
                   CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1009,8 +1018,10 @@ test_no_hello(bool use_tls)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1034,8 +1045,10 @@ test_no_hello(bool use_tls)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1086,8 +1099,10 @@ test_no_features_request(bool use_tls)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1112,8 +1127,10 @@ test_no_features_request(bool use_tls)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1385,8 +1402,10 @@ test_listener(bool use_tls, int domain)
     }
 
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1417,8 +1436,10 @@ test_listener(bool use_tls, int domain)
     }
 
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd);
-        do_tls_handshake((SSL *)tl);
+        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                                   CONTROLLER_PRIV_KEY_FILE);
+        INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
+                      "Failed to complete TLS handshake");
     } else {
         tl = (intptr_t) sd;
     }
@@ -1632,7 +1653,7 @@ test_no_controller(bool use_tls)
 }
 
 
-void
+static void
 test_bad_tls_config(bool use_tls)
 {
     ind_soc_config_t config; /* Currently ignored */
@@ -1687,6 +1708,72 @@ test_bad_tls_config(bool use_tls)
 }
 
 
+/* set up controller with different CA, cert, and key */
+static void
+test_mismatching_tls_controller(bool use_tls, int domain, char *addr)
+{
+    indigo_controller_id_t id;
+    int lsd;
+    intptr_t tl;
+    int sd;
+
+    if (!use_tls) {
+        return;
+    }
+
+    printf("***Start %s, %s, domain %s, addr %s\n", __FUNCTION__, 
+           get_tcp_tls(use_tls),
+           get_domain_name(domain), addr);
+
+    /* set up listening socket */
+    lsd = setup_server(domain, addr, CONTROLLER_PORT1);
+
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+
+    if (domain == AF_INET) {
+        id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
+    } else if (domain == AF_INET6) {
+        id = setup_cxn_v6(use_tls, addr, CONTROLLER_PORT1);
+    } else {
+        AIM_DIE("unknown domain %d", domain);
+    }
+
+    INDIGO_ASSERT(id >= 0);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
+
+    OK(ind_soc_select_and_run(1));
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
+
+    sd = server_accept(lsd);
+    OK(ind_soc_select_and_run(1));
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
+
+    tl = (intptr_t) tls_attach(sd, "different_ca.cert",
+                               "different_controller.cert",
+                               "different_controller.key");
+    INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == false,
+                  "Unexpectedly completed TLS handshake");
+
+    tl_close(use_tls, tl);
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+
+    OK(indigo_controller_remove(id));
+    OK(ind_soc_select_and_run(5));
+
+    indigo_teardown();
+
+    close(lsd);
+
+    printf("***Stop %s, %s, domain %s, addr %s\n", __FUNCTION__, 
+           get_tcp_tls(use_tls),
+           get_domain_name(domain), addr);
+}
+
+
 void run_all_tests(bool use_tls)
 {
     test_bad_controller(use_tls);
@@ -1704,6 +1791,7 @@ void run_all_tests(bool use_tls)
     test_no_hello(use_tls);
     test_no_features_request(use_tls);
     test_bad_tls_config(use_tls);
+    test_mismatching_tls_controller(use_tls, AF_INET, CONTROLLER_IP);
 
     test_aux3(use_tls, 0);
     test_aux3(use_tls, 1);
