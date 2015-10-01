@@ -355,18 +355,21 @@ verify_cert(SSL_CTX *ctx, const char *cert_filename)
     bool is_verified = false;
     X509_STORE *store = SSL_CTX_get_cert_store(ctx);
     X509_STORE_CTX *verify_ctx = X509_STORE_CTX_new();
+    FILE *fp_cert = NULL;
+    X509 *cert = NULL;
+
     if (verify_ctx == NULL) {
         AIM_LOG_ERROR("Cannot allocate X509 store ctx for cert verification");
         goto error;
     }
 
-    FILE *fp_cert = fopen(cert_filename, "r");
+    fp_cert = fopen(cert_filename, "r");
     if (fp_cert == NULL) {
         AIM_LOG_ERROR("Cannot open %s for cert verification", cert_filename);
         goto error;
     }
     
-    X509 *cert = PEM_read_X509(fp_cert, NULL, NULL, NULL);
+    cert = PEM_read_X509(fp_cert, NULL, NULL, NULL);
     if (fp_cert == NULL) {
         AIM_LOG_ERROR("Cannot parse %s for cert verification", cert_filename);
         goto error;
