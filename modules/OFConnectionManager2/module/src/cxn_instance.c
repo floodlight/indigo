@@ -950,8 +950,9 @@ read_from_cxn(connection_t *cxn)
                     return INDIGO_ERROR_PENDING;
                     break;
                 case SSL_ERROR_WANT_WRITE:
-                    LOG_TRACE(cxn, "SSL_read returns WANT_WRITE");
-                    return INDIGO_ERROR_PENDING;
+                    /* cannot handle rehandshake; log error and abort */
+                    LOG_ERROR(cxn, "SSL_read returns WANT_WRITE, aborting rehandshake");
+                    return INDIGO_ERROR_CONNECTION;
                     break;
                 case SSL_ERROR_SYSCALL:
                     LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
@@ -1262,9 +1263,9 @@ ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
         } else if (written < 0) {
             switch(SSL_get_error(cxn->ssl, written)) {
             case SSL_ERROR_WANT_READ:
-                /* do nothing */
-                LOG_TRACE(cxn, "SSL_write returns WANT_READ");
-                return total;
+                /* cannot handle rehandshake; log error and abort */
+                LOG_ERROR(cxn, "SSL_write returns WANT_READ, aborting rehandshake");
+                return -1;
                 break;
             case SSL_ERROR_WANT_WRITE:
                 /* do nothing */
