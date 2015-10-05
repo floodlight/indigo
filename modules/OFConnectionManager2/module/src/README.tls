@@ -52,8 +52,8 @@ In particular, when there is nothing to read, calling SSL_read() will
 return SSL_ERROR_WANT_READ, but it is still possible to call
 SSL_write() to send data.
 
-The approach taken here is to keep calling SSL_read() or SSL_write()
-as usual, until SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE are returned.
+The intended approach taken here was to keep calling SSL_read() or SSL_write()
+as usual, until SSL_ERROR_WANT_READ or SSL_ERROR_WANT_WRITE were returned.
 When this happens, call SSL_renegotiate_pending() to determine if a
 rehandshake is happening; if so, take over the connection's read/write
 events and repeatedly call SSL_do_handshake(), selecting on the desired
@@ -61,8 +61,11 @@ events as indicated by the WANT_READ/WANT_WRITE error codes.
 When the rehandshake completes, restore the connection's read/write 
 events and resume normal processing.
 
-Renegotiation still needs to be properly tested, but there are indications
-that it does not succeed when application data is being sent during the
-handshake:
+However, renegotiation is not properly tested.
+Additionally there are indications that renegotiation does not succeed
+when application data is being sent during the handshake:
 https://rt.openssl.org/Ticket/Display.html?id=2481&user=guest&pass=guest
+
+For now, we will abort the connection if SSL_write returns WANT_READ
+or if SSL_read returns WANT_WRITE.
 
