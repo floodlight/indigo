@@ -384,6 +384,7 @@ extern indigo_error_t ind_soc_finish(void);
  */
 extern int unit_test_soc_timer_event_count_get(void);
 extern int unit_test_soc_socket_count_get(void);
+extern int unit_test_soc_socket_events_get(int socket_id);
 
 
 #endif /* __SOCKETMANAGER_H__ */

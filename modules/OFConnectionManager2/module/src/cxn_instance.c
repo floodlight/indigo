@@ -46,6 +46,9 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
 #include "cxn_instance.h"
 
 
@@ -224,6 +227,73 @@ cxn_unregister_debug_counters(connection_t *cxn)
     }
 
     cxn->has_debug_counters = false;
+}
+
+
+/*------------------------------------------------------------
+ * Connection read/write event management
+ *------------------------------------------------------------*/
+
+/*
+ * the following four functions are intended to be called only by 
+ * set_cxn_read_write_events or during initialization.
+ */
+static void
+set_read_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_in_resume(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot set read event on socket %d", cxn->sd);
+}
+static void
+clear_read_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_in_pause(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot clear read event on socket %d", cxn->sd);
+}
+static void
+set_write_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_out_ready(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot set write event on socket %d", cxn->sd);
+}
+static void
+clear_write_ready(connection_t *cxn)
+{
+    int rv = ind_soc_data_out_clear(cxn->sd);
+    INDIGO_ASSERT(rv == INDIGO_ERROR_NONE,
+                  "Cannot clear write event on socket %d", cxn->sd);
+}
+
+
+/* set read and write events based on connection state */
+static void
+set_cxn_read_write_events(connection_t *cxn)
+{
+    switch (cxn->ssl_state) {
+    case CXN_SSL_WANT_READ:
+        set_read_ready(cxn);
+        clear_write_ready(cxn);
+        break;
+    case CXN_SSL_WANT_WRITE:
+        clear_read_ready(cxn);
+        set_write_ready(cxn);
+        break;
+    case CXN_SSL_WANT_NOTHING:  /* fall-through */
+    default:
+        if (cxn->pause_refcount) {
+            clear_read_ready(cxn);
+        } else {
+            set_read_ready(cxn);
+        }
+        if (cxn->pkts_enqueued) {
+            set_write_ready(cxn);
+        } else {
+            clear_write_ready(cxn);
+        }
+    }
 }
 
 
@@ -864,29 +934,64 @@ read_from_cxn(connection_t *cxn)
     uint8_t *inbuf_start;
 
     inbuf_start = &cxn->read_buffer[cxn->read_bytes];
-    bytes_in = read(cxn->sd, inbuf_start, cxn->bytes_needed);
 
-    /*
-     * Reading 0 bytes indicates connection has closed, although we allow
-     * for EAGAIN and EWOULDBLOCK
-     */
-
-    if (bytes_in <= 0) {
-        if (bytes_in == 0) { /* Socket is closed */
-            if (!CXN_LOCAL(cxn)) {
-                LOG_VERBOSE(cxn, "Connection closed by remote host");
+    if (cxn->ssl) {
+        ERR_clear_error();
+        bytes_in = SSL_read(cxn->ssl, inbuf_start, cxn->bytes_needed);
+        if (bytes_in <= 0) {
+            if (bytes_in == 0) {
+                LOG_VERBOSE(cxn, "Connection closed");
+                return INDIGO_ERROR_CONNECTION;
+            } else {
+                switch(SSL_get_error(cxn->ssl, bytes_in)) {
+                case SSL_ERROR_WANT_READ:
+                    /* do nothing */
+                    LOG_TRACE(cxn, "SSL_read returns WANT_READ");
+                    return INDIGO_ERROR_PENDING;
+                    break;
+                case SSL_ERROR_WANT_WRITE:
+                    /* cannot handle rehandshake; log error and abort */
+                    LOG_ERROR(cxn, "SSL_read returns WANT_WRITE, aborting rehandshake");
+                    return INDIGO_ERROR_CONNECTION;
+                    break;
+                case SSL_ERROR_SYSCALL:
+                    LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
+                    return INDIGO_ERROR_CONNECTION;
+                    break;
+                default:
+                    {
+                        char buf[IND_SSL_ERR_LEN];
+                        ERR_error_string(ERR_get_error(), buf);
+                        LOG_ERROR(cxn, "TLS error: %s", buf);
+                    }
+                    return INDIGO_ERROR_CONNECTION;
+                }
             }
+        }
+    } else {
+        bytes_in = read(cxn->sd, inbuf_start, cxn->bytes_needed);
+
+        /*
+         * Reading 0 bytes indicates connection has closed, although we allow
+         * for EAGAIN and EWOULDBLOCK
+         */
+        if (bytes_in <= 0) {
+            if (bytes_in == 0) { /* Socket is closed */
+                if (!CXN_LOCAL(cxn)) {
+                    LOG_VERBOSE(cxn, "Connection closed by remote host");
+                }
+                return INDIGO_ERROR_CONNECTION;
+            }
+
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                LOG_TRACE(cxn, "Error reading from socket: %s", strerror(errno));
+                return 0;
+            }
+
+            LOG_ERROR(cxn, "Error reading from socket: %s", strerror(errno));
+            ++ind_cxn_read_errors;
             return INDIGO_ERROR_CONNECTION;
         }
-
-        if (errno == EAGAIN || errno == EWOULDBLOCK) {
-            LOG_TRACE(cxn, "Error reading from socket: %s", strerror(errno));
-            return 0;
-        }
-
-        LOG_ERROR(cxn, "Error reading from socket: %s", strerror(errno));
-        ++ind_cxn_read_errors;
-        return INDIGO_ERROR_CONNECTION;
     }
 
     cxn->status.bytes_in += bytes_in;
@@ -1136,6 +1241,61 @@ cxn_process_read_buffer(connection_t *cxn)
  * Connection instance write buffer management
  *------------------------------------------------------------*/
 
+/* helper function */
+static int
+ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
+{
+    int i;
+    int total = 0;
+    int written;
+
+    for (i = 0; i < iovcnt; i++) {
+        const struct iovec *curr = iov + i;
+        ERR_clear_error();
+        written = SSL_write(cxn->ssl, curr->iov_base, curr->iov_len);
+        if (written == 0) {
+            if (SSL_get_error(cxn->ssl, 0) == SSL_ERROR_ZERO_RETURN) {
+                LOG_VERBOSE(cxn, "Connection closed");
+                return -1;
+            } else { 
+                return total;
+            }
+        } else if (written < 0) {
+            switch(SSL_get_error(cxn->ssl, written)) {
+            case SSL_ERROR_WANT_READ:
+                /* cannot handle rehandshake; log error and abort */
+                LOG_ERROR(cxn, "SSL_write returns WANT_READ, aborting rehandshake");
+                return -1;
+                break;
+            case SSL_ERROR_WANT_WRITE:
+                /* do nothing */
+                LOG_TRACE(cxn, "SSL_write returns WANT_WRITE");
+                return total;
+                break;
+            case SSL_ERROR_SYSCALL:
+                LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
+                return -1;
+                break;
+            default:
+                {
+                    char buf[IND_SSL_ERR_LEN];
+                    ERR_error_string(ERR_get_error(), buf);
+                    LOG_ERROR(cxn, "TLS error: %s", buf);
+                }
+                return -1;
+            }
+        } else if (written != curr->iov_len) {
+            /* partial write */
+            return total + written;
+        } else {
+            total += written;
+        }
+    }
+
+    return total;
+}
+
+
 /**
  * Process messages waiting to be sent to a connection socket
  */
@@ -1178,16 +1338,23 @@ cxn_process_write_buffer(connection_t *cxn)
             total += iov->iov_len;
         }
 
-        written = writev(cxn->sd, iovecs, num_iovecs);
-
-        if (written < 0) {
-            if (errno == EAGAIN) {
-                /* Socket buffer full and nothing was written */
-                written = 0;
-            } else {
-                /* Error writing to connection socket */
-                LOG_ERROR(cxn, "Error writing to socket: %s", strerror(errno));
+        if (cxn->ssl) {
+            written = ssl_writev(cxn, iovecs, num_iovecs);
+            if (written < 0) {
                 return INDIGO_ERROR_UNKNOWN;
+            }
+        } else {
+            written = writev(cxn->sd, iovecs, num_iovecs);
+            if (written < 0) {
+                if (errno == EAGAIN) {
+                    /* Socket buffer full and nothing was written */
+                    written = 0;
+                } else {
+                    /* Error writing to connection socket */
+                    LOG_ERROR(cxn, "Error writing to socket: %s",
+                              strerror(errno));
+                    return INDIGO_ERROR_UNKNOWN;
+                }
             }
         }
 
@@ -1232,7 +1399,8 @@ cxn_process_write_buffer(connection_t *cxn)
         LOG_TRACE(cxn, "No more data to write");
         AIM_ASSERT(cxn->bytes_enqueued == 0);
         AIM_ASSERT(bigring_count(cxn->write_queue) == 0);
-        ind_soc_data_out_clear(cxn->sd);
+
+        set_cxn_read_write_events(cxn);
     }
 
     return INDIGO_ERROR_NONE;
@@ -1289,13 +1457,77 @@ ind_cxn_instance_enqueue(connection_t *cxn, uint8_t *data, int len)
     /* Indicate data is ready to the socket manager */
     AIM_ASSERT(cxn->bytes_enqueued > 0);
     AIM_ASSERT(cxn->pkts_enqueued > 0);
-    ind_soc_data_out_ready(cxn->sd);
+
+    set_cxn_read_write_events(cxn);
 
     return INDIGO_ERROR_NONE;
 }
 
 
 /*----------*/
+
+/*
+ * For now, we do not support renegotiation.
+ * If SSL_read returns WANT_WRITE or SSL_write returns WANT_READ,
+ * we will abort the connection.
+ *
+ * See README.tls in this directory for further details.
+ */
+
+/**
+ * Attempt to advance TLS handshake to completion on the specified connection.
+ * Returns INDIGO_ERROR_UNKNOWN on error,
+ * INDIGO_ERROR_NONE on success,
+ * INDIGO_ERROR_PENDING on in-flight connection.
+ * Caller's responsibility to clean up on error.
+ */
+static indigo_error_t
+cxn_try_to_tls_handshake(connection_t *cxn)
+{
+    int rv;
+
+    ERR_clear_error();
+    rv = SSL_do_handshake(cxn->ssl);
+    if (rv == 1) {
+        LOG_INFO(cxn, "TLS handshake completed, cipher %s",
+                 SSL_get_cipher(cxn->ssl));
+        cxn->ssl_state = CXN_SSL_WANT_NOTHING;
+        return INDIGO_ERROR_NONE;
+    } else {
+        int err = SSL_get_error(cxn->ssl, rv);
+        if (err == SSL_ERROR_WANT_READ) {
+            LOG_TRACE(cxn, "SSL_do_handshake returns WANT_READ");
+            cxn->ssl_state = CXN_SSL_WANT_READ;
+            return INDIGO_ERROR_PENDING;
+        } else if (err == SSL_ERROR_WANT_WRITE) {
+            LOG_TRACE(cxn, "SSL_do_handshake returns WANT_WRITE");
+            cxn->ssl_state = CXN_SSL_WANT_WRITE;
+            return INDIGO_ERROR_PENDING;
+        } else if (err == SSL_ERROR_ZERO_RETURN) {
+            LOG_ERROR(cxn, "TLS handshake shutdown controlled");
+            cxn->ssl_state = CXN_SSL_WANT_NOTHING;
+            return INDIGO_ERROR_UNKNOWN;
+        } else {
+            LOG_ERROR(cxn, "TLS handshake fatal error %d", rv);
+            if (err == SSL_ERROR_SYSCALL) {
+                LOG_ERROR(cxn, "TLS syscall: %s", strerror(errno));
+            } else {
+                char buf[IND_SSL_ERR_LEN];
+                ERR_error_string(ERR_get_error(), buf);
+                LOG_ERROR(cxn, "TLS other: %s", buf);
+            }
+            cxn->ssl_state = CXN_SSL_WANT_NOTHING;
+            return INDIGO_ERROR_UNKNOWN;
+        }
+    }    
+}
+
+
+/* TLS convenience macros */
+#define IS_TLS_INIT_HANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_in_init(cxn->ssl))
+#define IS_TLS_REHANDSHAKING(cxn) \
+    ((cxn->ssl) && SSL_renegotiate_pending(cxn->ssl))
 
 /**
  * @brief Callback to process "socket ready"
@@ -1349,6 +1581,26 @@ cxn_socket_ready(
         return;
     }
 
+    /* handle rehandshaking if necessary;
+     * INIT state check skips TLS handshaking until socket is connected */
+    if (cxn->state != CXN_S_INIT &&
+        (IS_TLS_INIT_HANDSHAKING(cxn) || IS_TLS_REHANDSHAKING(cxn))) {
+        LOG_VERBOSE(cxn, "handle TLS handshaking");
+        switch (cxn_try_to_tls_handshake(cxn)) {
+        case INDIGO_ERROR_NONE:  /* fall-through */
+            /* done; wait for next iteration */
+        case INDIGO_ERROR_PENDING:
+            /* do nothing, wait for next iteration of cxn_socket_ready */
+            set_cxn_read_write_events(cxn);
+            break;
+        default:
+            /* something bad happened, close connection */
+            /* transition to closing */
+            cxn_state_set(cxn, CXN_S_CLOSING);
+        }
+        return;
+    }
+
     if (read_ready) {
         if ((rv = cxn_process_read_buffer(cxn)) < 0) {
             LOG_VERBOSE(cxn, "Error processing read buffer, resetting");
@@ -1361,11 +1613,8 @@ cxn_socket_ready(
         if (cxn->state == CXN_S_INIT && !CXN_LISTEN(cxn)) {
             rv = cxn_try_to_connect(cxn);
             if (rv == INDIGO_ERROR_NONE) {
-                /* success, move to next state */
                 cxn_state_set(cxn, CXN_S_HANDSHAKING);
-                rv = ind_soc_data_in_resume(cxn->sd);
-                AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                           "Failed to resume socket for %s", cxn->desc);
+                set_read_ready(cxn);
             } else if (rv == INDIGO_ERROR_PENDING) {
                 AIM_DIE("In-flight connection cannot be write ready");
             } else {
@@ -1460,7 +1709,7 @@ cxn_state_timeout(void *cookie)
 {
     connection_t *cxn = (connection_t *) cookie;
 
-    LOG_WARN(cxn, "Timeout in state %s", CXN_STATE_NAME(cxn));
+    LOG_INFO(cxn, "Timeout in state %s", CXN_STATE_NAME(cxn));
 
     switch (cxn->state) {
     case CXN_S_INIT:  /* fall-through */
@@ -1721,12 +1970,31 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
                     cxn->sd, cxn->controller);
     }
 
+    if (cxn->controller->ssl_ctx) {
+        cxn->ssl = SSL_new(cxn->controller->ssl_ctx);
+        if (cxn->ssl == NULL) {
+            LOG_ERROR(cxn, "Failed allocating encryption block");
+            goto error;
+        }
+        SSL_set_mode(cxn->ssl, SSL_MODE_ENABLE_PARTIAL_WRITE);
+        SSL_set_connect_state(cxn->ssl);
+        if (SSL_set_fd(cxn->ssl, cxn->sd) != 1) {
+            LOG_ERROR(cxn, "Failed linking encryption to socket");
+            goto error;
+        }
+    }
+
     cxn->active = true;
 
     return cxn;
 
  error:
     if (cxn) {
+        if (cxn->ssl) {
+            ERR_clear_error();
+            SSL_free(cxn->ssl);
+            cxn->ssl = NULL;
+        }
         if (cxn->sd >= 0) {
             close(cxn->sd);
             cxn->sd = -1;
@@ -1759,6 +2027,11 @@ ind_cxn_free(connection_t *cxn)
     cxn->bytes_enqueued = 0;
     cxn->pkts_enqueued = 0;
     cxn->write_queue_head_offset = 0;
+
+    if (cxn->ssl) {
+        SSL_free(cxn->ssl);
+        cxn->ssl = NULL;
+    }
 
     cxn->active = false;
 }
@@ -1793,7 +2066,7 @@ cxn_try_to_connect(connection_t *cxn)
                 errno == EINPROGRESS)) {
         /* mark socket for writing so that second connect() call can be made,
          * because nonblocking socket may return EINPROGRESS */
-        ind_soc_data_out_ready(cxn->sd);
+        set_write_ready(cxn);
         return INDIGO_ERROR_PENDING;
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
@@ -1826,9 +2099,7 @@ ind_cxn_start(connection_t *cxn)
                "Unable to register socket for %s", cxn->desc);
 
     /* block reads until connect() has completed */
-    rv = ind_soc_data_in_pause(cxn->sd);
-    AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-               "Failed to pause socket for %s", cxn->desc);
+    clear_read_ready(cxn);
 
     rv = cxn_try_to_connect(cxn);
     LOG_TRACE(cxn, "cxn_try_to_connect returns %d", rv);
@@ -1836,9 +2107,7 @@ ind_cxn_start(connection_t *cxn)
         /* success, move to next state;
          * connections started from the listener will also return 0 */
         cxn_state_set(cxn, CXN_S_HANDSHAKING);
-        rv = ind_soc_data_in_resume(cxn->sd);
-        AIM_ASSERT(rv == INDIGO_ERROR_NONE,
-                   "Failed to resume socket for %s", cxn->desc);
+        set_read_ready(cxn);
     } else if (rv == INDIGO_ERROR_PENDING) {
         /* connect is in-flight, register timeout */
         rv = ind_soc_timer_event_register_with_priority(
@@ -1877,10 +2146,8 @@ void
 ind_cxn_pause(connection_t *cxn)
 {
     if (cxn->pause_refcount++ == 0) {
-        if (ind_soc_data_in_pause(cxn->sd) < 0) {
-            LOG_INTERNAL(cxn, "Error pausing connection");
-            return;
-        }
+        /* FIXME were there cases where we could not clear?! */
+        set_cxn_read_write_events(cxn);
     }
 }
 
@@ -1889,7 +2156,7 @@ ind_cxn_resume(connection_t *cxn)
 {
     AIM_ASSERT(cxn->pause_refcount > 0);
     if (--cxn->pause_refcount == 0) {
-        (void)ind_soc_data_in_resume(cxn->sd);
+        set_cxn_read_write_events(cxn);
     }
 }
 
@@ -2042,18 +2309,34 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 
         protocol_params = get_connection_params(cxn);
 
-        if (protocol_params->header.protocol ==
-            INDIGO_CXN_PROTO_TCP_OVER_IPV4) {
-            indigo_cxn_params_tcp_over_ipv4_t *proto =
-                &protocol_params->tcp_over_ipv4;
+        switch(protocol_params->header.protocol) {
+        case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
             snprintf(uri, sizeof(uri), "tcp://%s:%d",
-                proto->controller_ip, proto->controller_port);
-        } else if (protocol_params->header.protocol ==
-                   INDIGO_CXN_PROTO_TCP_OVER_IPV6) {
-            indigo_cxn_params_tcp_over_ipv6_t *proto =
-                &protocol_params->tcp_over_ipv6;
+                     protocol_params->tcp_over_ipv4.controller_ip,
+                     protocol_params->tcp_over_ipv4.controller_port);
+            break;
+        case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
+            snprintf(uri, sizeof(uri), "tls://%s:%d",
+                     protocol_params->tcp_over_ipv4.controller_ip,
+                     protocol_params->tcp_over_ipv4.controller_port);
+            break;
+        case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
             snprintf(uri, sizeof(uri), "tcp://[%s]:%d",
-                proto->controller_ip, proto->controller_port);
+                     protocol_params->tcp_over_ipv6.controller_ip,
+                     protocol_params->tcp_over_ipv6.controller_port);
+            break;
+        case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
+            snprintf(uri, sizeof(uri), "tls://[%s]:%d",
+                     protocol_params->tcp_over_ipv6.controller_ip,
+                     protocol_params->tcp_over_ipv6.controller_port);
+            break;
+        case INDIGO_CXN_PROTO_UNIX:
+            snprintf(uri, sizeof(uri), "unix://%s",
+                     protocol_params->unx.unix_path);
+            break;
+        default:
+            AIM_DIE("unhandled protocol type %d\n",
+                    protocol_params->header.protocol);
         }
 
         of_bsn_controller_connection_uri_set(&entry, uri);

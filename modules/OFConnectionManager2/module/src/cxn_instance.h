@@ -33,6 +33,7 @@
 #include <BigList/biglist.h>
 #include <debug_counter/debug_counter.h>
 #include <BigRing/bigring.h>
+#include <openssl/ssl.h>
 
 #define READ_BUFFER_SIZE (64 * 1024)
 
@@ -119,6 +120,8 @@ typedef struct controller_s {
     struct connection_s *cxns[MAX_AUX_CONNECTIONS+1];
 
     char desc[MAX_CONTROLLER_DESC_LEN];  /* For logging */
+
+    SSL_CTX *ssl_ctx;  /* TLS configuration parameters */
 } controller_t;
 
 
@@ -167,6 +170,14 @@ typedef struct bundle_s {
     uint16_t flags; /* Copied from flags field in bundle-open request */
     uint8_t **msgs; /* Array of pointers to raw message data */
 } bundle_t;
+
+
+/* to track underlying SSL state */
+typedef enum cxn_ssl_state_e {
+    CXN_SSL_WANT_NOTHING,
+    CXN_SSL_WANT_WRITE,
+    CXN_SSL_WANT_READ,
+} cxn_ssl_state_t;
 
 
 #define MAX_AUX_ID_DESC_LEN (4)
@@ -237,6 +248,9 @@ typedef struct connection_s {
     int pause_refcount;
 
     char desc[MAX_CONTROLLER_DESC_LEN+MAX_AUX_ID_DESC_LEN];  /* For logging */
+
+    cxn_ssl_state_t ssl_state;  /* tracks SSL_WANT_READ/SSL_WANT_WRITE */
+    SSL *ssl;  /* TLS connection */
 } connection_t;
 
 /**

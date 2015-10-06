@@ -48,6 +48,9 @@
  */
 #define IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT 15000
 
+/* SSL error buffer length */
+#define IND_SSL_ERR_LEN 128
+
 /**
  * Module error counters
  */
@@ -103,6 +106,13 @@ void ind_cxn_bundle_cleanup(connection_t *cxn);
 void ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *_obj);
 void ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *_obj);
 
+/*
+ * populate destbuf with useful connection identifying info.
+ * destbuf has maximum length destbuflen.
+ */
+int
+ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
+                        char *destbuf, int destbuflen);
 
 /*
  * helper functions for unit testing only; 
@@ -113,5 +123,8 @@ cxn_state_t unit_test_cxn_state_get(indigo_controller_id_t controller_id,
 
 int unit_test_controller_count_get(void);
 int unit_test_connection_count_get(void);
+
+int unit_test_cxn_events_get(indigo_controller_id_t controller_id,
+                             uint8_t aux_id);
 
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */

@@ -90,6 +90,8 @@ typedef enum indigo_cxn_protocol_e {
     INDIGO_CXN_PROTO_TCP_OVER_IPV6      = 1,
 #ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
     INDIGO_CXN_PROTO_UNIX               = 2,
+    INDIGO_CXN_PROTO_TLS_OVER_IPV4      = 3,
+    INDIGO_CXN_PROTO_TLS_OVER_IPV6      = 4,
 #endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 } indigo_cxn_protocol_t;
 
@@ -153,6 +155,8 @@ typedef union indigo_cxn_protocol_params_u {
     indigo_cxn_params_tcp_over_ipv6_t tcp_over_ipv6;
 #ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
     indigo_cxn_params_unix_t unx;
+    indigo_cxn_params_tcp_over_ipv4_t tls_over_ipv4;
+    indigo_cxn_params_tcp_over_ipv6_t tls_over_ipv6;
 #endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 } indigo_cxn_protocol_params_t;
 
@@ -294,6 +298,29 @@ typedef struct indigo_cxn_status_s {
  * Prototypes of routines provided by connection manager
  *
  ****************************************************************/
+
+#ifdef DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2
+/**
+ * Maximum length of TLS configuration parameters,
+ * including NULL termination.
+ */
+#define INDIGO_TLS_CFG_PARAM_LEN 256
+
+/**
+ * Configure TLS parameters; each parameter has a maximum length given by
+ * INDIGO_TLS_CFG_PARAM_LEN above.
+ * @param cipher_list One or more cipher strings separated by colons.
+ * See https://www.openssl.org/docs/manmaster/apps/ciphers.html for examples.
+ * @param ca_cert Path to certificate authority's PEM-formatted certificate.
+ * @param switch_cert Path to switch's PEM-formatted certificate.
+ * @param switch_priv_key Path to switch's PEM-formatted private key.
+ */
+extern indigo_error_t
+indigo_cxn_config_tls(char *cipher_list,
+                      char *ca_cert,
+                      char *switch_cert,
+                      char *switch_priv_key);
+#endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 
 /**
  * Add a controller instance
