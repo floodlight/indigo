@@ -30,6 +30,7 @@
 
 #include <OFConnectionManager/ofconnectionmanager_config.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
+#include <OFConnectionManager/ofconnectionmanager_porting.h>
 #include "ofconnectionmanager_int.h"
 #include "ofconnectionmanager_log.h"
 #include <stdlib.h>
@@ -146,6 +147,10 @@ static struct config {
     int keepalive_period_ms;
     int num_controllers;
     struct controller controllers[MAX_CONTROLLERS];
+    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN];
+    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
+    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
+    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
     int valid;
 } staged_config, current_config;
 
@@ -238,7 +243,7 @@ parse_controller(struct controller *controller, cJSON *root)
 
     default:
         AIM_DIE("Config: No handling for protocol %d", proto);
-    }        
+    }
 
     err = ind_cfg_lookup_bool(root, "listen", &listen);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -352,6 +357,106 @@ find_controller(const struct config *config,
     return NULL;
 }
 
+static indigo_error_t
+parse_tls_config(cJSON *root)
+{
+    indigo_error_t err;
+    char *cipher_list;
+    char *ca_cert;
+    char *switch_cert;
+    char *switch_priv_key;
+
+    err = ind_cfg_lookup_string(root, "cipher_list", &cipher_list);
+    if (err == INDIGO_ERROR_NOT_FOUND) {
+        AIM_LOG_INFO("Config: No TLS cipher list, default to HIGH");
+        cipher_list = "HIGH";
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: cipher_list must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
+
+    err = ind_cfg_lookup_string(root, "ca_cert", &ca_cert);
+    if (err == INDIGO_ERROR_NOT_FOUND ||
+        (ca_cert && ca_cert[0] == '\0')) {
+        AIM_LOG_INFO("Config: No ca_cert given, allowed self-signed certs");
+        ca_cert = NULL;
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: ca_cert must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
+
+    err = ind_cfg_lookup_string(root, "switch_cert", &switch_cert);
+    if (err < 0) {
+        if (err == INDIGO_ERROR_NOT_FOUND) {
+            AIM_LOG_ERROR("Config: Missing switch_cert");
+        } else if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: switch_cert must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
+
+    err = ind_cfg_lookup_string(root, "switch_priv_key", &switch_priv_key);
+    if (err < 0) {
+        if (err == INDIGO_ERROR_NOT_FOUND) {
+            AIM_LOG_ERROR("Config: Missing switch_priv_key");
+        } else if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: switch_priv_key must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
+
+    if (ind_cxn_verify_tls(cipher_list, ca_cert,
+                           switch_cert, switch_priv_key) !=
+        INDIGO_ERROR_NONE) {
+        AIM_LOG_ERROR("Config: TLS parameter verification failed");
+        goto error;
+    }
+
+    OFCONNECTIONMANAGER_STRNCPY(staged_config.cipher_list, cipher_list,
+                                INDIGO_TLS_CFG_PARAM_LEN);
+    if (ca_cert) {
+        OFCONNECTIONMANAGER_STRNCPY(staged_config.ca_cert, ca_cert,
+                                    INDIGO_TLS_CFG_PARAM_LEN);
+    } else {
+        OFCONNECTIONMANAGER_MEMSET(staged_config.ca_cert, 0,
+                                   INDIGO_TLS_CFG_PARAM_LEN);
+    }
+    OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_cert, switch_cert,
+                                INDIGO_TLS_CFG_PARAM_LEN);
+    OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_priv_key, switch_priv_key,
+                                INDIGO_TLS_CFG_PARAM_LEN);
+
+    AIM_LOG_INFO("Config: TLS cipher list %s, ca_cert %s, "
+                 "switch_cert %s, switch_priv_key %s",
+                 cipher_list, ca_cert? ca_cert: "NONE",
+                 switch_cert, switch_priv_key);
+    return INDIGO_ERROR_NONE;
+
+ error:
+    AIM_LOG_VERBOSE("Config: Clearing TLS params");
+    OFCONNECTIONMANAGER_MEMSET(staged_config.cipher_list, 0,
+                               INDIGO_TLS_CFG_PARAM_LEN);
+    OFCONNECTIONMANAGER_MEMSET(staged_config.ca_cert, 0,
+                               INDIGO_TLS_CFG_PARAM_LEN);
+    OFCONNECTIONMANAGER_MEMSET(staged_config.switch_cert, 0,
+                               INDIGO_TLS_CFG_PARAM_LEN);
+    OFCONNECTIONMANAGER_MEMSET(staged_config.switch_priv_key, 0,
+                               INDIGO_TLS_CFG_PARAM_LEN);
+    return err;
+}
+
 indigo_error_t
 ind_cxn_cfg_stage(cJSON *config)
 {
@@ -377,7 +482,7 @@ ind_cxn_cfg_stage(cJSON *config)
         AIM_LOG_ERROR("Config: Could not parse 'keepalive_period_ms'");
         return err;
     } else if (err == INDIGO_ERROR_NOT_FOUND) {
-        AIM_LOG_ERROR("Config: Mising required key 'keepalive_period_ms'");
+        AIM_LOG_ERROR("Config: Missing required key 'keepalive_period_ms'");
         return err;
     }
 
@@ -390,6 +495,34 @@ ind_cxn_cfg_stage(cJSON *config)
         /* @FIXME local? listen? priority? */
         staged_config.controllers[i].config.periodic_echo_ms = staged_config.keepalive_period_ms;
         staged_config.controllers[i].config.reset_echo_count = 3; /* @FIXME */
+    }
+
+    /* verify TLS parameters */
+    /*
+     * for now, we should be able to accept:
+     * - TLS config with switch cert and key specified,
+     *   cipher_list and CA cert optional
+     * - if cipher_list is specified, it should be valid
+     * - if CA cert is specified, it should be consistent with switch cert
+     * - TLS config with parameters specified, but
+     *   CA cert, switch cert and switch priv key files not present
+     */
+    {
+        cJSON *node = cJSON_GetObjectItem(config, "tls");
+        if (node) {
+            if (node->type != cJSON_Object) {
+                AIM_LOG_ERROR("Config: expected tls to be an object");
+                return INDIGO_ERROR_PARAM;
+            }
+            err = parse_tls_config(node);
+            if (err != INDIGO_ERROR_NONE) {
+                AIM_LOG_ERROR("Config: error parsing TLS config: %s",
+                              indigo_strerror(err));
+                return err;
+            }
+        } else {
+            AIM_LOG_VERBOSE("Config: TLS config not found, continuing");
+        }
     }
 
     staged_config.valid = true;
@@ -416,6 +549,12 @@ ind_cxn_cfg_commit(void)
     } else {
         lobj->common_flags = staged_config.log_flags;
     }
+
+    /* configure TLS before parsing controller configs */
+    (void) indigo_cxn_config_tls(staged_config.cipher_list,
+                                 staged_config.ca_cert,
+                                 staged_config.switch_cert,
+                                 staged_config.switch_priv_key);
 
     for (i = 0; i < staged_config.num_controllers; i++) {
         struct controller *c = &staged_config.controllers[i];

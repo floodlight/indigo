@@ -82,7 +82,13 @@ void ind_cxn_send_cxn_list(void);
 
 void ind_cxn_status_change(connection_t *cxn);
 
-extern void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
+indigo_error_t
+ind_cxn_verify_tls(char *cipher_list,
+                   char *ca_cert,
+                   char *switch_cert,
+                   char *switch_priv_key);
+
+void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
 /**
  * @brief Update the configuration of the connection manager
