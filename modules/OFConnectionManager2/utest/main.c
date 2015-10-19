@@ -540,10 +540,12 @@ tls_attach(int sd, char *ca_cert,
         ERR_print_errors_fp(stderr);
         assert(0);
     }
-    sprintf(filename, TEST_FS, basedir, MOD_NAME, ca_cert);
-    if (SSL_CTX_load_verify_locations(ctx, filename, NULL) != 1) {
-        ERR_print_errors_fp(stderr);
-        assert(0);
+    if (ca_cert) {
+        sprintf(filename, TEST_FS, basedir, MOD_NAME, ca_cert);
+        if (SSL_CTX_load_verify_locations(ctx, filename, NULL) != 1) {
+            ERR_print_errors_fp(stderr);
+            assert(0);
+        }
     }
     sprintf(filename, TEST_FS, basedir, MOD_NAME, controller_cert);
     if (SSL_CTX_use_certificate_file(ctx, filename, SSL_FILETYPE_PEM) != 1) {
@@ -559,8 +561,13 @@ tls_attach(int sd, char *ca_cert,
         fprintf(stderr, "private key does not match public certificate\n");
         assert(0);
     }
-    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
-                       NULL);
+    if (ca_cert) {
+        SSL_CTX_set_verify(ctx,
+                           SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT,
+                           NULL);
+    } else {
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
+    }
     ssl = SSL_new(ctx);
     if (ssl == NULL) {
         ERR_print_errors_fp(stderr);
@@ -626,7 +633,7 @@ do_tls_handshake(SSL *ssl)
  * SSL* ssl if is_tls is true
  */
 static intptr_t
-advance_to_handshake_complete(bool use_tls,
+advance_to_handshake_complete(bool use_tls, bool use_ca_cert,
                               int controller_id, int aux_id, int lsd)
 {
     int sd;
@@ -641,7 +648,9 @@ advance_to_handshake_complete(bool use_tls,
     INDIGO_ASSERT(unit_test_cxn_state_get(controller_id, aux_id) ==
                   CXN_S_HANDSHAKING);
     if (use_tls) {
-        tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+        tl = (intptr_t) tls_attach(sd,
+                                   use_ca_cert? CA_CERT_FILE: NULL,
+                                   CONTROLLER_CERT_FILE,
                                    CONTROLLER_PRIV_KEY_FILE);
         INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == true,
                       "Failed to complete TLS handshake");
@@ -700,13 +709,15 @@ tls_setup(bool use_tls,
     char switch_cert_filename[256];
     char switch_priv_key_filename[256];
 
-    sprintf(ca_cert_filename, TEST_FS, basedir, MOD_NAME, ca_cert);
+    if (ca_cert) {
+        sprintf(ca_cert_filename, TEST_FS, basedir, MOD_NAME, ca_cert);
+    }
     sprintf(switch_cert_filename, TEST_FS, basedir, MOD_NAME, switch_cert);
     sprintf(switch_priv_key_filename, TEST_FS, basedir, MOD_NAME,
             switch_privkey);
 
     return indigo_cxn_config_tls(cipher_list,
-                                 ca_cert_filename,
+                                 ca_cert? ca_cert_filename: NULL,
                                  switch_cert_filename,
                                  switch_priv_key_filename);
 }
@@ -843,7 +854,7 @@ force_rehandshake(indigo_controller_id_t id, SSL *tl)
 }
 
 static void
-test_normal(bool use_tls, int domain, char *addr)
+test_normal(bool use_tls, bool use_ca_cert, int domain, char *addr)
 {
     indigo_controller_id_t id;
     int lsd;
@@ -860,7 +871,7 @@ test_normal(bool use_tls, int domain, char *addr)
     /* set up listening socket */
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
 
-    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+    indigo_setup(use_tls, CIPHER_LIST, use_ca_cert? CA_CERT_FILE: NULL,
                  SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
 
     if (domain == AF_INET) {
@@ -883,7 +894,7 @@ test_normal(bool use_tls, int domain, char *addr)
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
-    tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
+    tl = advance_to_handshake_complete(use_tls, use_ca_cert, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
@@ -960,7 +971,7 @@ test_normal(bool use_tls, int domain, char *addr)
 
     /* check that the client reconnected */
     OK(ind_soc_select_and_run(100));
-    tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
+    tl = advance_to_handshake_complete(use_tls, use_ca_cert, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
     OK(ind_soc_select_and_run(10));
@@ -1186,7 +1197,7 @@ test_aux3(bool use_tls, int delta)
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
     printf("Advance main connection to handshake complete\n");
-    tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
+    tl = advance_to_handshake_complete(use_tls, true, id, 0, lsd);
 
     printf("Start aux connections\n");
     of_send_aux_cxn_req(use_tls, tl, num_aux);
@@ -1205,7 +1216,7 @@ test_aux3(bool use_tls, int delta)
 
     /* note we are off by 1 on aux_id */
     for (i = 0; i < num_aux; i++) {
-        aux_tl[i] = advance_to_handshake_complete(use_tls, id, i+1, lsd);
+        aux_tl[i] = advance_to_handshake_complete(use_tls, true, id, i+1, lsd);
     }
 
     if (delta) {
@@ -1229,8 +1240,8 @@ test_aux3(bool use_tls, int delta)
             /* aux_tl index is aux_id-1 */
             for (i = 0; i < delta; i++) {
                 aux_tl[num_aux+i] =
-                    advance_to_handshake_complete(use_tls, id,
-                                                  num_aux+i+1, lsd);
+                    advance_to_handshake_complete(use_tls, true,
+                                                  id, num_aux+i+1, lsd);
                 INDIGO_ASSERT(aux_tl[num_aux+i] > 0);
             }
         } else {
@@ -1248,7 +1259,7 @@ test_aux3(bool use_tls, int delta)
 
     /* check that the client reconnected */
     OK(ind_soc_select_and_run(100));
-    tl = advance_to_handshake_complete(use_tls, id, 0, lsd);
+    tl = advance_to_handshake_complete(use_tls, true, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
     tl_close(use_tls, tl);
 
@@ -1523,7 +1534,7 @@ test_dual(bool use_tls)
             /* add */
             cid[con_idx] = setup_cxn(use_tls, CONTROLLER_IP,
                                      controller_ports[con_idx]);
-            tl[con_idx] = advance_to_handshake_complete(use_tls, 
+            tl[con_idx] = advance_to_handshake_complete(use_tls, true,
                                                         cid[con_idx], 0,
                                                         lsd[con_idx]);
             INDIGO_ASSERT(unit_test_controller_count_get() == active_count,
@@ -1780,12 +1791,18 @@ void run_all_tests(bool use_tls)
     test_bad_listener(use_tls);
     test_no_controller(use_tls);
 
-    test_normal(use_tls, AF_INET, CONTROLLER_IP);
-    test_normal(use_tls, AF_INET6, CONTROLLER_IPV6);
-    /* disable linklocal test; address is currently hardcoded */
-    /* test_normal(AF_INET6, CONTROLLER_IPV6_LINKLOCAL); */
-    if (!use_tls) {
-        test_normal(use_tls, AF_UNIX, CONTROLLER_UNIX);
+    if (use_tls) {
+        /* do not use CA */
+        test_normal(use_tls, false, AF_INET, CONTROLLER_IP);
+        /* use CA */
+        test_normal(use_tls, true, AF_INET, CONTROLLER_IP);
+        test_normal(use_tls, true, AF_INET6, CONTROLLER_IPV6);
+        /* disable linklocal test; address is currently hardcoded */
+        /* test_normal(AF_INET6, true, CONTROLLER_IPV6_LINKLOCAL); */
+    } else {
+        test_normal(use_tls, false, AF_INET, CONTROLLER_IP);
+        test_normal(use_tls, false, AF_INET6, CONTROLLER_IPV6);
+        test_normal(use_tls, false, AF_UNIX, CONTROLLER_UNIX);
     }
 
     test_no_hello(use_tls);

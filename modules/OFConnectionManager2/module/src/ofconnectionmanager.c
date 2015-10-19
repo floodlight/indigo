@@ -24,6 +24,7 @@
 
 #include <SocketManager/socketmanager.h>
 #include <OFConnectionManager/ofconnectionmanager.h>
+#include <OFConnectionManager/ofconnectionmanager_porting.h>
 #include <Configuration/configuration.h>
 
 #include <indigo/memory.h>
@@ -399,11 +400,16 @@ verify_cert(SSL_CTX *ctx, const char *cert_filename)
 }
 
 
+/* set ca_cert to NULL to use self-signed certificates */
 static SSL_CTX *
-ssl_ctx_alloc(void)
+ssl_ctx_alloc(char *cipher_list,
+              char *ca_cert,
+              char *switch_cert,
+              char *switch_priv_key)
 {
     SSL_CTX *ctx;
     char buf[IND_SSL_ERR_LEN];
+    bool has_ca_cert = (ca_cert && ca_cert[0] != '\0');
 
     ctx = SSL_CTX_new(TLSv1_2_client_method());
     if (ctx == NULL) {
@@ -411,23 +417,25 @@ ssl_ctx_alloc(void)
         AIM_LOG_ERROR("Failed to allocate SSL_CTX: %s", buf);
         goto error;
     }
-    if (SSL_CTX_set_cipher_list(ctx, tls_cfg.cipher_list) != 1) {
+    if (SSL_CTX_set_cipher_list(ctx, cipher_list) != 1) {
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set cipher list: %s", buf);
         goto error;
     }
-    if (SSL_CTX_load_verify_locations(ctx, tls_cfg.ca_cert, NULL) != 1) {
-        ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("Failed to set CA certificate file: %s", buf);
-        goto error;
+    if (has_ca_cert) {
+        if (SSL_CTX_load_verify_locations(ctx, ca_cert, NULL) != 1) {
+            ERR_error_string(ERR_get_error(), buf);
+            AIM_LOG_ERROR("Failed to set CA certificate file: %s", buf);
+            goto error;
+        }
     }
-    if (SSL_CTX_use_certificate_file(ctx, tls_cfg.switch_cert,
+    if (SSL_CTX_use_certificate_file(ctx, switch_cert,
                                      SSL_FILETYPE_PEM) != 1) {
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set certificate file: %s", buf);
         goto error;
     }
-    if (SSL_CTX_use_PrivateKey_file(ctx, tls_cfg.switch_priv_key,
+    if (SSL_CTX_use_PrivateKey_file(ctx, switch_priv_key,
                                     SSL_FILETYPE_PEM) != 1) {
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to set private key file: %s", buf);
@@ -439,12 +447,16 @@ ssl_ctx_alloc(void)
                       buf);
         goto error;
     }
-    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
 
-    /* verify certificate chain */
-    if (!verify_cert(ctx, tls_cfg.switch_cert)) {
-        AIM_LOG_ERROR("Failed to verify certificate file");
-        goto error;
+    if (has_ca_cert) {
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+        /* verify certificate chain */
+        if (!verify_cert(ctx, switch_cert)) {
+            AIM_LOG_ERROR("Failed to verify certificate file");
+            goto error;
+        }
+    } else {
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
     }
 
     return ctx;
@@ -464,6 +476,25 @@ ssl_ctx_free(SSL_CTX *ctx)
 }
 
 
+/* verify specified parameters are usable and consistent */
+indigo_error_t
+ind_cxn_verify_tls(char *cipher_list,
+                   char *ca_cert,
+                   char *switch_cert,
+                   char *switch_priv_key)
+{
+    SSL_CTX *ctx;
+
+    ctx = ssl_ctx_alloc(cipher_list, ca_cert, switch_cert, switch_priv_key);
+    if (ctx) {
+        ssl_ctx_free(ctx);
+        return INDIGO_ERROR_NONE;
+    } else {
+        return INDIGO_ERROR_PARAM;
+    }
+}
+
+
 /* public API for TLS configuration */
 indigo_error_t
 indigo_cxn_config_tls(char *cipher_list,
@@ -471,21 +502,27 @@ indigo_cxn_config_tls(char *cipher_list,
                       char *switch_cert,
                       char *switch_priv_key)
 {
-    SSL_CTX *ctx;
+    indigo_error_t rv;
 
-    strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
-    strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
-    strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
-    strncpy(tls_cfg.switch_priv_key, switch_priv_key,
-            sizeof(tls_cfg.switch_priv_key));
-
-    ctx = ssl_ctx_alloc();
-    if (ctx) {
-        ssl_ctx_free(ctx);
-        return INDIGO_ERROR_NONE;
-    } else {
-        return INDIGO_ERROR_PARAM;
+    rv = ind_cxn_verify_tls(cipher_list, ca_cert,
+                            switch_cert, switch_priv_key);
+    if (rv == INDIGO_ERROR_NONE) {
+        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.cipher_list, cipher_list,
+                                    sizeof(tls_cfg.cipher_list));
+        if (ca_cert) {
+            OFCONNECTIONMANAGER_STRNCPY(tls_cfg.ca_cert, ca_cert,
+                                        sizeof(tls_cfg.ca_cert));
+        } else {
+            OFCONNECTIONMANAGER_MEMSET(tls_cfg.ca_cert, 0,
+                                        sizeof(tls_cfg.ca_cert));
+        }
+        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_cert, switch_cert,
+                                    sizeof(tls_cfg.switch_cert));
+        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_priv_key, switch_priv_key,
+                                    sizeof(tls_cfg.switch_priv_key));
     }
+
+    return rv;
 }
 
 
@@ -621,7 +658,10 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
      * SSL can be set up on the connection */
     if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
         protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
-        controller->ssl_ctx = ssl_ctx_alloc();
+        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.cipher_list,
+                                            tls_cfg.ca_cert,
+                                            tls_cfg.switch_cert,
+                                            tls_cfg.switch_priv_key);
         if (controller->ssl_ctx == NULL) {
             AIM_LOG_ERROR("Could not set up SSL context for controller");
             controller->active = false;
@@ -1067,8 +1107,13 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
 
     if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
         protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
-        controller->ssl_ctx = ssl_ctx_alloc();
+        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.cipher_list,
+                                            tls_cfg.ca_cert,
+                                            tls_cfg.switch_cert,
+                                            tls_cfg.switch_priv_key);
         if (controller->ssl_ctx == NULL) {
+            AIM_LOG_ERROR("Could not allocate SSL context");
+            rv = INDIGO_ERROR_UNKNOWN;
             goto error;
         }
     }

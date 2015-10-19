@@ -312,6 +312,7 @@ typedef struct indigo_cxn_status_s {
  * @param cipher_list One or more cipher strings separated by colons.
  * See https://www.openssl.org/docs/manmaster/apps/ciphers.html for examples.
  * @param ca_cert Path to certificate authority's PEM-formatted certificate.
+ * Set to NULL to allow self-signed certificates.
  * @param switch_cert Path to switch's PEM-formatted certificate.
  * @param switch_priv_key Path to switch's PEM-formatted private key.
  */
