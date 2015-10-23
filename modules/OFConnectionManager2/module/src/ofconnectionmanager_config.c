@@ -361,10 +361,24 @@ static indigo_error_t
 parse_tls_config(cJSON *root)
 {
     indigo_error_t err;
+    char *tls_mode;
     char *cipher_list;
     char *ca_cert;
     char *switch_cert;
     char *switch_priv_key;
+
+    err = ind_cfg_lookup_string(root, "tls_mode", &tls_mode);
+    if (err == INDIGO_ERROR_NOT_FOUND) {
+        AIM_LOG_INFO("Config: TLS mode not set, defaulting to off");
+        tls_mode = "off";
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: tls_mode must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
 
     err = ind_cfg_lookup_string(root, "cipher_list", &cipher_list);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -382,7 +396,7 @@ parse_tls_config(cJSON *root)
     err = ind_cfg_lookup_string(root, "ca_cert", &ca_cert);
     if (err == INDIGO_ERROR_NOT_FOUND ||
         (ca_cert && ca_cert[0] == '\0')) {
-        AIM_LOG_INFO("Config: No ca_cert given, allowed self-signed certs");
+        AIM_LOG_INFO("Config: No ca_cert given, allowing self-signed certs");
         ca_cert = NULL;
     } else if (err < 0) {
         if (err == INDIGO_ERROR_PARAM) {
@@ -417,6 +431,18 @@ parse_tls_config(cJSON *root)
         goto error;
     }
 
+    if ((strcmp(tls_mode, "off") == 0) ||
+        (strcmp(tls_mode, "optional") == 0)) {
+        AIM_LOG_INFO("Config: tls_mode %s, ignoring ca_cert", tls_mode);
+        ca_cert = NULL;
+    } else if (strcmp(tls_mode, "strict") == 0) {
+        AIM_LOG_INFO("Config: tls_mode %s, enforcing ca_cert", tls_mode);
+    } else {
+        AIM_LOG_ERROR("Config: bad tls_mode %s, aborting TLS config",
+                      tls_mode);
+        goto error;
+    }
+
     if (ind_cxn_verify_tls(cipher_list, ca_cert,
                            switch_cert, switch_priv_key) !=
         INDIGO_ERROR_NONE) {
@@ -438,9 +464,9 @@ parse_tls_config(cJSON *root)
     OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_priv_key, switch_priv_key,
                                 INDIGO_TLS_CFG_PARAM_LEN);
 
-    AIM_LOG_INFO("Config: TLS cipher list %s, ca_cert %s, "
+    AIM_LOG_INFO("Config: TLS mode %s, cipher list %s, ca_cert %s, "
                  "switch_cert %s, switch_priv_key %s",
-                 cipher_list, ca_cert? ca_cert: "NONE",
+                 tls_mode, cipher_list, ca_cert? ca_cert: "NONE",
                  switch_cert, switch_priv_key);
     return INDIGO_ERROR_NONE;
 

@@ -72,6 +72,18 @@ ofconnectionmanager_ucli_ucli__stats__(ucli_context_t *uc)
     return UCLI_STATUS_OK;
 }
 
+static ucli_status_t
+ofconnectionmanager_ucli_ucli__tls__(ucli_context_t *uc)
+{
+    UCLI_COMMAND_INFO(uc,
+                      "tls", 0,
+                      "$summary#Show TLS configuration.");
+
+    ind_cxn_tls_config_show(&uc->pvs);
+
+    return UCLI_STATUS_OK;
+}
+
 
 /* <auto.ucli.handlers.start> */
 /******************************************************************************
@@ -84,6 +96,7 @@ static ucli_command_handler_f ofconnectionmanager_ucli_ucli_handlers__[] =
 {
     ofconnectionmanager_ucli_ucli__config__,
     ofconnectionmanager_ucli_ucli__stats__,
+    ofconnectionmanager_ucli_ucli__tls__,
     NULL
 };
 /******************************************************************************/

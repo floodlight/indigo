@@ -90,6 +90,9 @@ ind_cxn_verify_tls(char *cipher_list,
 
 void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
+void ind_cxn_tls_config_show(aim_pvs_t *pvs);
+
+
 /**
  * @brief Update the configuration of the connection manager
  * @param config Pointer to the implementation specific configuration
