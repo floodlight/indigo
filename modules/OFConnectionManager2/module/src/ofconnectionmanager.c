@@ -526,6 +526,18 @@ indigo_cxn_config_tls(char *cipher_list,
 }
 
 
+/* backend print function for debugging */
+void
+ind_cxn_tls_config_show(aim_pvs_t *pvs)
+{
+    aim_printf(pvs, "cipher_list: %s\n", tls_cfg.cipher_list);
+    aim_printf(pvs, "ca_cert: %s\n",
+               tls_cfg.ca_cert[0] != '\0'?  tls_cfg.ca_cert: "None");
+    aim_printf(pvs, "switch_cert: %s\n", tls_cfg.switch_cert);
+    aim_printf(pvs, "switch_priv_key: %s\n", tls_cfg.switch_priv_key);
+}
+
+
 /*------------------------------------------------------------
  * Listening connection handling
  *------------------------------------------------------------*/
