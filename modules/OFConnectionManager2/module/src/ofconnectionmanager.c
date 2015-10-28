@@ -586,7 +586,7 @@ indigo_cxn_config_tls(char *cipher_list,
                                     sizeof(tls_cfg.switch_cert));
         OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_priv_key, switch_priv_key,
                                     sizeof(tls_cfg.switch_priv_key));
-        if (exp_controller_suffix) {
+        if (exp_controller_suffix && (exp_controller_suffix[0] != '\0')) {
             tls_cfg.check_controller_suffix = true;
             OFCONNECTIONMANAGER_STRNCPY(tls_cfg.exp_controller_suffix,
                                         exp_controller_suffix,
@@ -611,6 +611,9 @@ ind_cxn_tls_config_show(aim_pvs_t *pvs)
                tls_cfg.ca_cert[0] != '\0'?  tls_cfg.ca_cert: "None");
     aim_printf(pvs, "switch_cert: %s\n", tls_cfg.switch_cert);
     aim_printf(pvs, "switch_priv_key: %s\n", tls_cfg.switch_priv_key);
+    aim_printf(pvs, "exp_controller_suffix: %s\n",
+               tls_cfg.check_controller_suffix?
+               tls_cfg.exp_controller_suffix: "None");
 }
 
 
