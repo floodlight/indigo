@@ -151,6 +151,7 @@ static struct config {
     char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
     char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
     char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
+    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN];
     int valid;
 } staged_config, current_config;
 
@@ -366,6 +367,7 @@ parse_tls_config(cJSON *root)
     char *ca_cert;
     char *switch_cert;
     char *switch_priv_key;
+    char *exp_controller_suffix;
 
     err = ind_cfg_lookup_string(root, "tls_mode", &tls_mode);
     if (err == INDIGO_ERROR_NOT_FOUND) {
@@ -431,6 +433,22 @@ parse_tls_config(cJSON *root)
         goto error;
     }
 
+    err = ind_cfg_lookup_string(root, "exp_controller_suffix",
+                                &exp_controller_suffix);
+    if (err == INDIGO_ERROR_NOT_FOUND ||
+        (exp_controller_suffix && exp_controller_suffix[0] == '\0')) {
+        AIM_LOG_INFO("Config: No exp_controller_suffix, "
+                     "not verifying controller names");
+        exp_controller_suffix = NULL;
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: exp_controller_suffix must be a string");
+        } else {
+            AIM_LOG_ERROR("Config: %s", indigo_strerror(err));
+        }
+        goto error;
+    }
+
     if ((strcmp(tls_mode, "off") == 0) ||
         (strcmp(tls_mode, "optional") == 0)) {
         AIM_LOG_INFO("Config: tls_mode %s, ignoring ca_cert", tls_mode);
@@ -444,7 +462,8 @@ parse_tls_config(cJSON *root)
     }
 
     if (ind_cxn_verify_tls(cipher_list, ca_cert,
-                           switch_cert, switch_priv_key) !=
+                           switch_cert, switch_priv_key,
+                           exp_controller_suffix) !=
         INDIGO_ERROR_NONE) {
         AIM_LOG_ERROR("Config: TLS parameter verification failed");
         goto error;
@@ -463,11 +482,21 @@ parse_tls_config(cJSON *root)
                                 INDIGO_TLS_CFG_PARAM_LEN);
     OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_priv_key, switch_priv_key,
                                 INDIGO_TLS_CFG_PARAM_LEN);
+    if (exp_controller_suffix) {
+        OFCONNECTIONMANAGER_STRNCPY(staged_config.exp_controller_suffix,
+                                    exp_controller_suffix,
+                                    INDIGO_TLS_CFG_PARAM_LEN);
+    } else {
+        OFCONNECTIONMANAGER_MEMSET(staged_config.exp_controller_suffix, 0,
+                                   INDIGO_TLS_CFG_PARAM_LEN);
+    }
 
     AIM_LOG_INFO("Config: TLS mode %s, cipher list %s, ca_cert %s, "
-                 "switch_cert %s, switch_priv_key %s",
+                 "switch_cert %s, switch_priv_key %s, "
+                 "exp_controller_suffix %s",
                  tls_mode, cipher_list, ca_cert? ca_cert: "NONE",
-                 switch_cert, switch_priv_key);
+                 switch_cert, switch_priv_key,
+                 exp_controller_suffix? exp_controller_suffix: "NONE");
     return INDIGO_ERROR_NONE;
 
  error:
@@ -479,6 +508,8 @@ parse_tls_config(cJSON *root)
     OFCONNECTIONMANAGER_MEMSET(staged_config.switch_cert, 0,
                                INDIGO_TLS_CFG_PARAM_LEN);
     OFCONNECTIONMANAGER_MEMSET(staged_config.switch_priv_key, 0,
+                               INDIGO_TLS_CFG_PARAM_LEN);
+    OFCONNECTIONMANAGER_MEMSET(staged_config.exp_controller_suffix, 0,
                                INDIGO_TLS_CFG_PARAM_LEN);
     return err;
 }
@@ -580,7 +611,8 @@ ind_cxn_cfg_commit(void)
     (void) indigo_cxn_config_tls(staged_config.cipher_list,
                                  staged_config.ca_cert,
                                  staged_config.switch_cert,
-                                 staged_config.switch_priv_key);
+                                 staged_config.switch_priv_key,
+                                 staged_config.exp_controller_suffix);
 
     for (i = 0; i < staged_config.num_controllers; i++) {
         struct controller *c = &staged_config.controllers[i];

@@ -48,6 +48,7 @@
 #include <openssl/engine.h>
 #include <openssl/conf.h>
 #include <openssl/evp.h>
+#include <openssl/objects.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -343,6 +344,8 @@ typedef struct tls_cfg_s {
     char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
     char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
     char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
+    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN];
+    bool check_controller_suffix;
 } tls_cfg_t;
 
 static tls_cfg_t tls_cfg;
@@ -400,9 +403,66 @@ verify_cert(SSL_CTX *ctx, const char *cert_filename)
 }
 
 
+/* true if str ends with searchstr  */
+static bool
+ends_with(char *str, char *searchstr)
+{
+    char *substr = strstr(str, searchstr);
+    return substr && (*(substr + strlen(searchstr)) == '\0');
+}
+
+static int
+verify_cb(int preverify_ok, X509_STORE_CTX *ctx)
+{
+    int depth = X509_STORE_CTX_get_error_depth(ctx);
+
+    /* skip all certificates except for server certificate at depth 0 */
+    if (depth != 0) {
+        AIM_LOG_VERBOSE("Depth %d: preverify_ok %d", depth, preverify_ok);
+        return preverify_ok? 1: 0;
+    }
+
+    /* get common name entry from certificate's subject name */
+    X509 *cert = X509_STORE_CTX_get_current_cert(ctx);
+    X509_NAME *name = X509_get_subject_name(cert);
+    int loc = X509_NAME_get_index_by_NID(name, NID_commonName, -1);
+    if (loc < 0) {
+        /* could not find common name, fail */
+        AIM_LOG_ERROR("Failed to find common name, verify failed");
+        return 0;
+    }
+
+    /* print from common name entry into membio */
+    X509_NAME_ENTRY *entry = X509_NAME_get_entry(name, loc);
+    ASN1_STRING *asn1str = X509_NAME_ENTRY_get_data(entry);
+    BIO *membio = BIO_new(BIO_s_mem());
+    ASN1_STRING_print(membio, asn1str);
+
+    /* get string from membio and compare */
+    char buf[INDIGO_TLS_CFG_PARAM_LEN];
+    int nread = BIO_gets(membio, buf, sizeof(buf));
+    bool match = false;
+    if (nread) {
+        match = ends_with(buf, tls_cfg.exp_controller_suffix);
+        AIM_LOG_INFO("Subject name %s, %s %s",
+                     buf, match? "matches": "fails to match", 
+                     tls_cfg.exp_controller_suffix);
+    }
+    BIO_free(membio);
+
+    if (preverify_ok && match) {
+        return 1;
+    } else {
+        AIM_LOG_ERROR("Failed to verify controller name");
+        return 0;
+    }
+}
+
+
 /* set ca_cert to NULL to use self-signed certificates */
 static SSL_CTX *
-ssl_ctx_alloc(char *cipher_list,
+ssl_ctx_alloc(bool do_common_name_check,
+              char *cipher_list,
               char *ca_cert,
               char *switch_cert,
               char *switch_priv_key)
@@ -449,7 +509,8 @@ ssl_ctx_alloc(char *cipher_list,
     }
 
     if (has_ca_cert) {
-        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
+        SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER,
+                           do_common_name_check? verify_cb: NULL);
         /* verify certificate chain */
         if (!verify_cert(ctx, switch_cert)) {
             AIM_LOG_ERROR("Failed to verify certificate file");
@@ -481,11 +542,14 @@ indigo_error_t
 ind_cxn_verify_tls(char *cipher_list,
                    char *ca_cert,
                    char *switch_cert,
-                   char *switch_priv_key)
+                   char *switch_priv_key,
+                   char *exp_controller_suffix)
 {
     SSL_CTX *ctx;
 
-    ctx = ssl_ctx_alloc(cipher_list, ca_cert, switch_cert, switch_priv_key);
+    /* currently no checks on exp_controller_suffix */
+    ctx = ssl_ctx_alloc(false,
+                        cipher_list, ca_cert, switch_cert, switch_priv_key);
     if (ctx) {
         ssl_ctx_free(ctx);
         return INDIGO_ERROR_NONE;
@@ -500,12 +564,14 @@ indigo_error_t
 indigo_cxn_config_tls(char *cipher_list,
                       char *ca_cert,
                       char *switch_cert,
-                      char *switch_priv_key)
+                      char *switch_priv_key,
+                      char *exp_controller_suffix)
 {
     indigo_error_t rv;
 
     rv = ind_cxn_verify_tls(cipher_list, ca_cert,
-                            switch_cert, switch_priv_key);
+                            switch_cert, switch_priv_key,
+                            exp_controller_suffix);
     if (rv == INDIGO_ERROR_NONE) {
         OFCONNECTIONMANAGER_STRNCPY(tls_cfg.cipher_list, cipher_list,
                                     sizeof(tls_cfg.cipher_list));
@@ -520,6 +586,16 @@ indigo_cxn_config_tls(char *cipher_list,
                                     sizeof(tls_cfg.switch_cert));
         OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_priv_key, switch_priv_key,
                                     sizeof(tls_cfg.switch_priv_key));
+        if (exp_controller_suffix) {
+            tls_cfg.check_controller_suffix = true;
+            OFCONNECTIONMANAGER_STRNCPY(tls_cfg.exp_controller_suffix,
+                                        exp_controller_suffix,
+                                        sizeof(tls_cfg.exp_controller_suffix));
+        } else {
+            tls_cfg.check_controller_suffix = false;
+            OFCONNECTIONMANAGER_MEMSET(tls_cfg.exp_controller_suffix, 0,
+                                       sizeof(tls_cfg.exp_controller_suffix));
+        }
     }
 
     return rv;
@@ -670,7 +746,8 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
      * SSL can be set up on the connection */
     if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
         protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
-        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.cipher_list,
+        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.check_controller_suffix,
+                                            tls_cfg.cipher_list,
                                             tls_cfg.ca_cert,
                                             tls_cfg.switch_cert,
                                             tls_cfg.switch_priv_key);
@@ -1119,7 +1196,8 @@ indigo_controller_add(indigo_cxn_protocol_params_t *protocol_params,
 
     if (protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV4 ||
         protocol_params->header.protocol == INDIGO_CXN_PROTO_TLS_OVER_IPV6) {
-        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.cipher_list,
+        controller->ssl_ctx = ssl_ctx_alloc(tls_cfg.check_controller_suffix,
+                                            tls_cfg.cipher_list,
                                             tls_cfg.ca_cert,
                                             tls_cfg.switch_cert,
                                             tls_cfg.switch_priv_key);

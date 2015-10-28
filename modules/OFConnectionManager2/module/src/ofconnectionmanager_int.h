@@ -86,7 +86,8 @@ indigo_error_t
 ind_cxn_verify_tls(char *cipher_list,
                    char *ca_cert,
                    char *switch_cert,
-                   char *switch_priv_key);
+                   char *switch_priv_key,
+                   char *exp_controller_suffix);
 
 void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
