@@ -315,12 +315,15 @@ typedef struct indigo_cxn_status_s {
  * Set to NULL to allow self-signed certificates.
  * @param switch_cert Path to switch's PEM-formatted certificate.
  * @param switch_priv_key Path to switch's PEM-formatted private key.
+ * @param exp_controller_suffix If not NULL and ca_cert is not NULL,
+ * will verify that the controller's commonName ends with this string.
  */
 extern indigo_error_t
 indigo_cxn_config_tls(char *cipher_list,
                       char *ca_cert,
                       char *switch_cert,
-                      char *switch_priv_key);
+                      char *switch_priv_key,
+                      char *exp_controller_suffix);
 #endif /* DEPENDMODULE_INCLUDE_OFCONNECTIONMANAGER2 */
 
 /**

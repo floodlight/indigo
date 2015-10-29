@@ -703,7 +703,8 @@ tls_setup(bool use_tls,
           char *cipher_list,
           char *ca_cert,
           char *switch_cert,
-          char *switch_privkey)
+          char *switch_privkey,
+          char *exp_controller_suffix)
 {
     char ca_cert_filename[256];
     char switch_cert_filename[256];
@@ -719,7 +720,8 @@ tls_setup(bool use_tls,
     return indigo_cxn_config_tls(cipher_list,
                                  ca_cert? ca_cert_filename: NULL,
                                  switch_cert_filename,
-                                 switch_priv_key_filename);
+                                 switch_priv_key_filename,
+                                 exp_controller_suffix);
 }
 
 
@@ -728,7 +730,8 @@ indigo_setup(bool use_tls,
              char *cipher_list,
              char *ca_cert,
              char *switch_cert,
-             char *switch_privkey)
+             char *switch_privkey,
+             char *exp_controller_suffix)
 {
     ind_soc_config_t config; /* Currently ignored */
 
@@ -741,7 +744,7 @@ indigo_setup(bool use_tls,
     if (use_tls) {
         indigo_error_t err;
         err = tls_setup(use_tls, cipher_list, ca_cert,
-                        switch_cert, switch_privkey);
+                        switch_cert, switch_privkey, exp_controller_suffix);
         INDIGO_ASSERT(err == INDIGO_ERROR_NONE, "tls setup failure");
     }
 
@@ -854,7 +857,8 @@ force_rehandshake(indigo_controller_id_t id, SSL *tl)
 }
 
 static void
-test_normal(bool use_tls, bool use_ca_cert, int domain, char *addr)
+test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
+            int domain, char *addr)
 {
     indigo_controller_id_t id;
     int lsd;
@@ -864,15 +868,18 @@ test_normal(bool use_tls, bool use_ca_cert, int domain, char *addr)
     uint8_t buf[512];  /* may need to be increased */
     indigo_cxn_barrier_blocker_t blocker;
 
-    printf("***Start %s, %s, domain %s, addr %s\n", __FUNCTION__, 
-           get_tcp_tls(use_tls),
+    printf("***Start %s, %s, %s, controller_suffix %s, "
+           "domain %s, addr %s\n",
+           __FUNCTION__, get_tcp_tls(use_tls),
+           use_ca_cert? "with CA": "without CA",
+           controller_suffix? controller_suffix: "NONE",
            get_domain_name(domain), addr);
 
     /* set up listening socket */
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
 
     indigo_setup(use_tls, CIPHER_LIST, use_ca_cert? CA_CERT_FILE: NULL,
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, controller_suffix);
 
     if (domain == AF_INET) {
         id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
@@ -992,8 +999,11 @@ test_normal(bool use_tls, bool use_ca_cert, int domain, char *addr)
 
     close(lsd);
 
-    printf("***Stop %s, %s, domain %s, addr %s\n", __FUNCTION__, 
-           get_tcp_tls(use_tls),
+    printf("***Stop %s, %s, %s, controller_suffix %s, "
+           "domain %s, addr %s\n",
+           __FUNCTION__, get_tcp_tls(use_tls),
+           use_ca_cert? "with CA": "without CA",
+           controller_suffix? controller_suffix: "NONE",
            get_domain_name(domain), addr);
 }
 
@@ -1015,7 +1025,7 @@ test_no_hello(bool use_tls)
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1096,7 +1106,7 @@ test_no_features_request(bool use_tls)
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1187,7 +1197,7 @@ test_aux3(bool use_tls, int delta)
     lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     INDIGO_ASSERT((id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
@@ -1394,7 +1404,7 @@ test_listener(bool use_tls, int domain)
            get_domain_name(domain));
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     /* set up connection manager listening connection */
     if (domain == AF_UNIX) {
@@ -1520,7 +1530,7 @@ test_dual(bool use_tls)
     }
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     for (idx = 1; idx < num_events; idx++) {
         int con_idx = (events[idx-1] ^ events[idx]) - 1;
@@ -1581,7 +1591,7 @@ test_bad_controller(bool use_tls)
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
@@ -1613,7 +1623,7 @@ test_bad_listener(bool use_tls)
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
@@ -1646,7 +1656,7 @@ test_no_controller(bool use_tls)
     printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     id = setup_cxn(use_tls, CONTROLLER_IP, CONTROLLER_PORT1);
     INDIGO_ASSERT(id >= 0);
@@ -1680,37 +1690,37 @@ test_bad_tls_config(bool use_tls)
 
     /* bad cipher list */
     err = tls_setup(true, "nonexistentcipher:shouldfail", CA_CERT_FILE,
-                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
                   "did not detect bad cipher list");
 
     /* missing file */
     err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
-                    "thisfiledoesnotexist", SWITCH_PRIV_KEY_FILE);
+                    "thisfiledoesnotexist", SWITCH_PRIV_KEY_FILE, NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
                   "did not detect missing file");
 
     /* wrong file format */
     err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
-                    SWITCH_CERT_FILE, "switch.der");
+                    SWITCH_CERT_FILE, "switch.der", NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
                   "did not detect wrong file format");
 
     /* key does not match certificate */
     err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
-                    SWITCH_CERT_FILE, "mismatch.key");
+                    SWITCH_CERT_FILE, "mismatch.key", NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
                   "did not detect mismatched key and cert");
 
     /* switch certificate signed by different CA */
     err = tls_setup(true, CIPHER_LIST, "different_ca.cert",
-                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_PARAM, 
                   "did not detect bad certificate chain");
 
     /* positive case, this should just work */
     err = tls_setup(true, CIPHER_LIST, CA_CERT_FILE,
-                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                    SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
     INDIGO_ASSERT(err == INDIGO_ERROR_NONE, 
                   "valid tls configuration unrecognized");
 
@@ -1740,7 +1750,7 @@ test_mismatching_tls_controller(bool use_tls, int domain, char *addr)
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
 
     indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
-                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE);
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
 
     if (domain == AF_INET) {
         id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
@@ -1785,6 +1795,72 @@ test_mismatching_tls_controller(bool use_tls, int domain, char *addr)
 }
 
 
+/* try to connect to a controller whose common name does not match
+ * the supplied suffix */
+static void
+test_bad_controller_name(bool use_tls, int domain, char *addr)
+{
+    indigo_controller_id_t id;
+    int lsd;
+    intptr_t tl;
+    int sd;
+
+    if (!use_tls) {
+        return;
+    }
+
+    printf("***Start %s, %s, domain %s, addr %s\n", __FUNCTION__, 
+           get_tcp_tls(use_tls),
+           get_domain_name(domain), addr);
+
+    /* set up listening socket */
+    lsd = setup_server(domain, addr, CONTROLLER_PORT1);
+
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, "controller-magic");
+
+    if (domain == AF_INET) {
+        id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
+    } else if (domain == AF_INET6) {
+        id = setup_cxn_v6(use_tls, addr, CONTROLLER_PORT1);
+    } else {
+        AIM_DIE("unknown domain %d", domain);
+    }
+
+    INDIGO_ASSERT(id >= 0);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
+
+    OK(ind_soc_select_and_run(1));
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
+
+    sd = server_accept(lsd);
+    OK(ind_soc_select_and_run(1));
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
+
+    tl = (intptr_t) tls_attach(sd, CA_CERT_FILE, CONTROLLER_CERT_FILE,
+                               CONTROLLER_PRIV_KEY_FILE);
+    INDIGO_ASSERT(do_tls_handshake((SSL *)tl) == false,
+                  "Unexpectedly completed TLS handshake");
+
+    tl_close(use_tls, tl);
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+
+    OK(indigo_controller_remove(id));
+    OK(ind_soc_select_and_run(5));
+
+    indigo_teardown();
+
+    close(lsd);
+
+    printf("***Stop %s, %s, domain %s, addr %s\n", __FUNCTION__, 
+           get_tcp_tls(use_tls),
+           get_domain_name(domain), addr);
+}
+
+
 void run_all_tests(bool use_tls)
 {
     test_bad_controller(use_tls);
@@ -1793,22 +1869,26 @@ void run_all_tests(bool use_tls)
 
     if (use_tls) {
         /* do not use CA */
-        test_normal(use_tls, false, AF_INET, CONTROLLER_IP);
-        /* use CA */
-        test_normal(use_tls, true, AF_INET, CONTROLLER_IP);
-        test_normal(use_tls, true, AF_INET6, CONTROLLER_IPV6);
+        test_normal(use_tls, false, NULL, AF_INET, CONTROLLER_IP);
+        /* use CA, do not check controller suffix */
+        test_normal(use_tls, true, NULL, AF_INET, CONTROLLER_IP);
+        /* use CA, check controller suffix */
+        test_normal(use_tls, true, "-Controller", AF_INET, CONTROLLER_IP);
+        /* use CA, do not check controller suffix */
+        test_normal(use_tls, true, NULL, AF_INET6, CONTROLLER_IPV6);
         /* disable linklocal test; address is currently hardcoded */
         /* test_normal(AF_INET6, true, CONTROLLER_IPV6_LINKLOCAL); */
     } else {
-        test_normal(use_tls, false, AF_INET, CONTROLLER_IP);
-        test_normal(use_tls, false, AF_INET6, CONTROLLER_IPV6);
-        test_normal(use_tls, false, AF_UNIX, CONTROLLER_UNIX);
+        test_normal(use_tls, false, NULL, AF_INET, CONTROLLER_IP);
+        test_normal(use_tls, false, NULL, AF_INET6, CONTROLLER_IPV6);
+        test_normal(use_tls, false, NULL, AF_UNIX, CONTROLLER_UNIX);
     }
 
     test_no_hello(use_tls);
     test_no_features_request(use_tls);
     test_bad_tls_config(use_tls);
     test_mismatching_tls_controller(use_tls, AF_INET, CONTROLLER_IP);
+    test_bad_controller_name(use_tls, AF_INET, CONTROLLER_IP);
 
     test_aux3(use_tls, 0);
     test_aux3(use_tls, 1);
