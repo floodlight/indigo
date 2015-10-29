@@ -407,8 +407,11 @@ verify_cert(SSL_CTX *ctx, const char *cert_filename)
 static bool
 ends_with(char *str, char *searchstr)
 {
-    char *substr = strstr(str, searchstr);
-    return substr && (*(substr + strlen(searchstr)) == '\0');
+    int slen = strlen(str);
+    int searchlen = strlen(searchstr);
+
+    return (slen >= searchlen)?
+        (strcmp(str+slen-searchlen, searchstr) == 0): false;
 }
 
 static int
@@ -419,7 +422,7 @@ verify_cb(int preverify_ok, X509_STORE_CTX *ctx)
     /* skip all certificates except for server certificate at depth 0 */
     if (depth != 0) {
         AIM_LOG_VERBOSE("Depth %d: preverify_ok %d", depth, preverify_ok);
-        return preverify_ok? 1: 0;
+        return preverify_ok;
     }
 
     /* get common name entry from certificate's subject name */
