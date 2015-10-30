@@ -279,32 +279,32 @@ ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
 
     switch (params->header.protocol) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
-        len = snprintf(destbuf, destbuflen, "tcp:%s:%d",
-                       params->tcp_over_ipv4.controller_ip,
-                       params->tcp_over_ipv4.controller_port);
+        len = OFCONNECTIONMANAGER_SNPRINTF(destbuf, destbuflen, "tcp:%s:%d",
+                                           params->tcp_over_ipv4.controller_ip,
+                                           params->tcp_over_ipv4.controller_port);
         break;
     case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
-        len = snprintf(destbuf, destbuflen, "tls:%s:%d",
-                       params->tcp_over_ipv4.controller_ip,
-                       params->tcp_over_ipv4.controller_port);
+        len = OFCONNECTIONMANAGER_SNPRINTF(destbuf, destbuflen, "tls:%s:%d",
+                                           params->tcp_over_ipv4.controller_ip,
+                                           params->tcp_over_ipv4.controller_port);
         break;
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
-        len = snprintf(destbuf, destbuflen, "tcp6:%s:%d",
-                       params->tcp_over_ipv6.controller_ip,
-                       params->tcp_over_ipv6.controller_port);
+        len = OFCONNECTIONMANAGER_SNPRINTF(destbuf, destbuflen, "tcp6:%s:%d",
+                                           params->tcp_over_ipv6.controller_ip,
+                                           params->tcp_over_ipv6.controller_port);
         break;
     case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
-        len = snprintf(destbuf, destbuflen, "tls6:%s:%d",
-                       params->tcp_over_ipv6.controller_ip,
-                       params->tcp_over_ipv6.controller_port);
+        len = OFCONNECTIONMANAGER_SNPRINTF(destbuf, destbuflen, "tls6:%s:%d",
+                                           params->tcp_over_ipv6.controller_ip,
+                                           params->tcp_over_ipv6.controller_port);
         break;
     case INDIGO_CXN_PROTO_UNIX:
-        len = snprintf(destbuf, destbuflen, "%s",
-                       params->unx.unix_path);
+        len = OFCONNECTIONMANAGER_SNPRINTF(destbuf, destbuflen, "%s",
+                                           params->unx.unix_path);
         break;
     case INDIGO_CXN_PROTO_INVALID:  /* fall-through */
     default:
-        strcpy(destbuf, inv);
+        OFCONNECTIONMANAGER_STRNCPY(destbuf, inv, sizeof(inv));
         len = sizeof(inv)-1;
         break;
     }
@@ -2150,7 +2150,7 @@ parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
                            socklen_t *sockaddrlen)
 {
     char port_str[8];
-    snprintf(port_str, sizeof(port_str), "%u", port);
+    OFCONNECTIONMANAGER_SNPRINTF(port_str, sizeof(port_str), "%u", port);
 
     struct addrinfo hints;
     memset(&hints, 0, sizeof(hints));
@@ -2170,7 +2170,7 @@ parse_sockaddr_getaddrinfo(int family, const char *addr, int port,
         return INDIGO_ERROR_PARAM;
     }
 
-    memcpy(sockaddr, ai->ai_addr, ai->ai_addrlen);
+    OFCONNECTIONMANAGER_MEMCPY(sockaddr, ai->ai_addr, ai->ai_addrlen);
     *sockaddrlen = ai->ai_addrlen;
     freeaddrinfo(ai);
     return INDIGO_ERROR_NONE;
@@ -2183,7 +2183,8 @@ parse_sockaddr_unix(const char *path,
 {
     struct sockaddr_un *sun = (struct sockaddr_un *) sockaddr;
     sun->sun_family = AF_UNIX;
-    snprintf(sun->sun_path, sizeof(sun->sun_path), "%s", path);
+    OFCONNECTIONMANAGER_SNPRINTF(sun->sun_path, sizeof(sun->sun_path),
+                                 "%s", path);
     *sockaddrlen = sizeof(*sun);
     return INDIGO_ERROR_NONE;
 }
