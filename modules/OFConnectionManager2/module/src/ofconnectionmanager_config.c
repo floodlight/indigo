@@ -272,19 +272,22 @@ parse_controller(struct controller *controller, cJSON *root)
     case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
         params4 = &controller->proto.tcp_over_ipv4;
         params4->protocol = proto;
-        strncpy(params4->controller_ip, ip, sizeof(params4->controller_ip));
+        OFCONNECTIONMANAGER_STRNCPY(params4->controller_ip, ip,
+                                    sizeof(params4->controller_ip));
         params4->controller_port = port;
         break;
     case INDIGO_CXN_PROTO_TCP_OVER_IPV6:  /* fall-through */
     case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
         params6 = &controller->proto.tcp_over_ipv6;
         params6->protocol = proto;
-        strncpy(params6->controller_ip, ip, sizeof(params6->controller_ip));
+        OFCONNECTIONMANAGER_STRNCPY(params6->controller_ip, ip,
+                                    sizeof(params6->controller_ip));
         params6->controller_port = port;
         break;
     case INDIGO_CXN_PROTO_UNIX:
         params_unix = &controller->proto.unx;
-        strncpy(params_unix->unix_path, unix_path, INDIGO_CXN_UNIX_PATH_LEN);
+        OFCONNECTIONMANAGER_STRNCPY(params_unix->unix_path, unix_path,
+                                    INDIGO_CXN_UNIX_PATH_LEN);
         break;
     default:
         AIM_DIE("Config: No handling for protocol %d", proto);

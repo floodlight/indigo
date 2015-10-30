@@ -34,13 +34,13 @@ indigo_error_t
 ind_cfg_filename_set(char *filename)
 {
     char *tmp_name;
-    if ((tmp_name = strdup(filename)) == NULL) {
+    if ((tmp_name = aim_strdup(filename)) == NULL) {
         AIM_LOG_ERROR("Config:  Failed to set filename str to %s", filename);
         return INDIGO_ERROR_RESOURCE;
     }
 
     if (current_filename != NULL) {
-        free(current_filename);
+        aim_free(current_filename);
     }
     current_filename = tmp_name;
 
@@ -135,7 +135,7 @@ parse_json_file(const char *filename)
     fseek(f, 0, SEEK_SET);
     data = aim_malloc(len + 1);
     if (fread(data, 1, len, f) == 0) {
-        free(data);
+        aim_free(data);
         fclose(f);
         AIM_LOG_ERROR("failed to read %s", filename);
         return NULL;
@@ -158,11 +158,11 @@ parse_json_file(const char *filename)
 
         AIM_LOG_ERROR("Error at line %d col %d: [%.8s]\n", line, col, errptr);
 
-        free(data);
+        aim_free(data);
         return NULL;
     }
 
-    free(data);
+    aim_free(data);
 
     return root;
 }
@@ -266,7 +266,7 @@ indigo_error_t
 ind_cfg_lookup(cJSON *root, const char *path_, cJSON **result)
 {
     /* strtok_r mutates its input, need to copy */
-    char *path = strdup(path_);
+    char *path = aim_strdup(path_);
     char *saveptr = NULL;
     char *token;
     cJSON *node = root;
@@ -281,7 +281,7 @@ ind_cfg_lookup(cJSON *root, const char *path_, cJSON **result)
         }
     }
 
-    free(path);
+    aim_free(path);
     *result = err == INDIGO_ERROR_NONE ? node : NULL;
     return err;
 }
