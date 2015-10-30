@@ -469,26 +469,21 @@ parse_tls_config(cJSON *root)
         goto error;
     }
 
-    OFCONNECTIONMANAGER_STRNCPY(staged_config.cipher_list, cipher_list,
-                                INDIGO_TLS_CFG_PARAM_LEN);
+    strncpy(staged_config.cipher_list, cipher_list, INDIGO_TLS_CFG_PARAM_LEN);
     if (ca_cert) {
-        OFCONNECTIONMANAGER_STRNCPY(staged_config.ca_cert, ca_cert,
-                                    INDIGO_TLS_CFG_PARAM_LEN);
+        strncpy(staged_config.ca_cert, ca_cert, INDIGO_TLS_CFG_PARAM_LEN);
     } else {
-        OFCONNECTIONMANAGER_MEMSET(staged_config.ca_cert, 0,
-                                   INDIGO_TLS_CFG_PARAM_LEN);
+        memset(staged_config.ca_cert, 0, INDIGO_TLS_CFG_PARAM_LEN);
     }
-    OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_cert, switch_cert,
-                                INDIGO_TLS_CFG_PARAM_LEN);
-    OFCONNECTIONMANAGER_STRNCPY(staged_config.switch_priv_key, switch_priv_key,
-                                INDIGO_TLS_CFG_PARAM_LEN);
+    strncpy(staged_config.switch_cert, switch_cert, INDIGO_TLS_CFG_PARAM_LEN);
+    strncpy(staged_config.switch_priv_key, switch_priv_key,
+            INDIGO_TLS_CFG_PARAM_LEN);
     if (exp_controller_suffix) {
-        OFCONNECTIONMANAGER_STRNCPY(staged_config.exp_controller_suffix,
-                                    exp_controller_suffix,
-                                    INDIGO_TLS_CFG_PARAM_LEN);
+        strncpy(staged_config.exp_controller_suffix, exp_controller_suffix,
+                INDIGO_TLS_CFG_PARAM_LEN);
     } else {
-        OFCONNECTIONMANAGER_MEMSET(staged_config.exp_controller_suffix, 0,
-                                   INDIGO_TLS_CFG_PARAM_LEN);
+        memset(staged_config.exp_controller_suffix, 0,
+               INDIGO_TLS_CFG_PARAM_LEN);
     }
 
     AIM_LOG_INFO("Config: TLS mode %s, cipher list %s, ca_cert %s, "
@@ -501,16 +496,11 @@ parse_tls_config(cJSON *root)
 
  error:
     AIM_LOG_VERBOSE("Config: Clearing TLS params");
-    OFCONNECTIONMANAGER_MEMSET(staged_config.cipher_list, 0,
-                               INDIGO_TLS_CFG_PARAM_LEN);
-    OFCONNECTIONMANAGER_MEMSET(staged_config.ca_cert, 0,
-                               INDIGO_TLS_CFG_PARAM_LEN);
-    OFCONNECTIONMANAGER_MEMSET(staged_config.switch_cert, 0,
-                               INDIGO_TLS_CFG_PARAM_LEN);
-    OFCONNECTIONMANAGER_MEMSET(staged_config.switch_priv_key, 0,
-                               INDIGO_TLS_CFG_PARAM_LEN);
-    OFCONNECTIONMANAGER_MEMSET(staged_config.exp_controller_suffix, 0,
-                               INDIGO_TLS_CFG_PARAM_LEN);
+    memset(staged_config.cipher_list, 0, INDIGO_TLS_CFG_PARAM_LEN);
+    memset(staged_config.ca_cert, 0, INDIGO_TLS_CFG_PARAM_LEN);
+    memset(staged_config.switch_cert, 0, INDIGO_TLS_CFG_PARAM_LEN);
+    memset(staged_config.switch_priv_key, 0, INDIGO_TLS_CFG_PARAM_LEN);
+    memset(staged_config.exp_controller_suffix, 0, INDIGO_TLS_CFG_PARAM_LEN);
     return err;
 }
 
