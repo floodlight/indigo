@@ -261,10 +261,10 @@ free_bundle(bundle_t *bundle)
 {
     int i;
     for (i = 0; i < bundle->count; i++) {
-        free(bundle->msgs[i]);
+        aim_free(bundle->msgs[i]);
     }
 
-    free(bundle->msgs);
+    aim_free(bundle->msgs);
 
     bundle->id = BUNDLE_ID_INVALID;
     bundle->msgs = NULL;
@@ -320,7 +320,7 @@ bundle_task(void *cookie)
             /* Connection went away. Drop remaining messages. */
         }
 
-        free(state->msgs[state->offset]);
+        aim_free(state->msgs[state->offset]);
         state->msgs[state->offset] = NULL;
         state->offset++;
 
@@ -329,8 +329,8 @@ bundle_task(void *cookie)
         }
     }
 
-    free(state->msgs);
-    free(state);
+    aim_free(state->msgs);
+    aim_free(state);
 
     if (cxn) {
         ind_cxn_resume(cxn);

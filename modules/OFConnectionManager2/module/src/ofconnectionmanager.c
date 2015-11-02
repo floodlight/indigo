@@ -576,28 +576,23 @@ indigo_cxn_config_tls(char *cipher_list,
                             switch_cert, switch_priv_key,
                             exp_controller_suffix);
     if (rv == INDIGO_ERROR_NONE) {
-        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.cipher_list, cipher_list,
-                                    sizeof(tls_cfg.cipher_list));
+        strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
         if (ca_cert) {
-            OFCONNECTIONMANAGER_STRNCPY(tls_cfg.ca_cert, ca_cert,
-                                        sizeof(tls_cfg.ca_cert));
+            strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
         } else {
-            OFCONNECTIONMANAGER_MEMSET(tls_cfg.ca_cert, 0,
-                                        sizeof(tls_cfg.ca_cert));
+            memset(tls_cfg.ca_cert, 0, sizeof(tls_cfg.ca_cert));
         }
-        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_cert, switch_cert,
-                                    sizeof(tls_cfg.switch_cert));
-        OFCONNECTIONMANAGER_STRNCPY(tls_cfg.switch_priv_key, switch_priv_key,
-                                    sizeof(tls_cfg.switch_priv_key));
+        strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
+        strncpy(tls_cfg.switch_priv_key, switch_priv_key,
+                sizeof(tls_cfg.switch_priv_key));
         if (exp_controller_suffix && (exp_controller_suffix[0] != '\0')) {
             tls_cfg.check_controller_suffix = true;
-            OFCONNECTIONMANAGER_STRNCPY(tls_cfg.exp_controller_suffix,
-                                        exp_controller_suffix,
-                                        sizeof(tls_cfg.exp_controller_suffix));
+            strncpy(tls_cfg.exp_controller_suffix, exp_controller_suffix,
+                    sizeof(tls_cfg.exp_controller_suffix));
         } else {
             tls_cfg.check_controller_suffix = false;
-            OFCONNECTIONMANAGER_MEMSET(tls_cfg.exp_controller_suffix, 0,
-                                       sizeof(tls_cfg.exp_controller_suffix));
+            memset(tls_cfg.exp_controller_suffix, 0,
+                   sizeof(tls_cfg.exp_controller_suffix));
         }
     }
 
