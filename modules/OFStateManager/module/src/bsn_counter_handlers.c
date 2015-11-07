@@ -200,6 +200,9 @@ ind_core_bsn_port_counter_stats_entry_populate(of_bsn_port_counter_stats_entry_t
     append_uint64(&values, stats.rx_overflow_errors);
     append_uint64(&values, stats.tx_carrier_errors);
     append_uint64(&values, stats.rx_bad_vlan);
+
+    append_uint64(&values, stats.link_up_count);
+    append_uint64(&values, stats.link_down_count);
 }
 
 void
