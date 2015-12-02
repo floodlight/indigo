@@ -475,6 +475,17 @@ extern void
 indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
                             uint16_t type, uint16_t code);
 
+/**
+ * Send a BSN error message to a controller connection
+ * @param cxn_id Controller to receive msg
+ * @param orig Message this error is in response to
+ * @param err_txt Informative text to be copied into error msg
+ */
+
+void
+indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                          of_desc_str_t err_txt);
+
 
 /**
  * Connection information structure.

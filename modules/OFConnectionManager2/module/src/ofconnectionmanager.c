@@ -1834,14 +1834,10 @@ ind_cxn_finish(void)
 
 /**
  * Send an error message to a controller connection
- * @param version The version to use for the msg
  * @param cxn_id Controller to receive msg
- * @param xid The transaction ID to use for the message
+ * @param orig Message this error is in response to
  * @param type Type of error message
  * @param code Code of error message for this type
- * @param octets If not NULL use this for the data
- *
- * If version is invalid, uses the connection's negotiated version
  *
  * LOCI has one class per error message type. This is necessary to support
  * experimenter error messages, but is inconvenient when we just want to
@@ -1890,6 +1886,49 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
     indigo_cxn_send_controller_message(cxn_id, msg);
 }
 
+/**
+ * Send a BSN error message to a controller connection
+ * @param cxn_id Controller to receive msg
+ * @param orig Message this error is in response to
+ * @param err_txt Informative text to be copied into error msg
+ */
+
+void
+indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                          of_desc_str_t err_txt)
+{
+    of_bsn_error_t *err;
+    of_octets_t payload;
+    uint32_t xid;
+
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        AIM_LOG_ERROR("Attempted to send error message to nonexistent connection " CXN_ID_FMT,
+                      CXN_ID_FMT_ARGS(cxn_id));
+        return;
+    }
+
+    payload.data = OF_OBJECT_BUFFER_INDEX(orig, 0);
+    payload.bytes = orig->length;
+
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
+
+    AIM_LOG_TRACE("Sending error msg to %s, text '%s'",
+                  cxn->desc, err_txt);
+
+    if ((err = of_bsn_error_new(orig->version)) == NULL) {
+        AIM_DIE("Could not allocate error message");
+    }
+
+    of_bsn_error_xid_set(err, xid);
+    of_bsn_error_err_msg_set(err, err_txt);
+
+    if (of_bsn_error_data_set(err, &payload) < 0) {
+        AIM_LOG_INTERNAL("Failed to append original request to error message");
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, err);
+}
 
 /* controller list */
 void
