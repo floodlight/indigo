@@ -196,6 +196,14 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
                       cxn_id);
 }
 
+void
+indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                          char *err_txt)
+{
+    AIM_LOG_VERBOSE("Send BSN error msg called for cxn id %d: %s\n",
+                    cxn_id, err_txt);
+}
+
 static int controller_message_counters[OF_MESSAGE_OBJECT_COUNT];
 
 void
