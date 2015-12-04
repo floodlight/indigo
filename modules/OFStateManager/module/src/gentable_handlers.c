@@ -269,10 +269,7 @@ ind_core_bsn_gentable_entry_add_handler(
     return;
 
 error:
-    {
-        of_desc_str_t err_txt = "Gentable add failed";
-        indigo_cxn_send_bsn_error(cxn_id, obj, err_txt);
-    }
+    indigo_cxn_send_bsn_error(cxn_id, obj, "Gentable add failed");
 }
 
 void
@@ -307,10 +304,9 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     rv = delete_entry(cxn_id, gentable, entry);
     if (rv < 0) {
-        of_desc_str_t err_txt = "Gentable delete failed";
         AIM_LOG_ERROR("%s gentable delete failed: %s",
                       gentable->name, indigo_strerror(rv));
-        indigo_cxn_send_bsn_error(cxn_id, obj, err_txt);
+        indigo_cxn_send_bsn_error(cxn_id, obj, "Gentable delete failed");
         return;
     }
 }
@@ -416,10 +412,10 @@ ind_core_bsn_gentable_set_buckets_size_handler(
     }
 
     if (new_buckets_size == 0 || (new_buckets_size & (new_buckets_size - 1)) != 0) {
-        of_desc_str_t err_txt = "Gentable set bucket size failed";
         AIM_LOG_ERROR("Attempted to set a non power of 2 buckets size (%d) for gentable %s",
                       new_buckets_size, gentable->name);
-        indigo_cxn_send_bsn_error(cxn_id, obj, err_txt);
+        indigo_cxn_send_bsn_error(cxn_id, obj,
+                                  "Gentable set bucket size failed");
         return;
     }
 

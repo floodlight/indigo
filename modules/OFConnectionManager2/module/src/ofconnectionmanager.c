@@ -1895,11 +1895,12 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
 
 void
 indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
-                          of_desc_str_t err_txt)
+                          char *err_txt)
 {
     of_bsn_error_t *err;
     of_octets_t payload;
     uint32_t xid;
+    of_desc_str_t dst_txt = "";
 
     connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
     if (cxn == NULL) {
@@ -1921,7 +1922,8 @@ indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
     }
 
     of_bsn_error_xid_set(err, xid);
-    of_bsn_error_err_msg_set(err, err_txt);
+    strncpy(dst_txt, err_txt, sizeof(dst_txt));
+    of_bsn_error_err_msg_set(err, dst_txt);
 
     if (of_bsn_error_data_set(err, &payload) < 0) {
         AIM_LOG_INTERNAL("Failed to append original request to error message");
