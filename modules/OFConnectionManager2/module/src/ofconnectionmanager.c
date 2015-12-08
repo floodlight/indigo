@@ -160,12 +160,10 @@ static status_change_t status_change[MAX_STATUS_CHANGE_CALLBACKS];
  */
 
 #define FOREACH_STATUS_CALLBACK(_idx, _cb, _ck)                      \
-    for (_idx = 0, _cb = status_change[_idx].callback,               \
-             _ck = status_change[_idx].cookie;                       \
-         _idx < MAX_STATUS_CHANGE_CALLBACKS;                         \
-         ++_idx, _cb = status_change[_idx].callback,                 \
-             _ck = status_change[_idx].cookie)                       \
-        if (_cb != NULL)
+    for (_idx = 0; _idx < MAX_STATUS_CHANGE_CALLBACKS; _idx++)       \
+        if (_cb = status_change[_idx].callback,                      \
+            _ck = status_change[_idx].cookie,                        \
+            _cb != NULL)
 
 /**
  * Connection instance notifies the connection manager of a
