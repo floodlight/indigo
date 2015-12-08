@@ -2250,6 +2250,7 @@ ind_cxn_parse_sockaddr(const indigo_cxn_protocol_params_t *protocol_params,
     default:
         AIM_LOG_INTERNAL("Invalid protocol %d",
                          protocol_params->header.protocol);
+        *sockaddrlen = 0;
         return INDIGO_ERROR_PARAM;
     }
 
