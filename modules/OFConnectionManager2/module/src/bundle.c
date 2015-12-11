@@ -51,6 +51,7 @@
 
 struct bundle_task_state {
     indigo_cxn_id_t cxn_id;
+    of_object_t *reply;
     uint32_t id; /* Bundle ID */
     uint32_t count; /* Length of msgs array */
     uint32_t offset; /* Current position in msgs array */
@@ -133,6 +134,8 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
 
         struct bundle_task_state *state = aim_zmalloc(sizeof(*state));
         state->cxn_id = cxn->cxn_id;
+        state->reply = of_object_dup(obj);
+        of_bundle_ctrl_msg_bundle_ctrl_type_set(state->reply, OFPBCT_COMMIT_REPLY);
         state->id = bundle->id;
         state->count = bundle->count;
         state->offset = 0;
@@ -149,6 +152,9 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
         bundle->count = 0;
 
         free_bundle(bundle);
+
+        /* Do not send reply yet */
+        return;
     } else if (ctrl_type == OFPBCT_DISCARD_REQUEST) {
         if (bundle == NULL) {
             err_code = OFPBFC_BAD_ID;
@@ -327,6 +333,12 @@ bundle_task(void *cookie)
         if (ind_soc_should_yield()) {
             return IND_SOC_TASK_CONTINUE;
         }
+    }
+
+    if (cxn) {
+        indigo_cxn_send_controller_message(cxn->cxn_id, state->reply);
+    } else {
+        of_object_delete(state->reply);
     }
 
     aim_free(state->msgs);
