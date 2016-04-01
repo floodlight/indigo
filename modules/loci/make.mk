@@ -33,5 +33,5 @@ loci_CFLAGS := -Os
 endif
 
 LIBRARY := loci
-loci_SUBDIR := $(LOCI)/src
+loci_SUBDIR := $(LOCI)/src/
 include $(BUILDER)/lib.mk
