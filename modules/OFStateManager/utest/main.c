@@ -58,6 +58,9 @@ int test_group_table(void);
 /* Defined in port_registration_test.c */
 int test_port_registration(void);
 
+/* Defined in generic_stats_test.c */
+int test_generic_stats(void);
+
 /* Must be an even number */
 #define TEST_FLOW_COUNT 1000
 
@@ -1449,6 +1452,10 @@ aim_main(int argc, char* argv[])
     }
 
     if (test_port_registration() != TEST_PASS) {
+        return 1;
+    }
+
+    if (test_generic_stats() != TEST_PASS) {
         return 1;
     }
 

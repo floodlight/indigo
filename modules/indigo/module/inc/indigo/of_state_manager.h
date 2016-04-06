@@ -638,5 +638,43 @@ indigo_core_queue_register(of_port_no_t port_no, uint32_t queue_id, struct ind_c
 void
 indigo_core_queue_unregister(struct ind_core_queue *handle);
 
+/****************************************************************
+ * Generic stats
+ ****************************************************************/
+
+/**
+ * Handle a generic stats request
+ * @param cxn_id Connection ID
+ * @param req Request message
+ * @param priv Private data passed to indigo_core_generic_stats_register
+ *
+ * This function should send one or more generic stats reply messages,
+ * setting the OFPSF_REQ_MORE flag on all but the last. It can spawn
+ * a long running task if necessary.
+ */
+typedef void (*indigo_core_generic_stats_f)(
+    indigo_cxn_id_t cxn_id,
+    const of_bsn_generic_stats_request_t *req,
+    void *priv);
+
+/**
+ * @brief Register a generic stats request
+ * @param name Name of the stats request
+ * @param handler Function pointer called when stats request is received
+ * @param priv Private data passed to handler
+ */
+void
+indigo_core_generic_stats_register(
+    const char *name,
+    indigo_core_generic_stats_f handler,
+    void *priv);
+
+/**
+ * @brief Unregister a generic stats request
+ * @param name Name of the stats request
+ */
+void
+indigo_core_generic_stats_unregister(const char *name);
+
 #endif /* _INDIGO_OF_STATE_MANAGER_H_ */
 /** @} */
