@@ -421,6 +421,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_bsn_debug_counter_stats_request_handler(obj, cxn);
         break;
 
+    case OF_BSN_GENERIC_STATS_REQUEST:
+        ind_core_bsn_generic_stats_request_handler(obj, cxn);
+        break;
+
     /* These all use the experimenter handler */
     case OF_BSN_GET_MIRRORING_REQUEST:
     case OF_BSN_SET_MIRRORING:
