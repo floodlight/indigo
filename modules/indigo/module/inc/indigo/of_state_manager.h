@@ -654,7 +654,7 @@ indigo_core_queue_unregister(struct ind_core_queue *handle);
  */
 typedef void (*indigo_core_generic_stats_f)(
     indigo_cxn_id_t cxn_id,
-    const of_bsn_generic_stats_request_t *req,
+    of_bsn_generic_stats_request_t *req,
     void *priv);
 
 /**
