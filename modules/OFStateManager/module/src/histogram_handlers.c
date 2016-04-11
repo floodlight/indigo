@@ -24,6 +24,9 @@
  * a single histogram. Pass the name of the histogram in a name TLV.
  * The reply uses a single uint64_list TLV, which contains the first key
  * and count for each nonzero bucket.
+ *
+ * The "histograms" generic stats request returns an entry per histogram
+ * with a single name TLV.
  */
 
 #include "ofstatemanager_log.h"
@@ -35,12 +38,14 @@
 #include "ofstatemanager_decs.h"
 
 static void handle_histogram_request(indigo_cxn_id_t cxn_id, of_bsn_generic_stats_request_t *req, void *priv);
+static void handle_histograms_request(indigo_cxn_id_t cxn_id, of_bsn_generic_stats_request_t *req, void *priv);
 static struct histogram *test_histogram;
 
 void
 ind_core_histogram_handlers_init(void)
 {
     indigo_core_generic_stats_register("histogram", handle_histogram_request, NULL);
+    indigo_core_generic_stats_register("histograms", handle_histograms_request, NULL);
 
     /* Simple histogram for testing OpenFlow messaging */
     test_histogram = histogram_create("test");
@@ -137,4 +142,79 @@ handle_histogram_request(
     }
 
     indigo_cxn_send_controller_message(cxn_id, reply);
+}
+
+static void
+handle_histograms_request(
+    indigo_cxn_id_t cxn_id,
+    of_bsn_generic_stats_request_t *req,
+    void *priv)
+{
+    uint32_t xid;
+    of_bsn_generic_stats_request_xid_get(req, &xid);
+
+    of_object_t *reply = of_bsn_generic_stats_reply_new(req->version);
+    if (reply == NULL) {
+        AIM_LOG_ERROR("Failed to allocate bsn_generic_stats_reply");
+        return;
+    }
+
+    of_bsn_generic_stats_reply_xid_set(reply, xid);
+
+    of_object_t entries;
+    of_bsn_generic_stats_reply_entries_bind(reply, &entries);
+
+    of_object_t *entry = of_bsn_generic_stats_entry_new(entries.version);
+    if (entry == NULL) {
+        AIM_LOG_ERROR("Failed to allocate bsn_generic_stats_entry");
+        of_object_delete(reply);
+        return;
+    }
+
+    struct list_links *cur;
+    struct list_head *head = histogram_list();
+    LIST_FOREACH(head, cur) {
+        struct histogram *hist = container_of(cur, links, struct histogram);
+
+        of_object_t tlvs;
+        of_bsn_generic_stats_entry_tlvs_bind(entry, &tlvs);
+
+        of_object_t tlv;
+        of_bsn_tlv_name_init(&tlv, tlvs.version, -1, 1);
+        of_list_bsn_tlv_append_bind(&tlvs, &tlv);
+
+        of_octets_t octets = { .data=(uint8_t *)hist->name, .bytes=strlen(hist->name) };
+        if (of_bsn_tlv_name_value_set(&tlv, &octets) < 0) {
+            AIM_LOG_ERROR("Unexpectedly failed to set name TLV value");
+            break;
+        }
+
+        if (of_list_bsn_generic_stats_entry_append(&entries, entry) < 0) {
+            /* Current message full, send it and start another */
+            of_bsn_generic_stats_reply_flags_set(reply, OF_STATS_REPLY_FLAG_REPLY_MORE);
+            indigo_cxn_send_controller_message(cxn_id, reply);
+
+            reply = of_bsn_generic_stats_reply_new(req->version);
+            if (reply == NULL) {
+                AIM_LOG_ERROR("Failed to allocate bsn_generic_stats_reply");
+                break;
+            }
+
+            of_bsn_generic_stats_reply_xid_set(reply, xid);
+
+            of_bsn_generic_stats_reply_entries_bind(reply, &entries);
+            if (of_list_bsn_generic_stats_entry_append(&entries, entry) < 0) {
+                AIM_LOG_ERROR("Unexpectedly failed to add stats entry to empty message");
+                break;
+            }
+        }
+
+        of_object_truncate(entry);
+    }
+
+    of_object_delete(entry);
+
+    if (reply) {
+        indigo_cxn_send_controller_message(cxn_id, reply);
+    }
 }
