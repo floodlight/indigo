@@ -46,4 +46,6 @@ extern void ind_core_flow_entry_delete(ft_entry_t *entry,
 
 void ind_core_group_init(void);
 
+void ind_core_histogram_handlers_init(void);
+
 #endif /* OFSTATEMANAGER_DECS_H */

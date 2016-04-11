@@ -598,6 +598,8 @@ ind_core_init(ind_core_config_t *config)
         "ofstatemanager.forwarding_add_failure",
         "Forwarding driver failed to insert flow");
 
+    ind_core_histogram_handlers_init();
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
