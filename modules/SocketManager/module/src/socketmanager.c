@@ -57,18 +57,13 @@
 #include <AIM/aim_list.h>
 #include <timer_wheel/timer_wheel.h>
 #include <debug_counter/debug_counter.h>
+#include <histogram/histogram.h>
 
 #include <poll.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
 #include <limits.h>
-
-DEBUG_COUNTER(latency10, "socman.latency10", "Returned to event loop in less than 10 ms");
-DEBUG_COUNTER(latency20, "socman.latency20", "Returned to event loop in less than 20 ms");
-DEBUG_COUNTER(latency50, "socman.latency50", "Returned to event loop in less than 50 ms");
-DEBUG_COUNTER(latency100, "socman.latency100", "Returned to event loop in less than 100 ms");
-DEBUG_COUNTER(latency_high, "socman.latency_high", "Returned to event loop after 100 ms");
 
 static void before_callback(void);
 static void after_callback(void);
@@ -146,6 +141,8 @@ typedef struct ind_soc_task_s {
 /* Sorted in descending priority order */
 static list_head_t tasks;
 
+static struct histogram *latency_histogram;
+
 
 /* Return index for timer; -1 if not found.  Use only with valid callback */
 static int
@@ -193,6 +190,8 @@ soc_mgr_init(void)
 
     list_init(&tasks);
     list_init(&ready_timers);
+
+    latency_histogram = histogram_create("socman.latency");
 }
 
 
@@ -802,17 +801,7 @@ find_highest_ready_priority(void)
 static void
 update_latency_counters(indigo_time_t process_time)
 {
-    if (process_time < 10) {
-        debug_counter_inc(&latency10);
-    } else if (process_time < 20) {
-        debug_counter_inc(&latency20);
-    } else if (process_time < 50) {
-        debug_counter_inc(&latency50);
-    } else if (process_time < 100) {
-        debug_counter_inc(&latency100);
-    } else {
-        debug_counter_inc(&latency_high);
-    }
+    histogram_inc(latency_histogram, process_time);
 }
 
 /*
