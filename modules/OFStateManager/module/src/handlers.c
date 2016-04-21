@@ -335,6 +335,101 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
 
 /****************************************************************/
 
+/**
+ * Handle a queue_desc_stats_request message
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ * @returns Error code
+ */
+
+void
+ind_core_queue_desc_request_handler(of_object_t *_obj,
+                                    indigo_cxn_id_t cxn_id)
+{
+    of_queue_desc_stats_request_t *obj = _obj;
+    of_queue_desc_stats_reply_t *reply;
+    uint32_t xid;
+    indigo_error_t rv;
+
+    if (ind_core_ports_registered > 0) {
+        reply = of_queue_desc_stats_reply_new(obj->version);
+        of_queue_desc_t *queue_desc = of_queue_desc_new(reply->version);
+
+        of_queue_desc_stats_request_xid_get(obj, &xid);
+        of_queue_desc_stats_reply_xid_set(reply, xid);
+
+        of_list_queue_desc_t entries;
+        of_queue_desc_stats_reply_entries_bind(reply, &entries);
+
+        of_port_no_t port_no;
+        of_queue_desc_stats_request_port_no_get(obj, &port_no);
+        bool all_ports = port_no == OF_PORT_DEST_WILDCARD;
+
+        uint32_t queue_id;
+        of_queue_desc_stats_request_queue_id_get(obj, &queue_id);
+        bool all_queues = queue_id == OF_QUEUE_ALL;
+
+        struct slot_allocator_iter iter;
+        slot_allocator_iter_init(ind_core_queue_allocator, &iter);
+        uint32_t slot;
+        while ((slot = slot_allocator_iter_next(&iter)) != SLOT_INVALID) {
+            struct ind_core_queue *queue = &ind_core_queues[slot];
+            if (!all_ports && queue->port_no != port_no) {
+                continue;
+            } else if (!all_queues && queue->queue_id != queue_id) {
+                continue;
+            }
+            of_object_truncate(queue_desc);
+            rv = indigo_port_queue_desc_get_one(queue->port_no,
+                                                queue->queue_id, queue_desc);
+            if (rv) {
+                AIM_LOG_ERROR("Failed to get queue desc for port %u queue %u: %s",
+                              queue->port_no, queue->queue_id, indigo_strerror(rv));
+            } else if (of_list_queue_desc_append(&entries, queue_desc) < 0) {
+                /* Message full, send current reply and start a new one */
+                of_queue_desc_stats_reply_flags_set(reply,
+                                                    OF_STATS_REPLY_FLAG_REPLY_MORE);
+                indigo_cxn_send_controller_message(cxn_id, reply);
+
+                if ((reply = of_queue_desc_stats_reply_new(obj->version)) == NULL) {
+                    AIM_DIE("Failed to allocate queue_desc_stats reply message");
+                }
+
+                of_queue_desc_stats_reply_xid_set(reply, xid);
+                of_queue_desc_stats_reply_entries_bind(reply, &entries);
+
+                if (of_list_queue_desc_append(&entries, queue_desc) < 0) {
+                    AIM_DIE("Unexpectedly failed to append queue desc");
+                }
+            }
+        }
+
+        of_queue_desc_delete(queue_desc);
+        indigo_cxn_send_controller_message(cxn_id, reply);
+    } else if (indigo_port_queue_desc_get) {
+        rv = indigo_port_queue_desc_get(obj, &reply);
+        if (rv == INDIGO_ERROR_NONE) {
+            /* Set the XID to match the request */
+            of_queue_desc_stats_request_xid_get(obj, &xid);
+            of_queue_desc_stats_reply_xid_set(reply, xid);
+
+            indigo_cxn_send_controller_message(cxn_id, reply);
+        } else {
+            of_port_no_t port_no;
+            uint32_t queue_id;
+            of_queue_desc_stats_request_port_no_get(obj, &port_no);
+            of_queue_desc_stats_request_queue_id_get(obj, &queue_id);
+            AIM_LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
+                          queue_id, port_no, indigo_strerror(rv));
+            /* @todo sending type 0, code 0 error message */
+            indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
+        }
+    }
+}
+
+
+/****************************************************************/
+
 static indigo_error_t
 flow_mod_setup_query(of_flow_modify_t *obj, /* Works with add, mod, del */
                      of_meta_match_t *query,

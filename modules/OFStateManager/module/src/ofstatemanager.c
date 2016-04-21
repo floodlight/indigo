@@ -305,6 +305,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_queue_stats_request_handler(obj, cxn);
         break;
 
+    case OF_QUEUE_DESC_STATS_REQUEST:
+        ind_core_queue_desc_request_handler(obj, cxn);
+        break;
+
     /****************************************************************
      * Group messages
      ****************************************************************/
