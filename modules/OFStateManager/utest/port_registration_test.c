@@ -37,6 +37,7 @@
 struct port_counters {
     int stats;
     int desc_stats;
+    int queue_desc_stats[QUEUES_PER_PORT];
     int queue_stats[QUEUES_PER_PORT];
 };
 
@@ -79,6 +80,13 @@ indigo_error_t
 indigo_port_queue_stats_get_one(of_port_no_t port_no, uint32_t queue_id, of_queue_stats_entry_t *queue_stats)
 {
     port_counters[port_no].queue_stats[queue_id]++;
+    return INDIGO_ERROR_NONE;
+}
+
+indigo_error_t
+indigo_port_queue_desc_get_one(of_port_no_t port_no, uint32_t queue_id, of_queue_desc_t *queue_desc)
+{
+    port_counters[port_no].queue_desc_stats[queue_id]++;
     return INDIGO_ERROR_NONE;
 }
 
@@ -213,6 +221,116 @@ test_queue_stats(void)
 }
 
 static int
+test_queue_desc_stats(void)
+{
+    struct ind_core_port *handle1, *handle2;
+    indigo_core_port_register(1, &handle1);
+    indigo_core_port_register(2, &handle2);
+
+    struct ind_core_queue *queue1_3, *queue1_4, *queue2_3, *queue2_4;
+    indigo_core_queue_register(1, 3, &queue1_3);
+    indigo_core_queue_register(1, 4, &queue1_4);
+    indigo_core_queue_register(2, 3, &queue2_3);
+    indigo_core_queue_register(2, 4, &queue2_4);
+
+    /* Request for OFPP_ANY, OF_QUEUE_ALL */
+    memset(port_counters, 0, sizeof(port_counters));
+    of_queue_desc_stats_request_t *obj = of_queue_desc_stats_request_new(OF_VERSION_1_4);
+    of_queue_desc_stats_request_port_no_set(obj, OF_PORT_DEST_WILDCARD);
+    of_queue_desc_stats_request_queue_id_set(obj, OF_QUEUE_ALL);
+    handle_message(obj);
+    do_barrier();
+
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[3] == 1);
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[4] == 1);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[3] == 1);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[4] == 1);
+
+    /* Request for a single port, OF_QUEUE_ALL */
+    memset(port_counters, 0, sizeof(port_counters));
+    obj = of_queue_desc_stats_request_new(OF_VERSION_1_4);
+    of_queue_desc_stats_request_port_no_set(obj, 2);
+    of_queue_desc_stats_request_queue_id_set(obj, OF_QUEUE_ALL);
+    handle_message(obj);
+    do_barrier();
+
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[3] == 0);
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[4] == 0);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[3] == 1);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[4] == 1);
+
+    /* Request for OFPP_ANY, a single queue */
+    memset(port_counters, 0, sizeof(port_counters));
+    obj = of_queue_desc_stats_request_new(OF_VERSION_1_4);
+    of_queue_desc_stats_request_port_no_set(obj, OF_PORT_DEST_WILDCARD);
+    of_queue_desc_stats_request_queue_id_set(obj, 4);
+    handle_message(obj);
+    do_barrier();
+
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[3] == 0);
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[4] == 1);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[3] == 0);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[4] == 1);
+
+    /* Request for a single port and queue */
+    memset(port_counters, 0, sizeof(port_counters));
+    obj = of_queue_desc_stats_request_new(OF_VERSION_1_4);
+    of_queue_desc_stats_request_port_no_set(obj, 2);
+    of_queue_desc_stats_request_queue_id_set(obj, 4);
+    handle_message(obj);
+    do_barrier();
+
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[3] == 0);
+    AIM_TRUE_OR_DIE(port_counters[1].queue_desc_stats[4] == 0);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[3] == 0);
+    AIM_TRUE_OR_DIE(port_counters[2].queue_desc_stats[4] == 1);
+
+    indigo_core_queue_unregister(queue1_3);
+    indigo_core_queue_unregister(queue1_4);
+    indigo_core_queue_unregister(queue2_3);
+    indigo_core_queue_unregister(queue2_4);
+    indigo_core_port_unregister(handle1);
+    indigo_core_port_unregister(handle2);
+
+    return TEST_PASS;
+}
+
+static int
+test_queue_desc_stats_multipart(void)
+{
+    int i, j;
+    struct ind_core_port *port_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS];
+    struct ind_core_queue *queue_handles[OFSTATEMANAGER_CONFIG_MAX_PORTS];
+    const int qid = 3;
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_port_register(i, &port_handles[i]);
+        indigo_core_queue_register(i, qid, &queue_handles[i]);
+    }
+
+    memset(port_counters, 0, sizeof(port_counters));
+    of_queue_desc_stats_request_t *obj = of_queue_desc_stats_request_new(OF_VERSION_1_4);
+    of_queue_desc_stats_request_port_no_set(obj, OF_PORT_DEST_WILDCARD);
+    of_queue_desc_stats_request_queue_id_set(obj, OF_QUEUE_ALL);
+    handle_message(obj);
+    do_barrier();
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        for (j = 0; j < QUEUES_PER_PORT; j++) {
+            AIM_TRUE_OR_DIE(port_counters[i].queue_desc_stats[j] ==
+                            (j == qid)? 1: 0);
+        }
+    }
+
+    for (i = 0; i < OFSTATEMANAGER_CONFIG_MAX_PORTS; i++) {
+        indigo_core_queue_unregister(queue_handles[i]);
+        indigo_core_port_unregister(port_handles[i]);
+    }
+
+    return TEST_PASS;
+}
+
+static int
 test_port_desc_stats_multipart(void)
 {
     int i;
@@ -308,6 +426,8 @@ test_port_registration(void)
     RUN_TEST(port_desc_stats);
     RUN_TEST(port_stats);
     RUN_TEST(queue_stats);
+    RUN_TEST(queue_desc_stats);
+    RUN_TEST(queue_desc_stats_multipart);
     RUN_TEST(port_desc_stats_multipart);
     RUN_TEST(port_stats_multipart);
     RUN_TEST(queue_stats_multipart);

@@ -252,6 +252,32 @@ indigo_error_t indigo_port_queue_stats_get_one(
     uint32_t queue_id,
     of_queue_stats_entry_t *queue_stats) AIM_COMPILER_ATTR_WEAK;
 
+/**
+ * @brief Process an OF queue desc request
+ * @param queue_desc_request The LOXI request message
+ * @param [out] queue_desc_reply The LOXI reply message
+ * @return Return code from operation
+ *
+ * Ownership of the queue_desc_request LOXI object is maintained by the
+ * caller (OF state manager).
+ */
+
+extern indigo_error_t indigo_port_queue_desc_get(
+    of_queue_desc_stats_request_t *queue_desc_request,
+    of_queue_desc_stats_reply_t **queue_desc_reply) AIM_COMPILER_ATTR_WEAK;
+
+/**
+ * @brief Get queue description for a single queue
+ * @param port_no Port number
+ * @param queue_id Queue ID
+ * @param queue_stats LOXI object to populate
+ * @return Return code from operation
+ */
+
+indigo_error_t indigo_port_queue_desc_get_one(
+    of_port_no_t port_no,
+    uint32_t queue_id,
+    of_queue_desc_t *queue_desc) AIM_COMPILER_ATTR_WEAK;
 
 /**
  * @brief Experimenter (vendor) extension

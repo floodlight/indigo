@@ -51,6 +51,9 @@ extern void ind_core_queue_get_config_request_handler(
 extern void ind_core_queue_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
+extern void ind_core_queue_desc_request_handler(
+    of_object_t *_obj,
+    indigo_cxn_id_t cxn);
 extern void ind_core_flow_add_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn);
