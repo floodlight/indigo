@@ -203,6 +203,33 @@ ind_core_bsn_port_counter_stats_entry_populate(of_bsn_port_counter_stats_entry_t
 
     append_uint64(&values, stats.link_up_count);
     append_uint64(&values, stats.link_down_count);
+
+    append_uint64(&values, stats.rx_pfc_control_frame);
+    append_uint64(&values, stats.tx_pfc_control_frame);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_0);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_1);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_2);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_3);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_4);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_5);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_6);
+    append_uint64(&values, stats.rx_pfc_frame_xon_priority_7);
+    append_uint64(&values, stats.rx_pfc_frame_priority_0);
+    append_uint64(&values, stats.rx_pfc_frame_priority_1);
+    append_uint64(&values, stats.rx_pfc_frame_priority_2);
+    append_uint64(&values, stats.rx_pfc_frame_priority_3);
+    append_uint64(&values, stats.rx_pfc_frame_priority_4);
+    append_uint64(&values, stats.rx_pfc_frame_priority_5);
+    append_uint64(&values, stats.rx_pfc_frame_priority_6);
+    append_uint64(&values, stats.rx_pfc_frame_priority_7);
+    append_uint64(&values, stats.tx_pfc_frame_priority_0);
+    append_uint64(&values, stats.tx_pfc_frame_priority_1);
+    append_uint64(&values, stats.tx_pfc_frame_priority_2);
+    append_uint64(&values, stats.tx_pfc_frame_priority_3);
+    append_uint64(&values, stats.tx_pfc_frame_priority_4);
+    append_uint64(&values, stats.tx_pfc_frame_priority_5);
+    append_uint64(&values, stats.tx_pfc_frame_priority_6);
+    append_uint64(&values, stats.tx_pfc_frame_priority_7);
 }
 
 void

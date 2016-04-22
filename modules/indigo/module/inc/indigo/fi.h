@@ -121,6 +121,32 @@ typedef struct indigo_fi_port_stats {
     uint64_t rx_bad_vlan;
     uint64_t link_up_count;
     uint64_t link_down_count;
+    uint64_t rx_pfc_control_frame;
+    uint64_t tx_pfc_control_frame;
+    uint64_t rx_pfc_frame_xon_priority_0;
+    uint64_t rx_pfc_frame_xon_priority_1;
+    uint64_t rx_pfc_frame_xon_priority_2;
+    uint64_t rx_pfc_frame_xon_priority_3;
+    uint64_t rx_pfc_frame_xon_priority_4;
+    uint64_t rx_pfc_frame_xon_priority_5;
+    uint64_t rx_pfc_frame_xon_priority_6;
+    uint64_t rx_pfc_frame_xon_priority_7;
+    uint64_t rx_pfc_frame_priority_0;
+    uint64_t rx_pfc_frame_priority_1;
+    uint64_t rx_pfc_frame_priority_2;
+    uint64_t rx_pfc_frame_priority_3;
+    uint64_t rx_pfc_frame_priority_4;
+    uint64_t rx_pfc_frame_priority_5;
+    uint64_t rx_pfc_frame_priority_6;
+    uint64_t rx_pfc_frame_priority_7;
+    uint64_t tx_pfc_frame_priority_0;
+    uint64_t tx_pfc_frame_priority_1;
+    uint64_t tx_pfc_frame_priority_2;
+    uint64_t tx_pfc_frame_priority_3;
+    uint64_t tx_pfc_frame_priority_4;
+    uint64_t tx_pfc_frame_priority_5;
+    uint64_t tx_pfc_frame_priority_6;
+    uint64_t tx_pfc_frame_priority_7;
 } indigo_fi_port_stats_t;
 
 #endif /* _INDIGO_FI_H_ */
