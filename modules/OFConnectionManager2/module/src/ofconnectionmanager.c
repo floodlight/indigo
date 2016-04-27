@@ -1339,8 +1339,8 @@ indigo_cxn_connection_status_get(
  * These are sent when a controller's role changes for any reason
  * other than it directly sending a role request message.
  */
-void
-ind_cxn_send_role_status(connection_t *cxn, int reason)
+static void
+cxn_send_role_status(connection_t *cxn, int reason)
 {
     /* Need to make translate_to_openflow_role public */
     /* Master -> slave is currently the only possible case */
@@ -1393,8 +1393,10 @@ ind_controller_change_master(indigo_controller_id_t master_id)
             AIM_LOG_INFO("Downgrading controller %s role to slave",
                          controller->desc);
             controller->role = INDIGO_CXN_R_SLAVE;
-            ind_cxn_send_role_status(controller->cxns[0],
+            if (controller->cxns[0]) {
+                cxn_send_role_status(controller->cxns[0],
                                      OFPCRR_MASTER_REQUEST);
+            }
         }
     }
 }
