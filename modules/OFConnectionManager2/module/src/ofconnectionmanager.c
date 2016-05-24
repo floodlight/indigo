@@ -1118,8 +1118,13 @@ ind_cxn_set_aux_cxns(connection_t *main_cxn, uint32_t num_aux)
             return 1;
         }
     } else {
+        controller_t *controller = main_cxn->controller;
         for (idx = main_cxn->controller->num_aux+1; idx <= num_aux; ++idx) {
             if (controller_add_cxn(main_cxn->controller, idx) == NULL) {
+                while (--idx > controller->num_aux) {
+                    controller_stop_cxn(controller->cxns[idx]);
+                    controller->cxns[idx] = NULL;
+                }
                 return 1;
             }
         }
