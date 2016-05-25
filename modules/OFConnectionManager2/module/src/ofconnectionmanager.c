@@ -848,6 +848,8 @@ controller_add_cxn(controller_t *controller, uint8_t aux_id)
 {
     connection_t *cxn = NULL;
 
+    AIM_TRUE_OR_DIE(controller->cxns[aux_id] == NULL);
+
     AIM_LOG_VERBOSE("Connection add: %s:%d",
                     controller->desc, aux_id);
 
@@ -919,6 +921,8 @@ cxn_closed_handler(void *cookie)
 
     AIM_LOG_TRACE("%s: handling %s(%p)", __FUNCTION__, cxn->desc, cxn);
 
+    AIM_TRUE_OR_DIE(controller->cxns[aux_id] == cxn || controller->cxns[aux_id] == NULL);
+
     ind_cxn_free(cxn);
     controller->cxns[aux_id] = NULL;
 
@@ -976,10 +980,7 @@ ind_cxn_notify_closed(connection_t *cxn)
 static void
 controller_stop_cxn(connection_t *cxn)
 {
-    if (cxn == NULL) {
-        AIM_LOG_INTERNAL("Controller stop on null cxn, skipping");
-        return;
-    }
+    AIM_TRUE_OR_DIE(cxn != NULL, "NULL connection passed to controller_stop_cxn");
 
     AIM_LOG_TRACE("Controller stop cxn %s(%p)", cxn->desc, cxn);
     if (!ind_cxn_is_closed(cxn)) {
@@ -1118,8 +1119,14 @@ ind_cxn_set_aux_cxns(connection_t *main_cxn, uint32_t num_aux)
             return 1;
         }
     } else {
+        controller_t *controller = main_cxn->controller;
         for (idx = main_cxn->controller->num_aux+1; idx <= num_aux; ++idx) {
             if (controller_add_cxn(main_cxn->controller, idx) == NULL) {
+                /* Clean up newly added connections */
+                while (--idx > controller->num_aux) {
+                    controller_stop_cxn(controller->cxns[idx]);
+                    controller->cxns[idx] = NULL;
+                }
                 return 1;
             }
         }
@@ -1283,8 +1290,11 @@ indigo_controller_remove(indigo_controller_id_t controller_id)
 
     /* Remove the main connection */
     controller->restartable = false;
-    controller_stop_cxn(controller->cxns[0]);
-    controller->cxns[0] = NULL;
+
+    if (controller->cxns[0] != NULL) {
+        controller_stop_cxn(controller->cxns[0]);
+        controller->cxns[0] = NULL;
+    }
 
     /* controller remains active until cxn_closed_handler marks it inactive */
 
