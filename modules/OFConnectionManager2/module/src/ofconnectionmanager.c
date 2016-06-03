@@ -1051,8 +1051,11 @@ remove_aux_cxns(controller_t *controller, uint32_t num_aux)
     controller->num_aux = num_aux;
 
     for (idx = num_aux_current; idx > num_aux; --idx) {
-        controller_stop_cxn(controller->cxns[idx]);
-        controller->cxns[idx] = NULL;
+        /* An aux connection may be NULL if it has been closed */
+        if (controller->cxns[idx] != NULL) {
+            controller_stop_cxn(controller->cxns[idx]);
+            controller->cxns[idx] = NULL;
+        }
     }
 
     return INDIGO_ERROR_NONE;
