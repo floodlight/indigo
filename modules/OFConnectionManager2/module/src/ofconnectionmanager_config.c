@@ -308,6 +308,14 @@ parse_controller(struct controller *controller, cJSON *root)
     controller->config.local = local;
     controller->config.version = OFCONNECTIONMANAGER_CONFIG_OF_VERSION;
 
+    if (!local) {
+        controller->config.periodic_echo_ms = staged_config.keepalive_period_ms;
+        controller->config.reset_echo_count = 3;
+    } else {
+        controller->config.periodic_echo_ms = 0;
+        controller->config.reset_echo_count = 0;
+    }
+
     return INDIGO_ERROR_NONE;
 }
 
@@ -521,7 +529,6 @@ indigo_error_t
 ind_cxn_cfg_stage(cJSON *config)
 {
     indigo_error_t err;
-    int i;
 
     err = ind_cfg_parse_loglevel(config, "logging.connection",
                                  OFCONNECTIONMANAGER_CONFIG_LOG_BITS_DEFAULT,
@@ -549,12 +556,6 @@ ind_cxn_cfg_stage(cJSON *config)
     err = parse_controllers(config);
     if (err != INDIGO_ERROR_NONE) {
         return err;
-    }
-
-    for (i = 0; i < staged_config.num_controllers; i++) {
-        /* @FIXME local? listen? priority? */
-        staged_config.controllers[i].config.periodic_echo_ms = staged_config.keepalive_period_ms;
-        staged_config.controllers[i].config.reset_echo_count = 3; /* @FIXME */
     }
 
     /* verify TLS parameters */
