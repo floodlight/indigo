@@ -241,6 +241,7 @@ parse_controller(struct controller *controller, cJSON *root)
             }
             return err;
         }
+        break;
 
     default:
         AIM_DIE("Config: No handling for protocol %d", proto);
@@ -284,6 +285,7 @@ parse_controller(struct controller *controller, cJSON *root)
         break;
     case INDIGO_CXN_PROTO_UNIX:
         params_unix = &controller->proto.unx;
+        params_unix->protocol = proto;
         strncpy(params_unix->unix_path, unix_path, INDIGO_CXN_UNIX_PATH_LEN);
         break;
     default:
