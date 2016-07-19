@@ -166,6 +166,7 @@ parse_controller(struct controller *controller, cJSON *root)
     char *proto_str = NULL, *ip = NULL, *unix_path = NULL;
     int port;
     int listen;
+    int local;
     int prio;
     indigo_error_t err;
 
@@ -241,6 +242,7 @@ parse_controller(struct controller *controller, cJSON *root)
             }
             return err;
         }
+        break;
 
     default:
         AIM_DIE("Config: No handling for protocol %d", proto);
@@ -252,6 +254,16 @@ parse_controller(struct controller *controller, cJSON *root)
     } else if (err < 0) {
         if (err == INDIGO_ERROR_PARAM) {
             AIM_LOG_ERROR("Config: 'listen' must be a boolean");
+        }
+        return err;
+    }
+
+    err = ind_cfg_lookup_bool(root, "local", &local);
+    if (err == INDIGO_ERROR_NOT_FOUND) {
+        local = 0;
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: 'local' must be a boolean");
         }
         return err;
     }
@@ -284,6 +296,7 @@ parse_controller(struct controller *controller, cJSON *root)
         break;
     case INDIGO_CXN_PROTO_UNIX:
         params_unix = &controller->proto.unx;
+        params_unix->protocol = proto;
         strncpy(params_unix->unix_path, unix_path, INDIGO_CXN_UNIX_PATH_LEN);
         break;
     default:
@@ -292,8 +305,16 @@ parse_controller(struct controller *controller, cJSON *root)
 
     controller->config.listen = listen;
     controller->config.cxn_priority = prio;
-    controller->config.local = 0;
+    controller->config.local = local;
     controller->config.version = OFCONNECTIONMANAGER_CONFIG_OF_VERSION;
+
+    if (!local) {
+        controller->config.periodic_echo_ms = staged_config.keepalive_period_ms;
+        controller->config.reset_echo_count = 3;
+    } else {
+        controller->config.periodic_echo_ms = 0;
+        controller->config.reset_echo_count = 0;
+    }
 
     return INDIGO_ERROR_NONE;
 }
@@ -508,7 +529,6 @@ indigo_error_t
 ind_cxn_cfg_stage(cJSON *config)
 {
     indigo_error_t err;
-    int i;
 
     err = ind_cfg_parse_loglevel(config, "logging.connection",
                                  OFCONNECTIONMANAGER_CONFIG_LOG_BITS_DEFAULT,
@@ -536,12 +556,6 @@ ind_cxn_cfg_stage(cJSON *config)
     err = parse_controllers(config);
     if (err != INDIGO_ERROR_NONE) {
         return err;
-    }
-
-    for (i = 0; i < staged_config.num_controllers; i++) {
-        /* @FIXME local? listen? priority? */
-        staged_config.controllers[i].config.periodic_echo_ms = staged_config.keepalive_period_ms;
-        staged_config.controllers[i].config.reset_echo_count = 3; /* @FIXME */
     }
 
     /* verify TLS parameters */
