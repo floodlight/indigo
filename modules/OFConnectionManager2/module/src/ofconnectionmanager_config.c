@@ -166,6 +166,7 @@ parse_controller(struct controller *controller, cJSON *root)
     char *proto_str = NULL, *ip = NULL, *unix_path = NULL;
     int port;
     int listen;
+    int local;
     int prio;
     indigo_error_t err;
 
@@ -257,6 +258,16 @@ parse_controller(struct controller *controller, cJSON *root)
         return err;
     }
 
+    err = ind_cfg_lookup_bool(root, "local", &local);
+    if (err == INDIGO_ERROR_NOT_FOUND) {
+        local = 0;
+    } else if (err < 0) {
+        if (err == INDIGO_ERROR_PARAM) {
+            AIM_LOG_ERROR("Config: 'local' must be a boolean");
+        }
+        return err;
+    }
+
     err = ind_cfg_lookup_int(root, "priority", &prio);
     if (err == INDIGO_ERROR_NOT_FOUND) {
         prio = 0;
@@ -294,7 +305,7 @@ parse_controller(struct controller *controller, cJSON *root)
 
     controller->config.listen = listen;
     controller->config.cxn_priority = prio;
-    controller->config.local = 0;
+    controller->config.local = local;
     controller->config.version = OFCONNECTIONMANAGER_CONFIG_OF_VERSION;
 
     return INDIGO_ERROR_NONE;
