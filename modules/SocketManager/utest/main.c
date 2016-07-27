@@ -413,6 +413,24 @@ test_timer_mgmt(void)
     }
 }
 
+/*
+ * Test a timer beyond SOCKETMANAGER_CONFIG_TIMER_PEEK_MS
+ */
+static void
+test_future_timer(void)
+{
+    int count = 0;
+    INDIGO_ASSERT(ind_soc_timer_event_register(
+        timer_callback, &count, SOCKETMANAGER_CONFIG_TIMER_PEEK_MS*2) == 0);
+
+    /* Should run immediately */
+    ind_soc_select_and_run(SOCKETMANAGER_CONFIG_TIMER_PEEK_MS*3);
+    INDIGO_ASSERT(count == 1);
+
+    /* Should be unregistered after firing */
+    INDIGO_ASSERT(ind_soc_timer_event_unregister(timer_callback, &count) == 0);
+}
+
 static ind_soc_task_status_t
 task_callback(void *cookie)
 {
@@ -665,6 +683,7 @@ aim_main(int argc, char* argv[])
     test_timer_mgmt();
     test_periodic_timer();
     test_immediate_timer();
+    test_future_timer();
     test_socket();
     test_socket_mgmt();
     test_task();
