@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2016, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -121,6 +121,7 @@ typedef struct timer_event_s {
 static timer_event_t timer_event[SOCKETMANAGER_CONFIG_MAX_TIMERS];
 static timer_wheel_t *timer_wheel;
 static list_head_t ready_timers; /* contains timer_event_t through ready_links */
+static int num_timers = 0;
 
 #define TIMER_EVENT_VALID(idx) (timer_event[idx].callback != NULL)
 
@@ -374,7 +375,7 @@ ind_soc_run_status_set(ind_soc_run_status_t s)
 
 
 /*
- * Return the time in ms until the next timer fires, or -1 if no timers
+ * Return the time in ms until the next timer could fire, or -1 if no timers
  * are active.
  */
 static int
@@ -388,9 +389,11 @@ find_next_timer_expiration(indigo_time_t now)
         timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
     if (entry) {
         return entry->deadline - now;
+    } else if (num_timers > 0) {
+        return SOCKETMANAGER_CONFIG_TIMER_PEEK_MS;
+    } else {
+        return -1;
     }
-
-    return -1;
 }
 
 /* Pull expired timers off the timer wheel and add them to the ready list */
@@ -450,6 +453,7 @@ process_timers(ind_soc_priority_t priority)
         if (timer->repeat_time_ms == IND_SOC_TIMER_IMMEDIATE) {
             /* De-register one-shot immediate timers */
             timer->state = TIMER_STATE_FREE;
+            num_timers--;
         } else {
             timer_wheel_insert(timer_wheel, &timer->timer_wheel_entry,
                                now + timer->repeat_time_ms);
@@ -508,6 +512,7 @@ ind_soc_timer_event_register_with_priority(
     timer_wheel_insert(timer_wheel, &timer_event[idx].timer_wheel_entry,
                        INDIGO_CURRENT_TIME + repeat_time_ms);
     timer_event[idx].state = TIMER_STATE_WAITING;
+    num_timers++;
 
     return INDIGO_ERROR_NONE;
 }
@@ -539,6 +544,7 @@ ind_soc_timer_event_unregister(ind_soc_timer_callback_f callback, void *cookie)
     }
 
     timer_event[idx].state = TIMER_STATE_FREE;
+    num_timers--;
 
     return INDIGO_ERROR_NONE;
 }
