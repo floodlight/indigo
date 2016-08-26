@@ -39,7 +39,7 @@
 #include "handlers.h"
 #include <murmur/murmur.h>
 
-#define MAX_GENTABLES 64
+#define MAX_GENTABLES 128
 
 struct ind_core_gentable_entry;
 
@@ -114,6 +114,7 @@ indigo_core_gentable_register(
     AIM_TRUE_OR_DIE(ops->del != NULL || ops->del2 != NULL);
     AIM_TRUE_OR_DIE(ops->get_stats != NULL);
     AIM_TRUE_OR_DIE(buckets_size > 1);
+    AIM_TRUE_OR_DIE(strlen(name) <= OF_MAX_TABLE_NAME_LEN);
 
     struct indigo_core_gentable *gentable = aim_zmalloc(sizeof(*gentable));
 
