@@ -24,6 +24,7 @@
 #include <cjson_util/cjson_util.h>
 #include <cjson_util/cjson_util_file.h>
 #include <BigList/biglist.h>
+#include <SocketManager/socketmanager.h>
 
 /* List of struct ind_cfg_ops pointers */
 static biglist_t *cfg_registration_list;
@@ -32,6 +33,50 @@ static biglist_t *cfg_registration_list;
 static cjson_util_file_t cfg_jfs;
 
 
+/*
+ * Invokes each registered configuration listener with the cJSON tree
+ * parsed from the configuration file.
+ */
+static indigo_error_t
+stage_and_commit(void)
+{
+    biglist_t *el;
+    int failed = 0;
+
+    AIM_LOG_INFO("Staging new configuration");
+
+    BIGLIST_FOREACH(el, cfg_registration_list) {
+        struct ind_cfg_ops *ops = el->data;
+        if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
+            if (ops->stage(cfg_jfs.root) < 0) {
+                failed = 1;
+            }
+        }
+    }
+
+    if (failed == 0) {
+        AIM_LOG_INFO("Committing new configuration");
+
+        BIGLIST_FOREACH(el, cfg_registration_list) {
+            struct ind_cfg_ops *ops = el->data;
+            if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
+                ops->commit();
+            }
+        }
+
+        AIM_LOG_INFO("Finished reconfiguration");
+        return INDIGO_ERROR_NONE;
+    } else {
+        AIM_LOG_WARN("Reconfiguration failed, new configuration not applied");
+        return INDIGO_ERROR_UNKNOWN;
+    }
+}
+
+/*
+ * Set the configuration filename and load it.
+ * Uses cjson_util to parse the config file contents into a cJSON tree,
+ * and then stages and commits the parsed config.
+ */
 indigo_error_t
 ind_cfg_filename_set(char *filename)
 {
@@ -45,8 +90,8 @@ ind_cfg_filename_set(char *filename)
     rv = cjson_util_file_open(filename, &cfg_jfs, "{}");
     switch(rv) {
     case AIM_ERROR_NONE:
-        AIM_LOG_INFO("Config: filename %s set and loaded", filename);
-        return INDIGO_ERROR_NONE;
+        AIM_LOG_INFO("Config: filename %s set", filename);
+        return stage_and_commit();
     case AIM_ERROR_NOT_FOUND:
         AIM_LOG_ERROR("Config: filename %s not found", filename);
         return INDIGO_ERROR_NOT_FOUND;
@@ -100,7 +145,6 @@ ind_cfg_unregister(const struct ind_cfg_ops *ops)
  * Iterate thru the registered users and process any entries which
  * use a non-default configuration file
  */
-
 static void
 update_nondefault_config(void)
 {
@@ -131,15 +175,12 @@ update_nondefault_config(void)
 
 /*
  * Load a configuration file.
- *
- * The file is parsed into a cJSON tree and passed to each registered
- * listener.
+ * Uses cjson_util to reload the config file contents into a cJSON tree,
+ * and then stages and commits the parsed config.
  */
 indigo_error_t
 ind_cfg_load(void)
 {
-    biglist_t *el;
-    int failed = 0;
     int rv;
 
     /* Update any entries that use a non-default config file */
@@ -160,34 +201,27 @@ ind_cfg_load(void)
         return INDIGO_ERROR_PARSE;
     }
 
-    AIM_LOG_INFO("Staging new configuration");
-
-    BIGLIST_FOREACH(el, cfg_registration_list) {
-        struct ind_cfg_ops *ops = el->data;
-        if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
-            if (ops->stage(cfg_jfs.root) < 0) {
-                failed = 1;
-            }
-        }
-    }
-
-    if (failed == 0) {
-        AIM_LOG_INFO("Committing new configuration");
-
-        BIGLIST_FOREACH(el, cfg_registration_list) {
-            struct ind_cfg_ops *ops = el->data;
-            if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
-                ops->commit();
-            }
-        }
-
-        AIM_LOG_INFO("Finished reconfiguration");
-        return INDIGO_ERROR_NONE;
-    } else {
-        AIM_LOG_WARN("Reconfiguration failed, new configuration not applied");
-        return INDIGO_ERROR_UNKNOWN;
-    }
+    return stage_and_commit();
 }
+
+/* wrapper function */
+static void
+cfg_callback(void *cookie)
+{
+    ind_cfg_load();
+}
+
+/* install periodic event to call cfg_callback */
+indigo_error_t
+ind_cfg_install_reload_handler(void)
+{
+    const int period_ms = 250;
+
+    return ind_soc_timer_event_register_with_priority(cfg_callback, NULL,
+                                                      period_ms,
+                                                      IND_SOC_HIGH_PRIORITY);
+}
+
 
 indigo_error_t
 ind_cfg_lookup(cJSON *root, const char *path, cJSON **result)

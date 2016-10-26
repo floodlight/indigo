@@ -377,6 +377,90 @@ test_non_dflt_reconfiguration(void)
     unlink(filename_non_dflt);
 }
 
+/* Test periodic reload */
+
+void (*periodic_callback)(void *cookie);
+
+indigo_error_t
+ind_soc_timer_event_register_with_priority(void (*cb)(void *cookie),
+                                           void *cookie,
+                                           int period,
+                                           int periority)
+{
+    periodic_callback = cb;
+    return INDIGO_ERROR_NONE;
+}
+
+static int periodic_stage_count;
+
+static indigo_error_t
+periodic_stage(cJSON *cjson)
+{
+    INDIGO_ASSERT(periodic_stage_count == 0);
+    periodic_stage_count++;
+    return INDIGO_ERROR_NONE;
+}
+
+static int periodic_commit_count;
+
+static void
+periodic_commit(void)
+{
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    periodic_commit_count++;
+}
+
+static const struct ind_cfg_ops periodic_ops = {
+    .stage = periodic_stage,
+    .commit = periodic_commit,
+};
+
+static void
+test_periodic_reload(void)
+{
+    FILE *file;
+    char filename[] = "tmpXXXXXX";
+    int fd;
+
+    file = fdopen(mkstemp(filename), "w");
+    fwrite(sample_json, strlen(sample_json), 1, file);
+    fclose(file);
+
+    /* open file for futimens to touch */
+    fd = open(filename, O_WRONLY);
+
+    ind_cfg_install_reload_handler();
+
+    periodic_stage_count = periodic_commit_count = 0;
+    ind_cfg_register(&periodic_ops);
+
+    ind_cfg_filename_set(filename);
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    INDIGO_ASSERT(periodic_commit_count == 1);
+
+    /* nothing should happen */
+    periodic_stage_count = periodic_commit_count = 0;
+    /* invoke reload */
+    periodic_callback(NULL);
+    INDIGO_ASSERT(periodic_stage_count == 0);
+    INDIGO_ASSERT(periodic_commit_count == 0);
+
+    /* touched file, should stage and commit */
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
+    /* invoke reload */
+    periodic_callback(NULL);
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    INDIGO_ASSERT(periodic_commit_count == 1);
+
+    ind_cfg_unregister(&periodic_ops);
+
+    ind_cfg_filename_set(NULL);
+
+    close(fd);
+    unlink(filename);
+}
+
 int main(int argc, char* argv[])
 {
     char filename[256];
@@ -387,6 +471,7 @@ int main(int argc, char* argv[])
     test_json_parse_failure();
     test_reconfiguration();
     test_non_dflt_reconfiguration();
+    test_periodic_reload();
 
     return 0;
 }
