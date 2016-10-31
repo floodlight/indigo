@@ -277,6 +277,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_table_stats_request_handler(obj, cxn);
         break;
 
+    case OF_TABLE_FEATURES_STATS_REQUEST:
+        ind_core_table_features_stats_request_handler(obj, cxn);
+        break;
+
     case OF_DESC_STATS_REQUEST:
         ind_core_desc_stats_request_handler(obj, cxn);
         break;
