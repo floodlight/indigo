@@ -1325,6 +1325,65 @@ ind_core_table_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
     indigo_cxn_send_controller_message(cxn_id, reply);
 }
 
+/**
+ * Handle a table_features_stats_request message
+ * @param cxn_id Connection handler for the owning connection
+ * @param _obj Generic type object for the message to be coerced
+ */
+
+void
+ind_core_table_features_stats_request_handler(of_object_t *_obj,
+                                              indigo_cxn_id_t cxn_id)
+{
+    of_table_features_stats_request_t *obj = _obj;
+    of_table_features_stats_request_t *reply = NULL;
+    of_version_t version = obj->version;
+
+    /* table_features defined starting with OF1.3 */
+    if (version < OF_VERSION_1_3) {
+        ind_core_unhandled_message(obj, cxn_id);
+        return;
+    }
+
+    reply = of_table_features_stats_reply_new(version);
+    AIM_TRUE_OR_DIE(reply != NULL);
+
+    uint32_t xid;
+    of_table_features_stats_request_xid_get(obj, &xid);
+    of_table_features_stats_reply_xid_set(reply, xid);
+
+    of_list_table_stats_entry_t list[1];
+    of_table_features_stats_reply_entries_bind(reply, list);
+
+    int i;
+    for (i = 0; i < 256; i++) {
+        ind_core_table_t *table = ind_core_table_get(i);
+
+        if (table == NULL) {
+            continue;
+        }
+
+        indigo_fi_table_stats_t table_stats;
+        memset(&table_stats, -1, sizeof(table_stats));
+
+        if (table->ops->table_stats_get) {
+            (void) table->ops->table_stats_get(table->priv, cxn_id,
+                                               &table_stats);
+        }
+
+        of_table_features_t entry[1];
+        of_table_features_init(entry, version, -1, 1);
+        (void) of_list_table_features_append_bind(list, entry);
+
+        of_table_features_table_id_set(entry, i);
+        of_table_features_max_entries_set(entry, table_stats.max_entries);
+
+        /* FIXME populate other fields as necessary */
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, reply);
+}
+
 /****************************************************************/
 
 /**
