@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013,2016, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -32,6 +32,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <indigo/assert.h>
 #include <cjson/cJSON.h>
 
@@ -147,9 +150,7 @@ test_json_parse_failure(void)
     file = fdopen(mkstemp(filename), "w");
     fprintf(file, "{\n\tblah\n}");
     fclose(file);
-    ind_cfg_filename_set(filename);
-
-    INDIGO_ASSERT(ind_cfg_load() == INDIGO_ERROR_PARSE);
+    INDIGO_ASSERT(ind_cfg_filename_set(filename) == INDIGO_ERROR_PARSE);
 
     unlink(filename);
 }
@@ -209,27 +210,32 @@ static const struct ind_cfg_ops ops2 = {
 };
 
 static void
-test_reconfiguration(int reg)  /* If reg is false, assume registered */
+test_reconfiguration(void)
 {
     FILE *file;
     char filename[] = "tmpXXXXXX";
+    int fd;
 
     file = fdopen(mkstemp(filename), "w");
     fwrite(sample_json, strlen(sample_json), 1, file);
     fclose(file);
+
+    /* open file for futimens to touch */
+    fd = open(filename, O_WRONLY);
+
     ind_cfg_filename_set(filename);
 
-    if (reg) {
-        /* Nothing registered */
-        INDIGO_ASSERT(ind_cfg_load() == INDIGO_ERROR_NONE);
-        ind_cfg_register(&ops1);
-    }
+    /* Nothing registered */
+    INDIGO_ASSERT(ind_cfg_load() == INDIGO_ERROR_NONE);
+    ind_cfg_register(&ops1);
 
     /* Success */
     stage1_retval = INDIGO_ERROR_NONE;
     stage1_count = commit1_count = 0;
     stage2_count = 0;
     stage2_retval = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() == INDIGO_ERROR_NONE);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(commit1_count == 1);
@@ -239,19 +245,21 @@ test_reconfiguration(int reg)  /* If reg is false, assume registered */
     stage1_count = commit1_count = 0;
     stage2_count = 0;
     stage2_retval = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() < 0);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(commit1_count == 0);
 
-    if (reg) {
-        ind_cfg_register(&ops2);
-    }
+    ind_cfg_register(&ops2);
 
     /* Success */
     stage1_retval = INDIGO_ERROR_NONE;
     stage2_retval = INDIGO_ERROR_NONE;
     stage1_count = commit1_count = 0;
     stage2_count = commit2_count = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() == INDIGO_ERROR_NONE);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(stage2_count == 1);
@@ -263,6 +271,8 @@ test_reconfiguration(int reg)  /* If reg is false, assume registered */
     stage2_retval = INDIGO_ERROR_NONE;
     stage1_count = commit1_count = 0;
     stage2_count = commit2_count = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() < 0);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(stage2_count == 1);
@@ -274,6 +284,8 @@ test_reconfiguration(int reg)  /* If reg is false, assume registered */
     stage2_retval = INDIGO_ERROR_PARAM;
     stage1_count = commit1_count = 0;
     stage2_count = commit2_count = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() < 0);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(stage2_count == 1);
@@ -285,12 +297,20 @@ test_reconfiguration(int reg)  /* If reg is false, assume registered */
     stage2_retval = INDIGO_ERROR_PARAM;
     stage1_count = commit1_count = 0;
     stage2_count = commit2_count = 0;
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
     INDIGO_ASSERT(ind_cfg_load() < 0);
     INDIGO_ASSERT(stage1_count == 1);
     INDIGO_ASSERT(stage2_count == 1);
     INDIGO_ASSERT(commit1_count == 0);
     INDIGO_ASSERT(commit2_count == 0);
 
+    ind_cfg_unregister(&ops2);
+    ind_cfg_unregister(&ops1);
+
+    ind_cfg_filename_set(NULL);
+
+    close(fd);
     unlink(filename);
 }
 
@@ -348,11 +368,97 @@ test_non_dflt_reconfiguration(void)
 
     ops_non_dflt.filename = filename_non_dflt;
     ind_cfg_register(&ops_non_dflt);
-    test_reconfiguration(0);
+    test_reconfiguration();
     INDIGO_ASSERT(stage_non_dflt_count);
     INDIGO_ASSERT(commit_non_dflt_count);
 
+    ind_cfg_unregister(&ops_non_dflt);
+    
     unlink(filename_non_dflt);
+}
+
+/* Test periodic reload */
+
+void (*periodic_callback)(void *cookie);
+
+indigo_error_t
+ind_soc_timer_event_register_with_priority(void (*cb)(void *cookie),
+                                           void *cookie,
+                                           int period,
+                                           int periority)
+{
+    periodic_callback = cb;
+    return INDIGO_ERROR_NONE;
+}
+
+static int periodic_stage_count;
+
+static indigo_error_t
+periodic_stage(cJSON *cjson)
+{
+    INDIGO_ASSERT(periodic_stage_count == 0);
+    periodic_stage_count++;
+    return INDIGO_ERROR_NONE;
+}
+
+static int periodic_commit_count;
+
+static void
+periodic_commit(void)
+{
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    periodic_commit_count++;
+}
+
+static const struct ind_cfg_ops periodic_ops = {
+    .stage = periodic_stage,
+    .commit = periodic_commit,
+};
+
+static void
+test_periodic_reload(void)
+{
+    FILE *file;
+    char filename[] = "tmpXXXXXX";
+    int fd;
+
+    file = fdopen(mkstemp(filename), "w");
+    fwrite(sample_json, strlen(sample_json), 1, file);
+    fclose(file);
+
+    /* open file for futimens to touch */
+    fd = open(filename, O_WRONLY);
+
+    ind_cfg_install_reload_handler();
+
+    periodic_stage_count = periodic_commit_count = 0;
+    ind_cfg_register(&periodic_ops);
+
+    ind_cfg_filename_set(filename);
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    INDIGO_ASSERT(periodic_commit_count == 1);
+
+    /* nothing should happen */
+    periodic_stage_count = periodic_commit_count = 0;
+    /* invoke reload */
+    periodic_callback(NULL);
+    INDIGO_ASSERT(periodic_stage_count == 0);
+    INDIGO_ASSERT(periodic_commit_count == 0);
+
+    /* touched file, should stage and commit */
+    INDIGO_ASSERT(sleep(1) == 0);
+    INDIGO_ASSERT(futimens(fd, NULL) == 0);
+    /* invoke reload */
+    periodic_callback(NULL);
+    INDIGO_ASSERT(periodic_stage_count == 1);
+    INDIGO_ASSERT(periodic_commit_count == 1);
+
+    ind_cfg_unregister(&periodic_ops);
+
+    ind_cfg_filename_set(NULL);
+
+    close(fd);
+    unlink(filename);
 }
 
 int main(int argc, char* argv[])
@@ -363,8 +469,9 @@ int main(int argc, char* argv[])
 
     test_lookup();
     test_json_parse_failure();
-    test_reconfiguration(1);
+    test_reconfiguration();
     test_non_dflt_reconfiguration();
+    test_periodic_reload();
 
     return 0;
 }

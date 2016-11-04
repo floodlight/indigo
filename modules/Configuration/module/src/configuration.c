@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc. 
+ *        Copyright 2013-2016, Big Switch Networks, Inc.
  * 
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -21,32 +21,89 @@
 #include "configuration_int.h"
 #include "configuration_log.h"
 #include <cjson/cJSON.h>
+#include <cjson_util/cjson_util.h>
+#include <cjson_util/cjson_util_file.h>
 #include <BigList/biglist.h>
+#include <SocketManager/socketmanager.h>
 
 /* List of struct ind_cfg_ops pointers */
 static biglist_t *cfg_registration_list;
 
-/* Filename that current_cfg was read from. */
-static char *current_filename;
+/* Tracks current configuration file */
+static cjson_util_file_t cfg_jfs;
 
 
+/*
+ * Invokes each registered configuration listener with the cJSON tree
+ * parsed from the configuration file.
+ */
+static indigo_error_t
+stage_and_commit(void)
+{
+    biglist_t *el;
+    int failed = 0;
+
+    AIM_LOG_INFO("Staging new configuration");
+
+    BIGLIST_FOREACH(el, cfg_registration_list) {
+        struct ind_cfg_ops *ops = el->data;
+        if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
+            if (ops->stage(cfg_jfs.root) < 0) {
+                failed = 1;
+            }
+        }
+    }
+
+    if (failed == 0) {
+        AIM_LOG_INFO("Committing new configuration");
+
+        BIGLIST_FOREACH(el, cfg_registration_list) {
+            struct ind_cfg_ops *ops = el->data;
+            if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
+                ops->commit();
+            }
+        }
+
+        AIM_LOG_INFO("Finished reconfiguration");
+        return INDIGO_ERROR_NONE;
+    } else {
+        AIM_LOG_WARN("Reconfiguration failed, new configuration not applied");
+        return INDIGO_ERROR_UNKNOWN;
+    }
+}
+
+/*
+ * Set the configuration filename and load it.
+ * Uses cjson_util to parse the config file contents into a cJSON tree,
+ * and then stages and commits the parsed config.
+ */
 indigo_error_t
 ind_cfg_filename_set(char *filename)
 {
-    char *tmp_name;
-    if ((tmp_name = aim_strdup(filename)) == NULL) {
-        AIM_LOG_ERROR("Config:  Failed to set filename str to %s", filename);
-        return INDIGO_ERROR_RESOURCE;
+    int rv;
+
+    if (filename == NULL) {
+        cjson_util_file_close(&cfg_jfs);
+        return INDIGO_ERROR_NONE;
     }
-
-    if (current_filename != NULL) {
-        aim_free(current_filename);
+    
+    rv = cjson_util_file_open(filename, &cfg_jfs, "{}");
+    switch(rv) {
+    case AIM_ERROR_NONE:
+        AIM_LOG_INFO("Config: filename %s set", filename);
+        return stage_and_commit();
+    case AIM_ERROR_NOT_FOUND:
+        AIM_LOG_ERROR("Config: filename %s not found", filename);
+        return INDIGO_ERROR_NOT_FOUND;
+    case AIM_ERROR_PARAM:
+        AIM_LOG_ERROR("Config: failed to parse filename %s", filename);
+        return INDIGO_ERROR_PARSE;
+    case AIM_ERROR_INTERNAL:  /* fall-through */
+    default:
+        AIM_LOG_ERROR("Config: unknown error %d opening filename %s",
+                      rv, filename);
+        return INDIGO_ERROR_UNKNOWN;
     }
-    current_filename = tmp_name;
-
-    AIM_LOG_INFO("Config:  Set filename to %s", current_filename);
-
-    return INDIGO_ERROR_NONE;
 }
 
 indigo_error_t
@@ -55,16 +112,16 @@ ind_cfg_filename_get(char *filename, int maxlen)
     if (filename == NULL) {
         return INDIGO_ERROR_PARAM;
     }
-    if (current_filename == NULL) {
+    if (cfg_jfs.filename == NULL) {
         return INDIGO_ERROR_INIT;
     }
 
     if (strlen(filename) >= maxlen) {
-        AIM_LOG_ERROR("Config:  cannot get filename, too long");
+        AIM_LOG_ERROR("Config: cannot get filename, too long");
         return INDIGO_ERROR_PARAM;
     }
 
-    strncpy(filename, current_filename, maxlen);
+    strncpy(filename, cfg_jfs.filename, maxlen);
 
     return INDIGO_ERROR_NONE;
 }
@@ -85,106 +142,22 @@ ind_cfg_unregister(const struct ind_cfg_ops *ops)
 }
 
 /*
- * Given the start of a string containing newlines and another pointer
- * inside that string, return the line and column number of that position.
- *
- * Line and column numbering starts at 1. Tab width is assumed to be 8.
- */
-static void
-find_line_number(const char *start, const char *pos, int *line, int *col)
-{
-    const char *cur = start;
-    const int tabwidth = 8;
-    *line = 1;
-    *col = 1;
-
-    while (cur < pos) {
-        if (*cur == '\n') {
-            (*line)++;
-            *col = 1;
-        } else if (*cur == '\t') {
-            (*col) += tabwidth - ((*col - 1) % tabwidth);
-        } else {
-            (*col)++;
-        }
-        cur++;
-    }
-}
-
-/*
- * Parse the given config file into a cJSON tree.
- *
- * If the config file is invalid, logs the errors and returns NULL.
- */
-static cJSON *
-parse_json_file(const char *filename)
-{
-    FILE *f;
-    long len;
-    char *data;
-    cJSON *root;
-
-    f = fopen(filename, "r");
-    if (f == NULL) {
-        AIM_LOG_ERROR("failed to open %s", filename);
-        return NULL;
-    }
-
-    fseek(f, 0, SEEK_END);
-    len = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    data = aim_malloc(len + 1);
-    if (fread(data, 1, len, f) == 0) {
-        aim_free(data);
-        fclose(f);
-        AIM_LOG_ERROR("failed to read %s", filename);
-        return NULL;
-    }
-    data[len] = 0;
-    fclose(f);
-
-    root = cJSON_Parse(data);
-    if (!root) {
-        int line, col;
-        char *next_newline;
-        const char *errptr = cJSON_GetErrorPtr();
-        find_line_number(data, errptr, &line, &col);
-
-        /* Terminate the snippet before the next newline */
-        next_newline = strchr(errptr, '\n');
-        if (next_newline != NULL) {
-            *next_newline = '\0';
-        }
-
-        AIM_LOG_ERROR("Error at line %d col %d: [%.8s]\n", line, col, errptr);
-
-        aim_free(data);
-        return NULL;
-    }
-
-    aim_free(data);
-
-    return root;
-}
-
-/*
  * Iterate thru the registered users and process any entries which
  * use a non-default configuration file
  */
-
 static void
 update_nondefault_config(void)
 {
     cJSON *root;
     biglist_t *el;
+    int rv;
 
     BIGLIST_FOREACH(el, cfg_registration_list) {
         struct ind_cfg_ops *ops = el->data;
         if (!IND_CFG_ENTRY_USES_DEFAULT(ops)) {
             AIM_LOG_VERBOSE("Loading non-default cfg file %s", ops->filename);
-            root = parse_json_file(ops->filename);
-            if (root == NULL) {
-                /* parse_json_file() logged a detailed message. */
+            rv = cjson_util_parse_file(ops->filename, &root);
+            if (rv) {
                 AIM_LOG_ERROR("Could not load non-default cfg file %s",
                               ops->filename);
             } else {
@@ -202,88 +175,68 @@ update_nondefault_config(void)
 
 /*
  * Load a configuration file.
- *
- * The file is parsed into a cJSON tree and passed to each registered
- * listener.
- *
- * Use current_filename as the source.
+ * Uses cjson_util to reload the config file contents into a cJSON tree,
+ * and then stages and commits the parsed config.
  */
 indigo_error_t
 ind_cfg_load(void)
 {
-    cJSON *root;
-    biglist_t *el;
-    int failed = 0;
+    int rv;
 
     /* Update any entries that use a non-default config file */
     update_nondefault_config();
 
-    if (current_filename == NULL) {
+    if (cfg_jfs.filename == NULL) {
         AIM_LOG_WARN("received SIGHUP but not using a config file");
         return INDIGO_ERROR_NONE;
     }
 
-    root = parse_json_file(current_filename);
-    if (root == NULL) {
-        /* parse_json_file() logged a detailed message. */
-        AIM_LOG_ERROR("Configuration unchanged; could not load %s.",
-                      current_filename);
+    rv = cjson_util_file_reload(&cfg_jfs, 0);
+    if (rv == 0) {
+        AIM_LOG_VERBOSE("Configuration %s unchanged", cfg_jfs.filename);
+        return INDIGO_ERROR_NONE;
+    } else if (rv < 0) {
+        AIM_LOG_ERROR("Configuration reload of %s, rv %s ",
+                      cfg_jfs.filename, rv);
         return INDIGO_ERROR_PARSE;
     }
 
-    AIM_LOG_INFO("Staging new configuration");
-
-    BIGLIST_FOREACH(el, cfg_registration_list) {
-        struct ind_cfg_ops *ops = el->data;
-        if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
-            if (ops->stage(root) < 0) {
-                failed = 1;
-            }
-        }
-    }
-
-    cJSON_Delete(root);
-
-    if (failed == 0) {
-        AIM_LOG_INFO("Committing new configuration");
-
-        BIGLIST_FOREACH(el, cfg_registration_list) {
-            struct ind_cfg_ops *ops = el->data;
-            if (IND_CFG_ENTRY_USES_DEFAULT(ops)) {
-                ops->commit();
-            }
-        }
-
-        AIM_LOG_INFO("Finished reconfiguration");
-        return INDIGO_ERROR_NONE;
-    } else {
-        AIM_LOG_WARN("Reconfiguration failed, new configuration not applied");
-        return INDIGO_ERROR_UNKNOWN;
-    }
+    return stage_and_commit();
 }
 
-indigo_error_t
-ind_cfg_lookup(cJSON *root, const char *path_, cJSON **result)
+/* wrapper function */
+static void
+cfg_callback(void *cookie)
 {
-    /* strtok_r mutates its input, need to copy */
-    char *path = aim_strdup(path_);
-    char *saveptr = NULL;
-    char *token;
-    cJSON *node = root;
-    indigo_error_t err = INDIGO_ERROR_NONE;
+    ind_cfg_load();
+}
 
-    while (INDIGO_SUCCESS(err) &&
-           (token = strtok_r(node == root ? path : NULL, ".", &saveptr)) != NULL) {
-        if (node->type != cJSON_Object) {
-            err = INDIGO_ERROR_PARAM;
-        } else if ((node = cJSON_GetObjectItem(node, token)) == NULL) {
-            err = INDIGO_ERROR_NOT_FOUND;
-        }
+/* install periodic event to call cfg_callback */
+indigo_error_t
+ind_cfg_install_reload_handler(void)
+{
+    const int period_ms = 250;
+
+    return ind_soc_timer_event_register_with_priority(cfg_callback, NULL,
+                                                      period_ms,
+                                                      IND_SOC_HIGH_PRIORITY);
+}
+
+
+indigo_error_t
+ind_cfg_lookup(cJSON *root, const char *path, cJSON **result)
+{
+    int rv;
+    rv = cjson_util_lookup(root, result, path);
+    if (rv == AIM_ERROR_PARAM) {
+        *result = NULL;
+        return INDIGO_ERROR_PARAM;
+    } else if (rv == AIM_ERROR_NOT_FOUND) {
+        *result = NULL;
+        return INDIGO_ERROR_NOT_FOUND;
+    } else {
+        return INDIGO_ERROR_NONE;
     }
-
-    aim_free(path);
-    *result = err == INDIGO_ERROR_NONE ? node : NULL;
-    return err;
 }
 
 indigo_error_t

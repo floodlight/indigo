@@ -108,13 +108,33 @@ extern void ind_cfg_unregister(const struct ind_cfg_ops *ops);
  *
  * This function calls all registered stage callbacks, then, if all
  * stage callbacks succeeded, calls all commit callbacks.
+ *
+ * Note that no configuration is loaded if the configuration file has
+ * not changed (its modification time has not changed from its previous
+ * value, recorded when ind_cfg_filename_set or ind_cfg_load was previously
+ * called).
  */
 extern indigo_error_t ind_cfg_load(void);
 
-extern indigo_error_t ind_cfg_install_sighup_handler(void);
-
+/**
+ * Set or return the configuration filename.
+ * Note that the configuration file will be parsed, staged, and commited,
+ * when ind_cfg_filename_set() is called.
+ */
 extern indigo_error_t ind_cfg_filename_set(char *filename);
 extern indigo_error_t ind_cfg_filename_get(char *filename, int maxlen);
+
+/**
+ * Installs a signal handler to invoke ind_cfg_reload() when a
+ * SIGHUP is received.
+ */
+extern indigo_error_t ind_cfg_install_sighup_handler(void);
+
+/**
+ * Installs a handler that is run periodically to invoke ind_cfg_reload().
+ */
+extern indigo_error_t ind_cfg_install_reload_handler(void);
+
 
 /*
  * Convenience functions for looking up a particular value in the config

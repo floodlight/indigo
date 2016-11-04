@@ -21,7 +21,7 @@ include ../../../init.mk
 MODULE := Configuration_utest
 TEST_MODULE := Configuration
 
-DEPENDMODULES := AIM SocketManager indigo loci BigList cjson timer_wheel debug_counter histogram
+DEPENDMODULES := AIM SocketManager indigo loci BigList cjson timer_wheel debug_counter histogram cjson_util
 
 # These indicate Linux specific implementations to be used for
 # various features

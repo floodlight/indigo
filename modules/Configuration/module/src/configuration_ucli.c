@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013,2016, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -44,11 +44,7 @@ configuration_ucli_ucli__minus_f__(ucli_context_t* uc)
     UCLI_ARGPARSE_OR_RETURN(uc, "s", &filename);
     if (ind_cfg_filename_set(filename) < 0) {
         ucli_printf(uc,
-                    "Could not set configuration file to %s.  Using defaults\n",
-                    filename);
-    } else if (ind_cfg_load() < 0) {
-        ucli_printf(uc,
-                    "Could not load configuration file %s.  Using defaults\n",
+                    "Could not load configuration file %s\n",
                     filename);
     }
 
@@ -66,11 +62,7 @@ configuration_ucli_ucli__config__(ucli_context_t* uc)
     UCLI_ARGPARSE_OR_RETURN(uc, "s", &filename);
     if (ind_cfg_filename_set(filename) < 0) {
         ucli_printf(uc,
-                    "Could not set configuration file to %s.  Using defaults\n",
-                    filename);
-    } else if (ind_cfg_load() < 0) {
-        ucli_printf(uc,
-                    "Could not load configuration file %s.  Using defaults\n",
+                    "Could not load configuration file %s\n",
                     filename);
     }
 
