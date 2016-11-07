@@ -196,7 +196,7 @@ ind_cfg_load(void)
         AIM_LOG_VERBOSE("Configuration %s unchanged", cfg_jfs.filename);
         return INDIGO_ERROR_NONE;
     } else if (rv < 0) {
-        AIM_LOG_ERROR("Configuration reload of %s, rv %s ",
+        AIM_LOG_ERROR("Configuration reload of %s, rv %d",
                       cfg_jfs.filename, rv);
         return INDIGO_ERROR_PARSE;
     }
