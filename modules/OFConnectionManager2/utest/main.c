@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -351,6 +351,59 @@ of_send_barrier_request(bool is_tls, intptr_t tl)
     of_sendmsg(is_tls, tl, of_barrier_request_new(of_version));
 }
 
+static void
+of_send_bundle_open(bool is_tls, intptr_t tl)
+{
+    of_bundle_ctrl_msg_t *msg = of_bundle_ctrl_msg_new(of_version);
+    of_bundle_ctrl_msg_bundle_id_set(msg, 0x1234);
+    of_bundle_ctrl_msg_bundle_ctrl_type_set(msg, OFPBCT_OPEN_REQUEST);
+    of_sendmsg(is_tls, tl, msg);
+}
+
+static void
+of_send_bundle_commit(bool is_tls, intptr_t tl)
+{
+    of_bundle_ctrl_msg_t *msg = of_bundle_ctrl_msg_new(of_version);
+    of_bundle_ctrl_msg_bundle_id_set(msg, 0x1234);
+    of_bundle_ctrl_msg_bundle_ctrl_type_set(msg, OFPBCT_COMMIT_REQUEST);
+    of_sendmsg(is_tls, tl, msg);
+}
+
+static void
+of_send_bundle_add(bool is_tls, intptr_t tl, of_octets_t *data)
+{
+    of_bundle_add_msg_t *msg = of_bundle_add_msg_new(of_version);
+    of_bundle_add_msg_bundle_id_set(msg, 0x1234);
+    int rv = of_bundle_add_msg_data_set(msg, data);
+    AIM_ASSERT(rv == 0, "failed to add message data to bundle");
+    of_sendmsg(is_tls, tl, msg);
+}
+
+static void
+of_send_bundled_echo(bool is_tls, intptr_t tl, uint32_t xid)
+{
+    /* build an echo and extract its octets */
+    of_echo_request_t *echo = of_echo_request_new(of_version);
+    of_echo_request_xid_set(echo, xid);
+    uint8_t *data;
+    of_object_wire_buffer_steal(echo, &data);
+    of_octets_t octs = { .data = data,
+                         .bytes = of_message_length_get(data) };
+    of_send_bundle_add(is_tls, tl, &octs);
+}
+
+static void
+of_send_bundled_barrier(bool is_tls, intptr_t tl, uint32_t xid)
+{
+    /* build a barrier and extract its octets */
+    of_barrier_request_t *barrier = of_barrier_request_new(of_version);
+    of_barrier_request_xid_set(barrier, xid);
+    uint8_t *data;
+    of_object_wire_buffer_steal(barrier, &data);
+    of_octets_t octs = { .data = data,
+                         .bytes = of_message_length_get(data) };
+    of_send_bundle_add(is_tls, tl, &octs);
+}
 
 static of_object_t *
 tcp_recvmsg(int tl, uint8_t buf[], int buflen,
@@ -424,6 +477,22 @@ of_recvmsg(bool is_tls, intptr_t tl, uint8_t buf[], int buflen,
     }
 }
 
+static void
+check_for_echo(bool is_tls, intptr_t tl, uint32_t expected_xid)
+{
+    of_object_storage_t storage;
+    uint8_t buf[512];  /* may need to be increased */
+    of_object_t *obj;
+    uint32_t xid;
+    printf("check for echo reply with xid 0x%x\n", expected_xid);
+    obj = of_recvmsg(is_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_ECHO_REPLY,
+                  "did not receive OF_ECHO_REPLY, got %s", of_class_name(obj));
+    of_echo_reply_xid_get(obj, &xid);
+    INDIGO_ASSERT(xid == expected_xid,
+                  "received xid 0x%x does not match expected 0x%x",
+                  xid, expected_xid);
+}
 
 /* returns listening socket */
 static int
@@ -856,6 +925,51 @@ force_rehandshake(indigo_controller_id_t id, SSL *tl)
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
 }
 
+static int
+bundle_comparator(of_object_t *a, of_object_t *b)
+{
+    uint32_t xida;
+    if (a->object_id == OF_ECHO_REQUEST) {
+        of_echo_request_xid_get(a, &xida);
+    } else if (a->object_id == OF_BARRIER_REQUEST) {
+        of_barrier_request_xid_get(a, &xida);
+    } else {
+        AIM_DIE("unhandled object %s", of_class_name(a));
+    }
+    uint32_t xidb;
+    if (b->object_id == OF_ECHO_REQUEST) {
+        of_echo_request_xid_get(b, &xidb);
+    } else if (b->object_id == OF_BARRIER_REQUEST) {
+        of_barrier_request_xid_get(b, &xidb);
+    } else {
+        AIM_DIE("unhandled object %s", of_class_name(b));
+    }
+    printf("a %x, b %x, diff %d\n", xida, xidb, xida-xidb);
+    return xida - xidb;
+}
+
+static uint32_t
+subbundle_designator(of_object_t *obj)
+{
+    uint32_t xid;
+    if (obj->object_id == OF_ECHO_REQUEST) {
+        of_echo_request_xid_get(obj, &xid);
+    } else if (obj->object_id == OF_BARRIER_REQUEST) {
+        of_barrier_request_xid_get(obj, &xid);
+    } else {
+        AIM_DIE("unhandled object %s", of_class_name(obj));
+    }
+    return (xid & 0x3);
+}
+
+indigo_cxn_bundle_comparator_t
+subbundle_comparators[] = {
+    bundle_comparator,
+    NULL,
+    bundle_comparator,
+    NULL,
+};
+
 static void
 test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
             int domain, char *addr)
@@ -962,6 +1076,108 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     if (use_tls) {
         force_rehandshake(id, (SSL*)tl);
     }
+
+    /* bundle add test: open, add echoes, commit */
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set(0, NULL, NULL);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x981ab);
+    check_for_echo(use_tls, tl, 0x1278);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+
+    /* bundle add test with bundle comparator and barrier */
+    indigo_cxn_bundle_comparator_set(bundle_comparator);
+    indigo_cxn_subbundle_set(0, NULL, NULL);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_barrier(use_tls, tl, 0xaabbcc);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x1278);
+    check_for_echo(use_tls, tl, 0x981ab);
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+
+    /* bundle add test with subbundle designator */
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set(4, subbundle_designator, NULL);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_barrier(use_tls, tl, 0xaabbcc);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x1278);
+    check_for_echo(use_tls, tl, 0x981ab);
+    printf("check for barrier reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+
+    /* bundle add test with subbundle designator and comparator */
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set(4, subbundle_designator, subbundle_comparators);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_barrier(use_tls, tl, 0xaabbdd);
+    of_send_bundled_echo(use_tls, tl, 0x2a2);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundled_echo(use_tls, tl, 0x77372);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x1278);
+    check_for_echo(use_tls, tl, 0x2a2);
+    check_for_echo(use_tls, tl, 0x77372);
+    check_for_echo(use_tls, tl, 0x981ab);
+    printf("check for barrier reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
 
     /* once more for fun */
     of_send_controller_connections_request(use_tls, tl);

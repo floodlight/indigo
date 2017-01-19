@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -162,13 +162,19 @@ typedef enum cxn_state_e {
 #define MAX_BUNDLES 4
 #define BUNDLE_ID_INVALID (-1)
 
+typedef struct subbundle_s {
+    uint32_t count; /* Number of messages in subbundle */
+    uint32_t allocated; /* Length of msgs array */
+    uint8_t **msgs; /* Array of pointers to raw message data */
+} subbundle_t;
+
 typedef struct bundle_s {
     uint32_t id;    /* Supplied by controller when bundle is opened */
     uint32_t count; /* Number of messages in bundle */
-    uint32_t allocated; /* Length of msgs array */
     uint32_t bytes; /* Sum of message sizes */
     uint16_t flags; /* Copied from flags field in bundle-open request */
-    uint8_t **msgs; /* Array of pointers to raw message data */
+    uint32_t subbundle_count;  /* Number of subbundles */
+    subbundle_t *subbundles; /* Array of pointers to subbundles */
 } bundle_t;
 
 

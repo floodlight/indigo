@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -167,6 +167,16 @@
 
 #ifndef OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES
 #define OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES 50*1024*1024
+#endif
+
+/**
+ * OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES
+ *
+ * Maximum number of subbundles in a bundle */
+
+
+#ifndef OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES
+#define OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES 1023
 #endif
 
 

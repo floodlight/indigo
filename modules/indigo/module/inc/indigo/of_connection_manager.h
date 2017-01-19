@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -719,6 +719,39 @@ typedef int (*indigo_cxn_bundle_comparator_t)(of_object_t *a, of_object_t *b);
  */
 void
 indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn);
+
+typedef uint32_t (*indigo_cxn_subbundle_designator_t)(of_object_t *obj);
+
+/**
+ * Set up the subbundle infrastructure
+ *
+ * Sorting 100k+ messages with a single comparator may take seconds,
+ * stalling the main thread.
+ *
+ * Instead, we can divide a bundle into a number of subbundles, and provide
+ * a subbundle designator function that takes a message as input and
+ * returns the index of the subbundle to which that message should be
+ * assigned.
+ * On receipt of a bundle_add message, the encapsulated message is added to
+ * the subbundle specified by the designator.
+ *
+ * An array of subbundle comparator functions can also be provided.
+ * If the array is non-NULL, it must be num_subbundles in length.
+ * Once the bundle commit message is received, the subbundles for which
+ * non-NULL comparators are specified are sorted, and then the messages
+ * are processed in a long-running task.
+ * The i-th subbundle comparator is used to sort the i-th subbundle.
+ *
+ * @param num_subbundles Number of subbundles in a bundle
+ * @param designator Returns the subbundle to which the input message is added
+ * @param comparators Array of comparators for sorting subbundles
+ *
+ * To disable subbundling, use "indigo_cxn_subbundle_set(0, NULL, NULL);"
+ */
+void
+indigo_cxn_subbundle_set(uint32_t num_subbundles,
+                         indigo_cxn_subbundle_designator_t designator,
+                         indigo_cxn_bundle_comparator_t comparators[]);
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */

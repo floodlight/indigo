@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -106,6 +106,11 @@ ofconnectionmanager_config_settings_t ofconnectionmanager_config_settings[] =
     { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES) },
 #else
 { OFCONNECTIONMANAGER_CONFIG_MAX_BUNDLE_BYTES(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
+#endif
+#ifdef OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES
+    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES) },
+#else
+{ OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
     { NULL, NULL }
 };
