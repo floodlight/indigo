@@ -390,6 +390,8 @@ of_send_bundled_echo(bool is_tls, intptr_t tl, uint32_t xid)
     of_octets_t octs = { .data = data,
                          .bytes = of_message_length_get(data) };
     of_send_bundle_add(is_tls, tl, &octs);
+    aim_free(data);
+    of_object_delete(echo);
 }
 
 static void
@@ -403,6 +405,8 @@ of_send_bundled_barrier(bool is_tls, intptr_t tl, uint32_t xid)
     of_octets_t octs = { .data = data,
                          .bytes = of_message_length_get(data) };
     of_send_bundle_add(is_tls, tl, &octs);
+    aim_free(data);
+    of_object_delete(barrier);
 }
 
 static of_object_t *

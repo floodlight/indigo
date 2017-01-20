@@ -143,7 +143,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
             aim_zmalloc(sizeof(subbundle_t)*bundle->subbundle_count);
         AIM_TRUE_OR_DIE(bundle->subbundles != NULL,
                         "no memory allocated for subbundles");
-        AIM_LOG_VERBOSE("allocated %d subbundles", bundle->subbundle_count);
+        AIM_LOG_VERBOSE("allocated %u subbundles", bundle->subbundle_count);
     } else if (ctrl_type == OFPBCT_CLOSE_REQUEST) {
         /* Ignored */
     } else if (ctrl_type == OFPBCT_COMMIT_REQUEST) {
@@ -152,7 +152,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
             goto error;
         }
 
-        AIM_LOG_VERBOSE("bundle commit, count %d", bundle->count);
+        AIM_LOG_VERBOSE("bundle commit, %u messages", bundle->count);
         if (bundle->subbundle_count == 1) {
             if (comparator && !(bundle->flags & OFPBF_ORDERED)) {
                 subbundle_t *subbundle = &bundle->subbundles[0];
@@ -169,11 +169,12 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
                 if (subbundle_comparators && subbundle_comparators[i]) {
                     subbundle_t *subbundle = &bundle->subbundles[i];
                     subbundle_comparator_idx = i;
-                    AIM_LOG_VERBOSE("sort start for subbundle %d", i);
+                    AIM_LOG_VERBOSE("sorting subbundle %d, %u messages",
+                                    i, subbundle->count);
                     qsort(subbundle->msgs, subbundle->count,
                           sizeof(subbundle->msgs[0]),
                           subbundle_compare_message);
-                    AIM_LOG_VERBOSE("sorted %d", i);
+                    AIM_LOG_VERBOSE("sorting complete");
                 }
             }
         }
@@ -289,11 +290,12 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
         of_object_t *obj = parse_message(data.data, &obj_storage);
         if (obj->object_id == OF_BARRIER_REQUEST) {
             /* barriers are placed in the last subbundle */
-            idx = num_subbundles_per_bundle-1;
+            idx = bundle->subbundle_count - 1;
         } else {
             idx = subbundle_designator(obj);
-            if (idx > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES) {
-                idx = OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES;
+            /* misdesignated messages are also placed in the last subbundle */
+            if (idx > bundle->subbundle_count - 1) {
+                idx = bundle->subbundle_count - 1;
             }
         }
     }
@@ -360,20 +362,26 @@ free_bundle(bundle_t *bundle)
 }
 
 /* see description in public header file */
-void
+indigo_error_t
 indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[])
 {
+    if (num_subbundles > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
+        AIM_LOG_ERROR("num_subbundles %u exceeds maximum %u",
+                      num_subbundles,
+                      OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1);
+        return INDIGO_ERROR_PARAM;
+    }
+    if ((num_subbundles > 0) && (designator == NULL)) {
+        AIM_LOG_ERROR("num_subbundles > 0, but designator == NULL");
+        return INDIGO_ERROR_PARAM;
+    }
     /* one more subbundle for barriers */
     num_subbundles_per_bundle = num_subbundles + 1;
-    if (num_subbundles_per_bundle >
-        OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
-        num_subbundles_per_bundle =
-            OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1;
-    }
     subbundle_designator = designator;
     subbundle_comparators = comparators;
+    return INDIGO_ERROR_NONE;
 }
 
 /* WARNING: uses global variable to select the right subbundle comparator */
@@ -454,6 +462,9 @@ bundle_task(void *cookie)
                 return IND_SOC_TASK_CONTINUE;
             }
         }
+        /* clean up subbundle */
+        aim_free(subbundle->msgs);
+        subbundle->msgs = NULL;
         /* move to the next subbundle */
         state->cur_subbundle++;
         state->cur_offset = 0;

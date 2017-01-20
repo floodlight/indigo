@@ -745,10 +745,12 @@ typedef uint32_t (*indigo_cxn_subbundle_designator_t)(of_object_t *obj);
  * @param num_subbundles Number of subbundles in a bundle
  * @param designator Returns the subbundle to which the input message is added
  * @param comparators Array of comparators for sorting subbundles
+ * @return INDIGO_ERROR_PARAM if input parameters are invalid,
+ *    INDIGO_ERROR_NONE otherwise
  *
  * To disable subbundling, use "indigo_cxn_subbundle_set(0, NULL, NULL);"
  */
-void
+indigo_error_t
 indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[]);
