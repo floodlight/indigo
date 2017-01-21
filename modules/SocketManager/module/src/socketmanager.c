@@ -195,6 +195,11 @@ soc_mgr_init(void)
     latency_histogram = histogram_create("socman.latency");
 }
 
+static void
+soc_mgr_denit(void)
+{
+    histogram_destroy(latency_histogram);
+}
 
 indigo_error_t
 ind_soc_socket_register_with_priority(int socket_id,
@@ -681,7 +686,7 @@ ind_soc_finish(void)
 {
     AIM_LOG_VERBOSE("Shutting down socket manager");
     ind_cfg_unregister(&ind_soc_cfg_ops);
-    soc_mgr_init();
+    soc_mgr_denit();
     timer_wheel_destroy(timer_wheel);
     timer_wheel = NULL;
     init_done = 0;
