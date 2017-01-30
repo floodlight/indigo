@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015, Big Switch Networks, Inc.
+ *        Copyright 2013-2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -1939,6 +1939,58 @@ indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
     of_bsn_error_err_msg_set(err, dst_txt);
 
     if (of_bsn_error_data_set(err, &payload) < 0) {
+        AIM_LOG_INTERNAL("Failed to append original request to error message");
+    }
+
+    indigo_cxn_send_controller_message(cxn_id, err);
+}
+
+/**
+ * Send a BSN gentable error message to a controller connection
+ * @param cxn_id Controller to receive msg
+ * @param orig Message this error is in response to
+ * @param gentable_id Table on which error occurred
+ * @param code Error code to be sent
+ * @param err_txt Informative text to be copied into error msg
+ */
+void
+indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id,
+                                   of_object_t *orig,
+                                   uint16_t gentable_id,
+                                   uint16_t code,
+                                   char *err_txt)
+{
+    of_bsn_error_t *err;
+    of_octets_t payload;
+    uint32_t xid;
+    of_desc_str_t dst_txt = "";
+
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        AIM_LOG_ERROR("Attempted to send error message to nonexistent connection " CXN_ID_FMT,
+                      CXN_ID_FMT_ARGS(cxn_id));
+        return;
+    }
+
+    payload.data = OF_OBJECT_BUFFER_INDEX(orig, 0);
+    payload.bytes = orig->length;
+
+    xid = of_message_xid_get(OF_BUFFER_TO_MESSAGE(payload.data));
+
+    AIM_LOG_TRACE("Sending gentable error msg to %s, text '%s'",
+                  cxn->desc, err_txt);
+
+    if ((err = of_bsn_gentable_error_new(orig->version)) == NULL) {
+        AIM_DIE("Could not allocate error message");
+    }
+
+    of_bsn_gentable_error_xid_set(err, xid);
+    of_bsn_gentable_error_table_id_set(err, gentable_id);
+    of_bsn_gentable_error_error_code_set(err, code);
+    strncpy(dst_txt, err_txt, sizeof(dst_txt));
+    of_bsn_gentable_error_err_msg_set(err, dst_txt);
+
+    if (of_bsn_gentable_error_data_set(err, &payload) < 0) {
         AIM_LOG_INTERNAL("Failed to append original request to error message");
     }
 

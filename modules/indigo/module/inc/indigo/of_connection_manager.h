@@ -481,11 +481,24 @@ indigo_cxn_send_error_reply(indigo_cxn_id_t cxn_id, of_object_t *orig,
  * @param orig Message this error is in response to
  * @param err_txt Informative text to be copied into error msg
  */
-
 void
 indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
                           char *err_txt);
 
+/**
+ * Send a BSN gentable error message to a controller connection
+ * @param cxn_id Controller to receive msg
+ * @param orig Message this error is in response to
+ * @param gentable_id Table on which error occurred
+ * @param code Error code to be sent
+ * @param err_txt Informative text to be copied into error msg
+ */
+void
+indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id,
+                                   of_object_t *orig,
+                                   uint16_t gentable_id,
+                                   uint16_t code,
+                                   char *err_txt);
 
 /**
  * Connection information structure.
