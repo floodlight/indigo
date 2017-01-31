@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2017, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -270,7 +270,20 @@ ind_core_bsn_gentable_entry_add_handler(
     return;
 
 error:
-    indigo_cxn_send_bsn_error(cxn_id, obj, "Gentable add failed");
+    if (rv == INDIGO_ERROR_PARAM) {
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_PARAM,
+                                    "Gentable add failed, invalid parameter");
+    } else if ((rv == INDIGO_ERROR_RESOURCE) ||
+               (rv == INDIGO_ERROR_TABLE_FULL)) {
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_TABLE_FULL,
+                                           "Gentable add failed, table full");
+    } else {
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
+                                           "Gentable add failed");
+    }
 }
 
 void
@@ -307,7 +320,9 @@ ind_core_bsn_gentable_entry_delete_handler(
     if (rv < 0) {
         AIM_LOG_ERROR("%s gentable delete failed: %s",
                       gentable->name, indigo_strerror(rv));
-        indigo_cxn_send_bsn_error(cxn_id, obj, "Gentable delete failed");
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
+                                           "Gentable delete failed");
         return;
     }
 }
@@ -415,8 +430,9 @@ ind_core_bsn_gentable_set_buckets_size_handler(
     if (new_buckets_size == 0 || (new_buckets_size & (new_buckets_size - 1)) != 0) {
         AIM_LOG_ERROR("Attempted to set a non power of 2 buckets size (%d) for gentable %s",
                       new_buckets_size, gentable->name);
-        indigo_cxn_send_bsn_error(cxn_id, obj,
-                                  "Gentable set bucket size failed");
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
+                                           "Gentable set bucket size failed");
         return;
     }
 
