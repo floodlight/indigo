@@ -207,6 +207,15 @@ indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
                     cxn_id, err_txt);
 }
 
+void
+indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
+                                   uint16_t table_id, uint16_t code,
+                                   char *err_txt)
+{
+    AIM_LOG_VERBOSE("Send BSN gentable error msg called for cxn id %d: %s\n",
+                    cxn_id, err_txt);
+}
+
 static int controller_message_counters[OF_MESSAGE_OBJECT_COUNT];
 
 void
