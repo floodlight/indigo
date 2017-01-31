@@ -274,7 +274,8 @@ error:
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
                                            OF_BSN_GENTABLE_ERROR_PARAM,
                                     "Gentable add failed, invalid parameter");
-    } else if (rv == INDIGO_ERROR_RESOURCE) {
+    } else if ((rv == INDIGO_ERROR_RESOURCE) ||
+               (rv == INDIGO_ERROR_TABLE_FULL)) {
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
                                            OF_BSN_GENTABLE_ERROR_TABLE_FULL,
                                            "Gentable add failed, table full");
