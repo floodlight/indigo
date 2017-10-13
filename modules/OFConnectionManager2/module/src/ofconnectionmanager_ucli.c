@@ -84,6 +84,131 @@ ofconnectionmanager_ucli_ucli__tls__(ucli_context_t *uc)
     return UCLI_STATUS_OK;
 }
 
+static char *
+get_ip(indigo_cxn_protocol_params_t *params)
+{
+    switch(params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        return params->tcp_over_ipv4.controller_ip;
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
+        return params->tls_over_ipv4.controller_ip;
+        break;
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        return params->tcp_over_ipv6.controller_ip;
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
+        return params->tls_over_ipv6.controller_ip;
+        break;
+    default:
+        return NULL;
+    }
+}
+
+static uint16_t
+get_port(indigo_cxn_protocol_params_t *params)
+{
+    switch(params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:
+        return params->tcp_over_ipv4.controller_port;
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:
+        return params->tls_over_ipv4.controller_port;
+        break;
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        return params->tcp_over_ipv6.controller_port;
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
+        return params->tls_over_ipv6.controller_port;
+        break;
+    default:
+        return 0;
+    }
+}
+
+static char *
+get_protocol(indigo_cxn_protocol_params_t *params)
+{
+    switch(params->header.protocol) {
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TCP_OVER_IPV6:
+        return "TCP";
+        break;
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV4:  /* fall-through */
+    case INDIGO_CXN_PROTO_TLS_OVER_IPV6:
+        return "TLS";
+        break;
+    default:
+        return "UNK";
+    }
+}
+
+static char *
+get_role_name(indigo_cxn_role_t role)
+{
+    switch (role) {
+    case INDIGO_CXN_R_MASTER:
+        return "MASTER";
+        break;
+    case INDIGO_CXN_R_SLAVE:
+        return "SLAVE";
+        break;
+    case INDIGO_CXN_R_EQUAL:
+        return "EQUAL";
+        break;
+    default:
+        return "UNKNOWN";
+    }
+}
+
+static ucli_status_t
+ofconnectionmanager_ucli_ucli__controller_list__(ucli_context_t *uc)
+{
+    indigo_controller_info_t* ctrl;
+    indigo_controller_info_t* list = NULL;
+    int count = 0;
+    indigo_cxn_status_t status;
+    indigo_error_t rv;
+    const char* statename;
+    const char* rolename;
+
+    UCLI_COMMAND_INFO(uc,
+                      "controller-list", 0,
+                      "$summary#Show controller connections.");
+
+
+    indigo_controller_list(&list);
+
+    for(ctrl = list; ctrl; ctrl = ctrl->next) {
+        if (ctrl->main_cxn_id == INDIGO_CXN_ID_UNSPECIFIED) {
+            statename = "DISCONNECTED";
+            rolename = "EQUAL";
+        } else {
+            rv = indigo_cxn_connection_status_get(ctrl->main_cxn_id,
+                                                  &status);
+            if (rv == INDIGO_ERROR_NONE) {
+                statename = status.is_connected?
+                    "CONNECTED": "DISCONNECTED";
+                rolename = get_role_name(ctrl->role);
+            } else {
+                statename = "UNKNOWN";
+                rolename = "UNKNOWN";
+            }
+        }
+
+        char *ip = get_ip(&ctrl->protocol_params);
+        uint16_t port = get_port(&ctrl->protocol_params);
+        char *protocol = get_protocol(&ctrl->protocol_params);
+        /* dump as yaml for cli to parse and reformat */
+        ucli_printf(uc, "%d:\n  ip: %s\n  port: %u\n  protocol: %s\n"
+                    "  state: %s\n  role: %s\n  naux: %u\n",
+                    count++, ip? ip: "invalid", port, protocol,
+                    statename, rolename, ctrl->num_aux);
+    }
+
+    indigo_controller_list_destroy(list);
+    return UCLI_STATUS_OK;
+}
 
 /* <auto.ucli.handlers.start> */
 /******************************************************************************
@@ -97,6 +222,7 @@ static ucli_command_handler_f ofconnectionmanager_ucli_ucli_handlers__[] =
     ofconnectionmanager_ucli_ucli__config__,
     ofconnectionmanager_ucli_ucli__stats__,
     ofconnectionmanager_ucli_ucli__tls__,
+    ofconnectionmanager_ucli_ucli__controller_list__,
     NULL
 };
 /******************************************************************************/
