@@ -210,7 +210,6 @@ ofconnectionmanager_ucli_ucli__controller_list__(ucli_context_t *uc)
     return UCLI_STATUS_OK;
 }
 
-
 /* <auto.ucli.handlers.start> */
 /******************************************************************************
  *
