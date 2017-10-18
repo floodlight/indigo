@@ -112,15 +112,15 @@ ofconnectionmanager_config_settings_t ofconnectionmanager_config_settings[] =
 #else
 { OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
-#ifdef OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST
-    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST) },
+#ifdef OFCONNECTIONMANAGER_CONFIG_FIPS
+    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_FIPS), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_FIPS) },
 #else
-{ OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
+{ OFCONNECTIONMANAGER_CONFIG_FIPS(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
-#ifdef OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST
-    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST) },
+#ifdef OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST
+    { __ofconnectionmanager_config_STRINGIFY_NAME(OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST), __ofconnectionmanager_config_STRINGIFY_VALUE(OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST) },
 #else
-{ OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
+{ OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST(__ofconnectionmanager_config_STRINGIFY_NAME), "__undefined__" },
 #endif
     { NULL, NULL }
 };
@@ -418,7 +418,7 @@ parse_tls_config(cJSON *root)
         goto error;
     }
 
-#if OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST == 0
+#if OFCONNECTIONMANAGER_CONFIG_FIPS == 0
     err = ind_cfg_lookup_string(root, "cipher_list", &cipher_list);
     if (err == INDIGO_ERROR_NOT_FOUND) {
         AIM_LOG_INFO("Config: No TLS cipher list, default to HIGH");
@@ -433,8 +433,8 @@ parse_tls_config(cJSON *root)
     }
 #else
     AIM_LOG_INFO("Config: overriding TLS cipher list with %s",
-                 OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST);
-    cipher_list = OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST;
+                 OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST);
+    cipher_list = OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST;
 #endif
 
     err = ind_cfg_lookup_string(root, "ca_cert", &ca_cert);

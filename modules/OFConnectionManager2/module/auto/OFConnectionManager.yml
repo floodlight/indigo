@@ -66,12 +66,12 @@ cdefs: &cdefs
 - OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES:
     doc: "Maximum number of subbundles in a bundle"
     default: 1023
-- OFCONNECTIONMANAGER_CONFIG_OVERRIDE_TLS_CIPHER_LIST:
-    doc: "Override TLS cipher list config file setting"
+- OFCONNECTIONMANAGER_CONFIG_FIPS:
+    doc: "Override TLS cipher list config file setting with FIPS cipher list"
     default: 0
-- OFCONNECTIONMANAGER_CONFIG_TLS_CIPHER_LIST:
-    doc: "TLS cipher list if config file setting is overridden"
-    default: '"HIGH"'
+- OFCONNECTIONMANAGER_CONFIG_FIPS_CIPHER_LIST:
+    doc: "TLS cipher list for FIPS"
+    default: '"TLSv1.2:kRSA:!eNULL:!aNULL"'
 
 definitions:
   cdefs:
