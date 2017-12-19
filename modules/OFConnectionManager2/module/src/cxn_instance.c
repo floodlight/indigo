@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017 Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -165,9 +165,10 @@ ind_cxn_id_to_connection(indigo_cxn_id_t cxn_id)
 static void
 cxn_register_debug_counters(connection_t *cxn)
 {
+#if defined(PER_MSG_DEBUG_COUNTERS)
     int i;
     const int skip = 3; /* "of_" prefix */
-
+#endif
     {
         char name[DEBUG_COUNTER_NAME_SIZE];
         aim_snprintf(name, sizeof(name), "cxn.%s.tx_drop", cxn->desc);
@@ -175,7 +176,7 @@ cxn_register_debug_counters(connection_t *cxn)
         char *description = "Outgoing message dropped by the switch due to long send queue";
         debug_counter_register(&cxn->tx_drop_counter, aim_strdup(name), description);
     }
-
+#if defined(PER_MSG_DEBUG_COUNTERS)
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         char name[DEBUG_COUNTER_NAME_SIZE];
         aim_snprintf(name, sizeof(name), "cxn.%s.rx.%s",
@@ -193,15 +194,16 @@ cxn_register_debug_counters(connection_t *cxn)
         char *description = "Message sent from the switch";
         debug_counter_register(&cxn->tx_counters[i], aim_strdup(name), description);
     }
-
+#endif
     cxn->has_debug_counters = true;
 }
 
 static void
 cxn_unregister_debug_counters(connection_t *cxn)
 {
+#if defined(PER_MSG_DEBUG_COUNTERS)
     int i;
-
+#endif
     if (!cxn->has_debug_counters) {
         return;
     }
@@ -212,6 +214,7 @@ cxn_unregister_debug_counters(connection_t *cxn)
         aim_free(name);
     }
 
+#if defined(PER_MSG_DEBUG_COUNTERS)
     for (i = 0; i < OF_MESSAGE_OBJECT_COUNT; i++) {
         debug_counter_t *counter = &cxn->rx_counters[i];
         char *name = (char *) counter->name;
@@ -225,7 +228,7 @@ cxn_unregister_debug_counters(connection_t *cxn)
         debug_counter_unregister(counter);
         aim_free(name);
     }
-
+#endif
     cxn->has_debug_counters = false;
 }
 

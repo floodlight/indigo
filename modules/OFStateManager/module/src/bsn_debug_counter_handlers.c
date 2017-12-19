@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2014, Big Switch Networks, Inc.
+ *        Copyright 2014,2017 Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -57,6 +57,10 @@ ind_core_bsn_debug_counter_desc_stats_request_handler(of_object_t *_obj,
     list_head_t *counters = debug_counter_list();
     LIST_FOREACH(counters, cur) {
         debug_counter_t *counter = container_of(cur, links, debug_counter_t);
+
+        if (debug_counter_get(counter) == 0) {
+            continue;
+        }
 
         of_bsn_debug_counter_desc_stats_entry_counter_id_set(entry, counter->counter_id);
 
