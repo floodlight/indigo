@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2016,2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -232,6 +232,22 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*del2)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key);
+
+    /**
+     * @brief Start a subbundle operation on this gentable
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     */
+    indigo_error_t (*start)(
+        indigo_cxn_id_t cxn_id, void *table_priv);
+
+    /**
+     * @brief Finish a subbundle operation on this gentable
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     */
+    indigo_error_t (*finish)(
+        indigo_cxn_id_t cxn_id, void *table_priv);
 } indigo_core_gentable_ops_t;
 
 /*
@@ -315,6 +331,39 @@ indigo_core_gentable_release(indigo_core_gentable_t *gentable, of_object_t *key)
 uint16_t
 indigo_core_gentable_id(indigo_core_gentable_t *gentable);
 
+/**
+ * @brief Get the table ID of a gentable from its name.
+ * @param name Gentable name; should be same as that passed when registering.
+ *
+ * Returns the table ID assigned to the gentable with the specified name.
+ * If the gentable is not found, returns GENTABLE_ID_INVALID.
+ */
+#define GENTABLE_ID_INVALID ((uint16_t) (-1))
+
+uint16_t
+indigo_core_gentable_id_lookup(const char *name);
+
+/**
+ * @brief Get the table ID of a gentable
+ * @param gentable
+ *
+ * Returns the table ID assigned to the given gentable.
+ */
+
+indigo_error_t
+indigo_core_gentable_start(uint16_t gentable_id,
+                           indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Get the table ID of a gentable
+ * @param gentable
+ *
+ * Returns the table ID assigned to the given gentable.
+ */
+
+indigo_error_t
+indigo_core_gentable_finish(uint16_t gentable_id,
+                            indigo_cxn_id_t cxn_id);
 
 /**
  * Listener interfaces

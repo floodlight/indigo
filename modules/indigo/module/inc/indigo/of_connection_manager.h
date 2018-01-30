@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -767,6 +767,26 @@ indigo_error_t
 indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[]);
+
+typedef void (*indigo_cxn_subbundle_start_t)(indigo_cxn_id_t cxn_id,
+                                             uint32_t subbundle_idx);
+typedef void (*indigo_cxn_subbundle_finish_t)(indigo_cxn_id_t cxn_id,
+                                              uint32_t subbundle_idx);
+
+/**
+ * Extends the subbundle infrastructure from indigo_cxn_subbundle_set above.
+ * First three parameters are the same as for indigo_cxn_subbundle_set.
+ * @param starts Array of start functions; the ith function is called
+ * before the ith subbundle is started.
+ * @param finishes Array of finish functions; the ith function is called
+ * after the ith subbundle is finished.
+ */
+indigo_error_t
+indigo_cxn_subbundle_set2(uint32_t num_subbundles,
+                          indigo_cxn_subbundle_designator_t designator,
+                          indigo_cxn_bundle_comparator_t comparators[],
+                          indigo_cxn_subbundle_start_t starts[],
+                          indigo_cxn_subbundle_finish_t finishes[]);
 
 #endif /* _INDIGO_OF_CONNECTION_MANAGER_H_ */
 /* @} */

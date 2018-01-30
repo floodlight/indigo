@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -963,6 +963,7 @@ subbundle_designator(of_object_t *obj)
     } else {
         AIM_DIE("unhandled object %s", of_class_name(obj));
     }
+    printf("designate obj xid 0x%x to subbundle %d\n", xid, (xid & 0x3));
     return (xid & 0x3);
 }
 
@@ -972,6 +973,42 @@ subbundle_comparators[] = {
     NULL,
     bundle_comparator,
     NULL,
+};
+
+#define NUM_SUBBUNDLES 4
+uint32_t invoke_start[NUM_SUBBUNDLES];
+uint32_t invoke_finish[NUM_SUBBUNDLES];
+
+void
+subbundle_start(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+{
+    printf("start subbundle %u\n", subbundle_idx);
+    INDIGO_ASSERT(invoke_finish[subbundle_idx] == 0);
+    invoke_start[subbundle_idx]++;
+}
+
+void
+subbundle_finish(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+{
+    printf("finish subbundle %u\n", subbundle_idx);
+    INDIGO_ASSERT(invoke_start[subbundle_idx] == 1);
+    invoke_finish[subbundle_idx]++;
+}
+
+indigo_cxn_subbundle_start_t
+subbundle_starts[] = {
+    subbundle_start,
+    NULL,
+    subbundle_start,
+    subbundle_start,
+};
+
+indigo_cxn_subbundle_finish_t
+subbundle_finishes[] = {
+    subbundle_finish,
+    NULL,
+    subbundle_finish,
+    subbundle_finish,
 };
 
 static void
@@ -1082,6 +1119,7 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     }
 
     /* bundle add test: open, add echoes, commit */
+    printf("bundle add, no subbundle designator or comparators\n");
     indigo_cxn_bundle_comparator_set(NULL);
     indigo_cxn_subbundle_set(0, NULL, NULL);
     of_send_bundle_open(use_tls, tl);
@@ -1103,6 +1141,7 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
     /* bundle add test with bundle comparator and barrier */
+    printf("bundle add, bundle comparator by xid\n");
     indigo_cxn_bundle_comparator_set(bundle_comparator);
     indigo_cxn_subbundle_set(0, NULL, NULL);
     of_send_bundle_open(use_tls, tl);
@@ -1128,8 +1167,9 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
     /* bundle add test with subbundle designator */
+    printf("bundle add, subbundle designator by lowest 2 xid bits\n");
     indigo_cxn_bundle_comparator_set(NULL);
-    indigo_cxn_subbundle_set(4, subbundle_designator, NULL);
+    indigo_cxn_subbundle_set(NUM_SUBBUNDLES, subbundle_designator, NULL);
     of_send_bundle_open(use_tls, tl);
     OK(ind_soc_select_and_run(50));
     printf("check for bundle open reply\n");
@@ -1154,8 +1194,10 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
     /* bundle add test with subbundle designator and comparator */
+    printf("bundle add, subbundle designator by lowest 2 xid bits, comparator for subbundle 0 and 2\n");
     indigo_cxn_bundle_comparator_set(NULL);
-    indigo_cxn_subbundle_set(4, subbundle_designator, subbundle_comparators);
+    indigo_cxn_subbundle_set(NUM_SUBBUNDLES,
+                             subbundle_designator, subbundle_comparators);
     of_send_bundle_open(use_tls, tl);
     OK(ind_soc_select_and_run(50));
     printf("check for bundle open reply\n");
@@ -1183,6 +1225,50 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
+    /* bundle add test with subbundle designator and comparator */
+    printf("bundle add, subbundle designator by lowest 2 xid bits, "
+           "comparator for subbundle 0 and 2"
+           "subbundle start/finish for bundles 0,2,3\n");
+    memset(invoke_start, 0, sizeof(invoke_start));
+    memset(invoke_finish, 0, sizeof(invoke_finish));
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set2(NUM_SUBBUNDLES,
+                              subbundle_designator, subbundle_comparators,
+                              subbundle_starts, subbundle_finishes);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_barrier(use_tls, tl, 0xaabbdd);
+    of_send_bundled_echo(use_tls, tl, 0x2a2);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundled_echo(use_tls, tl, 0x77372);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x1278);
+    check_for_echo(use_tls, tl, 0x2a2);
+    check_for_echo(use_tls, tl, 0x77372);
+    check_for_echo(use_tls, tl, 0x981ab);
+    printf("check for barrier reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    /* check subbundle invocations */
+    {
+        int i;
+        for (i = 0; i < NUM_SUBBUNDLES; i++) {
+            INDIGO_ASSERT(invoke_start[i] == (subbundle_starts[i]? 1: 0));
+            INDIGO_ASSERT(invoke_finish[i] == (subbundle_finishes[i]? 1: 0));
+        }
+    }
     /* once more for fun */
     of_send_controller_connections_request(use_tls, tl);
     OK(ind_soc_select_and_run(100));
