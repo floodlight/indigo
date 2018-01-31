@@ -780,6 +780,20 @@ typedef void (*indigo_cxn_subbundle_finish_t)(indigo_cxn_id_t cxn_id,
  * before the ith subbundle is started.
  * @param finishes Array of finish functions; the ith function is called
  * after the ith subbundle is finished.
+ *
+ * The intent is to provide hooks so that operations on the flowtables or
+ * gentables in a subbundle can be bookended by start and finish functions.
+ *
+ * If the subbundle_designator is written to assign all openflow messages
+ * concerning a particular set of flowtables and/or gentables to a specific
+ * subbundle, the start and finish functions can facilitate processing of
+ * blocks of flow/gentable entries, rather than the usual per-entry
+ * processing.
+ *
+ * For gentables, indigo_core_gentable_start() and
+ * indigo_core_gentable_finish() can be called from the registered
+ * subbundle_start and subbundle_finish functions to invoke the
+ * start and finish functions of a given gentable.
  */
 indigo_error_t
 indigo_cxn_subbundle_set2(uint32_t num_subbundles,
