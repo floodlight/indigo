@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2017, Big Switch Networks, Inc.
+ *        Copyright 2013-2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -819,7 +819,7 @@ find_gentable_by_id(uint32_t table_id)
 }
 
 static uint16_t
-alloc_table_id()
+alloc_table_id(void)
 {
     int i;
     for (i = 0; i < MAX_GENTABLES; i++) {
@@ -1135,4 +1135,44 @@ uint16_t
 indigo_core_gentable_id(indigo_core_gentable_t *gentable)
 {
     return gentable->table_id;
+}
+
+uint16_t
+indigo_core_gentable_id_lookup(const char *name)
+{
+    /* simple linear search of existing gentables */
+    int i;
+    for (i = 0; i < MAX_GENTABLES; i++) {
+        if (gentables[i] && (gentables[i]->table_id == i) &&
+            (strncmp(gentables[i]->name, name, OF_MAX_TABLE_NAME_LEN) == 0)) {
+            return gentables[i]->table_id;
+        }
+    }
+    return GENTABLE_ID_INVALID;
+}
+
+indigo_error_t
+indigo_core_gentable_start(uint16_t gentable_id,
+                           indigo_cxn_id_t cxn_id)
+{
+    indigo_core_gentable_t *gentable;
+    gentable = find_gentable_by_id(gentable_id);
+    if (gentable && gentable->ops->start) {
+        return gentable->ops->start(cxn_id, gentable->priv);
+    } else {
+        return INDIGO_ERROR_NONE;
+    }
+}
+
+indigo_error_t
+indigo_core_gentable_finish(uint16_t gentable_id,
+                            indigo_cxn_id_t cxn_id)
+{
+    indigo_core_gentable_t *gentable;
+    gentable = find_gentable_by_id(gentable_id);
+    if (gentable && gentable->ops->finish) {
+        return gentable->ops->finish(cxn_id, gentable->priv);
+    } else {
+        return INDIGO_ERROR_NONE;
+    }
 }

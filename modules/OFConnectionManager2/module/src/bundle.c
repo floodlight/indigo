@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2014-2015,2017, Big Switch Networks, Inc.
+ *        Copyright 2014-2015,2017-2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -49,6 +49,8 @@
  *  - Validate messages on add
  */
 
+#define SUBBUNDLE_UNSET (-1)
+
 /* bundle task state stores all necessary info to process a bundle's msgs;
  * original bundle is freed immediately after task state is set up */
 struct bundle_task_state {
@@ -75,6 +77,9 @@ static indigo_cxn_bundle_comparator_t comparator;
 static uint32_t num_subbundles_per_bundle = 1;
 static indigo_cxn_subbundle_designator_t subbundle_designator;
 static indigo_cxn_bundle_comparator_t *subbundle_comparators;
+
+static indigo_cxn_subbundle_start_t *subbundle_starts;
+static indigo_cxn_subbundle_finish_t *subbundle_finishes;
 
 /* used by subbundle_compare_message to select subbundle comparator */
 static uint32_t subbundle_comparator_idx;
@@ -186,7 +191,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
                                                 OFPBCT_COMMIT_REPLY);
         state->id = bundle->id;
         state->subbundle_count = bundle->subbundle_count;
-        state->cur_subbundle = 0;
+        state->cur_subbundle = SUBBUNDLE_UNSET;
         state->cur_offset = 0;
         state->subbundles = bundle->subbundles;
 
@@ -367,6 +372,20 @@ indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[])
 {
+    return indigo_cxn_subbundle_set2(num_subbundles,
+                                     designator,
+                                     comparators,
+                                     NULL, NULL);
+}
+
+/* see description in public header file */
+indigo_error_t
+indigo_cxn_subbundle_set2(uint32_t num_subbundles,
+                          indigo_cxn_subbundle_designator_t designator,
+                          indigo_cxn_bundle_comparator_t comparators[],
+                          indigo_cxn_subbundle_start_t starts[],
+                          indigo_cxn_subbundle_finish_t finishes[])
+{
     if (num_subbundles > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
         AIM_LOG_ERROR("num_subbundles %u exceeds maximum %u",
                       num_subbundles,
@@ -379,8 +398,13 @@ indigo_cxn_subbundle_set(uint32_t num_subbundles,
     }
     /* one more subbundle for barriers */
     num_subbundles_per_bundle = num_subbundles + 1;
+
     subbundle_designator = designator;
     subbundle_comparators = comparators;
+
+    subbundle_starts = starts;
+    subbundle_finishes = finishes;
+
     return INDIGO_ERROR_NONE;
 }
 
@@ -433,12 +457,38 @@ compare_message(const void *_a, const void *_b)
     return comparator(obj_a, obj_b);
 }
 
+static void
+invoke_subbundle_start(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+{
+    /* do not invoke for last subbundle (only contains barriers) */
+    if (subbundle_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_starts[subbundle_idx]) {
+        (*subbundle_starts[subbundle_idx])(cxn_id, subbundle_idx);
+    }
+}
+
+static void
+invoke_subbundle_finish(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+{
+    /* do not invoke for last subbundle (only contains barriers) */
+    if (subbundle_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_finishes[subbundle_idx]) {
+        (*subbundle_finishes[subbundle_idx])(cxn_id, subbundle_idx);
+    }
+}
+
 static ind_soc_task_status_t
 bundle_task(void *cookie)
 {
     struct bundle_task_state *state = cookie;
 
     connection_t *cxn = ind_cxn_id_to_connection(state->cxn_id);
+
+    /* corner case: invoke start for first subbundle */
+    if (state->cur_subbundle == SUBBUNDLE_UNSET) {
+        state->cur_subbundle = 0;
+        invoke_subbundle_start(state->cxn_id, state->cur_subbundle);
+    }
 
     while (state->cur_subbundle < state->subbundle_count) {
         subbundle_t *subbundle = &state->subbundles[state->cur_subbundle];
@@ -465,9 +515,13 @@ bundle_task(void *cookie)
         /* clean up subbundle */
         aim_free(subbundle->msgs);
         subbundle->msgs = NULL;
+        /* invoke subbundle finish before moving onto next subbundle */
+        invoke_subbundle_finish(state->cxn_id, state->cur_subbundle);
         /* move to the next subbundle */
         state->cur_subbundle++;
         state->cur_offset = 0;
+        /* invoke subbundle start for next subbundle */
+        invoke_subbundle_start(state->cxn_id, state->cur_subbundle);
     }
 
     if (cxn) {

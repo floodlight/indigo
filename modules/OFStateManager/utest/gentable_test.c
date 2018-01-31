@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2014,2018, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -67,12 +67,15 @@ struct test_table {
     int count_modify;
     int count_delete;
     int count_stats;
+    int count_starts;
+    int count_finishes;
     struct test_entry entries[NUM_ENTRIES];
 };
 
 static struct test_table table;
 
 static indigo_core_gentable_ops_t test_ops;
+static indigo_core_gentable_ops_t test_ops2;
 
 static const of_mac_addr_t mac1 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x01 } };
 static const of_mac_addr_t mac2 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x02 } };
@@ -401,6 +404,56 @@ test_gentable_acquire(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_lookup_by_name(void)
+{
+    indigo_core_gentable_t *gt0;
+    of_table_name_t gt0name = "gentable 0";
+    indigo_core_gentable_t *gt1;
+    of_table_name_t gt1name = "gentable 1";
+
+    indigo_core_gentable_register(gt0name, &test_ops, (void*)1, 10, 8, &gt0);
+    indigo_core_gentable_register(gt1name, &test_ops, (void*)2, 10, 8, &gt1);
+
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id_lookup("gentable 1") ==
+                    indigo_core_gentable_id(gt1));
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id_lookup("gentable 0") ==
+                    indigo_core_gentable_id(gt0));
+    AIM_TRUE_OR_DIE(indigo_core_gentable_id_lookup("gentable 55") ==
+                    GENTABLE_ID_INVALID);
+
+    indigo_core_gentable_unregister(gt0);
+    indigo_core_gentable_unregister(gt1);
+    return TEST_PASS;
+}
+
+static int
+test_gentable_start_finish(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 0";
+
+    indigo_core_gentable_register(name, &test_ops, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_start(
+        indigo_core_gentable_id(gentable), 0) == INDIGO_ERROR_NONE);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_finish(
+        indigo_core_gentable_id(gentable), 0) == INDIGO_ERROR_NONE);
+    AIM_TRUE_OR_DIE(table.count_starts == 0);
+    AIM_TRUE_OR_DIE(table.count_finishes == 0);
+    indigo_core_gentable_unregister(gentable);
+
+    indigo_core_gentable_register(name, &test_ops2, &table, 10, 8, &gentable);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_start(
+        indigo_core_gentable_id(gentable), 0) == INDIGO_ERROR_NONE);
+    AIM_TRUE_OR_DIE(indigo_core_gentable_finish(
+        indigo_core_gentable_id(gentable), 0) == INDIGO_ERROR_NONE);
+    AIM_TRUE_OR_DIE(table.count_starts == 1);
+    AIM_TRUE_OR_DIE(table.count_finishes == 1);
+    indigo_core_gentable_unregister(gentable);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -412,6 +465,8 @@ test_gentable(void)
     RUN_TEST(gentable_long_running_task);
     RUN_TEST(gentable_lookup);
     RUN_TEST(gentable_acquire);
+    RUN_TEST(gentable_lookup_by_name);
+    RUN_TEST(gentable_start_finish);
     return TEST_PASS;
 }
 
@@ -677,4 +732,31 @@ static indigo_core_gentable_ops_t test_ops = {
     .modify2 = test_gentable_modify,
     .del2 = test_gentable_delete,
     .get_stats = test_gentable_get_stats,
+};
+
+static indigo_error_t
+test_gentable_start(indigo_cxn_id_t cxn_id, void *table_priv)
+{
+    struct test_table *table = table_priv;
+    table->count_op++;
+    table->count_starts++;
+    return INDIGO_ERROR_NONE;
+}
+
+static indigo_error_t
+test_gentable_finish(indigo_cxn_id_t cxn_id, void *table_priv)
+{
+    struct test_table *table = table_priv;
+    table->count_op++;
+    table->count_finishes++;
+    return INDIGO_ERROR_NONE;
+}
+
+static indigo_core_gentable_ops_t test_ops2 = {
+    .add2 = test_gentable_add,
+    .modify2 = test_gentable_modify,
+    .del2 = test_gentable_delete,
+    .get_stats = test_gentable_get_stats,
+    .start = test_gentable_start,
+    .finish = test_gentable_finish,
 };
