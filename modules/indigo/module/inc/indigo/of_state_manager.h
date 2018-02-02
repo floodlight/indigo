@@ -344,10 +344,12 @@ uint16_t
 indigo_core_gentable_id_lookup(const char *name);
 
 /**
- * @brief Get the table ID of a gentable
- * @param gentable
+ * @brief Invoke the start function from indigo_core_gentable_ops_t
+ * @param gentable_id table ID, uint16_t
+ * @param cxn_id Controller connection ID
  *
- * Returns the table ID assigned to the given gentable.
+ * Provided as a convenience routine.  Intended to be called from
+ * subbundle start functions, registered with indigo_cxn_subbundle_set2().
  */
 
 indigo_error_t
@@ -355,10 +357,12 @@ indigo_core_gentable_start(uint16_t gentable_id,
                            indigo_cxn_id_t cxn_id);
 
 /**
- * @brief Get the table ID of a gentable
- * @param gentable
+ * @brief Invoke the finish function from indigo_core_gentable_ops_t
+ * @param gentable_id table ID, uint16_t
+ * @param cxn_id Controller connection ID
  *
- * Returns the table ID assigned to the given gentable.
+ * Provided as a convenience routine.  Intended to be called from
+ * subbundle finish functions, registered with indigo_cxn_subbundle_set2().
  */
 
 indigo_error_t
