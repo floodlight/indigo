@@ -533,7 +533,7 @@ bundle_task(void *cookie)
     aim_free(state->subbundles);
     aim_free(state);
 
-    if (cxn) {
+    if (cxn && ind_cxn_is_handshake_complete(cxn)) {
         ind_cxn_resume(cxn);
     }
 
