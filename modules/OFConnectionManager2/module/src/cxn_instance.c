@@ -2157,9 +2157,15 @@ ind_cxn_pause(connection_t *cxn)
 void
 ind_cxn_resume(connection_t *cxn)
 {
+    if (cxn == NULL) {
+        return;
+    }
+
     AIM_ASSERT(cxn->pause_refcount > 0);
     if (--cxn->pause_refcount == 0) {
-        set_cxn_read_write_events(cxn);
+        if (ind_cxn_is_handshake_complete(cxn)) {
+            set_cxn_read_write_events(cxn);
+        }
     }
 }
 
