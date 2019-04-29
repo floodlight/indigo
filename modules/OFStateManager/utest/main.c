@@ -45,9 +45,7 @@
 #include <locitest/test_common.h>
 
 #include "ofstatemanager_decs.h"
-
-/* Defined in gentable_test.c */
-int test_gentable(void);
+#include "gentable_test.h"
 
 /* Defined in table_test.c */
 int test_table(void);
@@ -214,6 +212,8 @@ indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
 {
     AIM_LOG_VERBOSE("Send BSN gentable error msg called for cxn id %d: %s\n",
                     cxn_id, err_txt);
+    bsn_err_count++;
+    strncpy(bsn_err_txt, err_txt, sizeof(of_desc_str_t));
 }
 
 static int controller_message_counters[OF_MESSAGE_OBJECT_COUNT];

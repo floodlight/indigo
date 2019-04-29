@@ -39,6 +39,8 @@
 #include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
 
+#include "gentable_test.h"
+
 #define TABLE_ID 1
 #define NUM_ENTRIES 10
 
@@ -76,10 +78,15 @@ static struct test_table table;
 
 static indigo_core_gentable_ops_t test_ops;
 static indigo_core_gentable_ops_t test_ops2;
+static indigo_core_gentable_ops_t test_ops3;
 
 static const of_mac_addr_t mac1 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x01 } };
 static const of_mac_addr_t mac2 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x02 } };
 static const of_mac_addr_t mac3 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x03 } };
+
+/* used by indigo_cxn_send_bsn_gentable_error */
+int bsn_err_count = 0;
+char bsn_err_txt[256];
 
 static int
 test_gentable_entry_add(void)
@@ -454,6 +461,36 @@ test_gentable_start_finish(void)
     return TEST_PASS;
 }
 
+static int
+test_gentable_errs(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 3";
+
+    indigo_core_gentable_register(name, &test_ops3, &table, 10, 8, &gentable);
+    memset(&table, 0, sizeof(table));
+    bsn_err_count = 0;
+    do_add(1, mac1, 0);
+    AIM_TRUE_OR_DIE(bsn_err_count == 1 &&
+                    strcmp("add failure 1", bsn_err_txt) == 0);
+    bsn_err_count = 0;
+    do_add(1, mac1, 0);
+    AIM_TRUE_OR_DIE(bsn_err_count == 0);
+    bsn_err_count = 0;
+    do_add(1, mac1, 0);
+    AIM_TRUE_OR_DIE(bsn_err_count == 1 &&
+                    strcmp("modify failure 1", bsn_err_txt) == 0);
+    bsn_err_count = 0;
+    do_delete(1);
+    AIM_TRUE_OR_DIE(bsn_err_count == 1 &&
+                    strcmp("delete failure 1", bsn_err_txt) == 0);
+    bsn_err_count = 0;
+    do_delete(1);
+    AIM_TRUE_OR_DIE(bsn_err_count == 0);
+
+    return TEST_PASS;
+}
+
 int
 test_gentable(void)
 {
@@ -467,6 +504,7 @@ test_gentable(void)
     RUN_TEST(gentable_acquire);
     RUN_TEST(gentable_lookup_by_name);
     RUN_TEST(gentable_start_finish);
+    RUN_TEST(gentable_errs);
     return TEST_PASS;
 }
 
@@ -533,7 +571,7 @@ do_delete(uint32_t port)
 }
 
 static void
-do_clear()
+do_clear(void)
 {
     of_object_t *obj = of_bsn_gentable_clear_request_new(OF_VERSION_1_3);
     of_bsn_gentable_clear_request_xid_set(obj, 0x12345678);
@@ -760,3 +798,61 @@ static indigo_core_gentable_ops_t test_ops2 = {
     .start = test_gentable_start,
     .finish = test_gentable_finish,
 };
+
+static indigo_error_t
+test_gentable_add3(indigo_cxn_id_t cxn_id, void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv, of_desc_str_t err_txt)
+{
+    struct test_table *table = table_priv;
+    table->count_op++;
+    table->count_add++;
+
+    /* fail every other time */
+    if (table->count_add % 2 == 1) {
+        char fmt[] = "add failure %d";
+        sprintf(err_txt, fmt, table->count_add);
+        return INDIGO_ERROR_PARAM;
+    }
+    return INDIGO_ERROR_NONE;
+}
+
+static indigo_error_t
+test_gentable_modify3(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, of_desc_str_t err_txt)
+{
+    struct test_table *table = table_priv;
+    table->count_op++;
+    table->count_modify++;
+
+    /* fail every other time */
+    if (table->count_modify % 2 == 1) {
+        char fmt[] = "modify failure %d";
+        sprintf(err_txt, fmt, table->count_modify);
+        return INDIGO_ERROR_PARAM;
+    }
+    return INDIGO_ERROR_NONE;
+}
+
+static indigo_error_t
+test_gentable_delete3(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t err_txt)
+{
+    struct test_table *table = table_priv;
+    table->count_op++;
+    table->count_delete++;
+
+    /* fail every other time */
+    if (table->count_delete % 2 == 1) {
+        char fmt[] = "delete failure %d";
+        sprintf(err_txt, fmt, table->count_delete);
+        return INDIGO_ERROR_PARAM;
+    }
+    return INDIGO_ERROR_NONE;
+}
+
+static indigo_core_gentable_ops_t test_ops3 = {
+    .add3 = test_gentable_add3,
+    .modify3 = test_gentable_modify3,
+    .del3 = test_gentable_delete3,
+    .get_stats = test_gentable_get_stats,
+    .start = test_gentable_start,
+    .finish = test_gentable_finish,
+};
+
