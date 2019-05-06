@@ -242,6 +242,8 @@ typedef struct indigo_core_gentable_ops {
      * @param [out] entry_priv Opaque private data for the entry, passed back
      *                         whenever another operation is made on the entry.
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*add3)(
         indigo_cxn_id_t cxn_id,
@@ -256,6 +258,8 @@ typedef struct indigo_core_gentable_ops {
      * @param key Entry key (identical to key from add)
      * @param value New entry value
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*modify3)(
         indigo_cxn_id_t cxn_id,
@@ -269,6 +273,8 @@ typedef struct indigo_core_gentable_ops {
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*del3)(
         indigo_cxn_id_t cxn_id,
