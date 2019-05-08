@@ -600,7 +600,13 @@ tls_attach(int sd, char *ca_cert,
     SSL *ssl;
     char filename[256];
 
-    ctx = SSL_CTX_new(TLS_server_method());
+    ctx = SSL_CTX_new(
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+                      TLSv1_2_server_method()
+#else
+                      TLS_server_method()
+#endif
+                      );
     if (ctx == NULL) {
         ERR_print_errors_fp(stderr);
         assert(0);

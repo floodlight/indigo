@@ -472,7 +472,13 @@ ssl_ctx_alloc(bool do_common_name_check,
     char buf[IND_SSL_ERR_LEN];
     bool has_ca_cert = (ca_cert && ca_cert[0] != '\0');
 
-    ctx = SSL_CTX_new(TLS_client_method());
+    ctx = SSL_CTX_new(
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+                      TLSv1_2_client_method()
+#else
+                      TLS_client_method()
+#endif
+                      );
     if (ctx == NULL) {
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to allocate SSL_CTX: %s", buf);
