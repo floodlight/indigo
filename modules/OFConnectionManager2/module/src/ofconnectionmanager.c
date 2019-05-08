@@ -380,7 +380,7 @@ verify_cert(SSL_CTX *ctx, const char *cert_filename)
     X509_STORE_CTX_init(verify_ctx, store, cert, NULL);
     if (X509_verify_cert(verify_ctx) != 1) {
         AIM_LOG_ERROR("Failed to verify certificate: %s",
-                      X509_verify_cert_error_string(verify_ctx->error));
+                      X509_verify_cert_error_string(X509_STORE_CTX_get_error(verify_ctx)));
         goto error;
     }
 
@@ -472,7 +472,13 @@ ssl_ctx_alloc(bool do_common_name_check,
     char buf[IND_SSL_ERR_LEN];
     bool has_ca_cert = (ca_cert && ca_cert[0] != '\0');
 
-    ctx = SSL_CTX_new(TLSv1_2_client_method());
+    ctx = SSL_CTX_new(
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
+                      TLSv1_2_client_method()
+#else
+                      TLS_client_method()
+#endif
+                      );
     if (ctx == NULL) {
         ERR_error_string(ERR_get_error(), buf);
         AIM_LOG_ERROR("Failed to allocate SSL_CTX: %s", buf);
@@ -1729,7 +1735,6 @@ tls_deinit(void)
 {
     /* note: 88 bytes in 3 blocks are still reachable 
      * from SSL_COMP_get_compression_methods */
-    ERR_remove_thread_state(NULL);
     ENGINE_cleanup();
     CONF_modules_unload(1);
     ERR_free_strings();
