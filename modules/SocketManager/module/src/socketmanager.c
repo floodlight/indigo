@@ -393,12 +393,6 @@ find_next_timer_expiration(indigo_time_t now)
     timer_wheel_entry_t *entry =
         timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
     if (entry) {
-        /* if the timer is late getting serviced, return 0 */
-        if (now > entry->deadline) {
-            AIM_LOG_TRACE("find_next_timer_expiration deadline late:",
-                          "now, %ld deadline %ld", now, entry->deadline);
-            return 0;
-        }
         return entry->deadline - now;
     } else if (num_timers > 0) {
         return SOCKETMANAGER_CONFIG_TIMER_PEEK_MS;
