@@ -394,12 +394,13 @@ find_next_timer_expiration(indigo_time_t now)
         timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
     if (entry) {
         /* if the timer is late getting serviced, return 0 */
-        if (now > entry->deadline) {
-            AIM_LOG_TRACE("find_next_timer_expiration deadline late:",
+        uint64_t delta = entry->deadline - now;
+        if (delta > INT32_MAX) {
+            AIM_LOG_TRACE("find_next_timer_expiration invalid time entries:",
                           "now, %ld deadline %ld", now, entry->deadline);
             return 0;
         }
-        return entry->deadline - now;
+        return delta;
     } else if (num_timers > 0) {
         return SOCKETMANAGER_CONFIG_TIMER_PEEK_MS;
     } else {
@@ -581,6 +582,8 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
 
     /* If neither is positive, return -1 (no timeout) */
     if ((run_for_ms < 0) && (next_event_ms < 0)) {
+        AIM_LOG_TRACE("calculate_next_timeout No valid timeout. next_event_ms:%d",
+                      next_event_ms);
         return -1;
     }
 
@@ -892,8 +895,8 @@ unit_test_soc_timer_event_count_get(void)
     int count = 0;
 
     FOREACH_TIMER_EVENT(idx) {
-        AIM_LOG_VERBOSE("timer %d callback %p state %d", 
-                        idx, timer_event[idx].callback, 
+        AIM_LOG_VERBOSE("timer %d callback %p state %d",
+                        idx, timer_event[idx].callback,
                         timer_event[idx].state);
         if (timer_event[idx].state != TIMER_STATE_FREE) {
             count++;
