@@ -380,8 +380,9 @@ ind_soc_run_status_set(ind_soc_run_status_t s)
 
 
 /*
- * Return the time in ms until the next timer could fire, or -1 if no timers
- * are active.
+ * Return the time in ms until the next timer could fire
+ * or SOCKETMANAGER_CONFIG_TIMER_PEEK_MS. A value of 0 is returned if an invalid
+ * value of time is calculated
  */
 static int
 find_next_timer_expiration(indigo_time_t now)
@@ -389,21 +390,27 @@ find_next_timer_expiration(indigo_time_t now)
     if (!list_empty(&ready_timers)) {
         return 0;
     }
-
     timer_wheel_entry_t *entry =
         timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
     if (entry) {
-        /* if the timer is late getting serviced, return 0 */
-        if (now > entry->deadline) {
-            AIM_LOG_TRACE("find_next_timer_expiration deadline late:",
+        /*
+         * There are two out of bounds cases to handle:
+         * 1) entry->deadline < now : We fetched an expiration timer which
+         *    should have occurred before now. Hence we need to choose a value
+         *    of 0. "entry->deadline - now" has a value > INT64_MAX.
+         * 2) entry->deadline - now > INT32_MAX : In this case the delta has a
+         *    value which cannot be represented in int32_t. We should return 0
+         * returning 0 for delta > INT32_MAX handles the above two cases.
+         */
+        uint64_t delta = entry->deadline - now;
+        if (delta > INT32_MAX) {
+            AIM_LOG_TRACE("find_next_timer_expiration invalid time entries:",
                           "now, %ld deadline %ld", now, entry->deadline);
             return 0;
         }
-        return entry->deadline - now;
-    } else if (num_timers > 0) {
-        return SOCKETMANAGER_CONFIG_TIMER_PEEK_MS;
+        return delta;
     } else {
-        return -1;
+        return SOCKETMANAGER_CONFIG_TIMER_PEEK_MS;
     }
 }
 
@@ -576,14 +583,13 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
 {
     int min_val;
     int remaining_ms;
-
-    /* Take min of positive values of next_event_ms and run_for_ms */
-
     /* If neither is positive, return -1 (no timeout) */
     if ((run_for_ms < 0) && (next_event_ms < 0)) {
+        AIM_LOG_TRACE("calculate_next_timeout No valid timeout. next_event_ms:%d",
+                      next_event_ms);
         return -1;
     }
-
+    /* Take min of positive values of next_event_ms and run_for_ms */
     if (run_for_ms >= 0) {
         remaining_ms = run_for_ms - INDIGO_TIME_DIFF_ms(start, current);
         if (remaining_ms < 0) {
@@ -892,8 +898,8 @@ unit_test_soc_timer_event_count_get(void)
     int count = 0;
 
     FOREACH_TIMER_EVENT(idx) {
-        AIM_LOG_VERBOSE("timer %d callback %p state %d", 
-                        idx, timer_event[idx].callback, 
+        AIM_LOG_VERBOSE("timer %d callback %p state %d",
+                        idx, timer_event[idx].callback,
                         timer_event[idx].state);
         if (timer_event[idx].state != TIMER_STATE_FREE) {
             count++;
