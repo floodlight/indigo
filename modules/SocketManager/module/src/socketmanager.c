@@ -381,7 +381,8 @@ ind_soc_run_status_set(ind_soc_run_status_t s)
 
 /*
  * Return the time in ms until the next timer could fire
- * or SOCKETMANAGER_CONFIG_TIMER_PEEK_MS
+ * or SOCKETMANAGER_CONFIG_TIMER_PEEK_MS. A value of 0 is returned if an invalid
+ * value of time is calculated
  */
 static int
 find_next_timer_expiration(indigo_time_t now)
@@ -392,7 +393,15 @@ find_next_timer_expiration(indigo_time_t now)
     timer_wheel_entry_t *entry =
         timer_wheel_peek(timer_wheel, now + SOCKETMANAGER_CONFIG_TIMER_PEEK_MS);
     if (entry) {
-        /* if the timer is late getting serviced, return 0 */
+        /*
+         * There are two out of bounds cases to handle:
+         * 1) entry->deadline < now : We fetched an expiration timer which
+         *    should have occurred before now. Hence we need to choose a value
+         *    of 0. "entry->deadline - now" has a value > INT64_MAX.
+         * 2) entry->deadline - now > INT32_MAX : In this case the delta has a
+         *    value which cannot be represented in int32_t. We should return 0
+         * returning 0 for delta > INT32_MAX handles the above two cases.
+         */
         uint64_t delta = entry->deadline - now;
         if (delta > INT32_MAX) {
             AIM_LOG_TRACE("find_next_timer_expiration invalid time entries:",
