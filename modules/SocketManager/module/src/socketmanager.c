@@ -370,6 +370,11 @@ ind_soc_socket_unregister(int socket_id)
 
 static ind_soc_run_status_t ind_soc_run_status__;
 
+/*
+ * NOTE: using this api to exit ind_soc_select_and_run may not always result in
+ * a timely exit if the registered callbacks are long. Consider using other
+ * mechanisms to ensure timely exit.
+ */
 void
 ind_soc_run_status_set(ind_soc_run_status_t s)
 {
@@ -399,14 +404,17 @@ find_next_timer_expiration(indigo_time_t now)
          *    should have occurred before now. Hence we need to choose a value
          *    of 0. "entry->deadline - now" has a value > INT64_MAX.
          * 2) entry->deadline - now > INT32_MAX : In this case the delta has a
-         *    value which cannot be represented in int32_t. We should return 0
-         * returning 0 for delta > INT32_MAX handles the above two cases.
+         *    value which cannot be represented in int32_t. We should
+         *    return INT32_MAX .
          */
         uint64_t delta = entry->deadline - now;
-        if (delta > INT32_MAX) {
-            AIM_LOG_TRACE("find_next_timer_expiration invalid time entries:",
+        if (entry->deadline < now) {
+            AIM_LOG_TRACE("find_next_timer_expiration deadline has past:",
                           "now, %ld deadline %ld", now, entry->deadline);
             return 0;
+        }
+        if (delta > INT32_MAX) {
+            return INT32_MAX;
         }
         return delta;
     } else {
@@ -878,6 +886,7 @@ ind_soc_select_and_run(int run_for_ms)
         process_tasks(priority);
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
+            AIM_LOG_TRACE("ind_soc_run_status__ = IND_SOC_RUN_STATUS_EXIT exiting");
             return INDIGO_ERROR_NONE;
         }
 
