@@ -372,8 +372,8 @@ static ind_soc_run_status_t ind_soc_run_status__;
 
 /*
  * NOTE: using this api to exit ind_soc_select_and_run may not always result in
- * a timely exit if the registered callbacks are long. Consider using other
- * mechanisms to ensure timely exit.
+ * a timely exit if the timer events have long durations of time between the
+ * timer callbacks. Consider using other mechanisms to ensure timely exit.
  */
 void
 ind_soc_run_status_set(ind_soc_run_status_t s)
