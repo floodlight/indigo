@@ -161,11 +161,11 @@
 /**
  * SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT
  *
- * Restrict the poll time out (in ms) to improve responsiveness. -1 for infinite */
+ * Restrict the poll time out (in ms) to improve responsiveness; set to a negative value for infinite timeout */
 
 
 #ifndef SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT
-#define SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT 1024
+#define SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT 1000
 #endif
 
 
