@@ -595,7 +595,8 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
     if ((run_for_ms < 0) && (next_event_ms < 0)) {
         AIM_LOG_TRACE("calculate_next_timeout No valid timeout. next_event_ms:%d",
                       next_event_ms);
-        return -1;
+        /* Prefer a finite poll timeout */
+        return SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT;
     }
     /* Take min of positive values of next_event_ms and run_for_ms */
     if (run_for_ms >= 0) {
@@ -612,6 +613,14 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
         min_val = next_event_ms;
     }
 
+    /* Finally check if the calculated timeout
+     * is greater than SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT
+     */
+    if (SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT >= 0) {
+        if (min_val > SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT) {
+            min_val = SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT;
+        }
+    }
     return min_val;
 }
 

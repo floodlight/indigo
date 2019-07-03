@@ -61,7 +61,7 @@ cdefs: &cdefs
     doc: "Maximum number of sockets supported"
     default: 1024
 - SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT:
-    doc: "Restrict the poll time out (in ms) to improve responsiveness"
+    doc: "Restrict the poll time out (in ms) to improve responsiveness. -1 for infinite"
     default: 1024
 
 
