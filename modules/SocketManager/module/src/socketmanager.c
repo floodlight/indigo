@@ -370,6 +370,11 @@ ind_soc_socket_unregister(int socket_id)
 
 static ind_soc_run_status_t ind_soc_run_status__;
 
+/*
+ * NOTE: using this api to exit ind_soc_select_and_run may not always result in
+ * a timely exit if the timer events have long durations of time between the
+ * timer callbacks. Consider using other mechanisms to ensure timely exit.
+ */
 void
 ind_soc_run_status_set(ind_soc_run_status_t s)
 {
@@ -399,14 +404,17 @@ find_next_timer_expiration(indigo_time_t now)
          *    should have occurred before now. Hence we need to choose a value
          *    of 0. "entry->deadline - now" has a value > INT64_MAX.
          * 2) entry->deadline - now > INT32_MAX : In this case the delta has a
-         *    value which cannot be represented in int32_t. We should return 0
-         * returning 0 for delta > INT32_MAX handles the above two cases.
+         *    value which cannot be represented in int32_t. We should
+         *    return INT32_MAX .
          */
         uint64_t delta = entry->deadline - now;
-        if (delta > INT32_MAX) {
-            AIM_LOG_TRACE("find_next_timer_expiration invalid time entries:",
+        if (entry->deadline < now) {
+            AIM_LOG_TRACE("find_next_timer_expiration deadline has past:",
                           "now, %ld deadline %ld", now, entry->deadline);
             return 0;
+        }
+        if (delta > INT32_MAX) {
+            return INT32_MAX;
         }
         return delta;
     } else {
@@ -587,7 +595,8 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
     if ((run_for_ms < 0) && (next_event_ms < 0)) {
         AIM_LOG_TRACE("calculate_next_timeout No valid timeout. next_event_ms:%d",
                       next_event_ms);
-        return -1;
+        /* Prefer a finite poll timeout */
+        return SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT;
     }
     /* Take min of positive values of next_event_ms and run_for_ms */
     if (run_for_ms >= 0) {
@@ -604,6 +613,14 @@ calculate_next_timeout(indigo_time_t start, indigo_time_t current,
         min_val = next_event_ms;
     }
 
+    /* Finally check if the calculated timeout
+     * is greater than SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT
+     */
+    if (SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT >= 0) {
+        if (min_val > SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT) {
+            min_val = SOCKETMANAGER_CONFIG_MAX_POLL_TIMEOUT;
+        }
+    }
     return min_val;
 }
 
@@ -878,6 +895,7 @@ ind_soc_select_and_run(int run_for_ms)
         process_tasks(priority);
 
         if (ind_soc_run_status__ == IND_SOC_RUN_STATUS_EXIT) {
+            AIM_LOG_TRACE("ind_soc_run_status__ = IND_SOC_RUN_STATUS_EXIT exiting");
             return INDIGO_ERROR_NONE;
         }
 
