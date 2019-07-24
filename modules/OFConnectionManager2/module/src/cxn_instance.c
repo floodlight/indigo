@@ -1092,6 +1092,7 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     uint32_t xid;
     uint16_t code;
     of_octets_t payload;
+    const int maxlen = 65536 - 128;  /* reserve 128 bytes for header */
 
     if (len < OF_MESSAGE_MIN_LENGTH) {
         xid = 0;
@@ -1109,7 +1110,8 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     }
 
     payload.data = buf;
-    payload.bytes = len;
+    /* truncate payload to fit in wire buffer */
+    payload.bytes = (len < maxlen)? len: maxlen;
 
     error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
     if (error_msg == NULL) {
