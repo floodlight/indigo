@@ -499,7 +499,9 @@ bundle_task(void *cookie)
                 of_object_t *obj =
                     parse_message(subbundle->msgs[state->cur_offset],
                                   &obj_storage);
-                ind_cxn_process_message(cxn, obj);
+                if (obj) {
+                    ind_cxn_process_message(cxn, obj);
+                }
             } else {
                 /* Connection went away. Drop remaining messages. */
             }
