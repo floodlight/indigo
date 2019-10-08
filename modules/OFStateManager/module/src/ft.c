@@ -561,7 +561,6 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
     ft_entry_t *entry;
     uint16_t flags;
 
-    AIM_LOG_INFO("%s: ", __FUNCTION__);
     entry = aim_zmalloc(sizeof(*entry));
 
     entry->id = id;
