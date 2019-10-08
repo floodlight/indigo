@@ -576,8 +576,8 @@ ft_entry_create(indigo_flow_id_t id, of_flow_add_t *flow_add,
 
     err = ft_entry_set_effects(entry, flow_add);
     if (err < 0) {
-        aim_free(entry);
         minimatch_cleanup(&entry->minimatch);
+        aim_free(entry);
         return err;
     }
 
