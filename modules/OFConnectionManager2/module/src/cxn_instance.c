@@ -27,6 +27,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/uio.h>
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
@@ -104,7 +105,7 @@ static connection_t connection[MAX_CONNECTIONS];
     ITERATE_OVER_ALL_CXNS(_idx, _cxn)                                   \
     if (CXN_ACTIVE(_cxn) && !CXN_LOCAL(_cxn))
 
-/* All remote main connections which completed hand-shake and with 
+/* All remote main connections which completed hand-shake and with
  * requested role */
 #define FOREACH_MAIN_HS_COMPLETE_CXN_WITH_ROLE(_idx, _cxn, _cxn_role)   \
     ITERATE_OVER_ALL_CXNS(_idx, _cxn)                                   \
@@ -238,7 +239,7 @@ cxn_unregister_debug_counters(connection_t *cxn)
  *------------------------------------------------------------*/
 
 /*
- * the following four functions are intended to be called only by 
+ * the following four functions are intended to be called only by
  * set_cxn_read_write_events or during initialization.
  */
 static void
@@ -315,7 +316,7 @@ cxn_send_hello(connection_t *cxn)
     indigo_cxn_config_params_t *config_params;
 
     LOG_TRACE(cxn, "Sending hello");
-    
+
     config_params = get_connection_config(cxn);
 
     if ((hello = of_hello_new(config_params->version)) == NULL) {
@@ -352,9 +353,9 @@ check_for_hello(connection_t *cxn, of_object_t *obj)
     } else {
         LOG_VERBOSE(cxn, "Received HELLO message (version %d)",
                     obj->version);
-        
+
         indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
-        
+
         cxn->status.negotiated_version = aim_imin(config_params->version,
                                                   obj->version);
 
@@ -382,7 +383,7 @@ ind_cxn_is_closed(const connection_t *cxn)
 }
 
 
-void 
+void
 ind_cxn_notify_features_reply_sent(connection_t *cxn)
 {
     if (cxn->state == CXN_S_HANDSHAKING) {
@@ -398,12 +399,12 @@ ind_cxn_notify_features_reply_sent(connection_t *cxn)
  * Main connection: Aggressive Echo/Timeout frequency of 2/6 sec
  * On timeout: Disconnect
  * Echo frequency duration is set external to this module
- * 
- * Aux connections: Echo frequency/timeout of 15/45 sec 
+ *
+ * Aux connections: Echo frequency/timeout of 15/45 sec
  * On timeout: Log an error but do not disconnect
  * Echo frequency duration is set locally
- * 
- * Any time a message is received from the controller, 
+ *
+ * Any time a message is received from the controller,
  * the outstanding count set to 0.
  */
 
@@ -432,7 +433,7 @@ periodic_keepalive(void *cookie)
             LOG_WARN(cxn, "Exceeded maximum outstanding echo requests (%d) "
                      "on auxiliary connection",
                      cxn->keepalive.threshold);
-        } 
+        }
         return;
     }
 
@@ -731,13 +732,13 @@ aux_connections_request_handle(connection_t *cxn, of_object_t *_obj)
     }
 
     of_bsn_set_aux_cxns_reply_xid_set(reply, xid);
-    
+
     /* get the number of aux connections to set up */
-    of_bsn_set_aux_cxns_request_num_aux_get(request, &num_aux);    
- 
+    of_bsn_set_aux_cxns_request_num_aux_get(request, &num_aux);
+
     LOG_VERBOSE(cxn, "Request for %d aux cxns", num_aux);
 
-    status = ind_cxn_set_aux_cxns(cxn, num_aux);  
+    status = ind_cxn_set_aux_cxns(cxn, num_aux);
     of_bsn_set_aux_cxns_reply_num_aux_set(reply, num_aux);
     of_bsn_set_aux_cxns_reply_status_set(reply, status);
     indigo_cxn_send_controller_message(cxn->cxn_id, reply);
@@ -1040,7 +1041,7 @@ read_message(connection_t *cxn)
     }
 
     if (READING_HEADER(cxn)) {
-        AIM_ASSERT(cxn->bytes_needed + cxn->read_bytes == 
+        AIM_ASSERT(cxn->bytes_needed + cxn->read_bytes ==
                    OF_MESSAGE_HEADER_LENGTH);
         if ((rv = read_from_cxn(cxn)) < 0) {
             return rv;
@@ -1262,7 +1263,7 @@ ssl_writev(connection_t *cxn, const struct iovec *iov, int iovcnt)
             if (SSL_get_error(cxn->ssl, 0) == SSL_ERROR_ZERO_RETURN) {
                 LOG_VERBOSE(cxn, "Connection closed");
                 return -1;
-            } else { 
+            } else {
                 return total;
             }
         } else if (written < 0) {
@@ -1524,7 +1525,7 @@ cxn_try_to_tls_handshake(connection_t *cxn)
             cxn->ssl_state = CXN_SSL_WANT_NOTHING;
             return INDIGO_ERROR_UNKNOWN;
         }
-    }    
+    }
 }
 
 
@@ -1684,7 +1685,7 @@ cxn_socket_ready(
 /**
  * Once a connection is accepted on the main listener connection,
  * that connection follows the state machine with some differences:
- * 
+ *
  * - Local connections immediately transition through handshaking state
  *   to handshake complete.
  * - There is no keepalive.
@@ -1745,7 +1746,7 @@ cxn_state_set(connection_t *cxn, cxn_state_t new_state)
     cxn_state_t old_state = cxn->state;
 
     if (old_state == new_state) {
-        LOG_VERBOSE(cxn, "Non-state change in %s", 
+        LOG_VERBOSE(cxn, "Non-state change in %s",
                     cxn_state_names[new_state]);
         return;
     }
@@ -1916,7 +1917,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
 
     /* Initialize connection structure */
     init_single_instance(cxn, saved_cxn_id);
-    cxn->write_queue = bigring_create(WRITE_QUEUE_SIZE, 
+    cxn->write_queue = bigring_create(WRITE_QUEUE_SIZE,
                                       bigring_aim_free_entry);
     cxn->controller = controller;
     cxn->aux_id = aux_id;
@@ -1929,7 +1930,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
             /* Aux cxns have a different echo frequency than main cxn */
             cxn->keepalive.period_ms = IND_AUX_CXN_PERIODIC_ECHO_MS_DEFAULT;
         } else {
-            cxn->keepalive.period_ms = 
+            cxn->keepalive.period_ms =
                 controller->config_params.periodic_echo_ms;
         }
         cxn->keepalive.threshold = controller->config_params.reset_echo_count;
@@ -1957,7 +1958,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
 
     if (cxn->sd >= 0) {
         soc_flags = fcntl(cxn->sd, F_GETFL, 0);
-        if (soc_flags == -1 || 
+        if (soc_flags == -1 ||
             fcntl(cxn->sd, F_SETFL, soc_flags | O_NONBLOCK) == -1) {
             LOG_ERROR(cxn, "Failed to set socket non-blocking, %s",
                       strerror(errno));
@@ -2067,7 +2068,7 @@ cxn_try_to_connect(connection_t *cxn)
         ((rv == -1) && errno == EISCONN)) {
         return INDIGO_ERROR_NONE;
     } else if ((rv == -1) &&
-               (errno == EAGAIN || errno == EALREADY || 
+               (errno == EAGAIN || errno == EALREADY ||
                 errno == EINPROGRESS)) {
         /* mark socket for writing so that second connect() call can be made,
          * because nonblocking socket may return EINPROGRESS */
@@ -2131,7 +2132,7 @@ ind_cxn_start(connection_t *cxn)
 /**
  * Force a connection to start the disconnection process
  */
-void 
+void
 ind_cxn_stop(connection_t *cxn)
 {
     LOG_VERBOSE(cxn, "Stopping");
@@ -2277,7 +2278,7 @@ ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list)
 {
     int idx;
     connection_t *cxn;
-    indigo_cxn_protocol_params_t *protocol_params; 
+    indigo_cxn_protocol_params_t *protocol_params;
 
     FOREACH_REMOTE_ACTIVE_CXN(idx, cxn) {
         of_bsn_controller_connection_t entry;
@@ -2381,14 +2382,14 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    cxn->desc);
         aim_printf(pvs, "    Id: %d\n", cxn->cxn_id);
         aim_printf(pvs, "    Auxiliary Id: %d\n", cxn->aux_id);
-        aim_printf(pvs, "    Controller Id: %d\n", 
+        aim_printf(pvs, "    Controller Id: %d\n",
                    cxn->controller->controller_id);
         aim_printf(pvs, "    State: %s\n", ind_cxn_is_handshake_complete(cxn)?
                    "Connected" : "Not connected");
-        aim_printf(pvs, "    Keepalive timeout: %d ms\n", 
+        aim_printf(pvs, "    Keepalive timeout: %d ms\n",
                    cxn->keepalive.period_ms);
         aim_printf(pvs, "    Threshold: %d\n", cxn->keepalive.threshold);
-        aim_printf(pvs, "    Outstanding Echo Count: %d\n", 
+        aim_printf(pvs, "    Outstanding Echo Count: %d\n",
                    cxn->keepalive.outstanding_echo_cnt);
 
         aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
