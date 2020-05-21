@@ -66,7 +66,7 @@ extern indigo_error_t indigo_core_packet_in(of_packet_in_t *packet_in);
  * Ownership of the message is not transferred.
  */
 
-extern void indigo_core_receive_controller_message(
+extern indigo_error_t indigo_core_receive_controller_message(
     indigo_cxn_id_t cxn,
     of_object_t *obj);
 
@@ -143,10 +143,48 @@ indigo_core_stats_get(uint32_t *total_flows,
  *
  ****************************************************************/
 
+
 /**
  * @brief Opaque handle to a gentable
  */
 typedef struct indigo_core_gentable indigo_core_gentable_t;
+
+/**
+ * @brief Async Add/Modify Operations parameters on a gentable
+ */
+typedef struct {
+    of_object_t *obj;                 /* original message */
+    indigo_cxn_id_t cxn_id;           /* Controller connection ID */
+    uint16_t table_id;                /* table id */
+    indigo_core_gentable_t *gentable; /* gentable */
+    of_list_bsn_tlv_t key;            /* key in obj */
+    of_list_bsn_tlv_t value;          /* value in obj */
+    void *priv;                       /* entry_priv Opaque private data for the entry, passed back */
+} indigo_core_add_resume_params_t;
+
+/**
+ * Entry deletion may be invoked through several causes
+ * - single deletion request
+ * - table clear request
+ * - gentable unregistration 
+ */
+typedef enum indigo_core_gentable_del_entry_cause {
+    INDIGO_CORE_GENTABLE_DEL_ENTRY_OTHERS = 0,
+    INDIGO_CORE_GENTABLE_DEL_ENTRY_SINGLE_REQUEST = 1,
+    INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_CLEAR = 2,
+    INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_UNREG = 3,
+} indigo_core_gentable_del_entry_cause_t;
+
+typedef struct {
+    indigo_core_gentable_del_entry_cause_t del_cause;
+    indigo_cxn_id_t cxn_id;           /* Controller connection ID */
+    uint16_t table_id;                /* table id */
+    indigo_core_gentable_t *gentable; /* gentable */
+    struct ind_core_gentable_entry *entry; /* entry in gentable */
+    void *entry_bucket;
+    void *del_cause_cookie;           /* specific data to deletion cause */
+    
+} indigo_core_del_resume_params_t;
 
 /**
  * @brief Operations on a gentable
@@ -282,6 +320,34 @@ typedef struct indigo_core_gentable_ops {
         of_desc_str_t err_txt);
 
     /**
+     * @brief Add an entry
+     * @param params paramters 
+     */
+    indigo_error_t (*add4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
+        void **entry_priv, of_desc_str_t err_txt,
+        indigo_core_add_resume_params_t *params);
+
+    /**
+     * @brief Modify an entry
+     */
+    indigo_error_t (*modify4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
+        indigo_core_add_resume_params_t *params);
+
+    /**
+     * @brief Delete an entry
+     */
+    indigo_error_t (*del4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_desc_str_t err_txt,
+        indigo_core_del_resume_params_t *params);
+
+    /**
      * @brief Start a subbundle operation on this gentable
      * @param cxn_id Controller connection ID
      * @param table_priv Table private data
@@ -328,6 +394,34 @@ indigo_core_gentable_register(
 
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
+
+/*
+ * @brief resume indigo add()/modify() when the driver gets the final status 
+ * @param params parameters needed by the resume task
+ * @param rv the final status of the driver async add/modify
+ *
+ * The rv status will decide how the indigo to do with the rest works.
+ * For non-async operation, the indigo will call this function internally.
+ */
+
+void
+indigo_core_gentable_entry_add_resume(
+    indigo_core_add_resume_params_t *params,
+    indigo_error_t rv);
+
+/*
+ * @brief resume indigo del() when the driver gets the final operation status 
+ * @param params parameters needed by the resume task
+ * @param rv the final status of the driver async add/modify
+ *
+ * The rv status will decide how the indigo to do with the rest works
+ * For non-async operation, the indigo will call this function internally.
+ */
+
+void
+indigo_core_gentable_entry_del_resume(
+    indigo_core_del_resume_params_t *params,
+    indigo_error_t rv);
 
 /*
  * @brief Lookup a gentable entry by key
