@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2016,2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2016,2018-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
