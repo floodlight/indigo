@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017 Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2020 Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -826,165 +826,6 @@ ind_cxn_unblock_barrier(connection_t *cxn)
 }
 
 /**
- * increase the async pending cnt
- * Set the bundle async op pending flag
- * @param cxn
- */
-void
-ind_cxn_block_async_op(connection_t *cxn)
-{
-    cxn->async_pending_cnt++;
-}
-
-void
-indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn != NULL) {
-        ind_cxn_block_async_op(cxn);
-    }
-}
-
-/**
- * Clear the async op pending flag
- * @param cxn
- */
-void
-ind_cxn_unblock_async_op(connection_t *cxn)
-{
-    if (cxn->async_pending_cnt >  0) {
-        cxn->async_pending_cnt--;
-    }
-}
-
-void
-indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn != NULL) {
-        ind_cxn_unblock_async_op(cxn);
-    }
-}
-
-/**
- * Set the iter async op pending flag
- * @param cxn
- */
-void
-ind_cxn_block_iter_async_op(connection_t *cxn)
-{
-    cxn->iter_async_pendingf = true;
-}
-
-void
-indigo_cxn_block_iter_async_op(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn != NULL) {
-        ind_cxn_block_iter_async_op(cxn);
-    }
-}
-
-/**
- * Clear the iteration async op pending flag
- * @param cxn
- */
-void
-ind_cxn_unblock_iter_async_op(connection_t *cxn)
-{
-    cxn->iter_async_pendingf = false;
-}
-
-void
-indigo_cxn_unblock_iter_async_op(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn != NULL) {
-        ind_cxn_unblock_iter_async_op(cxn);
-    }
-}
-
-/**
- * Check whether connection is in the iter task pending status
- * @param cxn_id connection id
- * @param iter_concurrent allow concurrent iteration without blocking
- */
-bool
-ind_cxn_iter_task_should_yield(connection_t *cxn)
-{
-    /* !!! iteration task itself contributes 1 to async_pending_cnt */
-    if (cxn->async_pending_cnt > 1) {
-        return true;
-    }
-    return false;
-}
-
-bool
-ind_cxn_iter_task_may_yield(connection_t *cxn)
-{
-    if (cxn->iter_async_pendingf) {
-        return true;
-    }
-    return false;
-}
-
-/**
- * Check whether connection is in the iter task pending status
- * @param cxn_id connection id
- */
-bool
-indigo_cxn_iter_task_should_yield(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn == NULL) {
-        return false;
-    }
-
-    return ind_cxn_iter_task_should_yield(cxn);
-}
-
-bool
-indigo_cxn_iter_task_may_yield(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn == NULL) {
-        return false;
-    }
-
-    return ind_cxn_iter_task_may_yield(cxn);
-}
-
-/**
- * Check whether connection's bundle task should yield
- * @param cxn connection
- */
-bool
-ind_cxn_bundle_task_should_yield(connection_t *cxn)
-{
-    if (cxn == NULL) {
-        /* Connection went away. Let task drop remaining messages. */
-        return false;
-    }
-
-    if (cxn->async_pending_cnt > 0) {
-        /* Wait for outstanding operations. */
-        return true;
-    }
-    return false;
-}
-
-bool
-indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
-{
-    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn == NULL) {
-        return false;
-    }
-
-    return ind_cxn_bundle_task_should_yield(cxn);
-}
-
-/**
  * Process an object pulled off a connection.
  *
  * @param cxn Connection from which message arrived
@@ -1314,6 +1155,7 @@ process_message(connection_t *cxn)
     cxn->read_bytes = 0;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
 
+    AIM_LOG_INFO("%s.......", __FUNCTION__);
     obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
         LOG_WARN(cxn, "Failed to parse OpenFlow message version=%u type=%u length=%u xid=%u",
@@ -2597,8 +2439,6 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         }
         aim_printf(pvs, "    Outstanding Async Operations: %u\n",
                    cxn->async_pending_cnt);
-        aim_printf(pvs, "    Iteration pending: %d\n",
-                   cxn->iter_async_pendingf);
     }
     if (!cxn_count) {
         aim_printf(pvs, "No active connections\n");
@@ -2622,4 +2462,75 @@ int unit_test_connection_count_get(void)
     }
 
     return count;
+}
+
+/**
+ * increase the async pending cnt
+ * Set the bundle async op pending flag
+ * @param cxn
+ */
+void
+ind_cxn_block_async_op(connection_t *cxn)
+{
+    cxn->async_pending_cnt++;
+}
+
+void
+indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_block_async_op(cxn);
+    }
+}
+
+/**
+ * Clear the async op pending flag
+ * @param cxn
+ */
+void
+ind_cxn_unblock_async_op(connection_t *cxn)
+{
+    if (cxn->async_pending_cnt >  0) {
+        cxn->async_pending_cnt--;
+    }
+}
+
+void
+indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_unblock_async_op(cxn);
+    }
+}
+
+/**
+ * Check whether connection's bundle task should yield
+ * @param cxn connection
+ */
+bool
+ind_cxn_bundle_task_should_yield(connection_t *cxn)
+{
+    if (cxn == NULL) {
+        /* Connection went away. Let task drop remaining messages. */
+        return false;
+    }
+
+    if (cxn->async_pending_cnt > 0) {
+        /* Wait for outstanding operations. */
+        return true;
+    }
+    return false;
+}
+
+bool
+indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        return false;
+    }
+
+    return ind_cxn_bundle_task_should_yield(cxn);
 }

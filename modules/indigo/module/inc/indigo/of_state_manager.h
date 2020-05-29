@@ -150,19 +150,6 @@ indigo_core_stats_get(uint32_t *total_flows,
 typedef struct indigo_core_gentable indigo_core_gentable_t;
 
 /**
- * @brief Async Add/Modify Operations parameters on a gentable
- */
-typedef struct {
-    of_object_t *obj;                 /* original message */
-    indigo_cxn_id_t cxn_id;           /* Controller connection ID */
-    uint16_t table_id;                /* table id */
-    indigo_core_gentable_t *gentable; /* gentable */
-    of_list_bsn_tlv_t key;            /* key in obj */
-    of_list_bsn_tlv_t value;          /* value in obj */
-    void *priv;                       /* entry_priv Opaque private data for the entry, passed back */
-} indigo_core_add_resume_params_t;
-
-/**
  * Entry deletion may be invoked through several causes
  * - single deletion request
  * - table clear request
@@ -174,17 +161,6 @@ typedef enum indigo_core_gentable_del_entry_cause {
     INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_CLEAR = 2,
     INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_UNREG = 3,
 } indigo_core_gentable_del_entry_cause_t;
-
-typedef struct {
-    indigo_core_gentable_del_entry_cause_t del_cause;
-    indigo_cxn_id_t cxn_id;           /* Controller connection ID */
-    uint16_t table_id;                /* table id */
-    indigo_core_gentable_t *gentable; /* gentable */
-    struct ind_core_gentable_entry *entry; /* entry in gentable */
-    void *entry_bucket;
-    void *del_cause_cookie;           /* specific data to deletion cause */
-    
-} indigo_core_del_resume_params_t;
 
 /**
  * @brief Operations on a gentable
@@ -326,8 +302,8 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*add4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
-        void **entry_priv, of_desc_str_t err_txt,
-        indigo_core_add_resume_params_t *params);
+        void **entry_priv, of_desc_str_t *err_txt,
+        of_object_t *obj);
 
     /**
      * @brief Modify an entry
@@ -335,8 +311,8 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*modify4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
-        indigo_core_add_resume_params_t *params);
+        of_list_bsn_tlv_t *value, of_desc_str_t *err_txt,
+        of_object_t *obj);
 
     /**
      * @brief Delete an entry
@@ -344,8 +320,9 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*del4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_desc_str_t err_txt,
-        indigo_core_del_resume_params_t *params);
+        of_desc_str_t *err_txt,
+        of_object_t *obj,
+        bool force);
 
     /**
      * @brief Start a subbundle operation on this gentable
@@ -397,7 +374,10 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 /*
  * @brief resume indigo add()/modify() when the driver gets the final status 
- * @param params parameters needed by the resume task
+ * @param cxn_id connection id
+ * @param obj of message of this operation
+ * @param priv driver's private data for this entry
+ * @param err_txt error string from driver
  * @param rv the final status of the driver async add/modify
  *
  * The rv status will decide how the indigo to do with the rest works.
@@ -406,12 +386,17 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 void
 indigo_core_gentable_entry_add_resume(
-    indigo_core_add_resume_params_t *params,
+    indigo_cxn_id_t cnx_id,
+    of_object_t *obj,
+    void *priv,
+    of_desc_str_t *err_txt,
     indigo_error_t rv);
 
 /*
  * @brief resume indigo del() when the driver gets the final operation status 
- * @param params parameters needed by the resume task
+ * @param cxn_id connection id
+ * @param obj of message of this operation
+ * @param err_txt error string from driver
  * @param rv the final status of the driver async add/modify
  *
  * The rv status will decide how the indigo to do with the rest works
@@ -420,7 +405,9 @@ indigo_core_gentable_entry_add_resume(
 
 void
 indigo_core_gentable_entry_del_resume(
-    indigo_core_del_resume_params_t *params,
+    indigo_cxn_id_t cnx_id,
+    of_object_t *obj,
+    of_desc_str_t *err_txt,
     indigo_error_t rv);
 
 /*

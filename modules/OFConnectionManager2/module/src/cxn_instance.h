@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-202, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -228,16 +228,8 @@ typedef struct connection_s {
         uint32_t xid;   /* XID of barrier request */
     } barrier;
 
-    /* async opeartions */
+    /* async operations */
     uint32_t async_pending_cnt;
-    uint32_t iter_pending_cnt;
-
-    /* Bundle Async op */
-    // bool bundle_async_pendingf;  /* bundle async op pending flag */
-
-    /* iter Async op (gentable only) */
-    bool iter_async_pendingf;  /* iteration task async op pending flag */
-    // bool iter_async_donef;     /* iteration task async op done flag */
 
     /* Echo */
     struct {
@@ -358,10 +350,6 @@ void ind_cxn_unblock_async_op(connection_t *cxn);
 void ind_cxn_block_iter_async_op(connection_t *cxn);
 void ind_cxn_unblock_iter_async_op(connection_t *cxn);
 
-bool
-ind_cxn_iter_task_may_yield(connection_t *cxn);
-bool
-ind_cxn_iter_task_should_yield(connection_t *cxn);
 bool
 ind_cxn_bundle_task_should_yield(connection_t *cxn);
 

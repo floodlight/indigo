@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -502,6 +502,16 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
     }
     return rv;
 }
+
+/**
+ * @brief Resume an OF message from the driver async return
+ * @param cxn The connection id from which the request came
+ * @param obj The generic LOXI object holding the message
+ *
+ * If a handler is called, the handler takes ownership of the LOXI object
+ *
+ * In any case, ownership of obj is NOT returned to the caller.
+ */
 
 static of_dpid_t ind_core_dpid = OFSTATEMANAGER_CONFIG_DPID_DEFAULT;
 

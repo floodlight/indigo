@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2014-2015,2017-2018, Big Switch Networks, Inc.
+ *        Copyright 2014-2015,2017-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -57,12 +57,12 @@
 struct bundle_task_state {
     indigo_cxn_id_t cxn_id;
     of_object_t *reply;
-    uint32_t id;               /* Bundle ID */
-    uint32_t subbundle_count;  /* Number of subbundles */
-    uint32_t cur_subbundle;    /* Currently processing this subbundle */
-    uint32_t cur_offset;       /* Current position in current subbundle */
-    bool cur_offset_pending;   /* Current position is pending */
-    subbundle_t *subbundles;   /* Array of pointers to subbundles */
+    uint32_t id;                /* Bundle ID */
+    uint32_t subbundle_count;   /* Number of subbundles */
+    uint32_t cur_subbundle;     /* Currently processing this subbundle */
+    uint32_t cur_offset;        /* Current position in current subbundle */
+    bool cur_offset_is_pending; /* Current position is pending */
+    subbundle_t *subbundles;    /* Array of pointers to subbundles */
 };
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
@@ -189,7 +189,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
         struct bundle_task_state *state = aim_zmalloc(sizeof(*state));
         state->cxn_id = cxn->cxn_id;
         state->reply = of_object_dup(obj);
-        state->cur_offset_pending = false;
+        state->cur_offset_is_pending = false;
         of_bundle_ctrl_msg_bundle_ctrl_type_set(state->reply,
                                                 OFPBCT_COMMIT_REPLY);
         state->id = bundle->id;
@@ -507,10 +507,10 @@ bundle_task(void *cookie)
         while (state->cur_offset < subbundle->count) {
             if (cxn) {
 
-                AIM_LOG_TRACE("bundle_task cur_offset=%u pending %d\n",
-                              state->cur_offset, state->cur_offset_pending);
-                if (state->cur_offset_pending == false) {
-                    /* The task is allowed to run.
+                AIM_LOG_TRACE("bundle_task cur_offset=%u is_pending %d\n",
+                              state->cur_offset, state->cur_offset_is_pending);
+                if (state->cur_offset_is_pending == false) {
+                    /* The task is ok to process message at cur_offset.
                      * The cur_offset is in clear status. */
                     of_object_storage_t obj_storage;
                     of_object_t *obj =
@@ -521,11 +521,11 @@ bundle_task(void *cookie)
                         rv = ind_cxn_process_message(cxn, obj);
                         if (rv == INDIGO_ERROR_PENDING) {
                             /* The message is an async operation
-                             * Set the cur offset is in pending status.
+                             * Mark the messsage at cur_offset as pending.
                              * The pending status will be cleared in the next
                              * runnable cycle.
                              */
-                            state->cur_offset_pending = true;
+                            state->cur_offset_is_pending = true;
                             ind_cxn_block_async_op(cxn);
                             AIM_LOG_TRACE("bundle_task cur_offset=%u pending\n",
                                           state->cur_offset);
@@ -536,14 +536,14 @@ bundle_task(void *cookie)
                     /* This subbundle msg is done. Clear its pending status.
                      * Fall through to free it.
                      */
-                    state->cur_offset_pending = false;
+                    state->cur_offset_is_pending = false;
                     AIM_LOG_TRACE("bundle_task cur_offset=%u was pending, now done\n",
                                   state->cur_offset);
                 }
             } else {
                 /* Connection went away. Drop remaining messages.
                  * Clear the cur_offset_pending status anyway. */
-                state->cur_offset_pending = false; 
+                state->cur_offset_is_pending = false; 
             }
 
             aim_free(subbundle->msgs[state->cur_offset]);

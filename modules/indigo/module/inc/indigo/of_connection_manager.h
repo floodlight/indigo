@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017-2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -661,7 +661,19 @@ void indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id);
  * @brief Destroy an async op blocker
  * @param cxn_id Connection ID
  */
-void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
+extern void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Create an iter async op blocker
+ * @param cxn_id Connection ID
+ */
+void indigo_cxn_block_iter_async_op(indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Destroy an iter async op blocker
+ * @param cxn_id Connection ID
+ */
+extern void indigo_cxn_unblock_iter_async_op(indigo_cxn_id_t cxn_id);
 
 /**
  * @brief Pause reading messages from a connection
@@ -681,24 +693,12 @@ void indigo_cxn_pause(indigo_cxn_id_t cxn_id);
  */
 void indigo_cxn_resume(indigo_cxn_id_t cxn_id);
 
-void indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id);
-void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
-
-void indigo_cxn_block_iter_async_op(indigo_cxn_id_t cxn_id);
-void indigo_cxn_unblock_iter_async_op(indigo_cxn_id_t cxn_id);
 
 /**
  * @brief Check whether bundle task should yield due to outstanding async operations
  * @param cxn Connection ID
  */
-bool indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
-
-/**
- * @brief Check whether iteration task should yield due to outstanding async operations
- * @param cxn_id Connection ID
- */
-bool indigo_cxn_iter_task_should_yield(indigo_cxn_id_t cxn_id);
-bool indigo_cxn_iter_task_may_yield(indigo_cxn_id_t cxn_id);
+extern bool indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
 
 /**
  * Barrier notification callback

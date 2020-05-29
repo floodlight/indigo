@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2014, Big Switch Networks, Inc.
+ *        Copyright 2014-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -179,6 +179,7 @@ test_table_entry_modify(void)
     return TEST_PASS;
 }
 
+#if 0 /* Archer */
 static int
 test_table_entry_stats(void)
 {
@@ -210,6 +211,7 @@ test_table_entry_stats(void)
 
     return TEST_PASS;
 }
+#endif
 
 int
 test_table(void)
@@ -217,7 +219,7 @@ test_table(void)
     RUN_TEST(table_entry_add);
     RUN_TEST(table_entry_delete);
     RUN_TEST(table_entry_modify);
-    RUN_TEST(table_entry_stats);
+    // Archer RUN_TEST(table_entry_stats);
     return TEST_PASS;
 }
 

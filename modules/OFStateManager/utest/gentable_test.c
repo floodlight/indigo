@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2014,2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2014,2018-2020, Big Switch Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -45,10 +45,13 @@
 #define NUM_ENTRIES 10
 
 extern void handle_message(of_object_t *obj);
+extern void handle_message_no_free(of_object_t *obj);
 extern int do_barrier(void);
 
 static void do_add(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi);
 static void do_delete(uint32_t port);
+static void do_add1(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi);
+static void do_delete1(uint32_t port);
 static void do_clear(void);
 static void do_entry_stats(void);
 static void do_set_buckets_size(uint32_t buckets_size);
@@ -71,6 +74,15 @@ struct test_table {
     int count_stats;
     int count_starts;
     int count_finishes;
+    int count_added;
+    int count_modified;
+    int count_deleted;
+    int count_add_pending;
+    int count_modify_pending;
+    int count_del_pending;
+    int count_add_timeout;
+    int count_modify_timeout;
+    int count_del_timeout;
     struct test_entry entries[NUM_ENTRIES];
 };
 
@@ -79,10 +91,14 @@ static struct test_table table;
 static indigo_core_gentable_ops_t test_ops;
 static indigo_core_gentable_ops_t test_ops2;
 static indigo_core_gentable_ops_t test_ops3;
+static indigo_core_gentable_ops_t test_ops4;
 
 static const of_mac_addr_t mac1 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x01 } };
 static const of_mac_addr_t mac2 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x02 } };
 static const of_mac_addr_t mac3 = { { 0xab, 0xcd, 0xef, 0xff, 0xff, 0x03 } };
+
+static int async_delay = 0;
+static int async_timeout = 0;
 
 /* used by indigo_cxn_send_bsn_gentable_error */
 int bsn_err_count = 0;
@@ -488,6 +504,89 @@ test_gentable_errs(void)
     do_delete(1);
     AIM_TRUE_OR_DIE(bsn_err_count == 0);
 
+    indigo_core_gentable_unregister(gentable);
+    return TEST_PASS;
+}
+
+int
+test_gentable_async(void)
+{
+    indigo_core_gentable_t *gentable;
+    of_table_name_t name = "gentable 4";
+
+    indigo_core_gentable_register(name, &test_ops4, &table, 10, 8, &gentable);
+    memset(&table, 0, sizeof(table));
+    async_delay = 10;
+    async_timeout = 15;
+    bsn_err_count = 0;
+    /* Create a of message to Add an entry. add4() will return pending status */
+    do_add1(1, mac1, 0);
+    AIM_TRUE_OR_DIE(table.count_add_pending == 1);
+    /* run 12 ms. The async delay will get invoked before timeout. */
+    ind_soc_select_and_run(12);
+    /* Should get added */
+    AIM_TRUE_OR_DIE(table.count_add_pending == 0 &&
+                    table.count_added == 1 &&
+                    strcmp("async added", bsn_err_txt) == 0);
+    /* modify */
+    do_add1(1, mac2, 0);
+    AIM_TRUE_OR_DIE(table.count_modify_pending == 1);
+    ind_soc_select_and_run(12);
+    /* Should get added */
+    AIM_TRUE_OR_DIE(table.count_modify_pending == 0 &&
+                    table.count_modified == 1 &&
+                    strcmp("async modified", bsn_err_txt) == 0);
+    
+    /* delete */
+    do_delete1(1);
+    AIM_TRUE_OR_DIE(table.count_del_pending == 1);
+    ind_soc_select_and_run(12);
+    AIM_TRUE_OR_DIE(table.count_del_pending == 0 &&
+                    table.count_deleted == 1 &&
+                    strcmp("async deleted", bsn_err_txt) == 0);
+
+    /* async timeout test */
+    async_delay = 15;
+    async_timeout = 10;
+    bsn_err_count = 0;
+    /* Create a of message to Add an entry. add4() will return pending status */
+    do_add1(1, mac1, 0);
+    AIM_TRUE_OR_DIE(table.count_add_pending == 1);
+    /* run 12 ms. The async timeout will get invoked before bottom half. */
+    ind_soc_select_and_run(12);
+    /* Should get timeout */
+    AIM_TRUE_OR_DIE(table.count_add_pending == 0 &&
+                    table.count_add_timeout == 1 &&
+                    strcmp("add timeout", bsn_err_txt) == 0);
+
+    async_delay = 10;
+    async_timeout = 15;
+    bsn_err_count = 0;
+    /* Create a of message to Add an entry. add4() will return pending status */
+    do_add1(1, mac1, 0);
+    AIM_TRUE_OR_DIE(table.count_add_pending == 1);
+    /* run 12 ms. The async delay will get invoked before timeout. */
+    ind_soc_select_and_run(12);
+
+    /* modify */
+    async_delay = 15;
+    async_timeout = 10;
+    bsn_err_count = 0;
+    do_add1(1, mac2, 0);
+    AIM_TRUE_OR_DIE(table.count_modify_pending == 1);
+    ind_soc_select_and_run(12);
+    /* Should get added */
+    AIM_TRUE_OR_DIE(table.count_modify_pending == 0 &&
+                    table.count_modify_timeout == 1 &&
+                    strcmp("modify timeout", bsn_err_txt) == 0);
+    
+    /* delete */
+    do_delete1(1);
+    AIM_TRUE_OR_DIE(table.count_del_pending == 1);
+    ind_soc_select_and_run(12);
+    AIM_TRUE_OR_DIE(table.count_del_pending == 0 &&
+                    table.count_del_timeout == 1 &&
+                    strcmp("delete timeout", bsn_err_txt) == 0);
     return TEST_PASS;
 }
 
@@ -505,6 +604,7 @@ test_gentable(void)
     RUN_TEST(gentable_lookup_by_name);
     RUN_TEST(gentable_start_finish);
     RUN_TEST(gentable_errs);
+    RUN_TEST(gentable_async);
     return TEST_PASS;
 }
 
@@ -567,6 +667,65 @@ do_delete(uint32_t port)
     }
 
     handle_message(obj);
+    do_barrier();
+}
+
+static void
+do_add1(uint32_t port, of_mac_addr_t mac, uint8_t csum_hi)
+{
+    of_object_t *obj = of_bsn_gentable_entry_add_new(OF_VERSION_1_3);
+    of_bsn_gentable_entry_add_xid_set(obj, 0x12345678);
+    of_bsn_gentable_entry_add_table_id_set(obj, TABLE_ID);
+    {
+        of_checksum_128_t checksum = { (uint64_t)csum_hi << 56, 0xFFEECCBBAA998877L };
+        of_bsn_gentable_entry_add_checksum_set(obj, checksum);
+    }
+    {
+        of_object_t *list = of_list_bsn_tlv_new(OF_VERSION_1_3);;
+        {
+            of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+            of_bsn_tlv_port_value_set(tlv, port);
+            of_list_append(list, tlv);
+            of_object_delete(tlv);
+        }
+        AIM_TRUE_OR_DIE(of_bsn_gentable_entry_add_key_set(obj, list) == 0);
+        of_object_delete(list);
+    }
+    {
+        of_object_t *list = of_list_bsn_tlv_new(OF_VERSION_1_3);;
+        {
+            of_object_t *tlv = of_bsn_tlv_mac_new(OF_VERSION_1_3);
+            of_bsn_tlv_mac_value_set(tlv, mac);
+            of_list_append(list, tlv);
+            of_object_delete(tlv);
+        }
+        AIM_TRUE_OR_DIE(of_bsn_gentable_entry_add_value_set(obj, list) == 0);
+        of_object_delete(list);
+    }
+
+    handle_message_no_free(obj);
+    do_barrier();
+}
+
+static void
+do_delete1(uint32_t port)
+{
+    of_object_t *obj = of_bsn_gentable_entry_delete_new(OF_VERSION_1_3);
+    of_bsn_gentable_entry_delete_xid_set(obj, 0x12345678);
+    of_bsn_gentable_entry_delete_table_id_set(obj, TABLE_ID);
+    {
+        of_object_t *list = of_list_bsn_tlv_new(OF_VERSION_1_3);;
+        {
+            of_object_t *tlv = of_bsn_tlv_port_new(OF_VERSION_1_3);
+            of_bsn_tlv_port_value_set(tlv, port);
+            of_list_append(list, tlv);
+            of_object_delete(tlv);
+        }
+        AIM_TRUE_OR_DIE(of_bsn_gentable_entry_delete_key_set(obj, list) == 0);
+        of_object_delete(list);
+    }
+
+    handle_message_no_free(obj);
     do_barrier();
 }
 
@@ -738,6 +897,7 @@ test_gentable_get_stats(void *table_priv, void *entry_priv, of_list_bsn_tlv_t *k
     AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
 
     struct test_entry *entry = &table->entries[port];
+
     AIM_TRUE_OR_DIE(entry == entry_priv);
 
     {
@@ -809,6 +969,7 @@ test_gentable_add3(indigo_cxn_id_t cxn_id, void *table_priv, of_list_bsn_tlv_t *
     /* fail every other time */
     if (table->count_add % 2 == 1) {
         char fmt[] = "add failure %d";
+      
         sprintf(err_txt, fmt, table->count_add);
         return INDIGO_ERROR_PARAM;
     }
@@ -856,3 +1017,315 @@ static indigo_core_gentable_ops_t test_ops3 = {
     .finish = test_gentable_finish,
 };
 
+static void gentable_add4_async_timeout(void *cookie);
+static void gentable_modify4_async_timeout(void *cookie);
+static void gentable_del4_async_timeout(void *cookie);
+
+typedef struct {
+    indigo_cxn_id_t cxn_id;
+    of_object_t *obj;
+    void *priv;                    /* entry under operation */
+    void *tmp_priv;                /* used by the add/modify */
+    of_desc_str_t *err_txt;
+    struct test_table *table_priv;    
+} gt_async_op_data_t;
+
+static void
+gentable_add4_async_bt(void *cookie)
+{
+    gt_async_op_data_t *resume_params = cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+    
+    /* cancel timer */
+    ind_soc_timer_event_unregister(gentable_add4_async_timeout, cookie);
+    ind_soc_timer_event_unregister(gentable_add4_async_bt, cookie);
+
+    /* copy new data to entry and free temp buffer */
+    *(struct test_entry *)resume_params->priv = *(struct test_entry *)resume_params->tmp_priv;
+    aim_free(resume_params->tmp_priv);
+
+    /* call indigo resume function */
+    table->count_add_pending--;
+    table->count_added++;
+    strcpy(*resume_params->err_txt, "async added");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_add_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->priv,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_NONE);
+    aim_free(cookie);
+    /* for test, we create obj in do_add1() */
+    of_object_delete(obj);
+}
+
+static void
+gentable_modify4_async_bt(void *cookie)
+{
+    gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+
+    /* cancel timer */
+    ind_soc_timer_event_unregister(gentable_modify4_async_timeout, cookie);
+    ind_soc_timer_event_unregister(gentable_modify4_async_bt, cookie);
+
+    /* copy new data to entry and free temp buffer */
+    *(struct test_entry *)resume_params->priv = *(struct test_entry *)resume_params->tmp_priv;
+    aim_free(resume_params->tmp_priv);
+
+    /* call indigo resume function */
+    table->count_modify_pending--;
+    table->count_modified++;
+    strcpy(*resume_params->err_txt, "async modified");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_add_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->priv,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_NONE);
+    aim_free(cookie);
+    of_object_delete(obj);
+}
+
+static void
+gentable_del4_async_bt(void *cookie)
+{
+    gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+
+    /* cancel timer */
+    ind_soc_timer_event_unregister(gentable_del4_async_timeout, cookie);
+    ind_soc_timer_event_unregister(gentable_del4_async_bt, cookie);
+
+    /* call indigo resume function */
+    table->count_del_pending--;
+    table->count_deleted++;
+    memset(resume_params->priv, 0, sizeof (struct test_entry));
+    strcpy(*resume_params->err_txt, "async deleted");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_del_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_NONE);
+    aim_free(cookie);
+    of_object_delete(obj);
+}
+
+static void
+gentable_add4_async_timeout(void *cookie)
+{
+    gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+
+    /* cancel async op event */
+    ind_soc_timer_event_unregister(gentable_add4_async_bt, cookie);
+    ind_soc_timer_event_unregister(gentable_add4_async_timeout, cookie);
+
+    /* call resume function */
+    table->count_add_pending--;
+    table->count_add_timeout++;
+    if (resume_params->tmp_priv) { 
+        aim_free(resume_params->tmp_priv);
+    }
+    strcpy(*resume_params->err_txt, "add timeout");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_add_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->priv,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_TIME_OUT);
+    aim_free(cookie);
+    of_object_delete(obj);
+}
+
+static void
+gentable_modify4_async_timeout(void *cookie)
+{
+    gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+
+    /* cancel async op event */
+    ind_soc_timer_event_unregister(gentable_modify4_async_bt, cookie);
+    ind_soc_timer_event_unregister(gentable_modify4_async_timeout, cookie);
+
+    /* call resume function */
+    table->count_modify_pending--;
+    table->count_modify_timeout++;
+    if (resume_params->tmp_priv) { 
+        aim_free(resume_params->tmp_priv);
+    }
+    strcpy(*resume_params->err_txt, "modify timeout");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_add_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->priv,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_TIME_OUT);
+    aim_free(cookie);
+    of_object_delete(obj);
+}
+
+static void
+gentable_del4_async_timeout(void *cookie)
+{
+    gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
+    struct test_table *table = resume_params->table_priv;
+    of_object_t *obj = resume_params->obj;
+
+    /* cancel timer */
+    ind_soc_timer_event_unregister(gentable_del4_async_timeout, cookie);
+    ind_soc_timer_event_unregister(gentable_del4_async_bt, cookie);
+
+    /* call indigo resume function */
+    table->count_del_pending--;
+    table->count_del_timeout++;
+    strcpy(*resume_params->err_txt, "delete timeout");
+    strcpy(bsn_err_txt, *resume_params->err_txt);
+    indigo_core_gentable_entry_del_resume(resume_params->cxn_id,
+                                          resume_params->obj,
+                                          resume_params->err_txt,
+                                          INDIGO_ERROR_TIME_OUT);
+    aim_free(cookie);
+    of_object_delete(obj);
+}
+
+static indigo_error_t
+test_gentable_add4(indigo_cxn_id_t cxn_id, void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv, of_desc_str_t *err_txt, of_object_t *obj)
+{
+    struct test_table *table = table_priv;
+    of_port_no_t port;
+    struct test_entry *entry, *tmp_entry;
+
+    /* get port - index of the table->entries*/
+    parse_key(key, &port);
+
+    AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
+
+    entry = &table->entries[port];
+
+    tmp_entry = aim_zmalloc(sizeof(*tmp_entry));
+
+    /* get value */
+    parse_value(value, &tmp_entry->mac);
+
+    table->count_op++;
+    table->count_add++;
+    gt_async_op_data_t *resume_params = aim_zmalloc(sizeof(*resume_params));
+
+    resume_params->cxn_id = cxn_id;
+    resume_params->obj = obj;
+    resume_params->err_txt = err_txt;
+    resume_params->table_priv = table_priv;
+    resume_params->priv = entry;
+    resume_params->tmp_priv = tmp_entry;
+
+    /* register timer */
+    ind_soc_timer_event_register(gentable_add4_async_timeout, (void *)resume_params,
+                                 async_timeout);
+
+    /* Test async operation */
+    ind_soc_timer_event_register(gentable_add4_async_bt, (void *)resume_params,
+                                 async_delay);
+    table->count_add_pending++;
+    return INDIGO_ERROR_PENDING;
+}
+
+static indigo_error_t
+test_gentable_modify4(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, of_desc_str_t *err_txt, of_object_t *obj)
+{
+    struct test_table *table = table_priv;
+    of_port_no_t port;
+    struct test_entry *entry, *tmp_entry;
+
+    /* get port - index of the table->entries*/
+    parse_key(key, &port);
+
+    AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
+
+    entry = &table->entries[port];
+    AIM_TRUE_OR_DIE(entry_priv == entry);
+
+    tmp_entry = aim_zmalloc(sizeof(*tmp_entry));
+    /* copy existing entry content */
+    *tmp_entry = *((struct test_entry *)entry_priv);    
+
+    /* get value */
+    parse_value(value, &tmp_entry->mac);
+
+    table->count_op++;
+    table->count_modify++;
+    gt_async_op_data_t *resume_params = aim_zmalloc(sizeof(*resume_params));
+
+    resume_params->cxn_id = cxn_id;
+    resume_params->obj = obj;
+    resume_params->err_txt = err_txt;
+    resume_params->table_priv = table_priv;
+    resume_params->priv = entry;
+    resume_params->tmp_priv = tmp_entry;
+
+    /* register timer */
+    ind_soc_timer_event_register(gentable_modify4_async_timeout, (void *)resume_params,
+                                 async_timeout);
+
+    /* Test async operation */
+    ind_soc_timer_event_register(gentable_modify4_async_bt, (void *)resume_params,
+                                 async_delay);
+    table->count_modify_pending++;
+    return INDIGO_ERROR_PENDING;
+}
+
+static indigo_error_t
+test_gentable_delete4(indigo_cxn_id_t cxn_id, void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t *err_txt, of_object_t *obj, bool force_del)
+{
+    struct test_table *table = table_priv;
+    of_port_no_t port;
+    struct test_entry *entry;
+
+    /* get port - index of the table->entries*/
+    parse_key(key, &port);
+
+    AIM_TRUE_OR_DIE(port < NUM_ENTRIES);
+
+    entry = &table->entries[port];
+    AIM_TRUE_OR_DIE(entry_priv == entry);
+
+    table->count_op++;
+    table->count_delete++;
+
+    gt_async_op_data_t *resume_params = aim_zmalloc(sizeof(*resume_params));
+
+    resume_params->cxn_id = cxn_id;
+    resume_params->obj = obj;
+    resume_params->err_txt = err_txt;
+    resume_params->table_priv = table_priv;
+    resume_params->priv = entry;
+
+    /* register timer */
+    ind_soc_timer_event_register(gentable_del4_async_timeout, (void *)resume_params,
+                                 async_timeout);
+
+    /* Test async operation */
+    ind_soc_timer_event_register(gentable_del4_async_bt, (void *)resume_params,
+                                 async_delay);
+    table->count_del_pending++;
+    return INDIGO_ERROR_PENDING;
+}
+
+static indigo_core_gentable_ops_t test_ops4 = {
+    .add4 = test_gentable_add4,
+    .modify4 = test_gentable_modify4,
+    .del4 = test_gentable_delete4,
+    .get_stats = test_gentable_get_stats,
+#if 0
+    .start = test_gentable_start,
+    .finish = test_gentable_finish,
+#else
+    .start = NULL,
+    .finish = NULL,
+#endif
+};

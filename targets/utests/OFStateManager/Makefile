@@ -1,6 +1,6 @@
 ################################################################
 #
-#        Copyright 2013, Big Switch Networks, Inc. 
+#        Copyright 2020, Arista Networks, Inc. 
 # 
 # Licensed under the Eclipse Public License, Version 1.0 (the
 # "License"); you may not use this file except in compliance
@@ -40,9 +40,9 @@ GLOBAL_CFLAGS += -DOFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI=0
 
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_TIMESLICE_MS=1
 
-DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration OFConnectionManager BigHash debug_counter timer_wheel minimatch BigRing OS slot_allocator histogram cjson_util
+DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration OFConnectionManager2 BigHash debug_counter timer_wheel minimatch BigRing OS slot_allocator histogram cjson_util
 
-GLOBAL_LINK_LIBS += -lm
+GLOBAL_LINK_LIBS += -lm -lcrypto -lssl
 
 include $(BUILDER)/build-unit-test.mk
 
