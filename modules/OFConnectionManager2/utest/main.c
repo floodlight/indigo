@@ -1497,7 +1497,7 @@ test_async_op(char *controller_suffix,
     printf("After unblock async: bundle task should yield() become %d\n",
            unit_test_cxn_bundle_task_should_yield(0));
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(0) == false,
-                  "No outstanding opeartion blocks bundle task");
+                  "No outstanding operation blocks bundle task");
     OK(ind_soc_select_and_run(50));
     check_for_echo(false, tl, 0x981ab);
     indigo_cxn_block_async_op(0);
