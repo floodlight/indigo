@@ -513,14 +513,9 @@ check_bucket_counts(ft_instance_t ft, int expected)
 void
 handle_message(of_object_t *obj)
 {
-    indigo_core_receive_controller_message(0, obj);
-    of_object_delete(obj);
-}
-
-void
-handle_message_no_free(of_object_t *obj)
-{
-    indigo_core_receive_controller_message(0, obj);
+    if (indigo_core_receive_controller_message(0, obj) != INDIGO_ERROR_PENDING) {
+        of_object_delete(obj);
+    }
 }
 
 int

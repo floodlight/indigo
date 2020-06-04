@@ -838,6 +838,7 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 {
     indigo_error_t rv = INDIGO_ERROR_NONE;
     /* Note that the messages handled in cxn_instance are not tracked */
+    AIM_LOG_INFO("Archer %s object_id=%u", __FUNCTION__, obj->object_id);
     switch (obj->object_id) {
     case OF_ECHO_REQUEST:
         echo_request_handle(cxn, obj);
@@ -1155,7 +1156,6 @@ process_message(connection_t *cxn)
     cxn->read_bytes = 0;
     cxn->bytes_needed = OF_MESSAGE_HEADER_LENGTH;
 
-    AIM_LOG_INFO("%s.......", __FUNCTION__);
     obj = of_object_new_from_message_preallocated(&obj_storage, cxn->read_buffer, len);
     if (obj == NULL) {
         LOG_WARN(cxn, "Failed to parse OpenFlow message version=%u type=%u length=%u xid=%u",
@@ -2525,7 +2525,7 @@ ind_cxn_bundle_task_should_yield(connection_t *cxn)
 }
 
 bool
-indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
+unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
 {
     connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
     if (cxn == NULL) {

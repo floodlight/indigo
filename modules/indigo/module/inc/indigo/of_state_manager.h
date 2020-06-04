@@ -302,7 +302,7 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*add4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
-        void **entry_priv, of_desc_str_t *err_txt,
+        void **entry_priv, of_desc_str_t err_txt,
         of_object_t *obj);
 
     /**
@@ -311,7 +311,7 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*modify4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_list_bsn_tlv_t *value, of_desc_str_t *err_txt,
+        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
         of_object_t *obj);
 
     /**
@@ -320,7 +320,7 @@ typedef struct indigo_core_gentable_ops {
     indigo_error_t (*del4)(
         indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_desc_str_t *err_txt,
+        of_desc_str_t err_txt,
         of_object_t *obj,
         bool force);
 
@@ -373,7 +373,7 @@ void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 /*
- * @brief resume indigo add()/modify() when the driver gets the final status 
+ * @brief resume indigo addi4()/modifyi4()/del4() when the driver gets the final status 
  * @param cxn_id connection id
  * @param obj of message of this operation
  * @param priv driver's private data for this entry
@@ -385,29 +385,11 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
  */
 
 void
-indigo_core_gentable_entry_add_resume(
+indigo_core_gentable_entry_resume(
     indigo_cxn_id_t cnx_id,
     of_object_t *obj,
     void *priv,
-    of_desc_str_t *err_txt,
-    indigo_error_t rv);
-
-/*
- * @brief resume indigo del() when the driver gets the final operation status 
- * @param cxn_id connection id
- * @param obj of message of this operation
- * @param err_txt error string from driver
- * @param rv the final status of the driver async add/modify
- *
- * The rv status will decide how the indigo to do with the rest works
- * For non-async operation, the indigo will call this function internally.
- */
-
-void
-indigo_core_gentable_entry_del_resume(
-    indigo_cxn_id_t cnx_id,
-    of_object_t *obj,
-    of_desc_str_t *err_txt,
+    of_desc_str_t err_txt,
     indigo_error_t rv);
 
 /*

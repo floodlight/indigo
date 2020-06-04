@@ -131,6 +131,12 @@ ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
 cxn_state_t unit_test_cxn_state_get(indigo_controller_id_t controller_id,
                                     uint8_t aux_id);
 
+/*
+ * helper functions for unit testing only; 
+ * do not call from outside of connectionmanager
+ */
+bool unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
+
 int unit_test_controller_count_get(void);
 int unit_test_connection_count_get(void);
 

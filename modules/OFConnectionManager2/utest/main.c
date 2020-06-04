@@ -1371,7 +1371,7 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
 }
 
 static void
-test_async_op(bool use_tls, bool use_ca_cert, char *controller_suffix,
+test_async_op(char *controller_suffix,
               int domain, char *addr)
 {
     indigo_controller_id_t id;
@@ -1384,21 +1384,21 @@ test_async_op(bool use_tls, bool use_ca_cert, char *controller_suffix,
 
     printf("***Start %s, %s, %s, controller_suffix %s, "
            "domain %s, addr %s\n",
-           __FUNCTION__, get_tcp_tls(use_tls),
-           use_ca_cert? "with CA": "without CA",
+           __FUNCTION__, get_tcp_tls(false),
+           "without CA",
            controller_suffix? controller_suffix: "NONE",
            get_domain_name(domain), addr);
 
     /* set up listening socket */
     lsd = setup_server(domain, addr, CONTROLLER_PORT1);
 
-    indigo_setup(use_tls, CIPHER_LIST, use_ca_cert? CA_CERT_FILE: NULL,
+    indigo_setup(false, CIPHER_LIST, NULL,
                  SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, controller_suffix);
 
     if (domain == AF_INET) {
-        id = setup_cxn(use_tls, addr, CONTROLLER_PORT1);
+        id = setup_cxn(false, addr, CONTROLLER_PORT1);
     } else if (domain == AF_INET6) {
-        id = setup_cxn_v6(use_tls, addr, CONTROLLER_PORT1);
+        id = setup_cxn_v6(false, addr, CONTROLLER_PORT1);
     } else if (domain == AF_UNIX) {
         id = setup_cxn_unix(addr);
     } else {
@@ -1415,31 +1415,31 @@ test_async_op(bool use_tls, bool use_ca_cert, char *controller_suffix,
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
 
-    tl = advance_to_handshake_complete(use_tls, use_ca_cert, id, 0, lsd);
+    tl = advance_to_handshake_complete(false, false, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
     INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
 
     /* on handshake complete, unsolicited controller_connections_reply is sent */
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
                   "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
     check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
 
     /* change role to master */
-    of_send_role_request(use_tls, tl, OF_CONTROLLER_ROLE_MASTER, 1);
+    of_send_role_request(false, tl, OF_CONTROLLER_ROLE_MASTER, 1);
     OK(ind_soc_select_and_run(50));
 
     /* on role change, unsolicited controller_connections_reply is sent */
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
                   "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
     check_connection_list(obj, OF_CONTROLLER_ROLE_MASTER);
     OK(ind_soc_select_and_run(50));
 
     /* check for role reply */
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_ROLE_REPLY,
                   "did not receive OF_ROLE_REPLY, got %d", obj->object_id);
 
@@ -1447,28 +1447,28 @@ test_async_op(bool use_tls, bool use_ca_cert, char *controller_suffix,
     INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
 
     /* send barrier request and wait for barrier reply */
-    of_send_barrier_request(use_tls, tl);
+    of_send_barrier_request(false, tl);
     OK(ind_soc_select_and_run(50));
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
                   "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
 
     /* block barrier, send barrier request */
     indigo_cxn_block_barrier(id, &blocker);
-    of_send_barrier_request(use_tls, tl);
+    of_send_barrier_request(false, tl);
     OK(ind_soc_select_and_run(50));
 
     /* unblock and wait for reply */
     indigo_cxn_unblock_barrier(&blocker);
     OK(ind_soc_select_and_run(50));
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
                   "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
 
     printf("Send generic command\n");
-    of_send_bsn_generic_command(use_tls, tl, 0x1268, "async_test");
+    of_send_bsn_generic_command(false, tl, 0x1268, "async_test");
     OK(ind_soc_select_and_run(50));
-    printf("bundle task should yield() = %d\n", indigo_cxn_bundle_task_should_yield(0));
+    printf("bundle task should yield() = %d\n", unit_test_cxn_bundle_task_should_yield(0));
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
 
@@ -1476,63 +1476,64 @@ test_async_op(bool use_tls, bool use_ca_cert, char *controller_suffix,
     printf("bundle add, no subbundle designator or comparators\n");
     indigo_cxn_bundle_comparator_set(NULL);
     indigo_cxn_subbundle_set(0, NULL, NULL);
-    of_send_bundle_open(use_tls, tl);
+    of_send_bundle_open(false, tl);
     OK(ind_soc_select_and_run(50));
     printf("check for bundle open reply\n");
 
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
-    of_send_bundled_echo(use_tls, tl, 0x981ab);
-    of_send_bundled_bsn_generic_command(use_tls, tl, 0x1288, "async_test");
-    of_send_bundled_echo(use_tls, tl, 0x1278);
-    of_send_bundle_commit(use_tls, tl);
+    of_send_bundled_echo(false, tl, 0x981ab);
+    of_send_bundled_bsn_generic_command(false, tl, 0x1288, "async_test");
+    of_send_bundled_echo(false, tl, 0x1278);
+    of_send_bundle_commit(false, tl);
     OK(ind_soc_select_and_run(50));
     /* check echo replies */
     printf("After bundle commit: bundle task should yield()=%d\n",
-           indigo_cxn_bundle_task_should_yield(0));
-    INDIGO_ASSERT(indigo_cxn_bundle_task_should_yield(0) == true,
+           unit_test_cxn_bundle_task_should_yield(0));
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(0) == true,
                   "outstanding operation should block bundle task");
     indigo_cxn_unblock_async_op(0);
     printf("After unblock async: bundle task should yield() become %d\n",
-           indigo_cxn_bundle_task_should_yield(0));
-    INDIGO_ASSERT(indigo_cxn_bundle_task_should_yield(0) == false,
+           unit_test_cxn_bundle_task_should_yield(0));
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(0) == false,
                   "No outstanding opeartion blocks bundle task");
     OK(ind_soc_select_and_run(50));
-    check_for_echo(use_tls, tl, 0x981ab);
+    check_for_echo(false, tl, 0x981ab);
+    indigo_cxn_block_async_op(0);
     printf("After subbunble async call: bundle task should yield()=%d\n",
-           indigo_cxn_bundle_task_should_yield(0));
-    INDIGO_ASSERT(indigo_cxn_bundle_task_should_yield(0) == true,
+           unit_test_cxn_bundle_task_should_yield(0));
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(0) == true,
                   "subbundle outstanding operation should block bundle task");
     indigo_cxn_unblock_async_op(0);
     OK(ind_soc_select_and_run(50));
     printf("After unblock subbnel async: bundle task should yield become %d\n",
-           indigo_cxn_bundle_task_should_yield(0));
-    check_for_echo(use_tls, tl, 0x1278);
+           unit_test_cxn_bundle_task_should_yield(0));
+    check_for_echo(false, tl, 0x1278);
     printf("check for bundle commit reply\n");
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
     printf("test_async_op is done. Close connection.\n");
-    tl_close(use_tls, tl);
+    tl_close(false, tl);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
 
     /* check that the client reconnected */
     OK(ind_soc_select_and_run(100));
-    tl = advance_to_handshake_complete(use_tls, use_ca_cert, id, 0, lsd);
+    tl = advance_to_handshake_complete(false, false, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
     OK(ind_soc_select_and_run(10));
     /* check for controller_connections_reply */
-    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
                   "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
 
     check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
 
-    tl_close(use_tls, tl);
+    tl_close(false, tl);
 
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
@@ -2450,7 +2451,7 @@ int aim_main(int argc, char* argv[])
     use_tls = true;
     run_all_tests(use_tls);
 
-    test_async_op(false, false, NULL, AF_INET, CONTROLLER_IP);
+    test_async_op(NULL, AF_INET, CONTROLLER_IP);
     return 0;
 }
 

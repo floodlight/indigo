@@ -693,13 +693,6 @@ void indigo_cxn_pause(indigo_cxn_id_t cxn_id);
  */
 void indigo_cxn_resume(indigo_cxn_id_t cxn_id);
 
-
-/**
- * @brief Check whether bundle task should yield due to outstanding async operations
- * @param cxn Connection ID
- */
-extern bool indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
-
 /**
  * Barrier notification callback
  *
