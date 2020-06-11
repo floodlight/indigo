@@ -150,6 +150,14 @@ indigo_core_stats_get(uint32_t *total_flows,
 typedef struct indigo_core_gentable indigo_core_gentable_t;
 
 /**
+ * @brief Opaque handle to an operation
+ */
+typedef struct indigo_core_op_context {
+    indigo_cxn_id_t cxn_id;
+    of_object_t *obj;
+} indigo_core_op_context_t;
+
+/**
  * Entry deletion may be invoked through several causes
  * - single deletion request
  * - table clear request
@@ -297,31 +305,52 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Add an entry
-     * @param params paramters 
+     * @param op_ctx operation context 
+     * @param table_priv Table private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     * @param [out] entry_priv Opaque private data for the entry, passed back
+     *                         whenever another operation is made on the entry.
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*add4)(
-        indigo_cxn_id_t cxn_id,
+        const indigo_core_op_context_t *op_ctx,
         void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
-        void **entry_priv, of_desc_str_t err_txt,
-        of_object_t *obj);
+        void **entry_priv, of_desc_str_t err_txt);
 
     /**
      * @brief Modify an entry
+     * @param op_ctx operation context 
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*modify4)(
-        indigo_cxn_id_t cxn_id,
+        const indigo_core_op_context_t *op_ctx,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
-        of_object_t *obj);
+        of_list_bsn_tlv_t *value, of_desc_str_t err_txt);
 
     /**
      * @brief Delete an entry
+     * @param op_ctx operation context 
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param force State manager won't expect async return if true
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
      */
     indigo_error_t (*del4)(
-        indigo_cxn_id_t cxn_id,
+        const indigo_core_op_context_t *op_ctx,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
         of_desc_str_t err_txt,
-        of_object_t *obj,
         bool force);
 
     /**
@@ -374,8 +403,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 /*
  * @brief resume indigo addi4()/modifyi4()/del4() when the driver gets the final status 
- * @param cxn_id connection id
- * @param obj of message of this operation
+ * @param op_ctx operation context 
  * @param priv driver's private data for this entry
  * @param err_txt error string from driver
  * @param rv the final status of the driver async add/modify
@@ -386,8 +414,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 void
 indigo_core_gentable_entry_resume(
-    indigo_cxn_id_t cnx_id,
-    of_object_t *obj,
+    indigo_core_op_context_t *op_ctx,
     void *priv,
     of_desc_str_t err_txt,
     indigo_error_t rv);

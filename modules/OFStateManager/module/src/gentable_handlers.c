@@ -27,6 +27,34 @@
  *  - Reduce LOCI allocation overhead per entry.
  *  - Reuse stats entry during stats tasks.
  *  - Automatically resize key hashtable buckets.
+ *
+ * Async Operations:
+ * The add4()/modify4()/del4() will support async operations.
+ * Driver:
+ *    The return value, INDIGO_ERROR_PENDING, indicates that driver
+ *    is performing an async operation.
+ *
+ *    The op_ctx (indigo_core_op_context) contains the operation
+ *    context information needed when driver notifies state manager
+ *    the final status.
+ *
+ *    The driver will call indigo_core_gentable_entry_resume() when
+ *    driver posts its final status to state manager.
+ *
+ *    Driver can implenent a timer to constrain the time to wait for
+ *    the operation completion. If the operation cannot finish within
+ *    expected time, an error will be posted to state manager through
+ *    the same resume function, indigo_core_gentable_entry_resume().
+ *
+ * State Manager
+ *    The new APIs and operation context are added to support async
+ *    operation.
+ *
+ *    Only add4()/modify()/del4() will expect INDIGO_ERROR_PENDING
+ *    return.
+ *
+ *    The indigo_core_gentable_entry_resume() function is used for
+ *    the bottom half of an async operation.
  */
 
 #include "ofstatemanager_log.h"
@@ -332,13 +360,17 @@ ind_core_bsn_gentable_entry_add_handler(
 
     if (entry == NULL) {
         if (gentable->ops->add4 != NULL) {
-            rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt, obj);
+            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+            op_ctx->cxn_id = cxn_id;
+            op_ctx->obj = obj;
+            rv = gentable->ops->add4(op_ctx, gentable->priv, &key, &value, &priv, err_txt);
             if (rv == INDIGO_ERROR_PENDING) {
                 /* entry hasn't been allocated yet, wait for resume.
                  * block async op pending */
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
+            aim_free(op_ctx);
         } else {
             if (gentable->ops->add3 != NULL) {
                 rv = gentable->ops->add3(cxn_id, gentable->priv, &key, &value, &priv, err_txt);
@@ -351,13 +383,17 @@ ind_core_bsn_gentable_entry_add_handler(
     } else {
         /* Modifying an existing entry */
         if (gentable->ops->modify4 != NULL) {
-            rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt, obj);
+            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+            op_ctx->cxn_id = cxn_id;
+            op_ctx->obj = obj;
+            rv = gentable->ops->modify4(op_ctx, gentable->priv, entry->priv, &key, &value, err_txt);
             if (rv == INDIGO_ERROR_PENDING) {
                 /* async returned
                  * block async op pending */
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
+            aim_free(op_ctx);
         } else {
             if (gentable->ops->modify3 != NULL) {
                 rv = gentable->ops->modify3(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt);
@@ -383,6 +419,7 @@ ind_core_bsn_gentable_entry_delete_handler(
     of_list_bsn_tlv_t key;
     struct ind_core_gentable_entry *entry;
     indigo_error_t rv = INDIGO_ERROR_NONE;
+    indigo_core_op_context_t *op_ctx;
     of_desc_str_t err_txt = "Gentable delete failed";
 
     of_bsn_gentable_entry_delete_table_id_get(obj, &table_id);
@@ -409,7 +446,10 @@ ind_core_bsn_gentable_entry_delete_handler(
     }
 
     if (gentable->ops->del4 != NULL) {
-        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt, obj, false);
+        op_ctx = aim_zmalloc(sizeof(*op_ctx));
+        op_ctx->cxn_id = cxn_id;
+        op_ctx->obj = obj;
+        rv = gentable->ops->del4(op_ctx, gentable->priv, entry->priv, entry->key, err_txt, false);
         /* async returned */
         if (rv == INDIGO_ERROR_PENDING) {
             AIM_LOG_TRACE("%s gentable delete async return",
@@ -418,6 +458,7 @@ ind_core_bsn_gentable_entry_delete_handler(
             indigo_cxn_block_async_op(cxn_id);
             return rv;
         }
+        aim_free(op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1107,7 +1148,10 @@ delete_entry(indigo_cxn_id_t cxn_id,
     }
 
     if (gentable->ops->del4 != NULL) {
-        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt, NULL, true);
+        indigo_core_op_context_t op_ctx;
+        op_ctx.cxn_id = cxn_id;
+        op_ctx.obj = NULL;
+        rv = gentable->ops->del4(&op_ctx, gentable->priv, entry->priv, entry->key, err_txt, true);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1124,16 +1168,26 @@ delete_entry(indigo_cxn_id_t cxn_id,
 
 void
 indigo_core_gentable_entry_resume(
-    indigo_cxn_id_t cxn_id,
-    of_object_t *obj,
+    indigo_core_op_context_t *op_ctx,
     void *priv,
     of_desc_str_t err_txt,
     indigo_error_t rv)
 {
+    indigo_cxn_id_t cxn_id;
+    of_object_t *obj;
+
+    if (op_ctx == NULL) {
+        /* incorrect resume call */
+        return;
+    }
+
+    aim_free(op_ctx);
+    cxn_id = op_ctx->cxn_id;
+    obj = op_ctx->obj;
     if (obj == NULL) {
         /* incorrect resume call */
         return;
-    } 
+     } 
     if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {
         gentable_entry_add_resume(cxn_id, obj, priv, err_txt, rv);
     } else {
@@ -1153,7 +1207,7 @@ find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key)
          hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
         struct ind_core_gentable_entry *entry =
             container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
-        if (key_equality(key, entry->key)) {
+         if (key_equality(key, entry->key)) {
             return entry;
         }
     }

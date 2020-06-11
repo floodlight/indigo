@@ -1149,7 +1149,6 @@ process_message(connection_t *cxn)
     of_object_t *obj;
     int len;
     of_object_storage_t obj_storage;
-    indigo_error_t rv = INDIGO_ERROR_NONE;
 
     /* Clear read buffer for next read */
     len = cxn->read_bytes;
@@ -1167,11 +1166,12 @@ process_message(connection_t *cxn)
         return;
     }
 
-    /* ignore the return value. */
-    rv = ind_cxn_process_message(cxn, obj);
-    if (rv == INDIGO_ERROR_PENDING) {
-        ind_cxn_block_async_op(cxn);
-    } 
+    /* ignore the return value.
+     * Assume async operation only occurs in gentable.
+     * The state manager will be resposible for handling
+     * pending return. 
+     */
+    ind_cxn_process_message(cxn, obj);
 }
 
 /* exposed for process_message and message bundling code to call */
