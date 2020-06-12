@@ -367,6 +367,10 @@ ind_core_bsn_gentable_entry_add_handler(
             if (rv == INDIGO_ERROR_PENDING) {
                 /* entry hasn't been allocated yet, wait for resume.
                  * block async op pending */
+                if (priv != NULL) {
+                    AIM_LOG_ERROR("gnetable %s return pending. Priv should be NULL", 
+                                  gentable->name);
+                }
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
@@ -1178,6 +1182,7 @@ indigo_core_gentable_entry_resume(
 
     if (op_ctx == NULL) {
         /* incorrect resume call */
+        AIM_LOG_ERROR("%s should have valid op_ctx", __FUNCTION__);
         return;
     }
 
@@ -1186,6 +1191,7 @@ indigo_core_gentable_entry_resume(
     obj = op_ctx->obj;
     if (obj == NULL) {
         /* incorrect resume call */
+        AIM_LOG_ERROR("%s should have valid obj", __FUNCTION__);
         return;
      } 
     if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {
@@ -1207,7 +1213,7 @@ find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key)
          hash_entry != NULL; hash_entry = bighash_next(hash_entry)) {
         struct ind_core_gentable_entry *entry =
             container_of(hash_entry, key_hash_entry, struct ind_core_gentable_entry);
-         if (key_equality(key, entry->key)) {
+        if (key_equality(key, entry->key)) {
             return entry;
         }
     }

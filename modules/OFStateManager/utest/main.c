@@ -291,16 +291,6 @@ indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
 {
 }
 
-void
-indigo_cxn_block_iter_async_op(indigo_cxn_id_t cxn_id)
-{
-}
-
-void
-indigo_cxn_unblock_iter_async_op(indigo_cxn_id_t cxn_id)
-{
-}
-
 bool
 indigo_cxn_iter_task_should_yield(indigo_cxn_id_t cxn_id)
 {

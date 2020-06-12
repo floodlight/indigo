@@ -347,9 +347,6 @@ void ind_cxn_resume(connection_t *cxn);
 void ind_cxn_block_async_op(connection_t *cxn);
 void ind_cxn_unblock_async_op(connection_t *cxn);
 
-void ind_cxn_block_iter_async_op(connection_t *cxn);
-void ind_cxn_unblock_iter_async_op(connection_t *cxn);
-
 bool
 ind_cxn_bundle_task_should_yield(connection_t *cxn);
 

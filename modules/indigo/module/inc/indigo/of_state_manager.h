@@ -141,6 +141,18 @@ indigo_core_stats_get(uint32_t *total_flows,
  * called when a gentable_entry_add message is received for a key that
  * already exists in the table.
  *
+ * Async operation support:
+ * add4()/modify4()/del4() are used for async operations.
+ * These new APIs can return INDIGO_ERROR_PENDING to state manager
+ * if the operations are async.
+ * The state manager provides a resume function,
+ * indigo_core_gentable_resume(), to complete the remaining works.
+ * The state manager also needs the operation context, containing
+ * connection id and oflow obj, to resume its remaining tasks.
+ * The operation context is passed to the driver in a form of
+ * struct indigo_core_op_context. (See add4i()/modify4()/del4()).
+ * Drivers call the resume function with the operation context and
+ * the final status.
  ****************************************************************/
 
 
@@ -305,12 +317,17 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Add an entry
-     * @param op_ctx operation context 
+     * @param op_ctx operation context. These data will be used when resume
+     *               function is called in the async operation. 
      * @param table_priv Table private data
      * @param key Entry key (identical to key from add)
      * @param value New entry value
      * @param [out] entry_priv Opaque private data for the entry, passed back
      *                         whenever another operation is made on the entry.
+     *                         For async operation (return INDIGO_ERROR_PENDING)
+     *                         this value assigned to entry_priv will be
+     *                         ignored by state manager. The entry_priv should
+     *                         be assigned in resume API.
      * @param err_txt In case of error, text to be copied to bsn_error msg
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
@@ -322,7 +339,8 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Modify an entry
-     * @param op_ctx operation context 
+     * @param op_ctx operation context. These data will be used when resume
+     *               function is called in the async operation. 
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
@@ -338,7 +356,8 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Delete an entry
-     * @param op_ctx operation context 
+     * @param op_ctx operation context. These data will be used when resume
+     *               function is called in the async operation. 
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
