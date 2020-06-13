@@ -179,7 +179,6 @@ test_table_entry_modify(void)
     return TEST_PASS;
 }
 
-#if 0 /* Archer */
 static int
 test_table_entry_stats(void)
 {
@@ -211,7 +210,6 @@ test_table_entry_stats(void)
 
     return TEST_PASS;
 }
-#endif
 
 int
 test_table(void)
@@ -219,7 +217,7 @@ test_table(void)
     RUN_TEST(table_entry_add);
     RUN_TEST(table_entry_delete);
     RUN_TEST(table_entry_modify);
-    // Archer RUN_TEST(table_entry_stats);
+    RUN_TEST(table_entry_stats);
     return TEST_PASS;
 }
 

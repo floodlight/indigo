@@ -838,7 +838,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
 {
     indigo_error_t rv = INDIGO_ERROR_NONE;
     /* Note that the messages handled in cxn_instance are not tracked */
-    AIM_LOG_INFO("Archer %s object_id=%u", __FUNCTION__, obj->object_id);
     switch (obj->object_id) {
     case OF_ECHO_REQUEST:
         echo_request_handle(cxn, obj);

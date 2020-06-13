@@ -170,19 +170,6 @@ typedef struct indigo_core_op_context {
 } indigo_core_op_context_t;
 
 /**
- * Entry deletion may be invoked through several causes
- * - single deletion request
- * - table clear request
- * - gentable unregistration 
- */
-typedef enum indigo_core_gentable_del_entry_cause {
-    INDIGO_CORE_GENTABLE_DEL_ENTRY_OTHERS = 0,
-    INDIGO_CORE_GENTABLE_DEL_ENTRY_SINGLE_REQUEST = 1,
-    INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_CLEAR = 2,
-    INDIGO_CORE_GENTABLE_DEL_ENTRY_TABLE_UNREG = 3,
-} indigo_core_gentable_del_entry_cause_t;
-
-/**
  * @brief Operations on a gentable
  */
 typedef struct indigo_core_gentable_ops {
@@ -423,7 +410,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 /*
  * @brief resume indigo addi4()/modifyi4()/del4() when the driver gets the final status 
  * @param op_ctx operation context 
- * @param priv driver's private data for this entry
+ * @param entry_priv driver's private data for this entry
  * @param err_txt error string from driver
  * @param rv the final status of the driver async add/modify
  *
@@ -434,7 +421,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 void
 indigo_core_gentable_entry_resume(
     indigo_core_op_context_t *op_ctx,
-    void *priv,
+    void *entry_priv,
     of_desc_str_t err_txt,
     indigo_error_t rv);
 

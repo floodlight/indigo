@@ -126,7 +126,6 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
     bundle_t *bundle = find_bundle(cxn, bundle_id);
 
     if (ctrl_type == OFPBCT_OPEN_REQUEST) {
-        AIM_LOG_INFO("Archer OPEN_RQUEST bundle_id=%u, total subbndle=%u", bundle_id, num_subbundles_per_bundle);
         if (bundle != NULL) {
             err_code = OFPBFC_BUNDLE_EXIST;
             goto error;
@@ -153,10 +152,8 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
                         "no memory allocated for subbundles");
         AIM_LOG_VERBOSE("allocated %u subbundles", bundle->subbundle_count);
     } else if (ctrl_type == OFPBCT_CLOSE_REQUEST) {
-        AIM_LOG_INFO("Archer CLOSE_RQUEST bundle_id=%u", bundle_id);
         /* Ignored */
     } else if (ctrl_type == OFPBCT_COMMIT_REQUEST) {
-        AIM_LOG_INFO("Archer COMMIT_RQUEST bundle_id=%u", bundle_id);
         if (bundle == NULL) {
             err_code = OFPBFC_BAD_ID;
             goto error;
@@ -261,7 +258,6 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
             OFPBFC_BAD_ID);
         return;
     }
-    AIM_LOG_INFO("Archer bundle_add id=%u", bundle->id);
 
     /* Validate length */
     if (data.bytes < OF_MESSAGE_HEADER_LENGTH || data.bytes != of_message_length_get(data.data)) {
@@ -303,7 +299,6 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
         if (obj->object_id == OF_BARRIER_REQUEST) {
             /* barriers are placed in the last subbundle */
             idx = bundle->subbundle_count - 1;
-            AIM_LOG_INFO("Archer barrier idx=%d", idx);
         } else {
             idx = subbundle_designator(obj);
             /* misdesignated messages are also placed in the last subbundle */
@@ -322,7 +317,6 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
     }
 
     subbundle->msgs[subbundle->count++] = aim_memdup(data.data, data.bytes);
-    AIM_LOG_INFO("Archer msg subbundle idx=%d, cur subbundle->count=%u", idx, subbundle->count);
     bundle->count++;
     bundle->bytes += data.bytes;
 }
@@ -407,7 +401,6 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
     }
     /* one more subbundle for barriers */
     num_subbundles_per_bundle = num_subbundles + 1;
-    AIM_LOG_INFO("Archer %s num_subbundles_per_bundle=%u", __FUNCTION__, num_subbundles_per_bundle);
 
     subbundle_designator = designator;
     subbundle_comparators = comparators;
@@ -514,7 +507,7 @@ bundle_task(void *cookie)
         while (state->cur_offset < subbundle->count) {
             if (cxn) {
 
-                AIM_LOG_INFO("cur_subbundle=%u bundle_task cur_offset=%u is_pending %d",
+                AIM_LOG_TRACE("cur_subbundle=%u bundle_task cur_offset=%u is_pending %d",
                               state->cur_subbundle,
                               state->cur_offset, state->cur_offset_is_pending);
                 if (state->cur_offset_is_pending == false) {

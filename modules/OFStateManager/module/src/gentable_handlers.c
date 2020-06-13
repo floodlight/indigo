@@ -84,7 +84,7 @@ static uint32_t hash_key(of_list_bsn_tlv_t *key);
 static indigo_error_t delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable, struct ind_core_gentable_entry *entry, of_desc_str_t err_txt);
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
-static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority, of_checksum_128_t checksum_prefix, of_checksum_128_t checksum_mask);
+static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority, of_checksum_128_t checksum_prefix, of_checksum_128_t checksum_mask);
 static void gentable_entry_del_resume(indigo_cxn_id_t cxn_id, of_object_t *obj, of_desc_str_t err_txt, indigo_error_t rv);
 static void gentable_entry_add_resume(indigo_cxn_id_t cxn_id, of_object_t *obj, void *priv, of_desc_str_t err_txt, indigo_error_t rv);
 struct ind_core_gentable_checksum_bucket {
@@ -540,7 +540,7 @@ ind_core_bsn_gentable_clear_request_handler(
     of_bsn_gentable_clear_request_xid_get(obj, &state->xid);
     indigo_cxn_pause(cxn_id);
 
-    rv = ind_core_gentable_spawn_iter_task(cxn_id, gentable, clear_iter, state,
+    rv = ind_core_gentable_spawn_iter_task(gentable, clear_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
@@ -715,7 +715,7 @@ ind_core_bsn_gentable_entry_stats_request_handler(
     state->reply = reply;
     indigo_cxn_pause(cxn_id);
 
-    rv = ind_core_gentable_spawn_iter_task(cxn_id, gentable, entry_stats_iter, state,
+    rv = ind_core_gentable_spawn_iter_task(gentable, entry_stats_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
@@ -810,7 +810,7 @@ ind_core_bsn_gentable_entry_desc_stats_request_handler(
     state->reply = reply;
     indigo_cxn_pause(cxn_id);
 
-    rv = ind_core_gentable_spawn_iter_task(cxn_id, gentable, entry_desc_stats_iter, state,
+    rv = ind_core_gentable_spawn_iter_task(gentable, entry_desc_stats_iter, state,
                                            IND_SOC_NORMAL_PRIORITY,
                                            checksum, checksum_mask);
     if (rv < 0) {
@@ -1245,7 +1245,6 @@ key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b)
  */
 
 struct ind_core_gentable_iter_task_state {
-    indigo_cxn_id_t cxn_id; /* connection id of this iteration */
     ind_core_gentable_iter_task_callback_f callback;
     void *cookie;
     uint16_t table_id;
@@ -1336,7 +1335,6 @@ ind_core_gentable_iter_task_callback(void *cookie)
 /*
  * Spawn a task that iterates over a gentable
  *
- * @param cxn_id connection id
  * @param gentable Handle for a gentable instance
  * @param callback Function called for each flowtable entry
  * @param cookie Opaque value passed to callback
@@ -1352,7 +1350,6 @@ ind_core_gentable_iter_task_callback(void *cookie)
 
 static indigo_error_t
 ind_core_gentable_spawn_iter_task(
-    indigo_cxn_id_t cxn_id,
     indigo_core_gentable_t *gentable,
     ind_core_gentable_iter_task_callback_f callback,
     void *cookie,
@@ -1364,7 +1361,6 @@ ind_core_gentable_spawn_iter_task(
 
     struct ind_core_gentable_iter_task_state *state = aim_zmalloc(sizeof(*state));
 
-    state->cxn_id = cxn_id;
     state->callback = callback;
     state->cookie = cookie;
     state->table_id = gentable->table_id;

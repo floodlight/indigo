@@ -213,7 +213,7 @@ indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
     AIM_LOG_VERBOSE("Send BSN gentable error msg called for cxn id %d: %s\n",
                     cxn_id, err_txt);
     bsn_err_count++;
-    /* copy the error text to globle buffer */
+    /* copy the error text to global buffer */
     strncpy(bsn_err_txt, err_txt, sizeof(of_desc_str_t));
 }
 
@@ -292,24 +292,11 @@ indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
 }
 
 bool
-indigo_cxn_iter_task_should_yield(indigo_cxn_id_t cxn_id)
-{
-    return false;
-}
- 
-bool
-indigo_cxn_iter_task_may_yield(indigo_cxn_id_t cxn_id)
-{
-    return false;
-}
-
-bool
 indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
 {
     return false;
 }
  
-
 indigo_error_t
 indigo_port_modify(of_port_mod_t *port_mod)
 {
