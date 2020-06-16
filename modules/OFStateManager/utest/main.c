@@ -1086,6 +1086,7 @@ delete_all_entries(ft_instance_t ft)
     TEST_OK(of_flow_delete_match_set(flow_del, &match));
     handle_message(flow_del);
     TEST_INDIGO_OK(do_barrier());
+
     TEST_OK(depopulate_table(ft));
 
     return TEST_PASS;
