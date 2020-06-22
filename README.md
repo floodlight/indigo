@@ -50,17 +50,9 @@ Run `make check`.  This will build and run each module's unit test.  In
 general, you will see a lot of output and occasionally even error messages
 for tests that exercise error handling.
 
-The Unit Tests of OFConnectionManager and OFStateManager rely on bigcode,
-infra, loci/locitest submodules.
-The existing submoduleis under indigo have the following issues:
-- The existing bigcode is on "19fb14d".
-  It will hit the cJSON.c error when build. Using the latest bigcode and
-  adding IOF to utests'  Makefile will resolve the problem.
-  to its include path.
-- The existing branch of infra (7458c2d) and loci/locitest (0b31e2b) are
-  working fine. The main branch of infra will cause the c files under
-  locitest from getting built.
-
+Use the VERBOSE=1 and vargrind environment as helper if needed when building
+utests.
+ 
 Generating Documentation
 ------------------------
 
