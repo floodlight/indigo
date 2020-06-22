@@ -1489,6 +1489,7 @@ test_async_op(char *controller_suffix,
     of_send_bundle_commit(false, tl);
     OK(ind_soc_select_and_run(50));
     /* check echo replies */
+    indigo_cxn_block_async_op(0);
     printf("After bundle commit: bundle task should yield()=%d\n",
            unit_test_cxn_bundle_task_should_yield(0));
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(0) == true,

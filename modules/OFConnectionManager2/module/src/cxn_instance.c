@@ -1167,14 +1167,13 @@ process_message(connection_t *cxn)
 
     /* ignore the return value.
      * Assume async operation only occurs in gentable.
-     * The state manager will be resposible for handling
+     * The state manager will be responsible for handling
      * pending return. 
      */
     ind_cxn_process_message(cxn, obj);
 }
 
 /* exposed for process_message and message bundling code to call */
-/* void */
 indigo_error_t
 ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
 {

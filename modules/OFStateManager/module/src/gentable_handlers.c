@@ -36,14 +36,14 @@
  *
  *    The op_ctx (indigo_core_op_context) contains the operation
  *    context information needed when driver notifies state manager
- *    the final status.
+ *    with the final status.
  *
- *    The driver will call indigo_core_gentable_entry_resume() when
- *    driver posts its final status to state manager.
+ *    The driver will call indigo_core_gentable_entry_resume() to
+ *    post its final status to state manager.
  *
- *    Driver can implenent a timer to constrain the time to wait for
+ *    Driver can implement a timer to constrain the time to wait for
  *    the operation completion. If the operation cannot finish within
- *    expected time, an error will be posted to state manager through
+ *    expected time, an error can be posted to state manager through
  *    the same resume function, indigo_core_gentable_entry_resume().
  *
  * State Manager
@@ -124,6 +124,13 @@ static indigo_core_gentable_t *gentables[MAX_GENTABLES];
  */
 static uint64_t next_generation_id = 0;
 
+/*
+ * Used to call del4() in gentable clearance case
+ * In such case, the deletion of gentable entries are invoked without
+'* of_object_t. Also, OFStateManager doesn't support async resume in
+ * such case
+ */
+indigo_core_op_context_t op_ctx;
 
 /* Registration */
 
@@ -453,7 +460,8 @@ ind_core_bsn_gentable_entry_delete_handler(
         op_ctx = aim_zmalloc(sizeof(*op_ctx));
         op_ctx->cxn_id = cxn_id;
         op_ctx->obj = obj;
-        rv = gentable->ops->del4(op_ctx, gentable->priv, entry->priv, entry->key, err_txt, false);
+        op_ctx->no_async = false;
+        rv = gentable->ops->del4(op_ctx, gentable->priv, entry->priv, entry->key, err_txt);
         /* async returned */
         if (rv == INDIGO_ERROR_PENDING) {
             AIM_LOG_TRACE("%s gentable delete async return",
@@ -1152,10 +1160,10 @@ delete_entry(indigo_cxn_id_t cxn_id,
     }
 
     if (gentable->ops->del4 != NULL) {
-        indigo_core_op_context_t op_ctx;
         op_ctx.cxn_id = cxn_id;
         op_ctx.obj = NULL;
-        rv = gentable->ops->del4(&op_ctx, gentable->priv, entry->priv, entry->key, err_txt, true);
+        op_ctx.no_async = true;
+        rv = gentable->ops->del4(&op_ctx, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1179,6 +1187,7 @@ indigo_core_gentable_entry_resume(
 {
     indigo_cxn_id_t cxn_id;
     of_object_t *obj;
+    bool no_async = true;
 
     if (op_ctx == NULL) {
         /* incorrect resume call */
@@ -1186,12 +1195,17 @@ indigo_core_gentable_entry_resume(
         return;
     }
 
-    aim_free(op_ctx);
     cxn_id = op_ctx->cxn_id;
     obj = op_ctx->obj;
+    no_async = op_ctx->no_async;
+    /* if no_async is true, it means that this op_ctx is not asynamic allocation */
+    if (op_ctx->no_async == false) {
+        aim_free(op_ctx);
+    }
     if (obj == NULL) {
         /* incorrect resume call */
-        AIM_LOG_ERROR("%s should have valid obj", __FUNCTION__);
+        AIM_LOG_ERROR("%s: should have valid obj (no_async=%d)",
+                      __FUNCTION__, no_async);
         return;
      } 
     if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {

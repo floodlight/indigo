@@ -40,7 +40,9 @@ GLOBAL_CFLAGS += -DOFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI=0
 
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_TIMESLICE_MS=1
 
-DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration OFConnectionManager2 BigHash debug_counter timer_wheel minimatch BigRing OS slot_allocator histogram cjson_util
+DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration BigHash debug_counter timer_wheel minimatch BigRing OS slot_allocator histogram cjson_util
+
+DEPENDMODULE_HEADERS := OFConnectionManager2
 
 GLOBAL_LINK_LIBS += -lm -lcrypto -lssl
 

@@ -143,14 +143,21 @@ indigo_core_stats_get(uint32_t *total_flows,
  *
  * Async operation support:
  * add4()/modify4()/del4() are used for async operations.
- * These new APIs can return INDIGO_ERROR_PENDING to state manager
- * if the operations are async.
- * The state manager provides a resume function,
- * indigo_core_gentable_resume(), to complete the remaining works.
+ * In the event that PENDING is returned by the add4/modify4/del4 APIs,
+ * the resume function indigo_core_gentable_resume() must be called by
+ * the driver either to complete any remaining work if the asynchronous
+ * operation is successfully completed by the lower-level driver, or to
+ * clean up operational state if the asynchronous operation fails in
+ * lower-level driver code. In order to provide sufficient context to
+ * the resume function, the add4/modify4/del4 APIs take a void* context
+ * as their first parameter. This void* value should be passed back to
+ * the resume function when the lower-level driver code finally completes
+ * (either with success or failure).
+ *
  * The state manager also needs the operation context, containing
  * connection id and oflow obj, to resume its remaining tasks.
  * The operation context is passed to the driver in a form of
- * struct indigo_core_op_context. (See add4i()/modify4()/del4()).
+ * struct indigo_core_op_context. (See add4()/modify4()/del4()).
  * Drivers call the resume function with the operation context and
  * the final status.
  ****************************************************************/
@@ -167,6 +174,9 @@ typedef struct indigo_core_gentable indigo_core_gentable_t;
 typedef struct indigo_core_op_context {
     indigo_cxn_id_t cxn_id;
     of_object_t *obj;
+    bool no_async;            /* indication this op context is not called for async operation.
+                               * It is used in the OFStatemManager internally.
+                               */
 } indigo_core_op_context_t;
 
 /**
@@ -304,8 +314,8 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Add an entry
-     * @param op_ctx operation context. These data will be used when resume
-     *               function is called in the async operation. 
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * @param table_priv Table private data
      * @param key Entry key (identical to key from add)
      * @param value New entry value
@@ -313,8 +323,10 @@ typedef struct indigo_core_gentable_ops {
      *                         whenever another operation is made on the entry.
      *                         For async operation (return INDIGO_ERROR_PENDING)
      *                         this value assigned to entry_priv will be
-     *                         ignored by state manager. The entry_priv should
-     *                         be assigned in resume API.
+     *                         ignored by state manager. Instead, the entry_priv
+     *                         passed to the resume function will be stored if
+     *                         the asynchronous operation is successfully
+     *                         completed by the lower-level driver
      * @param err_txt In case of error, text to be copied to bsn_error msg
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
@@ -326,8 +338,8 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Modify an entry
-     * @param op_ctx operation context. These data will be used when resume
-     *               function is called in the async operation. 
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
@@ -343,21 +355,19 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Delete an entry
-     * @param op_ctx operation context. These data will be used when resume
-     *               function is called in the async operation. 
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
      * @param err_txt In case of error, text to be copied to bsn_error msg
-     * @param force State manager won't expect async return if true
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
      */
     indigo_error_t (*del4)(
         const indigo_core_op_context_t *op_ctx,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_desc_str_t err_txt,
-        bool force);
+        of_desc_str_t err_txt);
 
     /**
      * @brief Start a subbundle operation on this gentable
@@ -408,14 +418,17 @@ void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 /*
- * @brief resume indigo addi4()/modifyi4()/del4() when the driver gets the final status 
+ * @brief resume indigo add4()/modify4()/del4() when the driver gets the final status 
  * @param op_ctx operation context 
  * @param entry_priv driver's private data for this entry
  * @param err_txt error string from driver
- * @param rv the final status of the driver async add/modify
+ * @param rv the final status of the driver async add/modify/del
  *
- * The rv status will decide how the indigo to do with the rest works.
- * For non-async operation, the indigo will call this function internally.
+ * The state manager will use the value of rv to either complete the async
+ * operation in case of success or clean up in case of failure
+ * This function is intended for asynchronous operations, and should not be called for
+ * synchronous operations
+ * For synchronous operations, the state manager will call this function internally.
  */
 
 void

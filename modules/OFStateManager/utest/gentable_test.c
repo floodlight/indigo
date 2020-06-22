@@ -1275,7 +1275,7 @@ test_gentable_modify4(
 static indigo_error_t
 test_gentable_delete4(
     const indigo_core_op_context_t *op_ctx,
-    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t err_txt, bool force_del)
+    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t err_txt)
 {
     struct test_table *table = table_priv;
     of_port_no_t port;
