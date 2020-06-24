@@ -1198,7 +1198,7 @@ indigo_core_gentable_entry_resume(
     cxn_id = op_ctx->cxn_id;
     obj = op_ctx->obj;
     no_async = op_ctx->no_async;
-    /* if no_async is true, it means that this op_ctx is not asynamic allocation */
+    /* if no_async is true, it means that this op_ctx is not dynamic allocated */
     if (op_ctx->no_async == false) {
         aim_free(op_ctx);
     }
