@@ -29,6 +29,7 @@
 
 #include <OFStateManager/ofstatemanager.h>
 #include <OFStateManager/ofstatemanager_config.h>
+#include <ofstatemanager_int.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1189,9 +1190,11 @@ gentable_del4_async_timeout(void *cookie)
 
 static indigo_error_t
 test_gentable_add4(
-    const indigo_core_op_context_t *op_ctx,
-    void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv, of_desc_str_t err_txt)
+    indigo_cxn_id_t cxn_id,
+    void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, void **entry_priv, of_desc_str_t err_txt,
+    void *op_ctx1)
 {
+    indigo_core_op_context_t *op_ctx = (indigo_core_op_context_t *)op_ctx1;
     struct test_table *table = table_priv;
     of_port_no_t port;
     struct test_entry *entry, *tmp_entry;
@@ -1230,9 +1233,11 @@ test_gentable_add4(
 
 static indigo_error_t
 test_gentable_modify4(
-    const indigo_core_op_context_t *op_ctx,
-    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, of_desc_str_t err_txt)
+    indigo_cxn_id_t cxn_id,
+    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
+    void *op_ctx1)
 {
+    indigo_core_op_context_t *op_ctx = (indigo_core_op_context_t *)op_ctx1;
     struct test_table *table = table_priv;
     of_port_no_t port;
     struct test_entry *entry, *tmp_entry;
@@ -1274,9 +1279,11 @@ test_gentable_modify4(
 
 static indigo_error_t
 test_gentable_delete4(
-    const indigo_core_op_context_t *op_ctx,
-    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t err_txt)
+    indigo_cxn_id_t cxn_id,
+    void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key, of_desc_str_t err_txt,
+    void *op_ctx1)
 {
+    indigo_core_op_context_t *op_ctx = (indigo_core_op_context_t *)op_ctx1;
     struct test_table *table = table_priv;
     of_port_no_t port;
     struct test_entry *entry;

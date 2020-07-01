@@ -169,17 +169,6 @@ indigo_core_stats_get(uint32_t *total_flows,
 typedef struct indigo_core_gentable indigo_core_gentable_t;
 
 /**
- * @brief Opaque handle to an operation
- */
-typedef struct indigo_core_op_context {
-    indigo_cxn_id_t cxn_id;
-    of_object_t *obj;
-    bool no_async;            /* indication this op context is not called for async operation.
-                               * It is used in the OFStatemManager internally.
-                               */
-} indigo_core_op_context_t;
-
-/**
  * @brief Operations on a gentable
  */
 typedef struct indigo_core_gentable_ops {
@@ -314,8 +303,7 @@ typedef struct indigo_core_gentable_ops {
 
     /**
      * @brief Add an entry
-     * @param op_ctx Opaque context to be passed back to state manager when
-     *               resume function is called after async operation completes
+     * @param cxn_id Controller connection ID
      * @param table_priv Table private data
      * @param key Entry key (identical to key from add)
      * @param value New entry value
@@ -328,46 +316,53 @@ typedef struct indigo_core_gentable_ops {
      *                         the asynchronous operation is successfully
      *                         completed by the lower-level driver
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
      */
     indigo_error_t (*add4)(
-        const indigo_core_op_context_t *op_ctx,
+        indigo_cxn_id_t cxn_id,
         void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
-        void **entry_priv, of_desc_str_t err_txt);
+        void **entry_priv, of_desc_str_t err_txt,
+        void *op_ctx);
 
     /**
      * @brief Modify an entry
-     * @param op_ctx Opaque context to be passed back to state manager when
-     *               resume function is called after async operation completes
+     * @param cxn_id Controller connection ID
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
      * @param value New entry value
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
      */
     indigo_error_t (*modify4)(
-        const indigo_core_op_context_t *op_ctx,
+        indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_list_bsn_tlv_t *value, of_desc_str_t err_txt);
+        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
+        void *op_ctx);
 
     /**
      * @brief Delete an entry
-     * @param op_ctx Opaque context to be passed back to state manager when
-     *               resume function is called after async operation completes
+     * @param cxn_id Controller connection ID
      * @param table_priv Table private data
      * @param entry_priv Entry private data
      * @param key Entry key (identical to key from add)
      * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
      * NOTE: When writing into err_txt, it is the implementer's responsibility
      * not to overflow err_txt
      */
     indigo_error_t (*del4)(
-        const indigo_core_op_context_t *op_ctx,
+        indigo_cxn_id_t cxn_id,
         void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
-        of_desc_str_t err_txt);
+        of_desc_str_t err_txt,
+        void *op_ctx);
 
     /**
      * @brief Start a subbundle operation on this gentable
@@ -433,7 +428,7 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
 
 void
 indigo_core_gentable_entry_resume(
-    indigo_core_op_context_t *op_ctx,
+    void *op_ctx,
     void *entry_priv,
     of_desc_str_t err_txt,
     indigo_error_t rv);

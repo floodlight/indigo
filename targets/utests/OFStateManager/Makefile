@@ -42,9 +42,9 @@ GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_TIMESLICE_MS=1
 
 DEPENDMODULES += AIM BigList SocketManager loci locitest indigo murmur cjson Configuration BigHash debug_counter timer_wheel minimatch BigRing OS slot_allocator histogram cjson_util
 
-DEPENDMODULE_HEADERS := OFConnectionManager2
+DEPENDMODULE_HEADERS := OFConnectionManager2 IOF
 
-GLOBAL_LINK_LIBS += -lm -lcrypto -lssl
+GLOBAL_LINK_LIBS += -lm
 
 include $(BUILDER)/build-unit-test.mk
 

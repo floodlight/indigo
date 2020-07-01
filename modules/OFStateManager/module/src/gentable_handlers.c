@@ -370,7 +370,8 @@ ind_core_bsn_gentable_entry_add_handler(
             indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
             op_ctx->cxn_id = cxn_id;
             op_ctx->obj = obj;
-            rv = gentable->ops->add4(op_ctx, gentable->priv, &key, &value, &priv, err_txt);
+            rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt,
+                                     (void *)op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
                 /* entry hasn't been allocated yet, wait for resume.
                  * block async op pending */
@@ -397,7 +398,8 @@ ind_core_bsn_gentable_entry_add_handler(
             indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
             op_ctx->cxn_id = cxn_id;
             op_ctx->obj = obj;
-            rv = gentable->ops->modify4(op_ctx, gentable->priv, entry->priv, &key, &value, err_txt);
+            rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt,
+                                        op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
                 /* async returned
                  * block async op pending */
@@ -461,7 +463,8 @@ ind_core_bsn_gentable_entry_delete_handler(
         op_ctx->cxn_id = cxn_id;
         op_ctx->obj = obj;
         op_ctx->no_async = false;
-        rv = gentable->ops->del4(op_ctx, gentable->priv, entry->priv, entry->key, err_txt);
+        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
+                                 (void *)op_ctx);
         /* async returned */
         if (rv == INDIGO_ERROR_PENDING) {
             AIM_LOG_TRACE("%s gentable delete async return",
@@ -1163,7 +1166,8 @@ delete_entry(indigo_cxn_id_t cxn_id,
         op_ctx.cxn_id = cxn_id;
         op_ctx.obj = NULL;
         op_ctx.no_async = true;
-        rv = gentable->ops->del4(&op_ctx, gentable->priv, entry->priv, entry->key, err_txt);
+        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
+                                 (void *) &op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1180,11 +1184,12 @@ delete_entry(indigo_cxn_id_t cxn_id,
 
 void
 indigo_core_gentable_entry_resume(
-    indigo_core_op_context_t *op_ctx,
+    void *op_ctx_in,
     void *priv,
     of_desc_str_t err_txt,
     indigo_error_t rv)
 {
+    indigo_core_op_context_t *op_ctx = (indigo_core_op_context_t *) op_ctx_in;
     indigo_cxn_id_t cxn_id;
     of_object_t *obj;
     bool no_async = true;
