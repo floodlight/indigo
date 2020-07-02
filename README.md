@@ -50,7 +50,7 @@ Run `make check`.  This will build and run each module's unit test.  In
 general, you will see a lot of output and occasionally even error messages
 for tests that exercise error handling.
 
-Use the VERBOSE=1 and vargrind environment for building problems.
+Use the VERBOSE=1 and valgrind environment variables for building problems.
 Example: "make VERBOSE=1" . "make VALGRIND=1".
  
 Generating Documentation
