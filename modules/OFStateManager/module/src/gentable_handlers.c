@@ -244,7 +244,7 @@ gentable_entry_add_resume(
     struct ind_core_gentable_checksum_bucket *checksum_bucket;
 
     if (obj == NULL) {
-        /* should not happen. just return the error unknown */ 
+        /* should not happen. just return */ 
         goto done;
     }
 
@@ -322,6 +322,7 @@ error:
                                            OF_BSN_GENTABLE_ERROR_TABLE_FULL,
                                            err_txt);
     } else if (rv == INDIGO_ERROR_TIME_OUT) {
+        /* Change UNKNOWN to proper value once we define the new error codes */
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
                                            OF_BSN_GENTABLE_ERROR_UNKNOWN,
                                            err_txt);
@@ -376,9 +377,14 @@ ind_core_bsn_gentable_entry_add_handler(
                 /* entry hasn't been allocated yet, wait for resume.
                  * block async op pending */
                 if (priv != NULL) {
-                    AIM_LOG_ERROR("gnetable %s return pending. Priv should be NULL", 
+                    AIM_LOG_ERROR("gentable %s return pending. Priv should be NULL", 
                                   gentable->name);
                 }
+                /* The following call will notify the connection manager that
+                 * the operation hasn't finished yet. The 'obj' cannot be freed.
+                 * this implementation will only handle one pending operation at
+                 * any point in time.
+                 */
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
@@ -1083,7 +1089,7 @@ delete_entry_gt_update(
  * - controller request
  * - iterate to delete all entires (not support for now)
  * - table unregister
- * Only controll request support async operation for now
+ * For now, only controller request sarriving in bundles can be asynchrous
  */
 static void
 gentable_entry_del_resume(
@@ -1118,7 +1124,7 @@ gentable_entry_del_resume(
 
     entry = find_entry_by_key(gentable, &key);
     if (entry == NULL) {
-        /* Entry may be defleted by gentable unregistration */
+        /* Entry may be deleted by gentable unregistration */
         AIM_LOG_TRACE("Nonexistent %s gentable entry in gentable_entry_delete message", gentable->name);
         return;
     }
@@ -1127,13 +1133,10 @@ gentable_entry_del_resume(
      */
     if ((rv == INDIGO_ERROR_NONE) || (rv == INDIGO_ERROR_TIME_OUT)) {
         delete_entry_gt_update(gentable, entry);
-    } else if (rv == INDIGO_ERROR_TIME_OUT) {
-        AIM_LOG_ERROR("%s gentable delete failed: %s",
-                      gentable->name, indigo_strerror(rv));
-        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, 
-                                           gentable->table_id,
-                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
-                                           err_txt);
+        if (rv == INDIGO_ERROR_TIME_OUT) {
+            AIM_LOG_ERROR("%s gentable delete failed: %s",
+                          gentable->name, indigo_strerror(rv));
+        }
     } else if (rv < 0) {
         AIM_LOG_ERROR("%s gentable delete failed: %s",
                       gentable->name, indigo_strerror(rv));
