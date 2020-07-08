@@ -77,6 +77,17 @@ calc_duration(indigo_time_t current_time, indigo_time_t entry_time,
     *nsecs = ((ms_time % 1000) * 1000000);
 }
 
+/**
+ * @brief Opaque handle to an operation
+ */
+typedef struct indigo_core_op_context {
+    indigo_cxn_id_t cxn_id;
+    of_object_t *obj;
+    bool no_async;            /* indication this op context is not called for async operation.
+                               * It is used in the OFStatemManager internally.
+                               */
+} indigo_core_op_context_t;
+
 extern const struct ind_cfg_ops ind_core_cfg_ops;
 
 void ind_core_test_gentable_init(void);

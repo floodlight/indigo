@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-202, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -228,6 +228,9 @@ typedef struct connection_s {
         uint32_t xid;   /* XID of barrier request */
     } barrier;
 
+    /* async operations */
+    uint32_t async_pending_cnt;
+
     /* Echo */
     struct {
         uint32_t outstanding_echo_cnt;  /* number of unacknowledged echoes */
@@ -341,7 +344,14 @@ void ind_cxn_unblock_barrier(connection_t *cxn);
 void ind_cxn_pause(connection_t *cxn);
 void ind_cxn_resume(connection_t *cxn);
 
-void ind_cxn_process_message(connection_t *cxn, of_object_t *obj);
+void ind_cxn_block_async_op(connection_t *cxn);
+void ind_cxn_unblock_async_op(connection_t *cxn);
+
+bool
+ind_cxn_bundle_task_should_yield(connection_t *cxn);
+
+indigo_error_t
+ind_cxn_process_message(connection_t *cxn, of_object_t *obj);
 
 void
 ind_cxn_populate_connection_list(of_list_bsn_controller_connection_t *list);

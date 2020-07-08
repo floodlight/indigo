@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -204,12 +204,13 @@ send_flow_removed_message(ft_entry_t *entry,
  * In any case, ownership of obj is NOT returned to the caller.
  */
 
-void
+indigo_error_t
 indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 {
+    indigo_error_t rv = INDIGO_ERROR_NONE;
     if (!ind_core_module_enabled) {
         AIM_LOG_INTERNAL("Not enabled");
-        return;
+        return rv;
     }
 
     AIM_LOG_TRACE("Received %s message from cxn %d",
@@ -217,7 +218,8 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
 
     if (ind_core_message_notify(cxn, obj) == INDIGO_CORE_LISTENER_RESULT_DROP) {
         AIM_LOG_TRACE("Listener dropped message");
-        return;
+
+        return rv;
     }
 
     /* Default handlers */
@@ -346,15 +348,15 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
      ****************************************************************/
 
     case OF_BSN_GENTABLE_ENTRY_ADD:
-        ind_core_bsn_gentable_entry_add_handler(obj, cxn);
+        rv = ind_core_bsn_gentable_entry_add_handler(obj, cxn);
         break;
 
     case OF_BSN_GENTABLE_ENTRY_DELETE:
-        ind_core_bsn_gentable_entry_delete_handler(obj, cxn);
+        rv = ind_core_bsn_gentable_entry_delete_handler(obj, cxn);
         break;
 
     case OF_BSN_GENTABLE_CLEAR_REQUEST:
-        ind_core_bsn_gentable_clear_request_handler(obj, cxn);
+        rv = ind_core_bsn_gentable_clear_request_handler(obj, cxn);
         break;
 
     case OF_BSN_GENTABLE_SET_BUCKETS_SIZE:
@@ -498,7 +500,18 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn, of_object_t *obj)
         ind_core_unhandled_message(obj, cxn);
         break;
     }
+    return rv;
 }
+
+/**
+ * @brief Resume an OF message from the driver async return
+ * @param cxn The connection id from which the request came
+ * @param obj The generic LOXI object holding the message
+ *
+ * If a handler is called, the handler takes ownership of the LOXI object
+ *
+ * In any case, ownership of obj is NOT returned to the caller.
+ */
 
 static of_dpid_t ind_core_dpid = OFSTATEMANAGER_CONFIG_DPID_DEFAULT;
 

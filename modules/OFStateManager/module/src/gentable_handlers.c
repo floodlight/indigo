@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -27,6 +27,34 @@
  *  - Reduce LOCI allocation overhead per entry.
  *  - Reuse stats entry during stats tasks.
  *  - Automatically resize key hashtable buckets.
+ *
+ * Async Operations:
+ * The add4()/modify4()/del4() will support async operations.
+ * Driver:
+ *    The return value, INDIGO_ERROR_PENDING, indicates that driver
+ *    is performing an async operation.
+ *
+ *    The op_ctx (indigo_core_op_context) contains the operation
+ *    context information needed when driver notifies state manager
+ *    with the final status.
+ *
+ *    The driver will call indigo_core_gentable_entry_resume() to
+ *    post its final status to state manager.
+ *
+ *    Driver can implement a timer to constrain the time to wait for
+ *    the operation completion. If the operation cannot finish within
+ *    expected time, an error can be posted to state manager through
+ *    the same resume function, indigo_core_gentable_entry_resume().
+ *
+ * State Manager
+ *    The new APIs and operation context are added to support async
+ *    operation.
+ *
+ *    Only add4()/modify()/del4() will expect INDIGO_ERROR_PENDING
+ *    return.
+ *
+ *    The indigo_core_gentable_entry_resume() function is used for
+ *    the bottom half of an async operation.
  */
 
 #include "ofstatemanager_log.h"
@@ -57,7 +85,8 @@ static indigo_error_t delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_
 static struct ind_core_gentable_entry *find_entry_by_key(indigo_core_gentable_t *gentable, of_list_bsn_tlv_t *key);
 static bool key_equality(of_list_bsn_tlv_t *a, of_list_bsn_tlv_t *b);
 static indigo_error_t ind_core_gentable_spawn_iter_task(indigo_core_gentable_t *gentable, ind_core_gentable_iter_task_callback_f callback, void *cookie, int priority, of_checksum_128_t checksum_prefix, of_checksum_128_t checksum_mask);
-
+static void gentable_entry_del_resume(indigo_cxn_id_t cxn_id, of_object_t *obj, of_desc_str_t err_txt, indigo_error_t rv);
+static void gentable_entry_add_resume(indigo_cxn_id_t cxn_id, of_object_t *obj, void *priv, of_desc_str_t err_txt, indigo_error_t rv);
 struct ind_core_gentable_checksum_bucket {
     of_checksum_128_t checksum;
     list_head_t entries;
@@ -95,6 +124,13 @@ static indigo_core_gentable_t *gentables[MAX_GENTABLES];
  */
 static uint64_t next_generation_id = 0;
 
+/*
+ * Used to call del4() in gentable clearance case
+ * In such case, the deletion of gentable entries are invoked without
+'* of_object_t. Also, OFStateManager doesn't support async resume in
+ * such case
+ */
+indigo_core_op_context_t op_ctx;
 
 /* Registration */
 
@@ -110,11 +146,11 @@ indigo_core_gentable_register(
     int i;
 
     AIM_TRUE_OR_DIE(ops->add != NULL || ops->add2 != NULL ||
-                    ops->add3 != NULL);
+                    ops->add3 != NULL || ops->add4 != NULL);
     AIM_TRUE_OR_DIE(ops->modify != NULL || ops->modify2 != NULL ||
-                    ops->modify3 != NULL);
+                    ops->modify3 != NULL || ops->modify4 != NULL);
     AIM_TRUE_OR_DIE(ops->del != NULL || ops->del2 != NULL ||
-                    ops->del3 != NULL);
+                    ops->del3 != NULL || ops->del4 != NULL);
     AIM_TRUE_OR_DIE(ops->get_stats != NULL);
     AIM_TRUE_OR_DIE(buckets_size > 1);
     AIM_TRUE_OR_DIE(strlen(name) <= OF_MAX_TABLE_NAME_LEN);
@@ -185,24 +221,34 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
 
 /* OpenFlow message handlers */
 
-void
-ind_core_bsn_gentable_entry_add_handler(
+/**
+ * gentable add/modify resume functon
+ * Drivers will call this resume function if the async operation reaches
+ * the final status
+ * If it is not an async operation, the indigo will call it.
+ * (The existing non-async operation deson't need to modify the codes.)
+ */
+static void
+gentable_entry_add_resume(
+    indigo_cxn_id_t cxn_id,
     of_object_t *obj,
-    indigo_cxn_id_t cxn_id)
+    void *priv,
+    of_desc_str_t err_txt,
+    indigo_error_t rv)
 {
     uint16_t table_id;
     indigo_core_gentable_t *gentable;
-    of_list_bsn_tlv_t key, value;
-    void *priv = NULL;
-    indigo_error_t rv;
-    struct ind_core_gentable_checksum_bucket *checksum_bucket;
+    of_list_bsn_tlv_t key;
+    of_list_bsn_tlv_t value;
     struct ind_core_gentable_entry *entry;
-    of_desc_str_t err_txt = "Gentable add failed";
+    struct ind_core_gentable_checksum_bucket *checksum_bucket;
+
+    if (obj == NULL) {
+        /* should not happen. just return */ 
+        goto done;
+    }
 
     of_bsn_gentable_entry_add_table_id_get(obj, &table_id);
-    of_bsn_gentable_entry_add_key_bind(obj, &key);
-    of_bsn_gentable_entry_add_value_bind(obj, &value);
-
     gentable = find_gentable_by_id(table_id);
     if (gentable == NULL) {
         AIM_LOG_ERROR("Nonexistent gentable id %d in gentable_entry_add message", table_id);
@@ -210,20 +256,14 @@ ind_core_bsn_gentable_entry_add_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        return;
+        goto done;
     }
+    of_bsn_gentable_entry_add_key_bind(obj, &key);
+    of_bsn_gentable_entry_add_value_bind(obj, &value);
 
     entry = find_entry_by_key(gentable, &key);
-
     if (entry == NULL) {
-        /* Adding a new entry */
-        if (gentable->ops->add3 != NULL) {
-            rv = gentable->ops->add3(cxn_id, gentable->priv, &key, &value, &priv, err_txt);
-        } else if (gentable->ops->add2 != NULL) {
-            rv = gentable->ops->add2(cxn_id, gentable->priv, &key, &value, &priv);
-        } else {
-            rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
-        }
+        /* Adding a new entry case */
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_ERROR("%s gentable add failed: %s",
                           gentable->name, indigo_strerror(rv));
@@ -241,19 +281,13 @@ ind_core_bsn_gentable_entry_add_handler(
         gentable->num_entries++;
     } else {
         /* Modifying an existing entry */
-        if (gentable->ops->modify3 != NULL) {
-            rv = gentable->ops->modify3(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt);
-        } else if (gentable->ops->modify2 != NULL) {
-            rv = gentable->ops->modify2(cxn_id, gentable->priv, entry->priv, &key, &value);
-        } else {
-            rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
-        }
         if (rv != INDIGO_ERROR_NONE) {
             AIM_LOG_ERROR("%s gentable modify failed: %s",
                           gentable->name, indigo_strerror(rv));
             goto error;
         }
 
+        /* Delete original value */
         of_object_delete(entry->value);
 
         /* Remove from old checksum bucket */
@@ -277,8 +311,6 @@ ind_core_bsn_gentable_entry_add_handler(
     /* Add to table checksum */
     add_checksum(&gentable->checksum, &entry->checksum);
 
-    return;
-
 error:
     if (rv == INDIGO_ERROR_PARAM) {
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
@@ -289,14 +321,114 @@ error:
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
                                            OF_BSN_GENTABLE_ERROR_TABLE_FULL,
                                            err_txt);
-    } else {
+    } else if (rv == INDIGO_ERROR_TIME_OUT) {
+        /* Change UNKNOWN to proper value once we define the new error codes */
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
+                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
+                                           err_txt);
+    } else if (rv < 0) {
         indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
                                            OF_BSN_GENTABLE_ERROR_UNKNOWN,
                                            "Gentable add failed");
     }
+done:
+    return;
 }
 
-void
+indigo_error_t
+ind_core_bsn_gentable_entry_add_handler(
+    of_object_t *obj,
+    indigo_cxn_id_t cxn_id)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    of_list_bsn_tlv_t key, value;
+    void *priv = NULL;
+    struct ind_core_gentable_entry *entry;
+    of_desc_str_t err_txt = "Gentable add failed";
+    indigo_error_t rv = INDIGO_ERROR_NONE;
+
+    of_bsn_gentable_entry_add_table_id_get(obj, &table_id);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        AIM_LOG_ERROR("Nonexistent gentable id %d in gentable_entry_add message", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        return rv;
+    }
+
+    /* bind key and value */
+    of_bsn_gentable_entry_add_key_bind(obj, &key);
+    of_bsn_gentable_entry_add_value_bind(obj, &value);
+
+    entry = find_entry_by_key(gentable, &key);
+
+    if (entry == NULL) {
+        if (gentable->ops->add4 != NULL) {
+            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+            op_ctx->cxn_id = cxn_id;
+            op_ctx->obj = obj;
+            rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt,
+                                     (void *)op_ctx);
+            if (rv == INDIGO_ERROR_PENDING) {
+                /* entry hasn't been allocated yet, wait for resume.
+                 * block async op pending */
+                if (priv != NULL) {
+                    AIM_LOG_ERROR("gentable %s return pending. Priv should be NULL", 
+                                  gentable->name);
+                }
+                /* The following call will notify the connection manager that
+                 * the operation hasn't finished yet. The 'obj' cannot be freed.
+                 * this implementation will only handle one pending operation at
+                 * any point in time.
+                 */
+                indigo_cxn_block_async_op(cxn_id);
+                return rv;
+            }
+            aim_free(op_ctx);
+        } else {
+            if (gentable->ops->add3 != NULL) {
+                rv = gentable->ops->add3(cxn_id, gentable->priv, &key, &value, &priv, err_txt);
+            } else if (gentable->ops->add2 != NULL) {
+                rv = gentable->ops->add2(cxn_id, gentable->priv, &key, &value, &priv);
+            } else {
+                rv = gentable->ops->add(gentable->priv, &key, &value, &priv);
+            }
+        }
+    } else {
+        /* Modifying an existing entry */
+        if (gentable->ops->modify4 != NULL) {
+            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+            op_ctx->cxn_id = cxn_id;
+            op_ctx->obj = obj;
+            rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt,
+                                        op_ctx);
+            if (rv == INDIGO_ERROR_PENDING) {
+                /* async returned
+                 * block async op pending */
+                indigo_cxn_block_async_op(cxn_id);
+                return rv;
+            }
+            aim_free(op_ctx);
+        } else {
+            if (gentable->ops->modify3 != NULL) {
+                rv = gentable->ops->modify3(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt);
+            } else if (gentable->ops->modify2 != NULL) {
+                rv = gentable->ops->modify2(cxn_id, gentable->priv, entry->priv, &key, &value);
+            } else {
+                rv = gentable->ops->modify(gentable->priv, entry->priv, &key, &value);
+            }
+        }
+    }
+    gentable_entry_add_resume(cxn_id, obj, priv, err_txt, rv);
+
+    return rv;
+}
+
+indigo_error_t
 ind_core_bsn_gentable_entry_delete_handler(
     of_object_t *obj,
     indigo_cxn_id_t cxn_id)
@@ -305,7 +437,8 @@ ind_core_bsn_gentable_entry_delete_handler(
     indigo_core_gentable_t *gentable;
     of_list_bsn_tlv_t key;
     struct ind_core_gentable_entry *entry;
-    indigo_error_t rv;
+    indigo_error_t rv = INDIGO_ERROR_NONE;
+    indigo_core_op_context_t *op_ctx;
     of_desc_str_t err_txt = "Gentable delete failed";
 
     of_bsn_gentable_entry_delete_table_id_get(obj, &table_id);
@@ -318,24 +451,45 @@ ind_core_bsn_gentable_entry_delete_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        return;
+        return rv;
     }
 
     entry = find_entry_by_key(gentable, &key);
     if (entry == NULL) {
         AIM_LOG_TRACE("Nonexistent %s gentable entry in gentable_entry_delete message", gentable->name);
-        return;
+        return rv;
     }
 
-    rv = delete_entry(cxn_id, gentable, entry, err_txt);
-    if (rv < 0) {
-        AIM_LOG_ERROR("%s gentable delete failed: %s",
-                      gentable->name, indigo_strerror(rv));
-        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, table_id,
-                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
-                                           err_txt);
-        return;
+    if (entry->refcount > 0) {
+        return INDIGO_ERROR_EXISTS;
     }
+
+    if (gentable->ops->del4 != NULL) {
+        op_ctx = aim_zmalloc(sizeof(*op_ctx));
+        op_ctx->cxn_id = cxn_id;
+        op_ctx->obj = obj;
+        op_ctx->no_async = false;
+        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
+                                 (void *)op_ctx);
+        /* async returned */
+        if (rv == INDIGO_ERROR_PENDING) {
+            AIM_LOG_TRACE("%s gentable delete async return",
+                          gentable->name);
+            /* unblock async op pending */
+            indigo_cxn_block_async_op(cxn_id);
+            return rv;
+        }
+        aim_free(op_ctx);
+    } else if (gentable->ops->del3 != NULL) {
+        rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
+    } else if (gentable->ops->del2 != NULL) {
+        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
+    } else {
+        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    }
+
+    gentable_entry_del_resume(cxn_id, obj, err_txt, rv);
+    return rv;
 }
 
 struct ind_core_gentable_clear_state {
@@ -373,7 +527,7 @@ clear_iter(void *cookie, indigo_core_gentable_t *gentable,
     }
 }
 
-void
+indigo_error_t
 ind_core_bsn_gentable_clear_request_handler(
     of_object_t *obj,
     indigo_cxn_id_t cxn_id)
@@ -394,7 +548,7 @@ ind_core_bsn_gentable_clear_request_handler(
             cxn_id, obj,
             OF_ERROR_TYPE_BAD_REQUEST,
             OF_REQUEST_FAILED_BAD_TABLE_ID);
-        return;
+        return INDIGO_ERROR_NONE;
     }
 
     struct ind_core_gentable_clear_state *state = aim_zmalloc(sizeof(*state));
@@ -411,6 +565,7 @@ ind_core_bsn_gentable_clear_request_handler(
         indigo_cxn_resume(cxn_id);
         aim_free(state);
     }
+    return INDIGO_ERROR_NONE;
 }
 
 void
@@ -896,35 +1051,28 @@ hash_key(of_list_bsn_tlv_t *key)
     return murmur_hash(OF_OBJECT_BUFFER_INDEX(key, 0), key->length, 0);
 }
 
-static indigo_error_t
-delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable,
-             struct ind_core_gentable_entry *entry, of_desc_str_t err_txt)
+/* remove entry from local copy */
+static void
+delete_entry_gt_update(
+    indigo_core_gentable_t *gentable,
+    struct ind_core_gentable_entry *entry)
 {
-    indigo_error_t rv;
     struct ind_core_gentable_checksum_bucket *checksum_bucket;
 
-    if (entry->refcount > 0) {
-        return INDIGO_ERROR_EXISTS;
+    if (gentable == NULL) {
+        return;
     }
-
-    if (gentable->ops->del3 != NULL) {
-        rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
-    } else if (gentable->ops->del2 != NULL) {
-        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
-    } else {
-        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
-    }
-    if (rv < 0) {
-        return rv;
-    }
-
-    bighash_remove(gentable->key_hashtable, &entry->key_hash_entry);
+    bighash_remove(gentable->key_hashtable,
+                   &entry->key_hash_entry);
     list_remove(&entry->checksum_links);
 
-    checksum_bucket = find_checksum_bucket(gentable, &entry->checksum);
+    checksum_bucket = find_checksum_bucket(gentable,
+                                           &entry->checksum);
 
-    subtract_checksum(&checksum_bucket->checksum, &entry->checksum);
-    subtract_checksum(&gentable->checksum, &entry->checksum);
+    subtract_checksum(&checksum_bucket->checksum,
+                      &entry->checksum);
+    subtract_checksum(&gentable->checksum,
+                      &entry->checksum);
 
     of_object_delete(entry->key);
     of_object_delete(entry->value);
@@ -932,7 +1080,150 @@ delete_entry(indigo_cxn_id_t cxn_id, indigo_core_gentable_t *gentable,
 
     gentable->num_entries--;
 
-    return INDIGO_ERROR_NONE;
+    return;
+}
+
+/*
+ * An API for gentable driver to resume the deletion work in Indigo layer
+ * The deletion request may come from several sources
+ * - controller request
+ * - iterate to delete all entires (not support for now)
+ * - table unregister
+ * For now, only controller request sarriving in bundles can be asynchrous
+ */
+static void
+gentable_entry_del_resume(
+    indigo_cxn_id_t cxn_id,
+    of_object_t *obj, 
+    of_desc_str_t err_txt,
+    indigo_error_t rv)
+{
+    uint16_t table_id;
+    indigo_core_gentable_t *gentable;
+    of_list_bsn_tlv_t key;
+    struct ind_core_gentable_entry *entry;
+
+    if (obj == NULL) {
+        /* incorrect resume call */
+        AIM_LOG_ERROR("%s should have valid obj", __FUNCTION__);
+        return;
+    } 
+    of_bsn_gentable_entry_delete_table_id_get(obj, &table_id);
+    of_bsn_gentable_entry_delete_key_bind(obj, &key);
+
+    gentable = find_gentable_by_id(table_id);
+    if (gentable == NULL) {
+        /* gentable may have been unregistered before */
+        AIM_LOG_ERROR("Nonexistent gentable id %d in gentable_entry_delete message", table_id);
+        indigo_cxn_send_error_reply(
+            cxn_id, obj,
+            OF_ERROR_TYPE_BAD_REQUEST,
+            OF_REQUEST_FAILED_BAD_TABLE_ID);
+        return;
+    }
+
+    entry = find_entry_by_key(gentable, &key);
+    if (entry == NULL) {
+        /* Entry may be deleted by gentable unregistration */
+        AIM_LOG_TRACE("Nonexistent %s gentable entry in gentable_entry_delete message", gentable->name);
+        return;
+    }
+
+    /* TODO - should we delete the entry for other error cases
+     */
+    if ((rv == INDIGO_ERROR_NONE) || (rv == INDIGO_ERROR_TIME_OUT)) {
+        delete_entry_gt_update(gentable, entry);
+        if (rv == INDIGO_ERROR_TIME_OUT) {
+            AIM_LOG_ERROR("%s gentable delete failed: %s",
+                          gentable->name, indigo_strerror(rv));
+        }
+    } else if (rv < 0) {
+        AIM_LOG_ERROR("%s gentable delete failed: %s",
+                      gentable->name, indigo_strerror(rv));
+        indigo_cxn_send_bsn_gentable_error(cxn_id, obj, 
+                                           gentable->table_id,
+                                           OF_BSN_GENTABLE_ERROR_UNKNOWN,
+                                           err_txt);
+    }
+}
+
+/**
+ * This API is used by iteration and gentable unregister cases.
+ * Both cases don't have the obj
+ * - iteration case: not used for now. Just for passing the build.
+ * - gentable unregister case: Don't care async operation. Just clear the entry.
+ */
+static indigo_error_t
+delete_entry(indigo_cxn_id_t cxn_id,
+             indigo_core_gentable_t *gentable,
+             struct ind_core_gentable_entry *entry,
+             of_desc_str_t err_txt)
+{
+    indigo_error_t rv;
+
+    if (entry->refcount > 0) {
+        return INDIGO_ERROR_EXISTS;
+    }
+
+    if (gentable->ops->del4 != NULL) {
+        op_ctx.cxn_id = cxn_id;
+        op_ctx.obj = NULL;
+        op_ctx.no_async = true;
+        rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
+                                 (void *) &op_ctx);
+    } else if (gentable->ops->del3 != NULL) {
+        rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
+    } else if (gentable->ops->del2 != NULL) {
+        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
+    } else {
+        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    }
+
+    /* Dont care about the return value. Force to remove it. */
+    delete_entry_gt_update(gentable, entry);
+
+    return rv;
+}
+
+void
+indigo_core_gentable_entry_resume(
+    void *op_ctx_in,
+    void *priv,
+    of_desc_str_t err_txt,
+    indigo_error_t rv)
+{
+    indigo_core_op_context_t *op_ctx = (indigo_core_op_context_t *) op_ctx_in;
+    indigo_cxn_id_t cxn_id;
+    of_object_t *obj;
+    bool no_async = true;
+
+    if (op_ctx == NULL) {
+        /* incorrect resume call */
+        AIM_LOG_ERROR("%s should have valid op_ctx", __FUNCTION__);
+        return;
+    }
+
+    cxn_id = op_ctx->cxn_id;
+    obj = op_ctx->obj;
+    no_async = op_ctx->no_async;
+    /* if no_async is true, it means that this op_ctx is not dynamic allocated */
+    if (op_ctx->no_async == false) {
+        aim_free(op_ctx);
+    }
+    if (obj == NULL) {
+        /* incorrect resume call */
+        AIM_LOG_ERROR("%s: should have valid obj (no_async=%d)",
+                      __FUNCTION__, no_async);
+        return;
+     } 
+    if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {
+        gentable_entry_add_resume(cxn_id, obj, priv, err_txt, rv);
+    } else {
+        gentable_entry_del_resume(cxn_id, obj, err_txt, rv);
+    }
+
+    /* unblock async op pending */
+    indigo_cxn_unblock_async_op(cxn_id);
 }
 
 static struct ind_core_gentable_entry *

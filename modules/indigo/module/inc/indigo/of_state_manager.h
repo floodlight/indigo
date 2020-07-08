@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2016,2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2016,2018-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -66,7 +66,7 @@ extern indigo_error_t indigo_core_packet_in(of_packet_in_t *packet_in);
  * Ownership of the message is not transferred.
  */
 
-extern void indigo_core_receive_controller_message(
+extern indigo_error_t indigo_core_receive_controller_message(
     indigo_cxn_id_t cxn,
     of_object_t *obj);
 
@@ -141,7 +141,27 @@ indigo_core_stats_get(uint32_t *total_flows,
  * called when a gentable_entry_add message is received for a key that
  * already exists in the table.
  *
+ * Async operation support:
+ * add4()/modify4()/del4() are used for async operations.
+ * In the event that PENDING is returned by the add4/modify4/del4 APIs,
+ * the resume function indigo_core_gentable_resume() must be called by
+ * the driver either to complete any remaining work if the asynchronous
+ * operation is successfully completed by the lower-level driver, or to
+ * clean up operational state if the asynchronous operation fails in
+ * lower-level driver code. In order to provide sufficient context to
+ * the resume function, the add4/modify4/del4 APIs take a void* context
+ * as their first parameter. This void* value should be passed back to
+ * the resume function when the lower-level driver code finally completes
+ * (either with success or failure).
+ *
+ * The state manager also needs the operation context, containing
+ * connection id and oflow obj, to resume its remaining tasks.
+ * The operation context is passed to the driver in a form of
+ * struct indigo_core_op_context. (See add4()/modify4()/del4()).
+ * Drivers call the resume function with the operation context and
+ * the final status.
  ****************************************************************/
+
 
 /**
  * @brief Opaque handle to a gentable
@@ -282,6 +302,69 @@ typedef struct indigo_core_gentable_ops {
         of_desc_str_t err_txt);
 
     /**
+     * @brief Add an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     * @param [out] entry_priv Opaque private data for the entry, passed back
+     *                         whenever another operation is made on the entry.
+     *                         For async operation (return INDIGO_ERROR_PENDING)
+     *                         this value assigned to entry_priv will be
+     *                         ignored by state manager. Instead, the entry_priv
+     *                         passed to the resume function will be stored if
+     *                         the asynchronous operation is successfully
+     *                         completed by the lower-level driver
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
+     */
+    indigo_error_t (*add4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, of_list_bsn_tlv_t *key, of_list_bsn_tlv_t *value,
+        void **entry_priv, of_desc_str_t err_txt,
+        void *op_ctx);
+
+    /**
+     * @brief Modify an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param value New entry value
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
+     */
+    indigo_error_t (*modify4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_list_bsn_tlv_t *value, of_desc_str_t err_txt,
+        void *op_ctx);
+
+    /**
+     * @brief Delete an entry
+     * @param cxn_id Controller connection ID
+     * @param table_priv Table private data
+     * @param entry_priv Entry private data
+     * @param key Entry key (identical to key from add)
+     * @param err_txt In case of error, text to be copied to bsn_error msg
+     * @param op_ctx Opaque context to be passed back to state manager when
+     *               resume function is called after async operation completes
+     * NOTE: When writing into err_txt, it is the implementer's responsibility
+     * not to overflow err_txt
+     */
+    indigo_error_t (*del4)(
+        indigo_cxn_id_t cxn_id,
+        void *table_priv, void *entry_priv, of_list_bsn_tlv_t *key,
+        of_desc_str_t err_txt,
+        void *op_ctx);
+
+    /**
      * @brief Start a subbundle operation on this gentable
      * @param cxn_id Controller connection ID
      * @param table_priv Table private data
@@ -328,6 +411,27 @@ indigo_core_gentable_register(
 
 void
 indigo_core_gentable_unregister(indigo_core_gentable_t *gentable);
+
+/*
+ * @brief resume indigo add4()/modify4()/del4() when the driver gets the final status 
+ * @param op_ctx operation context 
+ * @param entry_priv driver's private data for this entry
+ * @param err_txt error string from driver
+ * @param rv the final status of the driver async add/modify/del
+ *
+ * The state manager will use the value of rv to either complete the async
+ * operation in case of success or clean up in case of failure
+ * This function is intended for asynchronous operations, and should not be called for
+ * synchronous operations
+ * For synchronous operations, the state manager will call this function internally.
+ */
+
+void
+indigo_core_gentable_entry_resume(
+    void *op_ctx,
+    void *entry_priv,
+    of_desc_str_t err_txt,
+    indigo_error_t rv);
 
 /*
  * @brief Lookup a gentable entry by key

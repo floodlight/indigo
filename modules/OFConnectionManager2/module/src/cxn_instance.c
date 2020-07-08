@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017 Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2020 Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -825,7 +825,6 @@ ind_cxn_unblock_barrier(connection_t *cxn)
     }
 }
 
-
 /**
  * Process an object pulled off a connection.
  *
@@ -834,50 +833,51 @@ ind_cxn_unblock_barrier(connection_t *cxn)
  *
  * Handle echo request, echo reply and barrier request locally
  */
-static void
+static indigo_error_t
 of_msg_process(connection_t *cxn, of_object_t *obj)
 {
+    indigo_error_t rv = INDIGO_ERROR_NONE;
     /* Note that the messages handled in cxn_instance are not tracked */
     switch (obj->object_id) {
     case OF_ECHO_REQUEST:
         echo_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_ECHO_REPLY:
         echo_reply_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BARRIER_REQUEST:
         barrier_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_ROLE_REQUEST:
         role_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BSN_TIME_REQUEST:
         bsn_time_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BSN_CONTROLLER_CONNECTIONS_REQUEST:
         bsn_controller_connections_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BSN_SET_AUX_CXNS_REQUEST:
         aux_connections_request_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BSN_LOG:
         bsn_log_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BUNDLE_CTRL_MSG:
         ind_cxn_bundle_ctrl_handle(cxn, obj);
-        return;
+        return rv;
 
     case OF_BUNDLE_ADD_MSG:
         ind_cxn_bundle_add_handle(cxn, obj);
-        return;
+        return rv;
 
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
@@ -901,14 +901,15 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
                         of_object_id_str[obj->object_id]);
             indigo_cxn_send_error_reply(cxn->cxn_id, obj,
                                         OF_ERROR_TYPE_BAD_REQUEST, code);
-            return;
+            return rv;
         }
 
     default:
         break;
     }
 
-    indigo_core_receive_controller_message(cxn->cxn_id, obj);
+    rv = indigo_core_receive_controller_message(cxn->cxn_id, obj);
+    return rv;
 }
 
 
@@ -1164,13 +1165,19 @@ process_message(connection_t *cxn)
         return;
     }
 
+    /* ignore the return value.
+     * Assume async operation only occurs in gentable.
+     * The state manager will be responsible for handling
+     * pending return. 
+     */
     ind_cxn_process_message(cxn, obj);
 }
 
 /* exposed for process_message and message bundling code to call */
-void
+indigo_error_t
 ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
 {
+    indigo_error_t rv = INDIGO_ERROR_NONE;
     if(cxn->trace_pvs) {
         aim_printf(cxn->trace_pvs, "** of_msg_trace: received from cxn %s\n",
                    cxn->desc);
@@ -1214,8 +1221,9 @@ ind_cxn_process_message(connection_t *cxn, of_object_t *obj)
         check_for_hello(cxn, obj);
     } else {
         /* Process received message */
-        of_msg_process(cxn, obj);
+        rv = of_msg_process(cxn, obj);
     }
+    return rv;
 }
 
 /**
@@ -2427,6 +2435,8 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                 }
             }
         }
+        aim_printf(pvs, "    Outstanding Async Operations: %u\n",
+                   cxn->async_pending_cnt);
     }
     if (!cxn_count) {
         aim_printf(pvs, "No active connections\n");
@@ -2450,4 +2460,75 @@ int unit_test_connection_count_get(void)
     }
 
     return count;
+}
+
+/**
+ * increase the async pending cnt
+ * Set the bundle async op pending flag
+ * @param cxn
+ */
+void
+ind_cxn_block_async_op(connection_t *cxn)
+{
+    cxn->async_pending_cnt++;
+}
+
+void
+indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_block_async_op(cxn);
+    }
+}
+
+/**
+ * Clear the async op pending flag
+ * @param cxn
+ */
+void
+ind_cxn_unblock_async_op(connection_t *cxn)
+{
+    if (cxn->async_pending_cnt >  0) {
+        cxn->async_pending_cnt--;
+    }
+}
+
+void
+indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
+        ind_cxn_unblock_async_op(cxn);
+    }
+}
+
+/**
+ * Check whether connection's bundle task should yield
+ * @param cxn connection
+ */
+bool
+ind_cxn_bundle_task_should_yield(connection_t *cxn)
+{
+    if (cxn == NULL) {
+        /* Connection went away. Let task drop remaining messages. */
+        return false;
+    }
+
+    if (cxn->async_pending_cnt > 0) {
+        /* Wait for outstanding operations. */
+        return true;
+    }
+    return false;
+}
+
+bool
+unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        return false;
+    }
+
+    return ind_cxn_bundle_task_should_yield(cxn);
 }

@@ -1,0 +1,39 @@
+async operation support in bundle
+===================================
+- one outstanding operation is supported
+- only gentable operation support the async operation (not for flow table)
+
+OF ConnectionManager:
+========================
+- bundle task will yield if there is an outstanding operation
+- if the operation returns INDIGO_ERROR_PENDING, the bundle task will mark
+  that operation as pending, and resume the task from that operation.
+
+OF StateManager:
+========================
+- The gentable operations provide new getnable operation methods which
+  gentable drivers should implement them if those operations are going to
+  be asynchrous. (Look for add4(), modify4(), and del4() descriptions in
+  indigo/of_state_manager.h)
+- The OF StateManager only expects the INDIGO_ERROR_PENDING returned from the
+  the new methods (add4(), modify4(), and del4()).
+- If INDIGO_ERROR_PENDING is returned, the OF StateManager will mark the
+  outstanding operation and return the same status to OF ConnectionManager.
+  The OF StateManager will put the remaining work of that operation on hold.
+- A resume function, indigo_core_gentable_entry_resume(),  must be called
+  by the driver when the operation is completed (either successful or error).
+- The StateManager will perform the remaining work for that operation. If
+  the final status is successful, the entry will be added or deleted in the
+  gentable state tracked by OFStateManager.
+- The StateManager will release that operation from pending state so that
+  OF ConnectionManager can resume the next operation.
+
+Gentable Driver:
+=======================
+- The driver must implement the new *4 methods if it wants to support async
+  operations.
+- Return an INDIGO_ERROR_PENDING to OF StateManager if the operation is
+  asynchronous. 
+- Call the indigo_core_gentable_entry_resume() when the operation is completed.
+- There is a "op_ctx" in the *4 methods. This op_ctx is the used by the
+  OF StateManager in its resume function.

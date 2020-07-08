@@ -1,6 +1,6 @@
 ################################################################
 #
-#        Copyright 2015, Big Switch Networks, Inc. 
+#        Copyright 2015-2020, Arista Networks, Inc. 
 # 
 # Licensed under the Eclipse Public License, Version 1.0 (the
 # "License"); you may not use this file except in compliance
@@ -34,6 +34,8 @@ GLOBAL_CFLAGS += -DOFCONNECTIONMANAGER_CONFIG_INCLUDE_UCLI=0
 GLOBAL_CFLAGS += -DSOCKETMANAGER_CONFIG_INCLUDE_UCLI=0
 GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MODULES_INIT=1
 GLOBAL_CFLAGS += -DAIM_CONFIG_INCLUDE_MAIN=1
+
+DEPENDMODULE_HEADERS := IOF
 
 GLOBAL_LINK_LIBS += -lm -lcrypto -lssl
 

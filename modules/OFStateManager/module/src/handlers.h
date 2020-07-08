@@ -147,13 +147,16 @@ void ind_core_bsn_port_counter_stats_request_handler(
     indigo_cxn_id_t cxn_id);
 
 /* gentable_handlers.c */
-void ind_core_bsn_gentable_entry_add_handler(
+indigo_error_t
+ind_core_bsn_gentable_entry_add_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-void ind_core_bsn_gentable_entry_delete_handler(
+indigo_error_t 
+ind_core_bsn_gentable_entry_delete_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
-void ind_core_bsn_gentable_clear_request_handler(
+indigo_error_t
+ind_core_bsn_gentable_clear_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
 void ind_core_bsn_gentable_set_buckets_size_handler(

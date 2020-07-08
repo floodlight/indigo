@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2013-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -213,6 +213,7 @@ indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
     AIM_LOG_VERBOSE("Send BSN gentable error msg called for cxn id %d: %s\n",
                     cxn_id, err_txt);
     bsn_err_count++;
+    /* copy the error text to global buffer */
     strncpy(bsn_err_txt, err_txt, sizeof(of_desc_str_t));
 }
 
@@ -280,6 +281,22 @@ indigo_cxn_resume(indigo_cxn_id_t cxn_id)
     outstanding_op_cnt--;
 }
 
+void
+indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id)
+{
+}
+
+void
+indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
+{
+}
+
+bool
+indigo_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
+{
+    return false;
+}
+ 
 indigo_error_t
 indigo_port_modify(of_port_mod_t *port_mod)
 {
@@ -448,7 +465,6 @@ depopulate_table(ft_instance_t ft)
         ft_delete(ft, entry);
         TEST_ASSERT(check_table_entry_states(ft) == 0);
     }
-
     return 0;
 }
 
@@ -474,8 +490,9 @@ check_bucket_counts(ft_instance_t ft, int expected)
 void
 handle_message(of_object_t *obj)
 {
-    indigo_core_receive_controller_message(0, obj);
-    of_object_delete(obj);
+    if (indigo_core_receive_controller_message(0, obj) != INDIGO_ERROR_PENDING) {
+        of_object_delete(obj);
+    }
 }
 
 int

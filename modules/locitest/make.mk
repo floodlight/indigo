@@ -31,5 +31,5 @@ locitest_INCLUDES := -I $(LOCITEST)/inc -I $(LOCI)/src
 locitest_INTERNAL_INCLUDES := -I $(LOCITEST)/src
 
 LIBRARY := locitest
-locitest_SUBDIR := $(LOCITEST)/src
+locitest_SUBDIR := $(LOCITEST)/src/
 include $(BUILDER)/lib.mk

@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013-2015,2017-2018, Big Switch Networks, Inc.
+ *        Copyright 2013-2015,2017-2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -650,6 +650,18 @@ void indigo_cxn_block_barrier(indigo_cxn_id_t cxn_id, indigo_cxn_barrier_blocker
  * @param blocker Previously created by indigo_cxn_block_barrier
  */
 void indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker);
+
+/**
+ * @brief Create an async op blocker
+ * @param cxn_id Connection ID
+ */
+void indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Destroy an async op blocker
+ * @param cxn_id Connection ID
+ */
+extern void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
 
 /**
  * @brief Pause reading messages from a connection
