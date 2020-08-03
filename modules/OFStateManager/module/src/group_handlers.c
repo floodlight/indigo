@@ -482,7 +482,7 @@ void indigo_core_group_table_register(
     AIM_TRUE_OR_DIE(strlen(name) <= OF_MAX_TABLE_NAME_LEN);
 
     ind_core_group_table_t *table = aim_zmalloc(sizeof(*table));
-    strncpy(table->name, name, sizeof(table->name));
+    strncpy(table->name, name, sizeof(table->name)-1);
     table->ops = ops;
     table->priv = priv;
 

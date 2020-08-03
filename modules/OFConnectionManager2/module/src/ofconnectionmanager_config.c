@@ -162,11 +162,11 @@ static struct config {
     int keepalive_period_ms;
     int num_controllers;
     struct controller controllers[MAX_CONTROLLERS];
-    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN];
-    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
-    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
-    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
-    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN];
+    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN+1];
     int valid;
 } staged_config, current_config;
 

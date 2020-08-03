@@ -65,11 +65,11 @@ ind_core_bsn_debug_counter_desc_stats_request_handler(of_object_t *_obj,
         of_bsn_debug_counter_desc_stats_entry_counter_id_set(entry, counter->counter_id);
 
         memset(name, 0, sizeof(name));
-        strncpy(name, counter->name, sizeof(name));
+        strncpy(name, counter->name, sizeof(name)-1);
         of_bsn_debug_counter_desc_stats_entry_name_set(entry, name);
 
         memset(description, 0, sizeof(description));
-        strncpy(description, counter->description, sizeof(description));
+        strncpy(description, counter->description, sizeof(description)-1);
         of_bsn_debug_counter_desc_stats_entry_description_set(entry, description);
 
         if (of_list_append(&entries, entry) < 0) {
