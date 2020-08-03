@@ -48,7 +48,7 @@ void indigo_core_table_register(uint8_t table_id, const char *name,
     }
 
     ind_core_table_t *table = aim_zmalloc(sizeof(*table));
-    strncpy(table->name, name, sizeof(table->name));
+    strncpy(table->name, name, sizeof(table->name)-1);
     table->ops = ops;
     table->priv = priv;
     table->num_flows = 0;

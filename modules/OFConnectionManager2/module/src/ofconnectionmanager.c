@@ -338,11 +338,11 @@ controller_t_init(controller_t *controller,
  *------------------------------------------------------------*/
 
 typedef struct tls_cfg_s {
-    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN];
-    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN];
-    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN];
-    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN];
-    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN];
+    char cipher_list[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char ca_cert[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char switch_cert[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char switch_priv_key[INDIGO_TLS_CFG_PARAM_LEN+1];
+    char exp_controller_suffix[INDIGO_TLS_CFG_PARAM_LEN+1];
     bool check_controller_suffix;
 } tls_cfg_t;
 
@@ -580,19 +580,19 @@ indigo_cxn_config_tls(char *cipher_list,
                             switch_cert, switch_priv_key,
                             exp_controller_suffix);
     if (rv == INDIGO_ERROR_NONE) {
-        strncpy(tls_cfg.cipher_list, cipher_list, sizeof(tls_cfg.cipher_list));
+        strncpy(tls_cfg.cipher_list, cipher_list, INDIGO_TLS_CFG_PARAM_LEN);
         if (ca_cert) {
-            strncpy(tls_cfg.ca_cert, ca_cert, sizeof(tls_cfg.ca_cert));
+            strncpy(tls_cfg.ca_cert, ca_cert, INDIGO_TLS_CFG_PARAM_LEN);
         } else {
-            memset(tls_cfg.ca_cert, 0, sizeof(tls_cfg.ca_cert));
+            memset(tls_cfg.ca_cert, 0, INDIGO_TLS_CFG_PARAM_LEN);
         }
-        strncpy(tls_cfg.switch_cert, switch_cert, sizeof(tls_cfg.switch_cert));
+        strncpy(tls_cfg.switch_cert, switch_cert, INDIGO_TLS_CFG_PARAM_LEN);
         strncpy(tls_cfg.switch_priv_key, switch_priv_key,
-                sizeof(tls_cfg.switch_priv_key));
+                INDIGO_TLS_CFG_PARAM_LEN);
         if (exp_controller_suffix && (exp_controller_suffix[0] != '\0')) {
             tls_cfg.check_controller_suffix = true;
             strncpy(tls_cfg.exp_controller_suffix, exp_controller_suffix,
-                    sizeof(tls_cfg.exp_controller_suffix));
+                    INDIGO_TLS_CFG_PARAM_LEN);
         } else {
             tls_cfg.check_controller_suffix = false;
             memset(tls_cfg.exp_controller_suffix, 0,
@@ -1940,7 +1940,7 @@ indigo_cxn_send_bsn_error(indigo_cxn_id_t cxn_id, of_object_t *orig,
     }
 
     of_bsn_error_xid_set(err, xid);
-    strncpy(dst_txt, err_txt, sizeof(dst_txt));
+    strncpy(dst_txt, err_txt, OF_DESC_STR_LEN-1);
     of_bsn_error_err_msg_set(err, dst_txt);
 
     if (of_bsn_error_data_set(err, &payload) < 0) {
@@ -1992,7 +1992,7 @@ indigo_cxn_send_bsn_gentable_error(indigo_cxn_id_t cxn_id,
     of_bsn_gentable_error_xid_set(err, xid);
     of_bsn_gentable_error_table_id_set(err, gentable_id);
     of_bsn_gentable_error_error_code_set(err, code);
-    strncpy(dst_txt, err_txt, sizeof(dst_txt));
+    strncpy(dst_txt, err_txt, OF_DESC_STR_LEN-1);
     of_bsn_gentable_error_err_msg_set(err, dst_txt);
 
     if (of_bsn_gentable_error_data_set(err, &payload) < 0) {
