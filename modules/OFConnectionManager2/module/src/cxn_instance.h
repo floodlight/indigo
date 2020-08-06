@@ -236,6 +236,8 @@ typedef struct connection_s {
         uint32_t outstanding_echo_cnt;  /* number of unacknowledged echoes */
         uint32_t threshold;  /* value above which cxn is declared dead */
         uint32_t period_ms;  /* keepalive period in milliseconds */
+        uint32_t tx_echo_cnt; /* number of echoes */
+        uint32_t timeout_interval; /* interval for not checking timeout */
     } keepalive;
 
     bundle_t bundles[MAX_BUNDLES];
