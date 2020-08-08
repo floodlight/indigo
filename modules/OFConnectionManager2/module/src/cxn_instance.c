@@ -447,73 +447,37 @@ periodic_keepalive(void *cookie)
     indigo_cxn_send_controller_message(cxn->cxn_id, echo);
 
     LOG_VERBOSE(cxn, "Sending echo request xid %u", xid);
+    cxn->keepalive.outstanding_echo_cnt++;
     cxn->keepalive.tx_echo_cnt++;
 }
 
 /**
- * connection timeout interval change
+ * connection keepalive threshold count change
  */
-static void
-keepalive_timeout_change_handle(connection_t *cxn, of_object_t *obj)
+void
+indigo_cxn_keepalive_max_outstanding_count_set(
+    indigo_cxn_id_t cxn_id,
+    uint32_t max_outstanding_count)
 {
-    of_list_bsn_tlv_t cmd_tlvs; /* all gencmd tlvs */
-    of_object_t cmd_tlv;        /* current tlv in cmd_tlvs */
-    uint32_t timeout_interval = 0;
-
-    of_bsn_generic_command_tlvs_bind(obj, &cmd_tlvs);
-    if (of_list_bsn_tlv_first(&cmd_tlvs, &cmd_tlv) < 0) {
-        AIM_LOG_ERROR("%s: expected interval TLV, instead got end of list",
-                      __FUNCTION__);
-        indigo_cxn_send_bsn_error(cxn->cxn_id, obj, "Error parsing command");
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
         return;
     }
 
-    if (cmd_tlv.object_id == OF_BSN_TLV_INTERVAL) {
-        of_bsn_tlv_interval_value_get(&cmd_tlv, &timeout_interval);
-    } else {
-        AIM_LOG_ERROR("%s: expected interval TLV, instead got %s",
-                      __FUNCTION__, of_class_name(&cmd_tlv));
-        indigo_cxn_send_bsn_error(cxn->cxn_id, obj, "Error parsing command");
-        return;
-    }
-
-    cxn->keepalive.timeout_interval = timeout_interval;
-    if (cxn->keepalive.period_ms) {
-        /* for local connection, period_ms is 0. No echo request */
-        cxn->keepalive.threshold = timeout_interval / cxn->keepalive.period_ms;
-    }
+    cxn->keepalive.threshold = max_outstanding_count;
     /* Reset outstanding_echo_cnt -
      * During the support bundle period in controller, controller may set
-     * the timeout value to a larger value. Switch still send the echo request.
+     * the threshold value to a larger value. Switch still send the echo request.
      * In such case, the outstanding_echo_cnt will keep increasing.
-     * The controller has the spared time to set the timeout interval back
+     * When the controller has the spared time to set the threshold back
      * to a smaller number, the outstanding_echo_cnt may have been greater
      * than the new threshold. Therefore, we reset the outstanding_echo_cnt
-     * whenever we have a timeout interval change.
+     * whenever we have a threshold change.
      */
     cxn->keepalive.outstanding_echo_cnt = 0;
 
-    AIM_LOG_ERROR("%s: cxn %d keepalive timeout %u ms, threshold %d",
-                  __FUNCTION__, cxn->cxn_id, cxn->keepalive.timeout_interval,
-                  cxn->keepalive.threshold);
-}
-
-/**
- * Handle a bsn generic command
- */
-static bool
-generic_command_handle(connection_t *cxn, of_object_t *_obj)
-{
-    of_str64_t command_name;
-
-    of_bsn_generic_command_name_get(_obj, &command_name);
-
-    if (strcmp(command_name, "cxn_timeout_interval")) {
-        return false;
-    }
-
-    keepalive_timeout_change_handle(cxn, _obj);
-    return true;
+    AIM_LOG_INFO("%s: cxn %d keepalive threshold %d",
+                 __FUNCTION__, cxn->cxn_id, cxn->keepalive.threshold);
 }
 
 /**
@@ -944,17 +908,6 @@ of_msg_process(connection_t *cxn, of_object_t *obj)
     case OF_BUNDLE_ADD_MSG:
         ind_cxn_bundle_add_handle(cxn, obj);
         return rv;
-
-    /* handle a generic command */
-    case OF_BSN_GENERIC_COMMAND:
-        if (generic_command_handle(cxn, obj)) {
-            /* if the message is consumed, return */
-            return rv;
-        }
-        /* No need to check the controller role in the below codes.
-         * Don't fall through. Just pass message to statemanager.
-         */
-        break;
 
     /* Check permissions and fall through */
     case OF_FLOW_ADD:
@@ -2023,7 +1976,6 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
         cxn->keepalive.period_ms = 0;
         cxn->keepalive.threshold = 0;
     }
-    cxn->keepalive.timeout_interval = cxn->keepalive.period_ms * cxn->keepalive.threshold;
     cxn->keepalive.tx_echo_cnt = 0;
 
     if (sock_id == -1) {
@@ -2480,9 +2432,6 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
                    cxn->keepalive.outstanding_echo_cnt);
         aim_printf(pvs, "    Tx Echo Count: %d\n",
                    cxn->keepalive.tx_echo_cnt);
-        aim_printf(pvs, "    Timeout interval: %d\n",
-                   cxn->keepalive.timeout_interval);
-
         aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
                    cxn->status.messages_in);
         counter = 0;
