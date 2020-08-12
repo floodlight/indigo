@@ -37,6 +37,8 @@
 #include <cjson/cJSON.h>
 #include <Configuration/configuration.h>
 
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 /* <auto.start.cdefs(OFCONNECTIONMANAGER_CONFIG_HEADER).source> */
 #define __ofconnectionmanager_config_STRINGIFY_NAME(_x) #_x
 #define __ofconnectionmanager_config_STRINGIFY_VALUE(_x) __ofconnectionmanager_config_STRINGIFY_NAME(_x)

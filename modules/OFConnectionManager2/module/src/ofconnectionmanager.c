@@ -52,6 +52,8 @@
 
 #include "ofconnectionmanager_int.h"
 
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 
 static int init_done = 0;
 static int module_enabled = 0;

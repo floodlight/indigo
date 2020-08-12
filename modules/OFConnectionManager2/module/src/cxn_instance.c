@@ -29,6 +29,7 @@
 #include <sys/socket.h>
 #include <errno.h>
 #include <unistd.h>
+#include <sys/uio.h>
 #include <string.h>
 
 #include "ofconnectionmanager_int.h"

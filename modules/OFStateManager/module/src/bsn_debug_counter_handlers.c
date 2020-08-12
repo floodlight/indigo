@@ -31,6 +31,8 @@
 #include "handlers.h"
 #include "ofstatemanager_decs.h"
 
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 void
 ind_core_bsn_debug_counter_desc_stats_request_handler(of_object_t *_obj,
                                                       indigo_cxn_id_t cxn_id)

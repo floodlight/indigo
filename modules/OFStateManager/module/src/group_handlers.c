@@ -475,6 +475,8 @@ group_table_for_id(uint32_t group_id)
     return ind_core_group_tables[group_id >> 24];
 }
 
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 void indigo_core_group_table_register(
     uint8_t table_id, const char *name,
     const indigo_core_group_table_ops_t *ops, void *priv)

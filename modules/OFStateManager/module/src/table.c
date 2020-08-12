@@ -27,6 +27,8 @@
 static ind_core_table_t *ind_core_tables[256];
 int ind_core_num_tables_registered;
 
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+
 ind_core_table_t *
 ind_core_table_get(uint8_t table_id)
 {
