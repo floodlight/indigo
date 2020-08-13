@@ -1396,7 +1396,7 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
            get_domain_name(domain), addr);
 }
 
-void
+static void
 test_async_op(char *controller_suffix,
               int domain, char *addr)
 {
@@ -2468,13 +2468,14 @@ test_cxn_keepalive_max_outstanding_count(bool use_tls)
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
     INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
 
-    /* on handshake complete, unsolicited controller_connections_reply is sent */
+    /* on handshake complete, should receive an echo_request */
     obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_ECHO_REQUEST,
                   "did not receive OF_ECHO_REQUEST");
 
     INDIGO_ASSERT(cxn_is_connected[id][0]);
 
+    /* after 8 seconds, connection should time out */
     OK(ind_soc_select_and_run(8000));
 
     printf("check connection\n");
@@ -2501,7 +2502,7 @@ test_cxn_keepalive_max_outstanding_count(bool use_tls)
     printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
     INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
 
-    /* on handshake complete, unsolicited controller_connections_reply is sent */
+    /* on handshake complete, should receive an echo_request */
     obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_ECHO_REQUEST,
                   "did not receive OF_ECHO_REQUEST");

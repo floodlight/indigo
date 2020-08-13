@@ -815,10 +815,10 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
                           indigo_cxn_subbundle_finish_t finishes[]);
 
 /**
- * Adjust the OpenFlow connection timeout in switch by changing the
- * connection allowed outstanding count of keepalive messages.
- * @param cxn_id Connection ID where the barrier was received
- * @param max_outstanding_count Outstanding keepalive message count allowed
+ * Change the maximum number of outstanding keepalives, so that the
+ * connection timeout interval can be adjusted.
+ * @param cxn_id Connection ID whose max keepalive count is to be adjusted
+ * @param max_outstanding_count New value for max keepalive count 
  */
 void
 indigo_cxn_keepalive_max_outstanding_count_set(indigo_cxn_id_t cxn_id,

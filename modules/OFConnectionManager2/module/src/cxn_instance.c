@@ -476,8 +476,8 @@ indigo_cxn_keepalive_max_outstanding_count_set(
      */
     cxn->keepalive.outstanding_echo_cnt = 0;
 
-    AIM_LOG_INFO("%s: cxn %d keepalive threshold %d",
-                 __FUNCTION__, cxn->cxn_id, cxn->keepalive.threshold);
+    LOG_INFO(cxn, "Set keepalive threshold %d",
+             cxn->keepalive.threshold);
 }
 
 /**
