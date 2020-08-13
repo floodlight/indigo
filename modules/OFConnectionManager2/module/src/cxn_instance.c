@@ -448,6 +448,36 @@ periodic_keepalive(void *cookie)
 
     LOG_VERBOSE(cxn, "Sending echo request xid %u", xid);
     cxn->keepalive.outstanding_echo_cnt++;
+    cxn->keepalive.tx_echo_cnt++;
+}
+
+/**
+ * connection keepalive threshold count change
+ */
+void
+indigo_cxn_keepalive_max_outstanding_count_set(
+    indigo_cxn_id_t cxn_id,
+    uint32_t max_outstanding_count)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn != NULL) {
+        return;
+    }
+
+    cxn->keepalive.threshold = max_outstanding_count;
+    /* Reset outstanding_echo_cnt -
+     * During the support bundle period in controller, controller may set
+     * the threshold value to a larger value. Switch still send the echo request.
+     * In such case, the outstanding_echo_cnt will keep increasing.
+     * When the controller has the spared time to set the threshold back
+     * to a smaller number, the outstanding_echo_cnt may have been greater
+     * than the new threshold. Therefore, we reset the outstanding_echo_cnt
+     * whenever we have a threshold change.
+     */
+    cxn->keepalive.outstanding_echo_cnt = 0;
+
+    LOG_INFO(cxn, "Set keepalive threshold %d",
+             cxn->keepalive.threshold);
 }
 
 /**
@@ -1946,6 +1976,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
         cxn->keepalive.period_ms = 0;
         cxn->keepalive.threshold = 0;
     }
+    cxn->keepalive.tx_echo_cnt = 0;
 
     if (sock_id == -1) {
         /* Parse the protocol params just to get the family */
@@ -2399,7 +2430,8 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "    Threshold: %d\n", cxn->keepalive.threshold);
         aim_printf(pvs, "    Outstanding Echo Count: %d\n",
                    cxn->keepalive.outstanding_echo_cnt);
-
+        aim_printf(pvs, "    Tx Echo Count: %d\n",
+                   cxn->keepalive.tx_echo_cnt);
         aim_printf(pvs, "    Messages in, current connection: %"PRIu64"\n",
                    cxn->status.messages_in);
         counter = 0;

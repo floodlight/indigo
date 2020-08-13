@@ -72,7 +72,7 @@ cxn_status_change(indigo_controller_id_t controller_id,
                   bool is_connected,
                   void *cookie)
 {
-    char desc[64];
+    char desc[128];
 
     switch(cxn_proto_params->header.protocol) {
     case INDIGO_CXN_PROTO_TCP_OVER_IPV4:  /* fall-through */
@@ -140,6 +140,29 @@ setup_cxn(bool use_tls, char *controller_ip, int controller_port)
 
     memset(&config_params, 0, sizeof(config_params));
     config_params.version = OF_VERSION_1_4;
+    protocol_params.tcp_over_ipv4.protocol = use_tls?
+        INDIGO_CXN_PROTO_TLS_OVER_IPV4: INDIGO_CXN_PROTO_TCP_OVER_IPV4;
+    sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", controller_ip);
+    protocol_params.tcp_over_ipv4.controller_port = controller_port;
+
+    OK(indigo_controller_add(&protocol_params, &config_params, &id));
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+
+    return id;
+}
+
+static int
+setup_cxn_with_echo(bool use_tls, char *controller_ip, int controller_port)
+{
+    indigo_cxn_protocol_params_t protocol_params;
+    indigo_cxn_config_params_t config_params;
+    indigo_controller_id_t id;
+
+    memset(&config_params, 0, sizeof(config_params));
+    config_params.version = OF_VERSION_1_4;
+    config_params.periodic_echo_ms = 2000;
+    config_params.reset_echo_count = 3;
     protocol_params.tcp_over_ipv4.protocol = use_tls?
         INDIGO_CXN_PROTO_TLS_OVER_IPV4: INDIGO_CXN_PROTO_TCP_OVER_IPV4;
     sprintf(protocol_params.tcp_over_ipv4.controller_ip, "%s", controller_ip);
@@ -275,7 +298,10 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn_id,
         printf("Receive bsn generic command %s\n", name);
         if (strcmp(name, "async_test") == 0) {
             return INDIGO_ERROR_PENDING;
+        } else if (strcmp(name, "cxn_keepalive_max_outstanding_count") == 0) {
+            indigo_cxn_keepalive_max_outstanding_count_set(cxn_id, 6);
         }
+
     }  
     return rv;
     
@@ -1574,6 +1600,7 @@ test_no_hello(bool use_tls)
 
     sd = server_accept(lsd);
     OK(ind_soc_select_and_run(1));
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
     INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
     if (use_tls) {
@@ -1599,6 +1626,7 @@ test_no_hello(bool use_tls)
     tl_close(use_tls, tl);
 
     /* check that the client reconnected */
+    printf("check reconnected\n");
     OK(ind_soc_select_and_run(10));
     sd = server_accept(lsd);
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
@@ -2398,6 +2426,107 @@ test_bad_controller_name(bool use_tls, int domain, char *addr)
            get_domain_name(domain), addr);
 }
 
+static void
+test_cxn_keepalive_max_outstanding_count(bool use_tls)
+{
+    indigo_controller_id_t id;
+    int lsd;
+    intptr_t tl;
+    of_object_t *obj;
+    of_object_storage_t storage;
+    uint8_t buf[512];  /* may need to be increaed */
+
+    printf("***Start %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
+
+    /* set up listening socket */
+    lsd = setup_server(AF_INET, CONTROLLER_IP, CONTROLLER_PORT1);
+
+    indigo_setup(use_tls, CIPHER_LIST, CA_CERT_FILE, 
+                 SWITCH_CERT_FILE, SWITCH_PRIV_KEY_FILE, NULL);
+
+    INDIGO_ASSERT((id = setup_cxn_with_echo(use_tls, CONTROLLER_IP, CONTROLLER_PORT1)) >= 0);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_INIT);
+
+    OK(ind_soc_select_and_run(1));
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+    INDIGO_ASSERT(unit_test_cxn_state_get(id, 0) == CXN_S_HANDSHAKING);
+
+    tl = advance_to_handshake_complete(false, false, id, 0, lsd);
+    INDIGO_ASSERT(unit_test_connection_count_get() == 1);
+
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
+    /* on handshake complete, unsolicited controller_connections_reply is sent */
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
+
+    OK(ind_soc_select_and_run(2000));
+
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
+    /* on handshake complete, should receive an echo_request */
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_ECHO_REQUEST,
+                  "did not receive OF_ECHO_REQUEST");
+
+    INDIGO_ASSERT(cxn_is_connected[id][0]);
+
+    /* after 8 seconds, connection should time out */
+    OK(ind_soc_select_and_run(8000));
+
+    printf("check connection\n");
+    INDIGO_ASSERT(!cxn_is_connected[id][0]);
+
+
+    /* check that the client reconnected */
+    OK(ind_soc_select_and_run(100));
+    printf("\n\n\nCheck reconnect\n");
+    tl = advance_to_handshake_complete(false, false, id, 0, lsd);
+    INDIGO_ASSERT(unit_test_connection_count_get() == 1);
+
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
+    /* on handshake complete, unsolicited controller_connections_reply is sent */
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+    check_connection_list(obj, OF_CONTROLLER_ROLE_EQUAL);
+
+    OK(ind_soc_select_and_run(2000));
+
+    printf("cxn socket events %d\n", unit_test_cxn_events_get(id, 0));
+    INDIGO_ASSERT(unit_test_cxn_events_get(id, 0) == POLLIN);
+
+    /* on handshake complete, should receive an echo_request */
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_ECHO_REQUEST,
+                  "did not receive OF_ECHO_REQUEST");
+
+    INDIGO_ASSERT(cxn_is_connected[id][0]);
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+    printf("double allowed outstanding count\n");
+    of_send_bsn_generic_command(false, tl, 0x1268,
+                                "cxn_keepalive_max_outstanding_count");
+
+    OK(ind_soc_select_and_run(100));
+
+    /* wait at least 8 seconds, should not timeout */
+    OK(ind_soc_select_and_run(8*1000));
+    INDIGO_ASSERT(cxn_is_connected[id][0]);
+
+    OK(ind_soc_select_and_run(1000+10));
+
+    tl_close(use_tls, tl);
+
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
+}
+
 void run_all_tests(bool use_tls)
 {
     test_bad_controller(use_tls);
@@ -2453,6 +2582,7 @@ int aim_main(int argc, char* argv[])
     run_all_tests(use_tls);
 
     test_async_op(NULL, AF_INET, CONTROLLER_IP);
+    test_cxn_keepalive_max_outstanding_count(false);
     return 0;
 }
 
