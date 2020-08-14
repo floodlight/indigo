@@ -2484,7 +2484,7 @@ test_cxn_keepalive_max_outstanding_count(bool use_tls)
 
     /* check that the client reconnected */
     OK(ind_soc_select_and_run(100));
-    printf("\n\n\nCheck reconnect\n");
+    printf("\n\n\nCheck reconnect for setting the new keepalive max timeout count\n");
     tl = advance_to_handshake_complete(false, false, id, 0, lsd);
     INDIGO_ASSERT(unit_test_connection_count_get() == 1);
 
@@ -2509,22 +2509,25 @@ test_cxn_keepalive_max_outstanding_count(bool use_tls)
 
     INDIGO_ASSERT(cxn_is_connected[id][0]);
 
+    /* Run 2 seconds should have the outstanding count */
+    OK(ind_soc_select_and_run(2*1000));
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
     printf("double allowed outstanding count\n");
     of_send_bsn_generic_command(false, tl, 0x1268,
                                 "cxn_keepalive_max_outstanding_count");
 
     OK(ind_soc_select_and_run(100));
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
-    /* wait at least 8 seconds, should not timeout */
-    OK(ind_soc_select_and_run(8*1000));
+    /* wait at least 9 seconds, should not timeout */
+    OK(ind_soc_select_and_run(9*1000));
+    printf("After 9 seconds, show connections......\n");
     INDIGO_ASSERT(cxn_is_connected[id][0]);
+    ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
     OK(ind_soc_select_and_run(1000+10));
 
     tl_close(use_tls, tl);
-
-    ind_cxn_stats_show(&aim_pvs_stdout, 1);
 }
 
 void run_all_tests(bool use_tls)

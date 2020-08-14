@@ -460,7 +460,8 @@ indigo_cxn_keepalive_max_outstanding_count_set(
     uint32_t max_outstanding_count)
 {
     connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
-    if (cxn != NULL) {
+    if (cxn == NULL) {
+        /* connection may have gone */
         return;
     }
 
