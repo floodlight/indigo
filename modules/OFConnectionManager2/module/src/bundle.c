@@ -52,7 +52,7 @@
 
 #define SUBBUNDLE_UNSET (-1)
 
-/* bundle task state stores all necessary info to process a bundle's msgs;
+/* bundle task state stores all necessary info to process a bundle's msgs (objs);
  * original bundle is freed immediately after task state is set up */
 struct bundle_task_state {
     indigo_cxn_id_t cxn_id;
@@ -66,9 +66,9 @@ struct bundle_task_state {
 };
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
-static of_object_t *parse_message(uint8_t *data, of_object_storage_t *storage);
+static of_object_t *message_to_obj(uint8_t *data);
 static void free_bundle(bundle_t *bundle);
-static int compare_message(const void *_a, const void *_b);
+static int compare_obj(const void *_a, const void *_b);
 static ind_soc_task_status_t bundle_task(void *cookie);
 
 static indigo_cxn_bundle_comparator_t comparator;
@@ -86,7 +86,7 @@ static indigo_cxn_subbundle_finish_t *subbundle_finishes;
 /* used by subbundle_compare_message to select subbundle comparator */
 static uint32_t subbundle_comparator_idx;
 /* forward declaration */
-static int subbundle_compare_message(const void *_a, const void *_b);
+static int subbundle_compare_obj(const void *_a, const void *_b);
 
 
 void
@@ -164,8 +164,8 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
             if (comparator && !(bundle->flags & OFPBF_ORDERED)) {
                 subbundle_t *subbundle = &bundle->subbundles[0];
                 AIM_LOG_VERBOSE("qsort start");
-                qsort(subbundle->msgs, subbundle->count,
-                      sizeof(subbundle->msgs[0]), compare_message);
+                qsort(subbundle->objs, subbundle->count,
+                      sizeof(subbundle->objs[0]), compare_obj);
                 AIM_LOG_VERBOSE("qsort complete");
             }
         } else {
@@ -178,9 +178,9 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
                     subbundle_comparator_idx = i;
                     AIM_LOG_VERBOSE("sorting subbundle %d, %u messages",
                                     i, subbundle->count);
-                    qsort(subbundle->msgs, subbundle->count,
-                          sizeof(subbundle->msgs[0]),
-                          subbundle_compare_message);
+                    qsort(subbundle->objs, subbundle->count,
+                          sizeof(subbundle->objs[0]),
+                          subbundle_compare_obj);
                     AIM_LOG_VERBOSE("sorting complete");
                 }
             }
@@ -291,16 +291,17 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
 
     /* find the right subbundle */
     int idx;
+    void *msg = aim_memdup(data.data, data.bytes);
+    of_object_t *msg_obj = message_to_obj(msg);
+
     if (bundle->subbundle_count == 1) {
         idx = 0;
     } else {
-        of_object_storage_t obj_storage;
-        of_object_t *obj = parse_message(data.data, &obj_storage);
-        if (obj->object_id == OF_BARRIER_REQUEST) {
+        if (msg_obj->object_id == OF_BARRIER_REQUEST) {
             /* barriers are placed in the last subbundle */
             idx = bundle->subbundle_count - 1;
         } else {
-            idx = subbundle_designator(obj);
+            idx = subbundle_designator(msg_obj);
             /* misdesignated messages are also placed in the last subbundle */
             if (idx > bundle->subbundle_count - 1) {
                 idx = bundle->subbundle_count - 1;
@@ -312,11 +313,11 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
     if (subbundle->count == subbundle->allocated) {
         /* Resize array */
         uint32_t new_allocated = (subbundle->allocated == 0 ? 1 : subbundle->allocated * 2);
-        subbundle->msgs = aim_realloc(subbundle->msgs, sizeof(*subbundle->msgs) * new_allocated);
+        subbundle->objs = aim_realloc(subbundle->objs, sizeof(*subbundle->objs) * new_allocated);
         subbundle->allocated = new_allocated;
     }
 
-    subbundle->msgs[subbundle->count++] = aim_memdup(data.data, data.bytes);
+    subbundle->objs[subbundle->count++] = msg_obj; 
     bundle->count++;
     bundle->bytes += data.bytes;
 }
@@ -335,10 +336,10 @@ find_bundle(connection_t *cxn, uint32_t id)
 }
 
 static of_object_t *
-parse_message(uint8_t *data, of_object_storage_t *storage)
+message_to_obj(uint8_t *data)
 {
     int len = of_message_length_get(data);
-    return of_object_new_from_message_preallocated(storage, data, len);
+    return of_object_new_from_message(data, len);
 }
 
 
@@ -347,9 +348,9 @@ free_subbundle(subbundle_t *subbundle)
 {
     int i;
     for (i = 0; i < subbundle->count; i++) {
-        aim_free(subbundle->msgs[i]);
+        of_object_delete(subbundle->objs[i]);
     }
-    aim_free(subbundle->msgs);
+    aim_free(subbundle->objs);
 }
 
 static void
@@ -413,16 +414,14 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
 
 /* WARNING: uses global variable to select the right subbundle comparator */
 static int
-subbundle_compare_message(const void *_a, const void *_b)
+subbundle_compare_obj(const void *_a, const void *_b)
 {
     AIM_ASSERT((subbundle_comparators != NULL) &&
                (subbundle_comparator_idx < num_subbundles_per_bundle));
 
-    of_object_storage_t obj_a_storage;
-    of_object_t *obj_a = parse_message(*(uint8_t * const *)_a, &obj_a_storage);
+    of_object_t *obj_a = (of_object_t *)_a;
 
-    of_object_storage_t obj_b_storage;
-    of_object_t *obj_b = parse_message(*(uint8_t * const *)_b, &obj_b_storage);
+    of_object_t *obj_b = (of_object_t *)_b;
 
     if (obj_a == NULL || obj_b == NULL) {
         return 0;
@@ -438,15 +437,13 @@ indigo_cxn_bundle_comparator_set(indigo_cxn_bundle_comparator_t fn)
 }
 
 static int
-compare_message(const void *_a, const void *_b)
+compare_obj(const void *_a, const void *_b)
 {
     AIM_ASSERT(comparator != NULL);
 
-    of_object_storage_t obj_a_storage;
-    of_object_t *obj_a = parse_message(*(uint8_t * const *)_a, &obj_a_storage);
+    of_object_t *obj_a = (of_object_t *)_a;
 
-    of_object_storage_t obj_b_storage;
-    of_object_t *obj_b = parse_message(*(uint8_t * const *)_b, &obj_b_storage);
+    of_object_t *obj_b = (of_object_t *)_b;
 
     if (obj_a == NULL || obj_b == NULL) {
         return 0;
@@ -513,10 +510,7 @@ bundle_task(void *cookie)
                 if (state->cur_offset_is_pending == false) {
                     /* The task is ok to process message at cur_offset.
                      * The cur_offset is in clear status. */
-                    of_object_storage_t obj_storage;
-                    of_object_t *obj =
-                        parse_message(subbundle->msgs[state->cur_offset],
-                                      &obj_storage);
+                    of_object_t *obj = subbundle->objs[state->cur_offset];
                     if (obj) {
                         indigo_error_t rv;
                         rv = ind_cxn_process_message(cxn, obj);
@@ -547,8 +541,8 @@ bundle_task(void *cookie)
                 state->cur_offset_is_pending = false; 
             }
 
-            aim_free(subbundle->msgs[state->cur_offset]);
-            subbundle->msgs[state->cur_offset] = NULL;
+            of_object_delete(subbundle->objs[state->cur_offset]); 
+            subbundle->objs[state->cur_offset] = NULL;
             state->cur_offset++;
 
             if (ind_soc_should_yield()) {
@@ -556,8 +550,8 @@ bundle_task(void *cookie)
             }
         }
         /* clean up subbundle */
-        aim_free(subbundle->msgs);
-        subbundle->msgs = NULL;
+        aim_free(subbundle->objs);
+        subbundle->objs = NULL;
         /* invoke subbundle finish before moving onto next subbundle */
         invoke_subbundle_finish(state->cxn_id, state->cur_subbundle);
         /* move to the next subbundle */

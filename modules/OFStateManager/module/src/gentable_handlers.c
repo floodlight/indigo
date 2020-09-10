@@ -130,7 +130,8 @@ static uint64_t next_generation_id = 0;
 '* of_object_t. Also, OFStateManager doesn't support async resume in
  * such case
  */
-indigo_core_op_context_t op_ctx;
+static indigo_core_op_context_t op_ctx;
+#define CLR_REQ_INDIGO_ASYNC_OP_CTX_MAGIC    (INDIGO_ASYNC_OP_CTX_MAGIC + 1)
 
 /* Registration */
 
@@ -258,6 +259,12 @@ gentable_entry_add_resume(
             OF_REQUEST_FAILED_BAD_TABLE_ID);
         goto done;
     }
+
+    /* no internal table update when error */
+    if (rv != INDIGO_ERROR_NONE) {
+        goto error;
+    }
+
     of_bsn_gentable_entry_add_key_bind(obj, &key);
     of_bsn_gentable_entry_add_value_bind(obj, &value);
 
@@ -369,8 +376,11 @@ ind_core_bsn_gentable_entry_add_handler(
     if (entry == NULL) {
         if (gentable->ops->add4 != NULL) {
             indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+            op_ctx->magic = INDIGO_ASYNC_OP_CTX_MAGIC;
             op_ctx->cxn_id = cxn_id;
-            op_ctx->obj = obj;
+            /* dup obj in case of obj is free when connection is gone */
+            op_ctx->obj = of_object_dup(obj);
+            op_ctx->free_obj = true;
             rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt,
                                      (void *)op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
@@ -388,6 +398,8 @@ ind_core_bsn_gentable_entry_add_handler(
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
+            op_ctx->magic = 0;
+            of_object_delete(op_ctx->obj);
             aim_free(op_ctx);
         } else {
             if (gentable->ops->add3 != NULL) {
@@ -403,7 +415,9 @@ ind_core_bsn_gentable_entry_add_handler(
         if (gentable->ops->modify4 != NULL) {
             indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
             op_ctx->cxn_id = cxn_id;
-            op_ctx->obj = obj;
+            /* dup obj in case of obj is free when connection is gone */
+            op_ctx->obj = of_object_dup(obj);
+            op_ctx->free_obj = true;
             rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt,
                                         op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
@@ -412,6 +426,8 @@ ind_core_bsn_gentable_entry_add_handler(
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
+            op_ctx->magic = 0;
+            of_object_delete(op_ctx->obj);
             aim_free(op_ctx);
         } else {
             if (gentable->ops->modify3 != NULL) {
@@ -466,9 +482,12 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     if (gentable->ops->del4 != NULL) {
         op_ctx = aim_zmalloc(sizeof(*op_ctx));
+        op_ctx->magic = INDIGO_ASYNC_OP_CTX_MAGIC;
         op_ctx->cxn_id = cxn_id;
-        op_ctx->obj = obj;
-        op_ctx->no_async = false;
+        /* dup obj in case of obj is free when connection is gone */
+        op_ctx->obj = of_object_dup(obj);
+        op_ctx->free_obj = true;
+        op_ctx->no_async = false; /* not a clear request case */
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
                                  (void *)op_ctx);
         /* async returned */
@@ -479,6 +498,8 @@ ind_core_bsn_gentable_entry_delete_handler(
             indigo_cxn_block_async_op(cxn_id);
             return rv;
         }
+        op_ctx->magic = 0;
+        of_object_delete(op_ctx->obj);
         aim_free(op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
@@ -1166,6 +1187,7 @@ delete_entry(indigo_cxn_id_t cxn_id,
     }
 
     if (gentable->ops->del4 != NULL) {
+        op_ctx.magic = CLR_REQ_INDIGO_ASYNC_OP_CTX_MAGIC;
         op_ctx.cxn_id = cxn_id;
         op_ctx.obj = NULL;
         op_ctx.no_async = true;
@@ -1196,6 +1218,7 @@ indigo_core_gentable_entry_resume(
     indigo_cxn_id_t cxn_id;
     of_object_t *obj;
     bool no_async = true;
+    bool free_obj = false;
 
     if (op_ctx == NULL) {
         /* incorrect resume call */
@@ -1203,23 +1226,38 @@ indigo_core_gentable_entry_resume(
         return;
     }
 
+    /* The connection may have gone. However, we still process the entry
+     * add or delete. The OFConnectionManager will take care the connection
+     * issues.
+     */
     cxn_id = op_ctx->cxn_id;
     obj = op_ctx->obj;
     no_async = op_ctx->no_async;
+    free_obj = op_ctx->free_obj;
     /* if no_async is true, it means that this op_ctx is not dynamic allocated */
     if (op_ctx->no_async == false) {
+        op_ctx->magic = 0;
         aim_free(op_ctx);
+    } else {
+        /* no_async is used for table cleanup. don't expect this call. */
+        AIM_LOG_INFO("%s: internal entry deletion, ignore resume call", __FUNCTION__);
+        return;
     }
     if (obj == NULL) {
         /* incorrect resume call */
         AIM_LOG_ERROR("%s: should have valid obj (no_async=%d)",
                       __FUNCTION__, no_async);
         return;
-     } 
+    }
     if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {
+        AIM_LOG_INFO("OF_BSN_GENTABLE_ENTRY_ADD");
         gentable_entry_add_resume(cxn_id, obj, priv, err_txt, rv);
     } else {
+        AIM_LOG_INFO("OF_BSN_GENTABLE_ENTRY_DEL");
         gentable_entry_del_resume(cxn_id, obj, err_txt, rv);
+    }
+    if (free_obj) {
+        of_object_delete(obj);
     }
 
     /* unblock async op pending */
