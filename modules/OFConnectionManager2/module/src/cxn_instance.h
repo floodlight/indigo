@@ -164,7 +164,7 @@ typedef enum cxn_state_e {
 
 typedef struct subbundle_s {
     uint32_t count; /* Number of messages in subbundle */
-    uint32_t allocated; /* Length of msgs(objs) array */
+    uint32_t allocated; /* Length of objs array */
     of_object_t **objs; /* Array of pointer to of_object */
 } subbundle_t;
 
