@@ -80,15 +80,17 @@ calc_duration(indigo_time_t current_time, indigo_time_t entry_time,
 /**
  * @brief Opaque handle to an operation
  */
-#define INDIGO_ASYNC_OP_CTX_MAGIC     0xaabbccdd
 typedef struct indigo_core_op_context {
+    list_links_t links;
     indigo_cxn_id_t cxn_id;
     of_object_t *obj;
-    bool no_async;            /* indication this op context is not called for async operation.
-                               * It is used in the OFStatemManager internally.
-                               * It also indicates that this context and obj are not allocated
-                               * dynamically.
+    bool no_async;            /* indicate this op context is not for async operation.
+                               * It is used by the OFStatemManager internally for
+                               * entry deletion.
+                               * It also indicates that this context and obj are not
+                               * allocated dynamically.
                                */
+     indigo_time_t entry_time;
 } indigo_core_op_context_t;
 
 extern const struct ind_cfg_ops ind_core_cfg_ops;

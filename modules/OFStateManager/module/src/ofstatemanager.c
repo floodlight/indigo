@@ -719,6 +719,8 @@ ind_core_finish(void)
 {
     AIM_LOG_TRACE("OF state mgr finish called");
 
+    ind_core_bsn_gentable_handler_finish();
+
     /* Indicate core is shutting down */
     if (ind_core_module_enabled) {
         AIM_LOG_VERBOSE("Finish is calling disable");
@@ -761,6 +763,7 @@ ind_core_sw_desc_get(of_desc_str_t desc)
     INDIGO_MEM_COPY(desc, ind_core_of_config.desc_stats.sw_desc,
                     OF_DESC_STR_LEN);
 
+    ind_core_bsn_gentable_handler_init();
     return INDIGO_ERROR_NONE;
 }
 

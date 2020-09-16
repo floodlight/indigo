@@ -27,6 +27,7 @@
 #define _OF_STATE_HANDLERS_H_
 
 #include <loci/loci.h>
+#include <AIM/aim_pvs.h>
 #include <indigo/of_connection_manager.h>
 
 /* handlers.c */
@@ -204,5 +205,16 @@ void
 ind_core_bsn_generic_stats_request_handler(
     of_object_t *_obj,
     indigo_cxn_id_t cxn_id);
+
+/* gentable async debug */
+void
+ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs);
+
+/* bsn gentable handler init() and finish() */
+void
+ind_core_bsn_gentable_handler_init(void);
+
+void
+ind_core_bsn_gentable_handler_finish(void);
 
 #endif /* _OF_STATE_HANDLERS_H_ */
