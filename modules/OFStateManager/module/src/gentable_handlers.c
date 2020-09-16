@@ -131,6 +131,7 @@ static indigo_core_op_context_t op_ctx;
 
 /* outstanding op_ctx list for debug purpose */
 static list_head_t outstanding_op_ctx_list;
+static int gentable_handler_init_done = 0;
 
 static indigo_core_op_context_t * op_ctx_alloc(indigo_cxn_id_t cxn_id, of_object_t *obj);
 static void op_ctx_free(indigo_core_op_context_t *op_ctx);
@@ -533,9 +534,15 @@ ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs)
     indigo_core_gentable_t *gentable;
     uint16_t table_id;
 
+    if (gentable_handler_init_done == 0) {
+        return;
+    }
+    aim_printf(pvs, "gentable outstanding async ops:\n");
     LIST_FOREACH_SAFE (&outstanding_op_ctx_list, cur, next) {
         op_ctx = OP_CONTEXT_LIST_ENTRY_CONTAINER(cur);
-
+        if (op_ctx == NULL) {
+            continue;
+        }
         of_bsn_gentable_entry_add_table_id_get(op_ctx->obj, &table_id);
         gentable = find_gentable_by_id(table_id);
         aim_printf(pvs, "cxn_id=%d table=%d op=%s time=%llu\n",
@@ -1550,6 +1557,7 @@ void
 ind_core_bsn_gentable_handler_init()
 {
     list_init(&outstanding_op_ctx_list);
+    gentable_handler_init_done = 1;
 }
 
 void
@@ -1563,4 +1571,5 @@ ind_core_bsn_gentable_handler_finish()
         list_remove(&list_entry->links);
         op_ctx_free(list_entry);
     }
+    gentable_handler_init_done = 0;
 }
