@@ -621,6 +621,8 @@ ind_core_init(ind_core_config_t *config)
 
     ind_core_histogram_handlers_init();
 
+    ind_core_bsn_gentable_handler_init();
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -718,6 +720,8 @@ indigo_error_t
 ind_core_finish(void)
 {
     AIM_LOG_TRACE("OF state mgr finish called");
+
+    ind_core_bsn_gentable_handler_finish();
 
     /* Indicate core is shutting down */
     if (ind_core_module_enabled) {

@@ -59,6 +59,7 @@
 
 #include "ofstatemanager_log.h"
 
+#include <AIM/aim_pvs.h>
 #include <OFStateManager/ofstatemanager_config.h>
 #include <indigo/indigo.h>
 #include <loci/loci.h>
@@ -120,17 +121,25 @@ struct ind_core_gentable_entry {
 static indigo_core_gentable_t *gentables[MAX_GENTABLES];
 
 /*
+ * Used to call del4() in gentable clearance case
+ * In such case, the deletion of gentable entries are invoked without
+ * of_object_t. Also, OFStateManager doesn't support async resume in
+ * such case
+ * the op_ctx.no_async should be set to true.
+ */
+static indigo_core_op_context_t global_op_ctx;
+
+/* outstanding op_ctx list for debug purpose */
+static list_head_t outstanding_op_ctx_list;
+static bool gentable_handler_init_done = false;
+
+#define OP_CONTEXT_LIST_ENTRY_CONTAINER(links_ptr)             \
+    container_of((links_ptr), links, indigo_core_op_context_t)
+
+/*
  * Used to fix an ABA problem with iteration.
  */
 static uint64_t next_generation_id = 0;
-
-/*
- * Used to call del4() in gentable clearance case
- * In such case, the deletion of gentable entries are invoked without
-'* of_object_t. Also, OFStateManager doesn't support async resume in
- * such case
- */
-indigo_core_op_context_t op_ctx;
 
 /* Registration */
 
@@ -220,6 +229,26 @@ indigo_core_gentable_unregister(indigo_core_gentable_t *gentable)
 
 
 /* OpenFlow message handlers */
+static indigo_core_op_context_t *
+op_ctx_alloc(indigo_cxn_id_t cxn_id, of_object_t *obj)
+{
+    indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
+    op_ctx->cxn_id = cxn_id;
+    op_ctx->entry_time = INDIGO_CURRENT_TIME;
+    /* dup obj in case of obj is free when connection is gone */
+    op_ctx->obj = of_object_dup(obj);
+    op_ctx->no_async = false;
+    list_push(&outstanding_op_ctx_list, &op_ctx->links);
+    return op_ctx;
+}
+
+static void
+op_ctx_free(indigo_core_op_context_t *op_ctx)
+{
+    list_remove(&op_ctx->links),
+    of_object_delete(op_ctx->obj);
+    aim_free(op_ctx);
+}
 
 /**
  * gentable add/modify resume functon
@@ -258,6 +287,12 @@ gentable_entry_add_resume(
             OF_REQUEST_FAILED_BAD_TABLE_ID);
         goto done;
     }
+
+    /* no internal table update when error */
+    if (rv != INDIGO_ERROR_NONE) {
+        goto error;
+    }
+
     of_bsn_gentable_entry_add_key_bind(obj, &key);
     of_bsn_gentable_entry_add_value_bind(obj, &value);
 
@@ -368,9 +403,7 @@ ind_core_bsn_gentable_entry_add_handler(
 
     if (entry == NULL) {
         if (gentable->ops->add4 != NULL) {
-            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
-            op_ctx->cxn_id = cxn_id;
-            op_ctx->obj = obj;
+            indigo_core_op_context_t *op_ctx = op_ctx_alloc(cxn_id, obj);
             rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt,
                                      (void *)op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
@@ -388,7 +421,7 @@ ind_core_bsn_gentable_entry_add_handler(
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
-            aim_free(op_ctx);
+            op_ctx_free(op_ctx);
         } else {
             if (gentable->ops->add3 != NULL) {
                 rv = gentable->ops->add3(cxn_id, gentable->priv, &key, &value, &priv, err_txt);
@@ -401,9 +434,7 @@ ind_core_bsn_gentable_entry_add_handler(
     } else {
         /* Modifying an existing entry */
         if (gentable->ops->modify4 != NULL) {
-            indigo_core_op_context_t *op_ctx = aim_zmalloc(sizeof(*op_ctx));
-            op_ctx->cxn_id = cxn_id;
-            op_ctx->obj = obj;
+            indigo_core_op_context_t *op_ctx = op_ctx_alloc(cxn_id, obj);
             rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt,
                                         op_ctx);
             if (rv == INDIGO_ERROR_PENDING) {
@@ -412,7 +443,7 @@ ind_core_bsn_gentable_entry_add_handler(
                 indigo_cxn_block_async_op(cxn_id);
                 return rv;
             }
-            aim_free(op_ctx);
+            op_ctx_free(op_ctx);
         } else {
             if (gentable->ops->modify3 != NULL) {
                 rv = gentable->ops->modify3(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt);
@@ -465,10 +496,7 @@ ind_core_bsn_gentable_entry_delete_handler(
     }
 
     if (gentable->ops->del4 != NULL) {
-        op_ctx = aim_zmalloc(sizeof(*op_ctx));
-        op_ctx->cxn_id = cxn_id;
-        op_ctx->obj = obj;
-        op_ctx->no_async = false;
+        op_ctx = op_ctx_alloc(cxn_id, obj);
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
                                  (void *)op_ctx);
         /* async returned */
@@ -479,7 +507,7 @@ ind_core_bsn_gentable_entry_delete_handler(
             indigo_cxn_block_async_op(cxn_id);
             return rv;
         }
-        aim_free(op_ctx);
+        op_ctx_free(op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -490,6 +518,35 @@ ind_core_bsn_gentable_entry_delete_handler(
 
     gentable_entry_del_resume(cxn_id, obj, err_txt, rv);
     return rv;
+}
+
+/**
+ * Show the outstanding async operation.
+ */
+void
+ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs)
+{
+    list_links_t *cur, *next;
+    indigo_core_op_context_t *op_ctx;
+    indigo_core_gentable_t *gentable;
+    uint16_t table_id;
+
+    if (gentable_handler_init_done == false) {
+        return;
+    }
+    aim_printf(pvs, "gentable outstanding async ops:\n");
+    LIST_FOREACH_SAFE (&outstanding_op_ctx_list, cur, next) {
+        op_ctx = OP_CONTEXT_LIST_ENTRY_CONTAINER(cur);
+        if (op_ctx == NULL) {
+            continue;
+        }
+        of_bsn_gentable_entry_add_table_id_get(op_ctx->obj, &table_id);
+        gentable = find_gentable_by_id(table_id);
+        aim_printf(pvs, "cxn_id=%d table=%d op=%s time=%"PRIu64"\n",
+                   op_ctx->cxn_id, gentable? gentable->name : "None", 
+                   (op_ctx->obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD)? "ADD" : "DEL",
+                   INDIGO_TIME_DIFF_ms(op_ctx->entry_time, INDIGO_CURRENT_TIME)); 
+    }
 }
 
 struct ind_core_gentable_clear_state {
@@ -1166,11 +1223,11 @@ delete_entry(indigo_cxn_id_t cxn_id,
     }
 
     if (gentable->ops->del4 != NULL) {
-        op_ctx.cxn_id = cxn_id;
-        op_ctx.obj = NULL;
-        op_ctx.no_async = true;
+        global_op_ctx.cxn_id = cxn_id;
+        global_op_ctx.obj = NULL;
+        global_op_ctx.no_async = true;
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
-                                 (void *) &op_ctx);
+                                 (void *) &global_op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1197,30 +1254,36 @@ indigo_core_gentable_entry_resume(
     of_object_t *obj;
     bool no_async = true;
 
-    if (op_ctx == NULL) {
-        /* incorrect resume call */
-        AIM_LOG_ERROR("%s should have valid op_ctx", __FUNCTION__);
-        return;
-    }
+    AIM_ASSERT(op_ctx != NULL);
 
+    /* The connection may have gone. However, we still process the entry
+     * add or delete. The OFConnectionManager will take care the connection
+     * issues.
+     */
     cxn_id = op_ctx->cxn_id;
     obj = op_ctx->obj;
     no_async = op_ctx->no_async;
     /* if no_async is true, it means that this op_ctx is not dynamic allocated */
-    if (op_ctx->no_async == false) {
-        aim_free(op_ctx);
+    if (op_ctx->no_async) {
+        /* no_async is used for table cleanup. don't expect this call. */
+        AIM_LOG_INFO("%s: internal entry deletion, ignore resume call", __FUNCTION__);
+        return;
     }
     if (obj == NULL) {
         /* incorrect resume call */
         AIM_LOG_ERROR("%s: should have valid obj (no_async=%d)",
                       __FUNCTION__, no_async);
+        aim_free(op_ctx);
         return;
-     } 
+    }
     if (obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD) {
+        AIM_LOG_TRACE("OF_BSN_GENTABLE_ENTRY_ADD");
         gentable_entry_add_resume(cxn_id, obj, priv, err_txt, rv);
     } else {
+        AIM_LOG_TRACE("OF_BSN_GENTABLE_ENTRY_DEL");
         gentable_entry_del_resume(cxn_id, obj, err_txt, rv);
     }
+    op_ctx_free(op_ctx);
 
     /* unblock async op pending */
     indigo_cxn_unblock_async_op(cxn_id);
@@ -1481,4 +1544,25 @@ indigo_core_gentable_finish(uint16_t gentable_id,
     } else {
         return INDIGO_ERROR_NONE;
     }
+}
+
+void
+ind_core_bsn_gentable_handler_init()
+{
+    list_init(&outstanding_op_ctx_list);
+    gentable_handler_init_done = true;
+}
+
+void
+ind_core_bsn_gentable_handler_finish()
+{
+    list_links_t *cur, *next;
+    indigo_core_op_context_t *list_entry;
+
+    LIST_FOREACH_SAFE (&outstanding_op_ctx_list, cur, next) {
+        list_entry = OP_CONTEXT_LIST_ENTRY_CONTAINER(cur);
+        list_remove(&list_entry->links);
+        op_ctx_free(list_entry);
+    }
+    gentable_handler_init_done = false;
 }

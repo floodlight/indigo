@@ -26,6 +26,7 @@
  *****************************************************************************/
 
 #include <indigo/types.h>
+#include "handlers.h"
 #include <OFStateManager/ofstatemanager_config.h>
 
 
@@ -34,6 +35,17 @@
 #include <uCli/ucli.h>
 #include <uCli/ucli_argparse.h>
 #include <uCli/ucli_handler_macros.h>
+
+
+static ucli_status_t
+ofstatemanager_ucli_ucli__gt_outstanding_async_op__(ucli_context_t* uc)
+{
+    UCLI_COMMAND_INFO(uc,
+                      "gt_outstanding_async_op", 0,
+                      "$summary#show current gentable outstanding async op.");
+    ind_core_bsn_gentable_outstanding_async_ops(&uc->pvs); 
+    return UCLI_STATUS_OK;
+}
 
 
 
@@ -59,6 +71,7 @@ ofstatemanager_ucli_ucli__config__(ucli_context_t* uc)
 static ucli_command_handler_f ofstatemanager_ucli_ucli_handlers__[] =
 {
     ofstatemanager_ucli_ucli__config__,
+    ofstatemanager_ucli_ucli__gt_outstanding_async_op__,
     NULL
 };
 /******************************************************************************/
