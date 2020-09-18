@@ -542,7 +542,7 @@ ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs)
         }
         of_bsn_gentable_entry_add_table_id_get(op_ctx->obj, &table_id);
         gentable = find_gentable_by_id(table_id);
-        aim_printf(pvs, "cxn_id=%d table=%d op=%s time=%"PRIu64"\n",
+        aim_printf(pvs, "cxn_id=%d table=%s op=%s time=%"PRIu64"\n",
                    op_ctx->cxn_id, gentable? gentable->name : "None", 
                    (op_ctx->obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD)? "ADD" : "DEL",
                    INDIGO_TIME_DIFF_ms(op_ctx->entry_time, INDIGO_CURRENT_TIME)); 
