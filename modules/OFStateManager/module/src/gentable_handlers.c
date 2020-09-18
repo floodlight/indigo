@@ -127,14 +127,11 @@ static indigo_core_gentable_t *gentables[MAX_GENTABLES];
  * such case
  * the op_ctx.no_async should be set to true.
  */
-static indigo_core_op_context_t op_ctx;
+static indigo_core_op_context_t global_op_ctx;
 
 /* outstanding op_ctx list for debug purpose */
 static list_head_t outstanding_op_ctx_list;
-static int gentable_handler_init_done = 0;
-
-static indigo_core_op_context_t * op_ctx_alloc(indigo_cxn_id_t cxn_id, of_object_t *obj);
-static void op_ctx_free(indigo_core_op_context_t *op_ctx);
+static bool gentable_handler_init_done = false;
 
 #define OP_CONTEXT_LIST_ENTRY_CONTAINER(links_ptr)             \
     container_of((links_ptr), links, indigo_core_op_context_t)
@@ -534,7 +531,7 @@ ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs)
     indigo_core_gentable_t *gentable;
     uint16_t table_id;
 
-    if (gentable_handler_init_done == 0) {
+    if (gentable_handler_init_done == false) {
         return;
     }
     aim_printf(pvs, "gentable outstanding async ops:\n");
@@ -545,10 +542,10 @@ ind_core_bsn_gentable_outstanding_async_ops(aim_pvs_t *pvs)
         }
         of_bsn_gentable_entry_add_table_id_get(op_ctx->obj, &table_id);
         gentable = find_gentable_by_id(table_id);
-        aim_printf(pvs, "cxn_id=%d table=%d op=%s time=%llu\n",
+        aim_printf(pvs, "cxn_id=%d table=%d op=%s time=%"PRIu64"\n",
                    op_ctx->cxn_id, gentable? gentable->name : "None", 
                    (op_ctx->obj->object_id == OF_BSN_GENTABLE_ENTRY_ADD)? "ADD" : "DEL",
-                   INDIGO_CURRENT_TIME - op_ctx->entry_time); 
+                   INDIGO_TIME_DIFF_ms(op_ctx->entry_time, INDIGO_CURRENT_TIME)); 
     }
 }
 
@@ -1226,11 +1223,11 @@ delete_entry(indigo_cxn_id_t cxn_id,
     }
 
     if (gentable->ops->del4 != NULL) {
-        op_ctx.cxn_id = cxn_id;
-        op_ctx.obj = NULL;
-        op_ctx.no_async = true;
+        global_op_ctx.cxn_id = cxn_id;
+        global_op_ctx.obj = NULL;
+        global_op_ctx.no_async = true;
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
-                                 (void *) &op_ctx);
+                                 (void *) &global_op_ctx);
     } else if (gentable->ops->del3 != NULL) {
         rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
     } else if (gentable->ops->del2 != NULL) {
@@ -1257,11 +1254,7 @@ indigo_core_gentable_entry_resume(
     of_object_t *obj;
     bool no_async = true;
 
-    if (op_ctx == NULL) {
-        /* incorrect resume call */
-        AIM_LOG_ERROR("%s should have valid op_ctx", __FUNCTION__);
-        return;
-    }
+    AIM_ASSERT(op_ctx != NULL);
 
     /* The connection may have gone. However, we still process the entry
      * add or delete. The OFConnectionManager will take care the connection
@@ -1557,7 +1550,7 @@ void
 ind_core_bsn_gentable_handler_init()
 {
     list_init(&outstanding_op_ctx_list);
-    gentable_handler_init_done = 1;
+    gentable_handler_init_done = true;
 }
 
 void
@@ -1571,5 +1564,5 @@ ind_core_bsn_gentable_handler_finish()
         list_remove(&list_entry->links);
         op_ctx_free(list_entry);
     }
-    gentable_handler_init_done = 0;
+    gentable_handler_init_done = false;
 }

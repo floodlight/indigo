@@ -621,6 +621,8 @@ ind_core_init(ind_core_config_t *config)
 
     ind_core_histogram_handlers_init();
 
+    ind_core_bsn_gentable_handler_init();
+
     ind_core_init_done = 1;
 
     return INDIGO_ERROR_NONE;
@@ -763,7 +765,6 @@ ind_core_sw_desc_get(of_desc_str_t desc)
     INDIGO_MEM_COPY(desc, ind_core_of_config.desc_stats.sw_desc,
                     OF_DESC_STR_LEN);
 
-    ind_core_bsn_gentable_handler_init();
     return INDIGO_ERROR_NONE;
 }
 
