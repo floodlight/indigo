@@ -419,9 +419,9 @@ subbundle_compare_obj(const void *_a, const void *_b)
     AIM_ASSERT((subbundle_comparators != NULL) &&
                (subbundle_comparator_idx < num_subbundles_per_bundle));
 
-    of_object_t *obj_a = *(of_object_t * const *)_a;
+    of_object_t *obj_a = *((of_object_t * const *)_a);
 
-    of_object_t *obj_b = *(of_object_t * const *)_b;
+    of_object_t *obj_b = *((of_object_t * const *)_b);
 
     if (obj_a == NULL || obj_b == NULL) {
         return 0;
@@ -441,9 +441,9 @@ compare_obj(const void *_a, const void *_b)
 {
     AIM_ASSERT(comparator != NULL);
 
-    of_object_t *obj_a = *(of_object_t * const *)_a;
+    of_object_t *obj_a = *((of_object_t * const *)_a);
 
-    of_object_t *obj_b = *(of_object_t * const *)_b;
+    of_object_t *obj_b = *((of_object_t * const *)_b);
 
     if (obj_a == NULL || obj_b == NULL) {
         return 0;
