@@ -699,13 +699,17 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
     if (error_seen) {
         if (error_seen & (POLLNVAL | POLLHUP)) {
             if (error_seen & POLLNVAL) {
-                AIM_LOG_INFO("Listen cxn %s: socket has bad file descriptor", listen_cxn->desc);
+                AIM_LOG_INFO("Listen cxn %s: socket has a bad file descriptor", listen_cxn->desc);
                 listen_cxn->controller->badfd_count++;
             } else if (error_seen & POLLHUP) {
                 AIM_LOG_INFO("Listen cxn %s: socket disconnected", listen_cxn->desc);
                 listen_cxn->controller->disconnected_count++;
             }
-            /* listen cxn doesn't go through connection state */
+            /* listen cxn doesn't go through connection state.
+             * FIXME: listen connection is not a "restartable" case.
+             * Once error happens, it cannot be recovered.
+             * Find a way to restart it if needed.
+             */
             ind_soc_socket_unregister(listen_cxn->sd);
             close(listen_cxn->sd);
             listen_cxn->sd = -1;

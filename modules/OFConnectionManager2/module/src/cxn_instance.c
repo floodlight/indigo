@@ -1614,7 +1614,6 @@ cxn_socket_ready(
     AIM_ASSERT(cxn->sd == socket_id);
 
     if (error_seen) {
-        int socket_error = 0;
         if (error_seen & POLLNVAL) {
             LOG_INFO(cxn, "socket has bad file descriptor");
             cxn->controller->badfd_count++;
@@ -1622,6 +1621,7 @@ cxn_socket_ready(
             LOG_INFO(cxn, "socket disconnected");
             cxn->controller->disconnected_count++;
         } else {
+            int socket_error = 0;
             socklen_t len = sizeof(socket_error);
             getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
             if (cxn->aux_id == 0 && socket_error == ECONNREFUSED) {
