@@ -1619,7 +1619,7 @@ cxn_socket_ready(
             cxn->controller->badfd_count++;
         } else if (error_seen & POLLHUP) {
             LOG_INFO(cxn, "socket disconnected");
-            cxn->controller->disconnected_count++;
+            cxn->controller->hup_count++;
         } else {
             int socket_error = 0;
             socklen_t len = sizeof(socket_error);

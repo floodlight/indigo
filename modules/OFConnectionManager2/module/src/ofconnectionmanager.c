@@ -703,7 +703,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
                 listen_cxn->controller->badfd_count++;
             } else if (error_seen & POLLHUP) {
                 AIM_LOG_INFO("Listen cxn %s: socket disconnected", listen_cxn->desc);
-                listen_cxn->controller->disconnected_count++;
+                listen_cxn->controller->hup_count++;
             }
             /* listen cxn doesn't go through connection state.
              * FIXME: listen connection is not a "restartable" case.

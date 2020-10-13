@@ -114,8 +114,7 @@ typedef struct controller_s {
                            * cleared when TCP connection is established */
     uint32_t connect_fail_count;  /* For debug: Increments each time a main cxn attempt fails;
                                    * iand is not cleared */
-    uint32_t disconnected_count; /* Receive POLLHUP. See poll(3).
-                                  * Socket should be closed immediately. */
+    uint32_t hup_count; /* Receive POLLHUP. See poll(3). Close socket immediately. */
     uint32_t badfd_count; /* Receive POLLNVAL. See poll(3). Socket should be reopen. */
     indigo_controller_id_t controller_id;
 
