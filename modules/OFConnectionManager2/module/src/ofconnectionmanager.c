@@ -36,6 +36,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <errno.h>
+#include <poll.h>
 #include <unistd.h>
 #include <string.h>
 #include <arpa/inet.h>
@@ -696,11 +697,29 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
     AIM_ASSERT(listen_cxn->sd == socket_id);
 
     if (error_seen) {
-        int socket_error = 0;
-        socklen_t len = sizeof(socket_error);
-        getsockopt(listen_cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
-        AIM_LOG_ERROR("listen %s: %s", 
-                      listen_cxn->desc, strerror(socket_error));
+        if (error_seen & (POLLNVAL | POLLHUP)) {
+            if (error_seen & POLLNVAL) {
+                AIM_LOG_INFO("Listen cxn %s: socket has bad file descriptor", listen_cxn->desc);
+                listen_cxn->controller->badfd_count++;
+            } else if (error_seen & POLLHUP) {
+                AIM_LOG_INFO("Listen cxn %s: socket disconnected", listen_cxn->desc);
+                listen_cxn->controller->disconnected_count++;
+            }
+            /* listen cxn doesn't go through connection state */
+            ind_soc_socket_unregister(listen_cxn->sd);
+            close(listen_cxn->sd);
+            listen_cxn->sd = -1;
+            listen_cxn->controller->active = false;
+            listen_cxn->controller->cxns[0] = NULL;
+            ind_cxn_free(listen_cxn);
+            return;
+        } else {
+            int socket_error = 0;
+            socklen_t len = sizeof(socket_error);
+            getsockopt(listen_cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
+            AIM_LOG_ERROR("listen %s: %s", 
+                          listen_cxn->desc, strerror(socket_error));
+        }
         return;
     }
 

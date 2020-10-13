@@ -775,9 +775,13 @@ process_sockets(ind_soc_priority_t priority)
         error_seen = (pfd->revents & POLLERR) != 0;
         /* POLLHUP only applied on socket. See poll(3) manpage.
          * Let the callback to handle the error.
+         * POLLNVAL is an invalid fd case. In case of reuse of an old fd.
          */
         if (pfd->revents & POLLHUP) {
-            error_seen = POLLHUP;
+            error_seen |= POLLHUP;
+        }
+        if (pfd->revents & POLLNVAL) {
+            error_seen |= POLLNVAL;
         }
         if (read_ready || write_ready || error_seen) {
             before_callback();

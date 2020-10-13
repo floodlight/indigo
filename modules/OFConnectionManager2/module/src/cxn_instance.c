@@ -1615,8 +1615,11 @@ cxn_socket_ready(
 
     if (error_seen) {
         int socket_error = 0;
-        if (error_seen == POLLHUP) {
-            LOG_ERROR(cxn, "socket disconneted");
+        if (error_seen & POLLNVAL) {
+            LOG_INFO(cxn, "socket has bad file descriptor");
+            cxn->controller->badfd_count++;
+        } else if (error_seen & POLLHUP) {
+            LOG_INFO(cxn, "socket disconnected");
             cxn->controller->disconnected_count++;
         } else {
             socklen_t len = sizeof(socket_error);
@@ -1999,6 +2002,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
             goto error;
         }
     } else if (sock_id >= 0) {
+        cxn->is_accepted_socket = true;
         cxn->sd = sock_id;
     }
 
@@ -2123,6 +2127,7 @@ cxn_try_to_connect(connection_t *cxn)
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
         if (cxn->aux_id == 0) {
+            cxn->controller->connect_fail_count++;
             cxn->controller->fail_count++;
         }
         return INDIGO_ERROR_UNKNOWN;
