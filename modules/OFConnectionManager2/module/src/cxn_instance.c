@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <poll.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -1613,14 +1614,22 @@ cxn_socket_ready(
     AIM_ASSERT(cxn->sd == socket_id);
 
     if (error_seen) {
-        int socket_error = 0;
-        socklen_t len = sizeof(socket_error);
-        getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
-        if (cxn->aux_id == 0 && socket_error == ECONNREFUSED) {
-            LOG_VERBOSE(cxn, "Socket error: Connection refused");
-            cxn->controller->fail_count++;
+        if (error_seen & POLLNVAL) {
+            LOG_INFO(cxn, "socket has bad file descriptor");
+            cxn->controller->badfd_count++;
+        } else if (error_seen & POLLHUP) {
+            LOG_INFO(cxn, "socket disconnected");
+            cxn->controller->hup_count++;
         } else {
-            LOG_ERROR(cxn, "%s", strerror(socket_error));
+            int socket_error = 0;
+            socklen_t len = sizeof(socket_error);
+            getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
+            if (cxn->aux_id == 0 && socket_error == ECONNREFUSED) {
+                LOG_VERBOSE(cxn, "Socket error: Connection refused");
+                cxn->controller->fail_count++;
+            } else {
+                LOG_ERROR(cxn, "%s", strerror(socket_error));
+            }
         }
         controller_disconnect(cxn->controller);
         return;
@@ -1993,6 +2002,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
             goto error;
         }
     } else if (sock_id >= 0) {
+        cxn->is_accepted_socket = true;
         cxn->sd = sock_id;
     }
 
@@ -2117,6 +2127,7 @@ cxn_try_to_connect(connection_t *cxn)
     } else {
         LOG_INTERNAL(cxn, "connect: %s", strerror(errno));
         if (cxn->aux_id == 0) {
+            cxn->controller->connect_fail_count++;
             cxn->controller->fail_count++;
         }
         return INDIGO_ERROR_UNKNOWN;

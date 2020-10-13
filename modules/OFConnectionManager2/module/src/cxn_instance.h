@@ -112,6 +112,10 @@ typedef struct controller_s {
                        * is disconnected? */
     uint32_t fail_count;  /* Increments each time a main cxn attempt fails;
                            * cleared when TCP connection is established */
+    uint32_t connect_fail_count;  /* For debug: Increments each time a main cxn attempt fails;
+                                   * iand is not cleared */
+    uint32_t hup_count; /* Receive POLLHUP. See poll(3). Close socket immediately. */
+    uint32_t badfd_count; /* Receive POLLNVAL. See poll(3). Socket should be reopen. */
     indigo_controller_id_t controller_id;
 
     uint32_t num_aux; /* Auxillary connection count */
@@ -194,6 +198,7 @@ typedef struct connection_s {
     indigo_cxn_status_t status;
 
     bool active; /* Has this connection instance been configured? */
+    bool is_accepted_socket; /* sd comes from accept() call. For debug. */
     indigo_cxn_id_t cxn_id; /* For back tracking */
 
     int sd; /* The socket descriptor */

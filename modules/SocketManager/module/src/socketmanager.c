@@ -772,7 +772,11 @@ process_sockets(ind_soc_priority_t priority)
 
         read_ready = (pfd->revents & POLLIN) != 0;
         write_ready = (pfd->revents & POLLOUT) != 0;
-        error_seen = (pfd->revents & POLLERR) != 0;
+        /* POLLHUP only applied on socket. See poll(3) manpage.
+         * Let the callback to handle the error.
+         * POLLNVAL is an invalid fd case. In case of reuse of an old fd.
+         */
+        error_seen = (pfd->revents & (POLLERR | POLLHUP | POLLNVAL));
         if (read_ready || write_ready || error_seen) {
             before_callback();
             soc_map[pfd->fd].callback(pfd->fd, soc_map[pfd->fd].cookie,
