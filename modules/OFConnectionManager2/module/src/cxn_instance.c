@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <string.h>
+#include <poll.h>
 
 #include "ofconnectionmanager_int.h"
 
@@ -1614,13 +1615,18 @@ cxn_socket_ready(
 
     if (error_seen) {
         int socket_error = 0;
-        socklen_t len = sizeof(socket_error);
-        getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
-        if (cxn->aux_id == 0 && socket_error == ECONNREFUSED) {
-            LOG_VERBOSE(cxn, "Socket error: Connection refused");
-            cxn->controller->fail_count++;
+        if (error_seen == POLLHUP) {
+            LOG_ERROR(cxn, "socket disconneted");
+            cxn->controller->disconnected_count++;
         } else {
-            LOG_ERROR(cxn, "%s", strerror(socket_error));
+            socklen_t len = sizeof(socket_error);
+            getsockopt(cxn->sd, SOL_SOCKET, SO_ERROR, &socket_error, &len);
+            if (cxn->aux_id == 0 && socket_error == ECONNREFUSED) {
+                LOG_VERBOSE(cxn, "Socket error: Connection refused");
+                cxn->controller->fail_count++;
+            } else {
+                LOG_ERROR(cxn, "%s", strerror(socket_error));
+            }
         }
         controller_disconnect(cxn->controller);
         return;

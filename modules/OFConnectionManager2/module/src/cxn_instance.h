@@ -112,6 +112,8 @@ typedef struct controller_s {
                        * is disconnected? */
     uint32_t fail_count;  /* Increments each time a main cxn attempt fails;
                            * cleared when TCP connection is established */
+    uint32_t disconnected_count; /* Receive POLLHUP. See poll(3).
+                                  * Socket should be closed immediately. */
     indigo_controller_id_t controller_id;
 
     uint32_t num_aux; /* Auxillary connection count */
