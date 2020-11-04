@@ -658,10 +658,20 @@ void indigo_cxn_unblock_barrier(indigo_cxn_barrier_blocker_t *blocker);
 void indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id);
 
 /**
+ * @brief Create an async op blocker
+ */
+void indigo_block_bundle_task_async_op();
+
+/**
  * @brief Destroy an async op blocker
  * @param cxn_id Connection ID
  */
-extern void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
+void indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id);
+
+/**
+ * @brief Destroy an async op blocker
+ */
+void indigo_unblock_bundle_task_async_op(void);
 
 /**
  * @brief Pause reading messages from a connection

@@ -93,6 +93,9 @@ void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
 void ind_cxn_tls_config_show(aim_pvs_t *pvs);
 
+void ind_cxn_former_async_stats_show(aim_pvs_t *pvs);
+
+void ind_cxn_former_async_stats_clear(aim_pvs_t *pvs);
 
 /**
  * @brief Update the configuration of the connection manager
@@ -124,6 +127,7 @@ int
 ind_cxn_proto_ip_string(indigo_cxn_protocol_params_t *params,
                         char *destbuf, int destbuflen);
 
+#ifdef UNIT_TEST
 /*
  * helper functions for unit testing only; 
  * do not call from outside of connectionmanager
@@ -136,11 +140,14 @@ cxn_state_t unit_test_cxn_state_get(indigo_controller_id_t controller_id,
  * do not call from outside of connectionmanager
  */
 bool unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
+bool unit_test_cxn_subbundle_task_should_yield(indigo_cxn_id_t cxn_id);
+int unit_test_get_former_async_pending_cnt(void);
+void unit_test_controller_disconnect(indigo_cxn_id_t cxn_id);
 
 int unit_test_controller_count_get(void);
 int unit_test_connection_count_get(void);
 
 int unit_test_cxn_events_get(indigo_controller_id_t controller_id,
                              uint8_t aux_id);
-
+#endif /* UNIT_TEST */
 #endif /* __OFCONNECTIONMANAGER_INT_H__ */
