@@ -152,7 +152,6 @@ setup_cxn(bool use_tls, char *controller_ip, int controller_port)
     return id;
 }
 
-#if 0
 static int
 setup_cxn_with_echo(bool use_tls, char *controller_ip, int controller_port)
 {
@@ -175,7 +174,6 @@ setup_cxn_with_echo(bool use_tls, char *controller_ip, int controller_port)
 
     return id;
 }
-#endif
 
 static int
 setup_cxn_v6(bool use_tls, char *controller_ip, int controller_port)

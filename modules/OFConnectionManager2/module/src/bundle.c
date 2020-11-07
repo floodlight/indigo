@@ -63,10 +63,7 @@ struct bundle_task_state {
     uint32_t subbundle_count;   /* Number of subbundles */
     uint32_t cur_subbundle;     /* Currently processing this subbundle */
     uint32_t cur_offset;        /* Current position in current subbundle */
-    uint32_t pending_offset;    /* First pending message offset in current subbundle */
-    bool pending_offset_is_valid; /* pending_offset position is valid */
-    bool cur_msg_is_paused;       /* Current subbundle is in batch support */
-    bool free_pending_msgs;       /* free pending messages */
+    bool cur_subbundle_is_paused; /* Current subbundle is in batch support */
     subbundle_t *subbundles;      /* Array of pointers to subbundles */
 };
 
@@ -193,9 +190,7 @@ ind_cxn_bundle_ctrl_handle(connection_t *cxn, of_object_t *obj)
         struct bundle_task_state *state = aim_zmalloc(sizeof(*state));
         state->cxn_id = cxn->cxn_id;
         state->reply = of_object_dup(obj);
-        state->pending_offset_is_valid = false;
-        state->cur_msg_is_paused = false;
-        state->free_pending_msgs = false;
+        state->cur_subbundle_is_paused = false;
         of_bundle_ctrl_msg_bundle_ctrl_type_set(state->reply,
                                                 OFPBCT_COMMIT_REPLY);
         state->id = bundle->id;
@@ -505,15 +500,11 @@ bundle_task(void *cookie)
      * Otherwise, bundle state should wait until no pending operation.
      * Note: next subbundle cannot start until the previous subbundle has no pending.
      */
-    if (state->cur_msg_is_paused == true) {
+    if (state->cur_subbundle_is_paused == true) {
         if (ind_cxn_subbundle_should_yield(cxn)) {
             return IND_SOC_TASK_CONTINUE;
-        } else {
-            /* Connection has gone or all outstanding operations have
-             * gone.
-             */
-            state->free_pending_msgs = true;
         }
+        state->cur_subbundle_is_paused = false;
     }
 
     /* state->cur_msg_is_paused == false or cxn is NULL */
@@ -527,29 +518,13 @@ bundle_task(void *cookie)
     while (state->cur_subbundle < state->subbundle_count) {
         subbundle_t *subbundle = &state->subbundles[state->cur_subbundle];
 
-        /* Check whether it is the time to free the pending msgs */
-        if (state->free_pending_msgs) {
-            if (state->pending_offset_is_valid) {
-                /* free all the pending messages */
-                while (state->pending_offset < state->cur_offset) {
-                    if (subbundle->objs[state->pending_offset]) {
-                        of_object_delete(subbundle->objs[state->pending_offset]);
-                        subbundle->objs[state->pending_offset] = NULL;
-                    }
-                    state->pending_offset++;
-                }
-                state->pending_offset_is_valid = false;
-            }
-            state->free_pending_msgs = false;
-        }
-
         /* iterate through the current subbundle */
         while (state->cur_offset < subbundle->count) {
             /* cxn is gone or outstanding operations have been done */
-            if (cxn && (state->cur_msg_is_paused == false)) {
-                AIM_LOG_TRACE("cur_subbundle=%u bundle_task cur_offset=%u is_pending=%d is_paused=%d",
+            if (cxn) {
+                AIM_LOG_TRACE("cur_subbundle=%u cur_offset=%u is_paused=%d",
                               state->cur_subbundle, state->cur_offset,
-                              state->pending_offset_is_valid, state->cur_msg_is_paused);
+                              state->cur_subbundle_is_paused);
 
                 /* The task is ok to process message at cur_offset.
                  * The cur_offset is in clear status. */
@@ -558,37 +533,35 @@ bundle_task(void *cookie)
                     indigo_error_t rv;
                     rv = ind_cxn_process_message(cxn, obj);
                     if (rv == INDIGO_ERROR_PENDING) {
-                        /* The message is an async operation
-                         * If this is the Mark the messsage at cur_offset as pending.
-                         * The pending status will be cleared in the next
-                         * runnable cycle.
-                         * The lower layer decides to block the bundle loop.
-                         */
-                        if (state->pending_offset_is_valid == false) {
-                            state->pending_offset = state->cur_offset;
-                            state->pending_offset_is_valid = true;
-                        }
-                        state->cur_msg_is_paused = true; 
+                        /* The message is an async operation. Set pause flag. */
+                        state->cur_subbundle_is_paused = true; 
                         AIM_LOG_TRACE("bundle_task cur_offset=%u pending\n",
                                       state->cur_offset);
-                        return IND_SOC_TASK_CONTINUE;
-                    } else {
-                        /* TODO - rv is CONTINUE, then allow next message */
                     }
+                    /* rv is OK, ERROR, or CONTINUE, then allow next message.
+                     * The obj should have been duplicated in the OFStateManager
+                     * or driver. It is safe to free the obj.
+                     * TODO: special case if this obj is the last message in
+                     *       subbundle and rv is CONTINUE, we still treat it as
+                     *       PENDING case.
+                     *       the ind_cxn_process_message() should add a new
+                     *       parameter to tell OFStatemanager/driver no more
+                     *       message in this subbundle. 
+                     */
                 }
             } else { /* if (cxn) */
                 /* Connection went away or previous operation(s) was pasued.
                  * Free the cur_offset.
                  * Drop remaining messages if cxn is gone.
                  */
-                state->cur_msg_is_paused = false;
+                state->cur_subbundle_is_paused = false;
             } /* if (cxn) */
 
             of_object_delete(subbundle->objs[state->cur_offset]); 
             subbundle->objs[state->cur_offset] = NULL;
             state->cur_offset++;
 
-            if (ind_soc_should_yield()) {
+            if (ind_soc_should_yield() || state->cur_subbundle_is_paused) {
                 return IND_SOC_TASK_CONTINUE;
             }
         }
