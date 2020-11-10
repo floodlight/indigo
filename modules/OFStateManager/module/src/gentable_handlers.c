@@ -1206,7 +1206,7 @@ gentable_entry_del_resume(
 
 /**
  * This API is used by iteration and gentable unregister cases.
- * Prefer nun-async deletion API.
+ * Prefer synchronous deletion API.
  * Both cases don't have the obj
  * - iteration case: not used for now. Just for passing the build.
  * - gentable unregister case: Don't care async operation. Just clear the entry.

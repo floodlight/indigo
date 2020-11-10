@@ -1606,8 +1606,8 @@ test_async_op(char *controller_suffix,
     OK(ind_soc_select_and_run(2));
 
     printf("ofconnection manager global async cnt=%d\n",
-           unit_test_get_former_async_pending_cnt());
-    INDIGO_ASSERT(unit_test_get_former_async_pending_cnt(),
+           unit_test_get_accumulated_pending_cnt());
+    INDIGO_ASSERT(unit_test_get_accumulated_pending_cnt(),
                   "outstanding operation should be added to global outstanding counter");
 
     printf("\n****************************************************\n\n");

@@ -54,7 +54,7 @@
 
 /* bundle task state stores all necessary info to process a bundle's msgs (objs);
  * original bundle is freed immediately after task state is set up
- * Async opereation pending can happend within a subbundle.
+ * Async operation pending can happend within a subbundle.
  */
 struct bundle_task_state {
     indigo_cxn_id_t cxn_id;
@@ -486,7 +486,7 @@ bundle_task(void *cookie)
     connection_t *cxn = ind_cxn_id_to_connection(state->cxn_id);
 
     /* Check whether the bundle task operation should be paused.
-     * It will check the pending operations from former connections.
+     * It will check the pending operations from previous connections.
      * Note: If the existing connection is gone, then just let the bundle task
      *       continue its work - clean up all the subbundles.
      */
@@ -495,7 +495,7 @@ bundle_task(void *cookie)
     }
 
     /* If bundle state allows next message, then don't care how many
-     * pending operations. This case can be that the subbundle allows nexsage to
+     * pending operations. This case can be that the subbundle allows nexti ms to
      * be processed.
      * Otherwise, bundle state should wait until no pending operation.
      * Note: next subbundle cannot start until the previous subbundle has no pending.
@@ -541,18 +541,19 @@ bundle_task(void *cookie)
                     /* rv is OK, ERROR, or CONTINUE, then allow next message.
                      * The obj should have been duplicated in the OFStateManager
                      * or driver. It is safe to free the obj.
-                     * TODO: special case if this obj is the last message in
-                     *       subbundle and rv is CONTINUE, we still treat it as
-                     *       PENDING case.
+                     * TODO: Due to driver/OFStateManager doesn't know whether
+                     *       it can start to proccess the accumulated msgs,
                      *       the ind_cxn_process_message() should add a new
                      *       parameter to tell OFStatemanager/driver no more
-                     *       message in this subbundle. 
+                     *       message in this subbundle if this obj is the last
+                     *       message in subbundle.
+                     *       Also, if the last msg in subbundle returns CONTINUE,
+                     *       we still treat it as PENDING case.
                      */
                 }
             } else { /* if (cxn) */
-                /* Connection went away or previous operation(s) was pasued.
-                 * Free the cur_offset.
-                 * Drop remaining messages if cxn is gone.
+                /* Connection went away:
+                 * Free the cur_offset and remaining messages.
                  */
                 state->cur_subbundle_is_paused = false;
             } /* if (cxn) */

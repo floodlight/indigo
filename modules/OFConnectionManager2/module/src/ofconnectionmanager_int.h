@@ -93,9 +93,9 @@ void ind_cxn_stats_show(aim_pvs_t* pvs, int details);
 
 void ind_cxn_tls_config_show(aim_pvs_t *pvs);
 
-void ind_cxn_former_async_stats_show(aim_pvs_t *pvs);
+void ind_cxn_accumulated_pending_op_stats_show(aim_pvs_t *pvs);
 
-void ind_cxn_former_async_stats_clear(aim_pvs_t *pvs);
+void ind_cxn_accumulated_pending_op_stats_clear(aim_pvs_t *pvs);
 
 /**
  * @brief Update the configuration of the connection manager
@@ -141,7 +141,7 @@ cxn_state_t unit_test_cxn_state_get(indigo_controller_id_t controller_id,
  */
 bool unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id);
 bool unit_test_cxn_subbundle_task_should_yield(indigo_cxn_id_t cxn_id);
-int unit_test_get_former_async_pending_cnt(void);
+int unit_test_get_accumulated_pending_cnt(void);
 void unit_test_controller_disconnect(indigo_cxn_id_t cxn_id);
 
 int unit_test_controller_count_get(void);

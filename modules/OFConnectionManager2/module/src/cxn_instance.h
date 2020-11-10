@@ -234,7 +234,7 @@ typedef struct connection_s {
     } barrier;
 
     /* async operations */
-    uint32_t async_pending_cnt;
+    uint32_t pending_cnt;
 
     /* Echo */
     struct {
