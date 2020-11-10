@@ -59,12 +59,20 @@
 struct bundle_task_state {
     indigo_cxn_id_t cxn_id;
     of_object_t *reply;
-    uint32_t id;                /* Bundle ID */
-    uint32_t subbundle_count;   /* Number of subbundles */
-    uint32_t cur_subbundle;     /* Currently processing this subbundle */
-    uint32_t cur_offset;        /* Current position in current subbundle */
-    bool cur_subbundle_is_paused; /* Current subbundle is in batch support */
-    subbundle_t *subbundles;      /* Array of pointers to subbundles */
+    uint32_t id;                  /* Bundle ID */
+    uint32_t subbundle_count;     /* Number of subbundles */
+    uint32_t cur_subbundle;       /* Currently processing this subbundle */
+    uint32_t cur_offset;          /* Current position in current subbundle */
+    bool cur_subbundle_is_paused; /* Current subbundle is pending on its outstanding operation(s). 
+                                   * If this flag is set, then the subbundle should wait for
+                                   * all the outstanding operations before processing next
+                                   * message in the current subbundle.
+                                   * If this flag is NOT set, then the subbundle is ok to process
+                                   * next message in the subbundle (ignore the outstanding count.)
+                                   * This flag should be set before moving on next subbundle if
+                                   * the current subbundle has any outstanding operation.
+                                   */
+    subbundle_t *subbundles;       /* Array of pointers to subbundles */
 };
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
