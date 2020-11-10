@@ -28,7 +28,6 @@
 #define INDIGO_ERRORS \
     ERROR(NONE,             0, "Success") \
     ERROR(PENDING,          1, "Operation is pending") \
-    ERROR(CONTINUE,         2, "Continue next operation") \
     ERROR(RESOURCE,        -1, "Could not allocate space") \
     ERROR(PARAM,           -2, "Bad parameter") \
     ERROR(VERSION,         -3, "Version not supported") \

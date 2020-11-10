@@ -70,7 +70,9 @@ struct bundle_task_state {
                                    * If this flag is NOT set, then the subbundle is ok to process
                                    * next message in the subbundle (ignore the outstanding count.)
                                    * This flag should be set before moving on next subbundle if
-                                   * the current subbundle has any outstanding operation.
+                                   * the current subbundle has any outstanding operation so that the
+                                   * bundle task will be blocked until all outstanding operation(s)
+                                   * have been cleared.
                                    */
     subbundle_t *subbundles;       /* Array of pointers to subbundles */
 };
@@ -503,7 +505,7 @@ bundle_task(void *cookie)
     }
 
     /* If bundle state allows next message, then don't care how many
-     * pending operations. This case can be that the subbundle allows nexti ms to
+     * pending operations. This case can be that the subbundle allows next msg to
      * be processed.
      * Otherwise, bundle state should wait until no pending operation.
      * Note: next subbundle cannot start until the previous subbundle has no pending.
@@ -549,14 +551,6 @@ bundle_task(void *cookie)
                     /* rv is OK, ERROR, or CONTINUE, then allow next message.
                      * The obj should have been duplicated in the OFStateManager
                      * or driver. It is safe to free the obj.
-                     * TODO: Due to driver/OFStateManager doesn't know whether
-                     *       it can start to proccess the accumulated msgs,
-                     *       the ind_cxn_process_message() should add a new
-                     *       parameter to tell OFStatemanager/driver no more
-                     *       message in this subbundle if this obj is the last
-                     *       message in subbundle.
-                     *       Also, if the last msg in subbundle returns CONTINUE,
-                     *       we still treat it as PENDING case.
                      */
                 }
             } else { /* if (cxn) */
