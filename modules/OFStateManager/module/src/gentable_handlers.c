@@ -503,7 +503,7 @@ ind_core_bsn_gentable_entry_delete_handler(
         if (rv == INDIGO_ERROR_PENDING) {
             AIM_LOG_TRACE("%s gentable delete async return",
                           gentable->name);
-            /* unblock async op pending */
+            /* block async op pending */
             indigo_cxn_block_async_op(cxn_id);
             return rv;
         }
@@ -1206,6 +1206,7 @@ gentable_entry_del_resume(
 
 /**
  * This API is used by iteration and gentable unregister cases.
+ * Prefer synchronous deletion API.
  * Both cases don't have the obj
  * - iteration case: not used for now. Just for passing the build.
  * - gentable unregister case: Don't care async operation. Just clear the entry.
@@ -1216,25 +1217,25 @@ delete_entry(indigo_cxn_id_t cxn_id,
              struct ind_core_gentable_entry *entry,
              of_desc_str_t err_txt)
 {
-    indigo_error_t rv;
+    indigo_error_t rv = INDIGO_ERROR_NONE;
 
     if (entry->refcount > 0) {
         return INDIGO_ERROR_EXISTS;
     }
 
-    if (gentable->ops->del4 != NULL) {
+    if (gentable->ops->del3 != NULL) {
+        rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
+    } else if (gentable->ops->del2 != NULL) {
+        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
+    } else if (gentable->ops->del != NULL) {
+        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
+    } else if (gentable->ops->del4 != NULL) {
         global_op_ctx.cxn_id = cxn_id;
         global_op_ctx.obj = NULL;
         global_op_ctx.no_async = true;
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
                                  (void *) &global_op_ctx);
-    } else if (gentable->ops->del3 != NULL) {
-        rv = gentable->ops->del3(cxn_id, gentable->priv, entry->priv, entry->key, err_txt);
-    } else if (gentable->ops->del2 != NULL) {
-        rv = gentable->ops->del2(cxn_id, gentable->priv, entry->priv, entry->key);
-    } else {
-        rv = gentable->ops->del(gentable->priv, entry->priv, entry->key);
-    }
+    } 
 
     /* Dont care about the return value. Force to remove it. */
     delete_entry_gt_update(gentable, entry);

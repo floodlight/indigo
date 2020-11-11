@@ -2350,7 +2350,7 @@ ind_cxn_parse_sockaddr(const indigo_cxn_protocol_params_t *protocol_params,
     return INDIGO_ERROR_NONE;
 }
 
-
+#ifdef UNIT_TEST
 /*------------------------------------------------------------
  * Utility functions for unit testing only
  *------------------------------------------------------------*/
@@ -2398,4 +2398,4 @@ int unit_test_cxn_events_get(indigo_controller_id_t controller_id,
 
     return unit_test_soc_socket_events_get(controller->cxns[aux_id]->sd);
 }
-
+#endif /* UNIT_TEST */

@@ -81,6 +81,14 @@ cxn_try_to_connect(connection_t *cxn);
 /* Maximum number of messages to send per write callback */
 #define MAX_WRITE_MSGS 32
 
+/* Accumulated outstanding async count
+ * This counter count all the async pending operations of previous connection(s).
+ * The bundle tasks and clear iteration tasks should be blocked if this counter
+ * is not zero.
+ * The pending operations of current active connection are not added to this counter.
+ */
+int32_t accumulated_pending_cnt = 0; 
+int32_t accumulated_pending_clr_cnt = 0;
 
 /**
  * Connection control blocks, indexed by connection index
@@ -1987,6 +1995,7 @@ ind_cxn_alloc(controller_t *controller, uint8_t aux_id, int sock_id)
         cxn->keepalive.threshold = 0;
     }
     cxn->keepalive.tx_echo_cnt = 0;
+    cxn->pending_cnt = 0;
 
     if (sock_id == -1) {
         /* Parse the protocol params just to get the family */
@@ -2083,6 +2092,8 @@ ind_cxn_free(connection_t *cxn)
     cxn->bytes_enqueued = 0;
     cxn->pkts_enqueued = 0;
     cxn->write_queue_head_offset = 0;
+    accumulated_pending_cnt += cxn->pending_cnt;
+    cxn->pending_cnt = 0;
 
     if (cxn->ssl) {
         SSL_free(cxn->ssl);
@@ -2425,6 +2436,9 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
         aim_printf(pvs, "    Socket read errors: %u\n", ind_cxn_read_errors);
     }
 
+    aim_printf(pvs, "Outstanding async op count from previous connections: %d\n",
+               accumulated_pending_cnt);
+
     FOREACH_ACTIVE_CXN(cxn_idx, cxn) {
         cxn_count++;
         aim_printf(pvs, "Stats for%s%s connection %s:\n",
@@ -2480,30 +2494,27 @@ ind_cxn_stats_show(aim_pvs_t *pvs, int details)
             }
         }
         aim_printf(pvs, "    Outstanding Async Operations: %u\n",
-                   cxn->async_pending_cnt);
+                   cxn->pending_cnt);
     }
     if (!cxn_count) {
         aim_printf(pvs, "No active connections\n");
     }
 }
 
-
-/*------------------------------------------------------------
- * Utility functions for unit testing only
- *------------------------------------------------------------*/
-
-int unit_test_connection_count_get(void)
+void
+ind_cxn_accumulated_pending_op_stats_show(aim_pvs_t *pvs)
 {
-    int idx;
-    connection_t *cxn;
+    aim_printf(pvs, "Outstanding async op count from previous connections: %d\n",
+               accumulated_pending_cnt);
+    aim_printf(pvs, "Force clear accumulated outstanding async op count: %d\n",
+               accumulated_pending_clr_cnt);
+}
 
-    int count = 0;
-
-    FOREACH_ACTIVE_CXN(idx, cxn) {
-        count++;
-    }
-
-    return count;
+void
+ind_cxn_accumulated_pending_op_stats_clear(aim_pvs_t *pvs)
+{
+    accumulated_pending_cnt = 0;
+    accumulated_pending_clr_cnt++;
 }
 
 /**
@@ -2514,7 +2525,7 @@ int unit_test_connection_count_get(void)
 void
 ind_cxn_block_async_op(connection_t *cxn)
 {
-    cxn->async_pending_cnt++;
+    cxn->pending_cnt++;
 }
 
 void
@@ -2533,23 +2544,55 @@ indigo_cxn_block_async_op(indigo_cxn_id_t cxn_id)
 void
 ind_cxn_unblock_async_op(connection_t *cxn)
 {
-    if (cxn->async_pending_cnt >  0) {
-        cxn->async_pending_cnt--;
+    if (cxn->pending_cnt >  0) {
+        cxn->pending_cnt--;
+    }
+}
+
+void
+ind_unblock_async_op() {
+    if (accumulated_pending_cnt > 0) {
+        accumulated_pending_cnt--;
+    } else {
+        AIM_DIE("accumulated_pending_cnt already is 0");
     }
 }
 
 void
 indigo_cxn_unblock_async_op(indigo_cxn_id_t cxn_id)
 {
+    /* When cxn doesn't exist, assume this "unlock" is an op of previous connections. */ 
     connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
     if (cxn != NULL) {
         ind_cxn_unblock_async_op(cxn);
+    } else {
+        ind_unblock_async_op();
     }
 }
 
 /**
- * Check whether connection's bundle task should yield
+ * Check whether connection's subbundle should yield
  * @param cxn connection
+ */
+bool
+ind_cxn_subbundle_should_yield(connection_t *cxn)
+{
+    if (cxn == NULL) {
+        /* Connection went away. Let task drop remaining messages. */
+        return false;
+    }
+
+    if (cxn->pending_cnt > 0) {
+        /* Wait for outstanding operations. */
+        return true;
+    }
+    return false;
+}
+
+/* When the connection is valid, if there is any pending op,
+ * wait for them completion
+ * If connection has gone, let the stale connection drains the
+ * bundle contents.
  */
 bool
 ind_cxn_bundle_task_should_yield(connection_t *cxn)
@@ -2559,11 +2602,41 @@ ind_cxn_bundle_task_should_yield(connection_t *cxn)
         return false;
     }
 
-    if (cxn->async_pending_cnt > 0) {
-        /* Wait for outstanding operations. */
+    AIM_LOG_TRACE("%s: accumulated_pending_cnt=%d", __FUNCTION__, accumulated_pending_cnt);
+    if (accumulated_pending_cnt > 0) {
         return true;
     }
+
     return false;
+}
+
+#ifdef UNIT_TEST
+/*------------------------------------------------------------
+ * Utility functions for unit testing only
+ *------------------------------------------------------------*/
+int unit_test_connection_count_get(void)
+{
+    int idx;
+    connection_t *cxn;
+
+    int count = 0;
+
+    FOREACH_ACTIVE_CXN(idx, cxn) {
+        count++;
+    }
+
+    return count;
+}
+
+bool
+unit_test_cxn_subbundle_task_should_yield(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        return false;
+    }
+
+    return ind_cxn_subbundle_should_yield(cxn);
 }
 
 bool
@@ -2574,5 +2647,23 @@ unit_test_cxn_bundle_task_should_yield(indigo_cxn_id_t cxn_id)
         return false;
     }
 
-    return ind_cxn_bundle_task_should_yield(cxn);
+    return (ind_cxn_bundle_task_should_yield(cxn) ||
+            ind_cxn_subbundle_should_yield(cxn));
 }
+
+int
+unit_test_get_accumulated_pending_cnt(void)
+{
+    return accumulated_pending_cnt;
+}
+
+void
+unit_test_controller_disconnect(indigo_cxn_id_t cxn_id)
+{
+    connection_t *cxn = ind_cxn_id_to_connection(cxn_id);
+    if (cxn == NULL) {
+        return;
+    }
+    controller_disconnect(cxn->controller);
+}
+#endif /* UNIT_TEST */

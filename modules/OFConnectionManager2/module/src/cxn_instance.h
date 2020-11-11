@@ -234,7 +234,7 @@ typedef struct connection_s {
     } barrier;
 
     /* async operations */
-    uint32_t async_pending_cnt;
+    uint32_t pending_cnt;
 
     /* Echo */
     struct {
@@ -355,6 +355,9 @@ void ind_cxn_unblock_async_op(connection_t *cxn);
 
 bool
 ind_cxn_bundle_task_should_yield(connection_t *cxn);
+
+bool
+ind_cxn_subbundle_should_yield(connection_t *cxn);
 
 indigo_error_t
 ind_cxn_process_message(connection_t *cxn, of_object_t *obj);

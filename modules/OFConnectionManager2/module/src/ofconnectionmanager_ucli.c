@@ -73,6 +73,30 @@ ofconnectionmanager_ucli_ucli__stats__(ucli_context_t *uc)
 }
 
 static ucli_status_t
+ofconnectionmanager_ucli_ucli__pending_stats__(ucli_context_t *uc)
+{
+    UCLI_COMMAND_INFO(uc,
+                      "pending_stats", 0,
+                      "$summary#Show accumulated cxns outstanding stats.");
+
+    ind_cxn_accumulated_pending_op_stats_show(&uc->pvs);
+
+    return UCLI_STATUS_OK;
+}
+
+static ucli_status_t
+ofconnectionmanager_ucli_ucli__pending_stats_clear__(ucli_context_t *uc)
+{
+    UCLI_COMMAND_INFO(uc,
+                      "pending_stats_clear", 0,
+                      "$summary#Clear accumulated cxns outstanding stats.");
+
+    ind_cxn_accumulated_pending_op_stats_clear(&uc->pvs);
+
+    return UCLI_STATUS_OK;
+}
+
+static ucli_status_t
 ofconnectionmanager_ucli_ucli__tls__(ucli_context_t *uc)
 {
     UCLI_COMMAND_INFO(uc,
@@ -221,6 +245,8 @@ static ucli_command_handler_f ofconnectionmanager_ucli_ucli_handlers__[] =
 {
     ofconnectionmanager_ucli_ucli__config__,
     ofconnectionmanager_ucli_ucli__stats__,
+    ofconnectionmanager_ucli_ucli__pending_stats__,
+    ofconnectionmanager_ucli_ucli__pending_stats_clear__,
     ofconnectionmanager_ucli_ucli__tls__,
     ofconnectionmanager_ucli_ucli__controller_list__,
     NULL
