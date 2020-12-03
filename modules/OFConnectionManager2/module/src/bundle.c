@@ -498,7 +498,9 @@ invoke_subbundle_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subb
     /* do not invoke for last subbundle (only contains barriers) */
     if (subbundle_pre_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_pre_starts[subbundle_idx]) {
-        (*subbundle_pre_starts[subbundle_idx])(cxn_id, subbundle_info);
+        if (subbundle_info->total_msg_count) {
+            (*subbundle_pre_starts[subbundle_idx])(cxn_id, subbundle_info);
+        }
     }
 
     if (subbundle_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
@@ -519,7 +521,9 @@ invoke_subbundle_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *sub
 
     if (subbundle_post_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_post_finishes[subbundle_idx]) {
-        (*subbundle_post_finishes[subbundle_idx])(cxn_id, subbundle_info);
+        if (subbundle_info->total_msg_count) {
+            (*subbundle_post_finishes[subbundle_idx])(cxn_id, subbundle_info);
+        }
     }
 }
 
