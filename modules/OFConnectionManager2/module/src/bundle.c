@@ -92,10 +92,10 @@ static uint32_t num_subbundles_per_bundle = 1;
 static indigo_cxn_subbundle_designator_t subbundle_designator;
 static indigo_cxn_bundle_comparator_t *subbundle_comparators;
 
-static indigo_cxn_subbundle_start_t *subbundle_starts;
-static indigo_cxn_subbundle_finish_t *subbundle_finishes;
-static indigo_cxn_subbundle_pre_start_t *subbundle_pre_starts;
-static indigo_cxn_subbundle_post_finish_t *subbundle_post_finishes;
+static indigo_cxn_subbundle_start_t *subbundle_starts2;
+static indigo_cxn_subbundle_finish_t *subbundle_finishes2;
+static indigo_cxn_subbundle_start3_t *subbundle_starts3;
+static indigo_cxn_subbundle_finish3_t *subbundle_finishes3;
 
 /* used by subbundle_compare_message to select subbundle comparator */
 static uint32_t subbundle_comparator_idx;
@@ -389,10 +389,9 @@ indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[])
 {
-    return indigo_cxn_subbundle_set3(num_subbundles,
+    return indigo_cxn_subbundle_set2(num_subbundles,
                                      designator,
                                      comparators,
-                                     NULL, NULL,
                                      NULL, NULL);
 }
 
@@ -403,23 +402,6 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
                           indigo_cxn_bundle_comparator_t comparators[],
                           indigo_cxn_subbundle_start_t starts[],
                           indigo_cxn_subbundle_finish_t finishes[])
-{
-    return indigo_cxn_subbundle_set3(num_subbundles,
-                                     designator,
-                                     comparators,
-                                     starts, finishes,
-                                     NULL, NULL);
-}
-
-/* see description in public header file */
-indigo_error_t
-indigo_cxn_subbundle_set3(uint32_t num_subbundles,
-                          indigo_cxn_subbundle_designator_t designator,
-                          indigo_cxn_bundle_comparator_t comparators[],
-                          indigo_cxn_subbundle_start_t starts[],
-                          indigo_cxn_subbundle_finish_t finishes[],
-                          indigo_cxn_subbundle_pre_start_t pre_starts[],
-                          indigo_cxn_subbundle_post_finish_t post_finishes[])
 {
     if (num_subbundles > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
         AIM_LOG_ERROR("num_subbundles %u exceeds maximum %u",
@@ -437,11 +419,38 @@ indigo_cxn_subbundle_set3(uint32_t num_subbundles,
     subbundle_designator = designator;
     subbundle_comparators = comparators;
 
-    subbundle_starts = starts;
-    subbundle_finishes = finishes;
+    subbundle_starts2 = starts;
+    subbundle_finishes2 = finishes;
 
-    subbundle_pre_starts = pre_starts;
-    subbundle_post_finishes = post_finishes;
+    return INDIGO_ERROR_NONE;
+}
+
+/* see description in public header file */
+indigo_error_t
+indigo_cxn_subbundle_set3(uint32_t num_subbundles,
+                          indigo_cxn_subbundle_designator_t designator,
+                          indigo_cxn_bundle_comparator_t comparators[],
+                          indigo_cxn_subbundle_start3_t starts[],
+                          indigo_cxn_subbundle_finish3_t finishes[])
+{
+    if (num_subbundles > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
+        AIM_LOG_ERROR("num_subbundles %u exceeds maximum %u",
+                      num_subbundles,
+                      OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1);
+        return INDIGO_ERROR_PARAM;
+    }
+    if ((num_subbundles > 0) && (designator == NULL)) {
+        AIM_LOG_ERROR("num_subbundles > 0, but designator == NULL");
+        return INDIGO_ERROR_PARAM;
+    }
+    /* one more subbundle for barriers */
+    num_subbundles_per_bundle = num_subbundles + 1;
+
+    subbundle_designator = designator;
+    subbundle_comparators = comparators;
+
+    subbundle_starts3 = starts;
+    subbundle_finishes3 = finishes;
 
     return INDIGO_ERROR_NONE;
 }
@@ -496,16 +505,16 @@ invoke_subbundle_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subb
 {
     uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
-    if (subbundle_pre_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_pre_starts[subbundle_idx]) {
+    if (subbundle_starts3 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_starts3[subbundle_idx]) {
         if (subbundle_info->total_msg_count) {
-            (*subbundle_pre_starts[subbundle_idx])(cxn_id, subbundle_info);
+            (*subbundle_starts3[subbundle_idx])(cxn_id, subbundle_info);
         }
     }
 
-    if (subbundle_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_starts[subbundle_idx]) {
-        (*subbundle_starts[subbundle_idx])(cxn_id, subbundle_info->subbundle_idx);
+    if (subbundle_starts2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_starts2[subbundle_idx]) {
+        (*subbundle_starts2[subbundle_idx])(cxn_id, subbundle_idx);
     }
 }
 
@@ -514,16 +523,15 @@ invoke_subbundle_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *sub
 {
     uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
-    if (subbundle_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_finishes[subbundle_idx]) {
-        (*subbundle_finishes[subbundle_idx])(cxn_id, subbundle_info->subbundle_idx);
-    }
-
-    if (subbundle_post_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_post_finishes[subbundle_idx]) {
+    if (subbundle_finishes3 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_finishes3[subbundle_idx]) {
         if (subbundle_info->total_msg_count) {
-            (*subbundle_post_finishes[subbundle_idx])(cxn_id, subbundle_info);
+            (*subbundle_finishes3[subbundle_idx])(cxn_id, subbundle_info);
         }
+    }
+    if (subbundle_finishes2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_finishes2[subbundle_idx]) {
+        (*subbundle_finishes2[subbundle_idx])(cxn_id, subbundle_idx);
     }
 }
 

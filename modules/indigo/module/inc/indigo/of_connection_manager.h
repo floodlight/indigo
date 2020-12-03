@@ -827,17 +827,17 @@ typedef struct indigo_cxn_subbundle_info_s {
     uint32_t cur_msg_count;
 } indigo_cxn_subbundle_info_t;
 
-typedef void (*indigo_cxn_subbundle_pre_start_t)(indigo_cxn_id_t cxn_id,
-                                                 indigo_cxn_subbundle_info_t *subbundle_info);
-typedef void (*indigo_cxn_subbundle_post_finish_t)(indigo_cxn_id_t cxn_id,
-                                                   indigo_cxn_subbundle_info_t *subbundle_info);
+typedef void (*indigo_cxn_subbundle_start3_t)(indigo_cxn_id_t cxn_id,
+                                              indigo_cxn_subbundle_info_t *subbundle_info);
+typedef void (*indigo_cxn_subbundle_finish3_t)(indigo_cxn_id_t cxn_id,
+                                               indigo_cxn_subbundle_info_t *subbundle_info);
 
 /**
- * Extends the subbundle infrastructure from indigo_cxn_subbundle_set2 above.
- * First five parameters are the same as for indigo_cxn_subbundle_set2.
- * @param pre_starts Array of prestart functions; the ith function is called
+ * Extends the subbundle infrastructure from indigo_cxn_subbundle_set above.
+ * First five parameters are the same as for indigo_cxn_subbundle_set.
+ * @param starts Array of prestart functions; the ith function is called
  * before the ith subbundle is started.
- * @param post_finishes Array of postfinish functions; the ith function is called
+ * @param finishes Array of postfinish functions; the ith function is called
  * after the ith subbundle is finished.
  *
  * The intent is to provide subbundle information to the the flowtables or
@@ -852,10 +852,8 @@ indigo_error_t
 indigo_cxn_subbundle_set3(uint32_t num_subbundles,
                           indigo_cxn_subbundle_designator_t designator,
                           indigo_cxn_bundle_comparator_t comparators[],
-                          indigo_cxn_subbundle_start_t starts[],
-                          indigo_cxn_subbundle_finish_t finishes[],
-                          indigo_cxn_subbundle_pre_start_t pre_starts[],
-                          indigo_cxn_subbundle_post_finish_t post_finishes[]);
+                          indigo_cxn_subbundle_start3_t starts[],
+                          indigo_cxn_subbundle_finish3_t finishes[]);
 
 /**
  * Change the maximum number of outstanding keepalives, so that the
