@@ -1609,7 +1609,7 @@ test_async_op(char *controller_suffix,
      *     open, add echo, add async pending, add echo, commit
      * expect:
      *     only first echo reply, then wait for unblock
-     *     second echo rply after unblock
+     *     second echo reply after unblock
      */
     printf("bundle add, no subbundle designator or comparators\n");
     indigo_cxn_bundle_comparator_set(NULL);

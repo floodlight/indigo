@@ -31,7 +31,7 @@
  * Async Operations:
  * The add4()/modify4()/del4() will support async operations.
  * Driver:
- *    The return value, INDIGO_ERROR_PENDING or INDIGO_ERROR_CONTINUE,
+ *    A return value of INDIGO_ERROR_PENDING or INDIGO_ERROR_CONTINUE
  *    indicates that driver is performing an async operation.
  *
  *    The op_ctx (indigo_core_op_context) contains the operation
@@ -50,8 +50,8 @@
  *    The new APIs and operation context are added to support async
  *    operation.
  *
- *    Only add4()/modify()/del4() will expect INDIGO_ERROR_PENDING
- *    or INDIGO_ERROR_CONTINUE return.
+ *    Only add4()/modify()/del4() will return INDIGO_ERROR_PENDING
+ *    or INDIGO_ERROR_CONTINUE.
  *
  *    The indigo_core_gentable_entry_resume() function is used for
  *    the bottom half of an async operation.

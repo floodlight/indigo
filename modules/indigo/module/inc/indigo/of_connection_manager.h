@@ -842,8 +842,8 @@ typedef void (*indigo_cxn_subbundle_finish3_t)(indigo_cxn_id_t cxn_id,
  *
  * The intent is to provide subbundle information to the the flowtables or
  * gentables before or after processing the subbundle.
- * Adding these two functions also try to backward compatible the existing
- * codes instead of modifying the start() and finish() functions.
+ * call only one of indigo_cxn_subbundle_set, indigo_cxn_subbundle_set2, or
+ * indigo_cxn_subbundle_set3 functions
  *
  * This is instruduced to support multiple outstanding asynchronous messages and
  * beyond. 

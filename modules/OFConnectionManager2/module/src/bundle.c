@@ -510,9 +510,7 @@ invoke_subbundle_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subb
         if (subbundle_info->total_msg_count) {
             (*subbundle_starts3[subbundle_idx])(cxn_id, subbundle_info);
         }
-    }
-
-    if (subbundle_starts2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+    } else if (subbundle_starts2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_starts2[subbundle_idx]) {
         (*subbundle_starts2[subbundle_idx])(cxn_id, subbundle_idx);
     }
@@ -528,8 +526,7 @@ invoke_subbundle_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *sub
         if (subbundle_info->total_msg_count) {
             (*subbundle_finishes3[subbundle_idx])(cxn_id, subbundle_info);
         }
-    }
-    if (subbundle_finishes2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
+    } else if (subbundle_finishes2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_finishes2[subbundle_idx]) {
         (*subbundle_finishes2[subbundle_idx])(cxn_id, subbundle_idx);
     }
@@ -606,7 +603,7 @@ bundle_task(void *cookie)
                 }
             } else { /* if (cxn) */
                 /* Connection went away:
-                 * All the rest subbundles should be flushed away.
+                 * All the remaining subbundles should be flushed away.
                  * Free the cur_offset and remaining messages.
                  */
                 state->cur_subbundle_is_paused = false;
