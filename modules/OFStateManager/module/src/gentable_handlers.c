@@ -31,8 +31,8 @@
  * Async Operations:
  * The add4()/modify4()/del4() will support async operations.
  * Driver:
- *    The return value, INDIGO_ERROR_PENDING, indicates that driver
- *    is performing an async operation.
+ *    The return value, INDIGO_ERROR_PENDING or INDIGO_ERROR_CONTINUE,
+ *    indicates that driver is performing an async operation.
  *
  *    The op_ctx (indigo_core_op_context) contains the operation
  *    context information needed when driver notifies state manager
@@ -51,7 +51,7 @@
  *    operation.
  *
  *    Only add4()/modify()/del4() will expect INDIGO_ERROR_PENDING
- *    return.
+ *    or INDIGO_ERROR_CONTINUE return.
  *
  *    The indigo_core_gentable_entry_resume() function is used for
  *    the bottom half of an async operation.
@@ -406,7 +406,7 @@ ind_core_bsn_gentable_entry_add_handler(
             indigo_core_op_context_t *op_ctx = op_ctx_alloc(cxn_id, obj);
             rv = gentable->ops->add4(cxn_id, gentable->priv, &key, &value, &priv, err_txt,
                                      (void *)op_ctx);
-            if (rv == INDIGO_ERROR_PENDING) {
+            if ((rv == INDIGO_ERROR_PENDING) || (rv == INDIGO_ERROR_CONTINUE)) {
                 /* entry hasn't been allocated yet, wait for resume.
                  * block async op pending */
                 if (priv != NULL) {
@@ -437,7 +437,7 @@ ind_core_bsn_gentable_entry_add_handler(
             indigo_core_op_context_t *op_ctx = op_ctx_alloc(cxn_id, obj);
             rv = gentable->ops->modify4(cxn_id, gentable->priv, entry->priv, &key, &value, err_txt,
                                         op_ctx);
-            if (rv == INDIGO_ERROR_PENDING) {
+            if ((rv == INDIGO_ERROR_PENDING) || (rv == INDIGO_ERROR_CONTINUE)) {
                 /* async returned
                  * block async op pending */
                 indigo_cxn_block_async_op(cxn_id);
@@ -500,7 +500,7 @@ ind_core_bsn_gentable_entry_delete_handler(
         rv = gentable->ops->del4(cxn_id, gentable->priv, entry->priv, entry->key, err_txt,
                                  (void *)op_ctx);
         /* async returned */
-        if (rv == INDIGO_ERROR_PENDING) {
+        if ((rv == INDIGO_ERROR_PENDING) || (rv == INDIGO_ERROR_CONTINUE)) {
             AIM_LOG_TRACE("%s gentable delete async return",
                           gentable->name);
             /* block async op pending */

@@ -299,6 +299,9 @@ indigo_core_receive_controller_message(indigo_cxn_id_t cxn_id,
         if (strcmp(name, "async_test") == 0) {
             indigo_cxn_block_async_op(cxn_id); 
             return INDIGO_ERROR_PENDING;
+        } else if (strcmp(name, "async_continue_test") == 0) {
+            indigo_cxn_block_async_op(cxn_id); 
+            return INDIGO_ERROR_CONTINUE;
         } else if (strcmp(name, "cxn_keepalive_max_outstanding_count") == 0) {
             indigo_cxn_keepalive_max_outstanding_count_set(cxn_id, 6);
         }
@@ -1093,6 +1096,43 @@ subbundle_finishes[] = {
     subbundle_finish,
 };
 
+uint32_t invoke_pre_start[NUM_SUBBUNDLES];
+uint32_t invoke_post_finish[NUM_SUBBUNDLES];
+
+void
+subbundle_pre_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subbundle_info)
+{
+    uint32_t subbundle_idx = subbundle_info->subbundle_idx;
+    printf("pre_setart subbundle %u\n", subbundle_idx);
+    INDIGO_ASSERT(invoke_post_finish[subbundle_idx] == 0);
+    invoke_pre_start[subbundle_idx]++;
+}
+
+void
+subbundle_post_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subbundle_info)
+{
+    uint32_t subbundle_idx = subbundle_info->subbundle_idx;
+    printf("post finish subbundle %u\n", subbundle_idx);
+    INDIGO_ASSERT(invoke_pre_start[subbundle_idx] == 1);
+    invoke_post_finish[subbundle_idx]++;
+}
+
+indigo_cxn_subbundle_pre_start_t
+subbundle_pre_starts[] = {
+    subbundle_pre_start,
+    NULL,
+    subbundle_pre_start,
+    subbundle_pre_start,
+};
+
+indigo_cxn_subbundle_post_finish_t
+subbundle_post_finishes[] = {
+    subbundle_post_finish,
+    NULL,
+    subbundle_post_finish,
+    subbundle_post_finish,
+};
+
 static void
 test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
             int domain, char *addr)
@@ -1360,6 +1400,66 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
                   "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+
+
+    /* bundle add test with subbundle designator and comparator */
+    printf("bundle add, subbundle designator by lowest 2 xid bits, "
+           "comparator for subbundle 0 and 3"
+           "subbundle start/finish pre_start/post_finish for bundles 0,2,3\n");
+    memset(invoke_start, 0, sizeof(invoke_start));
+    memset(invoke_finish, 0, sizeof(invoke_finish));
+    memset(invoke_pre_start, 0, sizeof(invoke_pre_start));
+    memset(invoke_post_finish, 0, sizeof(invoke_post_finish));
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set3(NUM_SUBBUNDLES,
+                              subbundle_designator, subbundle_comparators,
+                              subbundle_starts, subbundle_finishes,
+                              subbundle_pre_starts, subbundle_post_finishes);
+    of_send_bundle_open(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(use_tls, tl, 0x981ab);
+    of_send_bundled_barrier(use_tls, tl, 0xaabbdd);
+    of_send_bundled_echo(use_tls, tl, 0x2a2);
+    of_send_bundled_echo(use_tls, tl, 0x1278);
+    of_send_bundled_echo(use_tls, tl, 0x77372);
+    of_send_bundle_commit(use_tls, tl);
+    OK(ind_soc_select_and_run(50));
+    /* check echo replies */
+    check_for_echo(use_tls, tl, 0x1278);
+    check_for_echo(use_tls, tl, 0x2a2);
+    check_for_echo(use_tls, tl, 0x77372);
+    check_for_echo(use_tls, tl, 0x981ab);
+    printf("check for barrier reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
+                  "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    /* check subbundle invocations */
+    {
+        int i;
+        for (i = 0; i < NUM_SUBBUNDLES; i++) {
+            INDIGO_ASSERT(invoke_start[i] == (subbundle_starts[i]? 1: 0));
+            INDIGO_ASSERT(invoke_pre_start[i] == (subbundle_pre_starts[i]? 1: 0));
+            INDIGO_ASSERT(invoke_finish[i] == (subbundle_finishes[i]? 1: 0));
+            INDIGO_ASSERT(invoke_post_finish[i] == (subbundle_post_finishes[i]? 1: 0));
+        }
+    }
+    /* once more for fun */
+    of_send_controller_connections_request(use_tls, tl);
+    OK(ind_soc_select_and_run(100));
+    /* check for controller_connections_reply */
+    obj = of_recvmsg(use_tls, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BSN_CONTROLLER_CONNECTIONS_REPLY,
+                  "did not receive OF_BSN_CONTROLLER_CONNECTIONS_REPLY");
+
+
     check_connection_list(obj, OF_CONTROLLER_ROLE_MASTER);
 
     tl_close(use_tls, tl);
@@ -1494,7 +1594,13 @@ test_async_op(char *controller_suffix,
     INDIGO_ASSERT(obj->object_id == OF_BARRIER_REPLY,
                   "did not receive OF_BARRIER_REPLY, got %d", obj->object_id);
 
-    /* bundle add test: open, add echoes, commit */
+    /* Test case: bundle async test
+     * steps:
+     *     open, add echo, add async pending, add echo, commit
+     * expect:
+     *     only first echo reply, then wait for unblock
+     *     second echo rply after unblock
+     */
     printf("bundle add, no subbundle designator or comparators\n");
     indigo_cxn_bundle_comparator_set(NULL);
     indigo_cxn_subbundle_set(0, NULL, NULL);
@@ -1532,6 +1638,52 @@ test_async_op(char *controller_suffix,
     obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
     INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
+
+    /* Test case: multiple outstanding operations
+     * steps:
+     *     open, add echo, add async continue, add echo, commit
+     * expect:
+     *     all two first echoes reply, and then wait for unblock
+     */
+    printf("bundle add, no subbundle designator or comparators\n");
+    indigo_cxn_bundle_comparator_set(NULL);
+    indigo_cxn_subbundle_set(0, NULL, NULL);
+    of_send_bundle_open(false, tl);
+    OK(ind_soc_select_and_run(50));
+    printf("check for bundle open reply\n");
+
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+    of_send_bundled_echo(false, tl, 0x9328);
+    of_send_bundled_bsn_generic_command(false, tl, 0x1288, "async_continue_test");
+    of_send_bundled_echo(false, tl, 0x1267);
+    of_send_bundle_commit(false, tl);
+    OK(ind_soc_select_and_run(50));
+
+    /* check first echo reply in bundle */
+    check_for_echo(false, tl, 0x9328);
+    printf("After bundle commit: bundle task should yield()=%d\n",
+           unit_test_cxn_bundle_task_should_yield(cxn_id));
+    /* check second echo reply in bundle */
+    check_for_echo(false, tl, 0x1267);
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == true,
+                  "outstanding operation should block bundle task");
+    indigo_cxn_unblock_async_op(cxn_id);
+    printf("After unblock async: bundle task should yield() become %d\n",
+           unit_test_cxn_bundle_task_should_yield(cxn_id));
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == false,
+                  "No outstanding operation blocks bundle task");
+    OK(ind_soc_select_and_run(50));
+    printf("After unblock subbnel async: bundle task should yield become %d\n",
+           unit_test_cxn_bundle_task_should_yield(cxn_id));
+
+    printf("check for bundle commit reply\n");
+    obj = of_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
+                  "did not receive OF_BUNDLE_CTTRL_MSG");
+
+    /* test case end */
 
     printf("test_async_op is done. Close connection.\n");
     tl_close(false, tl);

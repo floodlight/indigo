@@ -94,6 +94,8 @@ static indigo_cxn_bundle_comparator_t *subbundle_comparators;
 
 static indigo_cxn_subbundle_start_t *subbundle_starts;
 static indigo_cxn_subbundle_finish_t *subbundle_finishes;
+static indigo_cxn_subbundle_pre_start_t *subbundle_pre_starts;
+static indigo_cxn_subbundle_post_finish_t *subbundle_post_finishes;
 
 /* used by subbundle_compare_message to select subbundle comparator */
 static uint32_t subbundle_comparator_idx;
@@ -387,9 +389,10 @@ indigo_cxn_subbundle_set(uint32_t num_subbundles,
                          indigo_cxn_subbundle_designator_t designator,
                          indigo_cxn_bundle_comparator_t comparators[])
 {
-    return indigo_cxn_subbundle_set2(num_subbundles,
+    return indigo_cxn_subbundle_set3(num_subbundles,
                                      designator,
                                      comparators,
+                                     NULL, NULL,
                                      NULL, NULL);
 }
 
@@ -400,6 +403,23 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
                           indigo_cxn_bundle_comparator_t comparators[],
                           indigo_cxn_subbundle_start_t starts[],
                           indigo_cxn_subbundle_finish_t finishes[])
+{
+    return indigo_cxn_subbundle_set3(num_subbundles,
+                                     designator,
+                                     comparators,
+                                     starts, finishes,
+                                     NULL, NULL);
+}
+
+/* see description in public header file */
+indigo_error_t
+indigo_cxn_subbundle_set3(uint32_t num_subbundles,
+                          indigo_cxn_subbundle_designator_t designator,
+                          indigo_cxn_bundle_comparator_t comparators[],
+                          indigo_cxn_subbundle_start_t starts[],
+                          indigo_cxn_subbundle_finish_t finishes[],
+                          indigo_cxn_subbundle_pre_start_t pre_starts[],
+                          indigo_cxn_subbundle_post_finish_t post_finishes[])
 {
     if (num_subbundles > OFCONNECTIONMANAGER_CONFIG_MAX_SUBBUNDLES+1) {
         AIM_LOG_ERROR("num_subbundles %u exceeds maximum %u",
@@ -419,6 +439,9 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
 
     subbundle_starts = starts;
     subbundle_finishes = finishes;
+
+    subbundle_pre_starts = pre_starts;
+    subbundle_post_finishes = post_finishes;
 
     return INDIGO_ERROR_NONE;
 }
@@ -469,22 +492,34 @@ compare_obj(const void *_a, const void *_b)
 }
 
 static void
-invoke_subbundle_start(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+invoke_subbundle_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subbundle_info)
 {
+    uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
+    if (subbundle_pre_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_pre_starts[subbundle_idx]) {
+        (*subbundle_pre_starts[subbundle_idx])(cxn_id, subbundle_info);
+    }
+
     if (subbundle_starts && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_starts[subbundle_idx]) {
-        (*subbundle_starts[subbundle_idx])(cxn_id, subbundle_idx);
+        (*subbundle_starts[subbundle_idx])(cxn_id, subbundle_info->subbundle_idx);
     }
 }
 
 static void
-invoke_subbundle_finish(indigo_cxn_id_t cxn_id, uint32_t subbundle_idx)
+invoke_subbundle_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subbundle_info)
 {
+    uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
     if (subbundle_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
         subbundle_finishes[subbundle_idx]) {
-        (*subbundle_finishes[subbundle_idx])(cxn_id, subbundle_idx);
+        (*subbundle_finishes[subbundle_idx])(cxn_id, subbundle_info->subbundle_idx);
+    }
+
+    if (subbundle_post_finishes && (subbundle_idx < num_subbundles_per_bundle-1) &&
+        subbundle_post_finishes[subbundle_idx]) {
+        (*subbundle_post_finishes[subbundle_idx])(cxn_id, subbundle_info);
     }
 }
 
@@ -494,6 +529,7 @@ bundle_task(void *cookie)
     struct bundle_task_state *state = cookie;
 
     connection_t *cxn = ind_cxn_id_to_connection(state->cxn_id);
+    indigo_cxn_subbundle_info_t subbundle_info;
 
     /* Check whether the bundle task operation should be paused.
      * It will check the pending operations from previous connections.
@@ -522,7 +558,10 @@ bundle_task(void *cookie)
     /* corner case: invoke start for first subbundle */
     if (state->cur_subbundle == SUBBUNDLE_UNSET) {
         state->cur_subbundle = 0;
-        invoke_subbundle_start(state->cxn_id, state->cur_subbundle);
+        subbundle_info.subbundle_idx = state->cur_subbundle;
+        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+        subbundle_info.cur_msg_count = state->subbundles[state->cur_subbundle].count;
+        invoke_subbundle_start(state->cxn_id, &subbundle_info);
     }
 
     while (state->cur_subbundle < state->subbundle_count) {
@@ -548,13 +587,14 @@ bundle_task(void *cookie)
                         AIM_LOG_TRACE("bundle_task cur_offset=%u pending\n",
                                       state->cur_offset);
                     }
-                    /* rv is OK, ERROR, or CONTINUE, then allow next message.
+                    /* If rv is OK, ERROR, or CONTINUE, then allow next message.
                      * The obj should have been duplicated in the OFStateManager
                      * or driver. It is safe to free the obj.
                      */
                 }
             } else { /* if (cxn) */
                 /* Connection went away:
+                 * All the rest subbundles should be flushed away.
                  * Free the cur_offset and remaining messages.
                  */
                 state->cur_subbundle_is_paused = false;
@@ -572,12 +612,18 @@ bundle_task(void *cookie)
         aim_free(subbundle->objs);
         subbundle->objs = NULL;
         /* invoke subbundle finish before moving onto next subbundle */
-        invoke_subbundle_finish(state->cxn_id, state->cur_subbundle);
+        subbundle_info.subbundle_idx = state->cur_subbundle;
+        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+        subbundle_info.cur_msg_count = 0;
+        invoke_subbundle_finish(state->cxn_id, &subbundle_info);
         /* move to the next subbundle */
         state->cur_subbundle++;
         state->cur_offset = 0;
         /* invoke subbundle start for next subbundle */
-        invoke_subbundle_start(state->cxn_id, state->cur_subbundle);
+        subbundle_info.subbundle_idx = state->cur_subbundle;
+        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+        subbundle_info.cur_msg_count = state->subbundles[state->cur_subbundle].count;
+        invoke_subbundle_start(state->cxn_id, &subbundle_info);
     }
 
     if (cxn) {

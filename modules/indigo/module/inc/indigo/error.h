@@ -1,6 +1,6 @@
 /****************************************************************
  *
- *        Copyright 2013, Big Switch Networks, Inc.
+ *        Copyright 2020, Arista Networks, Inc.
  *
  * Licensed under the Eclipse Public License, Version 1.0 (the
  * "License"); you may not use this file except in compliance
@@ -28,6 +28,7 @@
 #define INDIGO_ERRORS \
     ERROR(NONE,             0, "Success") \
     ERROR(PENDING,          1, "Operation is pending") \
+    ERROR(CONTINUE,         2, "Continue next Operation") \
     ERROR(RESOURCE,        -1, "Could not allocate space") \
     ERROR(PARAM,           -2, "Bad parameter") \
     ERROR(VERSION,         -3, "Version not supported") \
