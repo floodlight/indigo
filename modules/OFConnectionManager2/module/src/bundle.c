@@ -75,6 +75,7 @@ struct bundle_task_state {
                                    * have been cleared.
                                    */
     subbundle_t *subbundles;       /* Array of pointers to subbundles */
+    bool is_aborted;               /* bundle task is aborted due to connection loss */
 };
 
 static bundle_t *find_bundle(connection_t *cxn, uint32_t id);
@@ -505,14 +506,18 @@ invoke_subbundle_start(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *subb
 {
     uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
-    if (subbundle_starts3 && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_starts3[subbundle_idx]) {
-        if (subbundle_info->total_msg_count) {
-            (*subbundle_starts3[subbundle_idx])(cxn_id, subbundle_info);
+    if (subbundle_starts3) {
+        if ((subbundle_idx < num_subbundles_per_bundle-1) &&
+            subbundle_starts3[subbundle_idx]) {
+            if (subbundle_info->total_msg_count) {
+                (*subbundle_starts3[subbundle_idx])(cxn_id, subbundle_info);
+            }
         }
-    } else if (subbundle_starts2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_starts2[subbundle_idx]) {
-        (*subbundle_starts2[subbundle_idx])(cxn_id, subbundle_idx);
+    } else if (subbundle_starts2) {
+        if ((subbundle_idx < num_subbundles_per_bundle-1) &&
+            subbundle_starts2[subbundle_idx]) {
+            (*subbundle_starts2[subbundle_idx])(cxn_id, subbundle_idx);
+        }
     }
 }
 
@@ -521,14 +526,18 @@ invoke_subbundle_finish(indigo_cxn_id_t cxn_id, indigo_cxn_subbundle_info_t *sub
 {
     uint32_t subbundle_idx = subbundle_info->subbundle_idx;
     /* do not invoke for last subbundle (only contains barriers) */
-    if (subbundle_finishes3 && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_finishes3[subbundle_idx]) {
-        if (subbundle_info->total_msg_count) {
-            (*subbundle_finishes3[subbundle_idx])(cxn_id, subbundle_info);
+    if (subbundle_finishes3) {
+        if ((subbundle_idx < num_subbundles_per_bundle-1) &&
+            subbundle_finishes3[subbundle_idx]) {
+            if (subbundle_info->total_msg_count) {
+                (*subbundle_finishes3[subbundle_idx])(cxn_id, subbundle_info);
+            }
         }
-    } else if (subbundle_finishes2 && (subbundle_idx < num_subbundles_per_bundle-1) &&
-        subbundle_finishes2[subbundle_idx]) {
-        (*subbundle_finishes2[subbundle_idx])(cxn_id, subbundle_idx);
+    } else if (subbundle_finishes2) {
+        if ((subbundle_idx < num_subbundles_per_bundle-1) &&
+            subbundle_finishes2[subbundle_idx]) {
+            (*subbundle_finishes2[subbundle_idx])(cxn_id, subbundle_idx);
+        }
     }
 }
 
@@ -567,9 +576,10 @@ bundle_task(void *cookie)
     /* corner case: invoke start for first subbundle */
     if (state->cur_subbundle == SUBBUNDLE_UNSET) {
         state->cur_subbundle = 0;
+        state->is_aborted = false;
         subbundle_info.subbundle_idx = state->cur_subbundle;
         subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.cur_msg_count = state->subbundles[state->cur_subbundle].count;
+        subbundle_info.is_aborted = false;
         invoke_subbundle_start(state->cxn_id, &subbundle_info);
     }
 
@@ -607,6 +617,7 @@ bundle_task(void *cookie)
                  * Free the cur_offset and remaining messages.
                  */
                 state->cur_subbundle_is_paused = false;
+                state->is_aborted = true;
             } /* if (cxn) */
 
             of_object_delete(subbundle->objs[state->cur_offset]); 
@@ -623,7 +634,7 @@ bundle_task(void *cookie)
         /* invoke subbundle finish before moving onto next subbundle */
         subbundle_info.subbundle_idx = state->cur_subbundle;
         subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.cur_msg_count = 0;
+        subbundle_info.is_aborted = state->is_aborted;
         invoke_subbundle_finish(state->cxn_id, &subbundle_info);
         /* move to the next subbundle */
         state->cur_subbundle++;
@@ -631,7 +642,7 @@ bundle_task(void *cookie)
         /* invoke subbundle start for next subbundle */
         subbundle_info.subbundle_idx = state->cur_subbundle;
         subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.cur_msg_count = state->subbundles[state->cur_subbundle].count;
+        subbundle_info.is_aborted = state->is_aborted;
         invoke_subbundle_start(state->cxn_id, &subbundle_info);
     }
 

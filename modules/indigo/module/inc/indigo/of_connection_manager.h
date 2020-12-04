@@ -824,7 +824,7 @@ indigo_cxn_subbundle_set2(uint32_t num_subbundles,
 typedef struct indigo_cxn_subbundle_info_s {
     uint32_t subbundle_idx;
     uint32_t total_msg_count;
-    uint32_t cur_msg_count;
+    bool is_aborted;
 } indigo_cxn_subbundle_info_t;
 
 typedef void (*indigo_cxn_subbundle_start3_t)(indigo_cxn_id_t cxn_id,
@@ -835,9 +835,9 @@ typedef void (*indigo_cxn_subbundle_finish3_t)(indigo_cxn_id_t cxn_id,
 /**
  * Extends the subbundle infrastructure from indigo_cxn_subbundle_set above.
  * First five parameters are the same as for indigo_cxn_subbundle_set.
- * @param starts Array of prestart functions; the ith function is called
+ * @param starts Array of start functions; the ith function is called
  * before the ith subbundle is started.
- * @param finishes Array of postfinish functions; the ith function is called
+ * @param finishes Array of finish functions; the ith function is called
  * after the ith subbundle is finished.
  *
  * The intent is to provide subbundle information to the the flowtables or

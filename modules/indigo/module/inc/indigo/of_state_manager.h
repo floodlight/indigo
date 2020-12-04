@@ -143,16 +143,22 @@ indigo_core_stats_get(uint32_t *total_flows,
  *
  * Async operation support:
  * add4()/modify4()/del4() are used for async operations.
- * In the event that PENDING is returned by the add4/modify4/del4 APIs,
+ * In the event that PENDING or CONTINUE is returned by the add4/modify4/
+ * del4 APIs, the pending count will be incremented and
  * the resume function indigo_core_gentable_resume() must be called by
  * the driver either to complete any remaining work if the asynchronous
  * operation is successfully completed by the lower-level driver, or to
  * clean up operational state if the asynchronous operation fails in
- * lower-level driver code. In order to provide sufficient context to
- * the resume function, the add4/modify4/del4 APIs take a void* context
- * as their first parameter. This void* value should be passed back to
- * the resume function when the lower-level driver code finally completes
- * (either with success or failure).
+ * lower-level driver code.
+ *
+ * The difference between PENDING and CONTINUE is that
+ * PENDING will pause subbundle processing while CONTINUE will continue
+ * the next message until all messages in subbundle have been processed.
+ *
+ * Also, in order to provide sufficient context to the resume function,
+ * the add4/modify4/del4 APIs take a void* context as their first parameter.
+ * This void* value should be passed back to the resume function when the
+ * lower-level driver code finally completes (either with success or failure).
  *
  * The state manager also needs the operation context, containing
  * connection id and oflow obj, to resume its remaining tasks.
