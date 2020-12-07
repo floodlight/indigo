@@ -1033,7 +1033,6 @@ gentable_add4_async_bt(void *cookie)
 {
     gt_async_op_data_t *resume_params = cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "async added";
     
     /* cancel timer */
@@ -1053,8 +1052,7 @@ gentable_add4_async_bt(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_NONE);
     aim_free(cookie);
-    /* for test, we create obj in do_add1() */
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static void
@@ -1062,7 +1060,6 @@ gentable_modify4_async_bt(void *cookie)
 {
     gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "async modified";
 
     /* cancel timer */
@@ -1082,7 +1079,7 @@ gentable_modify4_async_bt(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_NONE);
     aim_free(cookie);
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static void
@@ -1090,7 +1087,6 @@ gentable_del4_async_bt(void *cookie)
 {
     gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "async deleted";
 
     /* cancel timer */
@@ -1107,7 +1103,7 @@ gentable_del4_async_bt(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_NONE);
     aim_free(cookie);
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static void
@@ -1115,7 +1111,6 @@ gentable_add4_async_timeout(void *cookie)
 {
     gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "add timeout";
 
     /* cancel async op event */
@@ -1134,7 +1129,7 @@ gentable_add4_async_timeout(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_TIME_OUT);
     aim_free(cookie);
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static void
@@ -1142,7 +1137,6 @@ gentable_modify4_async_timeout(void *cookie)
 {
     gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "modify timeout";
 
     /* cancel async op event */
@@ -1161,7 +1155,7 @@ gentable_modify4_async_timeout(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_TIME_OUT);
     aim_free(cookie);
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static void
@@ -1169,7 +1163,6 @@ gentable_del4_async_timeout(void *cookie)
 {
     gt_async_op_data_t *resume_params = (gt_async_op_data_t *) cookie;
     struct test_table *table = resume_params->table_priv;
-    of_object_t *obj = resume_params->op_ctx->obj;
     of_desc_str_t err_txt = "delete timeout";
 
     /* cancel timer */
@@ -1185,7 +1178,7 @@ gentable_del4_async_timeout(void *cookie)
                                       err_txt,
                                       INDIGO_ERROR_TIME_OUT);
     aim_free(cookie);
-    of_object_delete(obj);
+    /* object is freed in resume */
 }
 
 static indigo_error_t
