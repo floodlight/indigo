@@ -53,7 +53,7 @@ ifndef SUBMODULE_LOXIGEN_ARTIFACTS
 endif
 
 ifdef SUBMODULES_LOCAL
-  SUBMODULES_LOCAL_UPDATE := $(shell python $(ROOT)/submodules/init.py --update $(SUBMODULES_LOCAL))
+  SUBMODULES_LOCAL_UPDATE := $(shell python3 $(ROOT)/submodules/init.py --update $(SUBMODULES_LOCAL))
   ifneq ($(lastword $(SUBMODULES_LOCAL_UPDATE)),submodules:ok.)
     $(info Local submodule update failed.)
     $(info Result:)
