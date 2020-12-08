@@ -50,8 +50,10 @@ Run `make check`.  This will build and run each module's unit test.  In
 general, you will see a lot of output and occasionally even error messages
 for tests that exercise error handling.
 
-Use the VERBOSE=1 and valgrind environment variables for building problems.
-Example: "make VERBOSE=1" . "make VALGRIND=1".
+Use the VERBOSE environment variable to diagnose building problems,
+and the BUILDER_EXCLUDE_SETCAP and VALGRIND environment variables to find memory
+leaks.
+For example: "make VERBOSE=1", or "make BUILDER_EXCLUDE_SETCAP=1 VALGRIND=1".
  
 Generating Documentation
 ------------------------

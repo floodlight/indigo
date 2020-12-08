@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ################################################################
 #
 #        Copyright 2013, Big Switch Networks, Inc.
@@ -55,30 +55,30 @@ os.chdir(ops.root)
 # Get the status of all submodules
 submodule_status = {}
 try:
-    for entry in subprocess.check_output(['git', 'submodule', 'status']).split("\n"):
+    for entry in subprocess.check_output(['git', 'submodule', 'status']).decode().split("\n"):
         data = entry.split()
         if len(data) >= 2:
             submodule_status[data[1].replace("submodules/", "")] = data[0]
-except Exception, e:
-    print repr(e)
+except Exception as e:
+    print(repr(e))
     raise
 
 if ops.list:
-    for (module, status) in submodule_status.iteritems():
-        print module
+    for (module, status) in submodule_status.items():
+        print(module)
 
 if ops.update:
-    for (module, status) in submodule_status.iteritems():
+    for (module, status) in submodule_status.items():
         if module in ops.update or "all" in ops.update:
             if status[0] == '-':
                 # This submodule has not yet been updated
-                print "Updating submodule %s" % module
+                print("Updating submodule %s" % module)
                 if subprocess.check_call(['git', 'submodule', 'update', '--init', 'submodules/%s' % module]) != 0:
-                    print "git error updating module '%s'." % (module, switchlight_root, module)
+                    print("git error updating module '%s'." % (module, switchlight_root, module))
                     sys.exit(1)
             else:
-                print "Submodule %s is already checked out." % module
-    print "submodules:ok."
+                print("Submodule %s is already checked out." % module)
+    print("submodules:ok.")
 
 
 
