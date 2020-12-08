@@ -465,6 +465,12 @@ ind_core_group_init(void)
     AIM_TRUE_OR_DIE(ind_core_group_hashtable != NULL);
 }
 
+void
+ind_core_group_finish(void)
+{
+    bighash_table_destroy(ind_core_group_hashtable, NULL);
+}
+
 /*
  * Group table management
  */

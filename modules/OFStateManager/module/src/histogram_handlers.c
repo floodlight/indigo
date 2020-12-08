@@ -55,6 +55,14 @@ ind_core_histogram_handlers_init(void)
     }
 }
 
+void
+ind_core_histogram_handlers_finish(void)
+{
+    histogram_destroy(test_histogram);
+    indigo_core_generic_stats_unregister("histograms");
+    indigo_core_generic_stats_unregister("histogram");
+}
+
 static void
 handle_histogram_request(
     indigo_cxn_id_t cxn_id,

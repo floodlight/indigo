@@ -45,7 +45,9 @@ extern void ind_core_flow_entry_delete(ft_entry_t *entry,
                                        indigo_cxn_id_t cxn_id);
 
 void ind_core_group_init(void);
+void ind_core_group_finish(void);
 
 void ind_core_histogram_handlers_init(void);
+void ind_core_histogram_handlers_finish(void);
 
 #endif /* OFSTATEMANAGER_DECS_H */

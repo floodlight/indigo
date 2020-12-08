@@ -89,3 +89,10 @@ ind_core_port_init(void)
     ind_core_port_allocator = slot_allocator_create(OFSTATEMANAGER_CONFIG_MAX_PORTS);
     ind_core_queue_allocator = slot_allocator_create(OFSTATEMANAGER_CONFIG_MAX_QUEUES);
 }
+
+void
+ind_core_port_finish(void)
+{
+    slot_allocator_destroy(ind_core_queue_allocator);
+    slot_allocator_destroy(ind_core_port_allocator);
+}

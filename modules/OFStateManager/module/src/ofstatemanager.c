@@ -723,15 +723,23 @@ ind_core_finish(void)
 
     ind_core_bsn_gentable_handler_finish();
 
+    ind_core_histogram_handlers_finish();
+
     /* Indicate core is shutting down */
     if (ind_core_module_enabled) {
         AIM_LOG_VERBOSE("Finish is calling disable");
         ind_core_enable_set(0);
     }
 
-    ft_destroy(ind_core_ft);
+    ind_core_port_finish();
 
     ind_core_test_gentable_finish();
+
+    ind_core_group_finish();
+
+    ft_destroy(ind_core_ft);
+
+    ind_cfg_unregister(&ind_core_cfg_ops);
 
     ind_core_init_done = 0;
 
