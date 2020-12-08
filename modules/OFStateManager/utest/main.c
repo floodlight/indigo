@@ -490,9 +490,8 @@ check_bucket_counts(ft_instance_t ft, int expected)
 void
 handle_message(of_object_t *obj)
 {
-    if (indigo_core_receive_controller_message(0, obj) != INDIGO_ERROR_PENDING) {
-        of_object_delete(obj);
-    }
+    indigo_core_receive_controller_message(0, obj);
+    of_object_delete(obj);
 }
 
 int
@@ -732,6 +731,7 @@ test_ft_hash(void)
         TEST_ASSERT(entry->id == TEST_KEY(idx));
     }
 
+    minimatch_cleanup(&query.minimatch);
     TEST_OK(depopulate_table(ft));
     TEST_ASSERT(check_bucket_counts(ft, 0) == 0);
     ft_destroy(ft);
