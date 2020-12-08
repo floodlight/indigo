@@ -28,10 +28,10 @@
 #include <unistd.h>
 
 #include <loci/loci.h>
-#include <locitest/unittest.h>
-#include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
 #include <indigo/forwarding.h>
+
+#include "test_infra.h"
 
 #define TABLE_ID 1
 #define NUM_ENTRIES 10

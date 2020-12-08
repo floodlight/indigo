@@ -28,9 +28,10 @@
 #include <unistd.h>
 
 #include <loci/loci.h>
-#include <locitest/unittest.h>
-#include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
+
+#include "test_infra.h"
+
 
 extern void handle_message(of_object_t *obj);
 extern int do_barrier(void);
