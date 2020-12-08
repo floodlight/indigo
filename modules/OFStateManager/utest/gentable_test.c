@@ -36,11 +36,10 @@
 #include <unistd.h>
 
 #include <loci/loci.h>
-#include <locitest/unittest.h>
-#include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
 
 #include "gentable_test.h"
+#include "test_infra.h"
 
 #define TABLE_ID 1
 #define NUM_ENTRIES 10
@@ -587,6 +586,8 @@ test_gentable_async(void)
     AIM_TRUE_OR_DIE(table.count_del_pending == 0 &&
                     table.count_del_timeout == 1 &&
                     strcmp("delete timeout", bsn_err_txt) == 0);
+
+    indigo_core_gentable_unregister(gentable);
     return TEST_PASS;
 }
 

@@ -41,11 +41,10 @@
 #include <ft.h>
 
 #include <loci/loci.h>
-#include <locitest/unittest.h>
-#include <locitest/test_common.h>
 
 #include "ofstatemanager_decs.h"
 #include "gentable_test.h"
+#include "test_infra.h"
 
 /* Defined in table_test.c */
 int test_table(void);
@@ -94,6 +93,18 @@ static int outstanding_op_cnt;
 
 /* Used by populate_table and depopulate_table to track entry pointers */
 static ft_entry_t *entries[TEST_FLOW_COUNT];
+
+
+/**
+ * Exit on error if set to 1
+ */
+int exit_on_error = 1;
+
+/**
+ * Global error state: 0 is okay, 1 is error
+ */
+int global_error = 0;
+
 
 /****************************************************************
  * Stubs
@@ -406,6 +417,51 @@ check_table_entry_states(ft_instance_t ft)
     return 0;
 }
 
+/*
+ * flow_add_v1_populate returns seed+1 for later invocations,
+ * so that subsequent flow_adds will be populated with other values
+ */
+int
+flow_add_v1_populate(of_flow_add_t *obj, int seed)
+{
+    of_match_t match;
+    of_list_action_t *list;
+    of_action_output_t output;
+    int rv;
+
+    /* populate a few scalar fields in the flow_add */
+    of_flow_add_xid_set(obj, seed);
+    of_flow_add_cookie_set(obj, seed+1);
+    of_flow_add_priority_set(obj, seed+3);
+    of_flow_add_out_port_set(obj, seed+4);
+
+    /* populate a few fields and corresponding masks in the match */
+    memset(&match, 0, sizeof(of_match_t));
+    OF_MATCH_MASK_ETH_TYPE_EXACT_SET(&match);
+    match.fields.eth_type = seed;
+    OF_MATCH_MASK_IPV4_SRC_EXACT_SET(&match);
+    match.fields.ipv4_src = seed+1;
+    OF_MATCH_MASK_IPV4_DST_EXACT_SET(&match);
+    match.fields.ipv4_dst = seed+2;
+    OF_MATCH_MASK_IP_PROTO_EXACT_SET(&match);
+    match.fields.ip_proto = seed+3;
+    rv = of_flow_add_match_set(obj, &match);
+    TEST_ASSERT(rv == OF_ERROR_NONE);
+
+    /* set up an action */
+    list = of_list_action_new(OF_VERSION_1_0);
+    TEST_ASSERT(list != NULL);
+    of_action_output_init(&output, OF_VERSION_1_0, -1, 1);
+    of_list_action_append_bind(list, &output);
+    of_action_output_port_set(&output, seed);
+    rv = of_flow_add_actions_set(obj, list);
+    TEST_ASSERT(rv == OF_ERROR_NONE);
+    of_list_action_delete(list);
+
+    return seed+1;
+}
+
+
 /**
  * Create count flows that differ only in the eth_type
  *
@@ -422,7 +478,7 @@ populate_table(ft_instance_t ft, int count, of_match_t *match)
     minimatch_t minimatch;
 
     flow_add_base = of_flow_add_new(OF_VERSION_1_0);
-    TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add_base, 1) != 0);
+    TEST_ASSERT(flow_add_v1_populate(flow_add_base, 1) != 0);
     of_flow_add_flags_set(flow_add_base, 0);
     TEST_OK(of_flow_add_match_get(flow_add_base, match));
 
@@ -569,7 +625,7 @@ test_ft_hash(void)
     TEST_ASSERT(ft != NULL);
 
     flow_add = of_flow_add_new(OF_VERSION_1_0);
-    TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, 1) != 0);
+    TEST_ASSERT(flow_add_v1_populate(flow_add, 1) != 0);
     of_flow_add_flags_set(flow_add, 0);
     TEST_ASSERT(of_flow_add_match_get(flow_add, &match) == 0);
 
@@ -590,7 +646,7 @@ test_ft_hash(void)
 
     /* Set up flow add structure */
     flow_add = of_flow_add_new(OF_VERSION_1_0);
-    TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, 1) != 0);
+    TEST_ASSERT(flow_add_v1_populate(flow_add, 1) != 0);
     of_flow_add_flags_set(flow_add, 0);
     of_flow_add_priority_get(flow_add, &orig_prio);
     of_flow_add_cookie_get(flow_add, &orig_cookie);
@@ -750,7 +806,7 @@ add_flow(ft_instance_t ft, int id, ft_entry_t **entry_p)
     of_match_t match;
     minimatch_t minimatch;
     flow_add = of_flow_add_new(OF_VERSION_1_0);
-    of_flow_add_OF_VERSION_1_0_populate(flow_add, id);
+    flow_add_v1_populate(flow_add, id);
     of_flow_add_flags_set(flow_add, 0);
     of_flow_add_cookie_set(flow_add, id);
     TEST_ASSERT(of_flow_add_match_get(flow_add, &match) == 0);
@@ -942,11 +998,11 @@ test_ft_iter_task(void)
     ft = ft_create();
 
     flow_add1 = of_flow_add_new(OF_VERSION_1_0);
-    of_flow_add_OF_VERSION_1_0_populate(flow_add1, 1);
+    flow_add_v1_populate(flow_add1, 1);
     of_flow_add_flags_set(flow_add1, 0);
 
     flow_add2 = of_flow_add_new(OF_VERSION_1_0);
-    of_flow_add_OF_VERSION_1_0_populate(flow_add2, 2);
+    flow_add_v1_populate(flow_add2, 2);
     of_flow_add_flags_set(flow_add2, 0);
 
     TEST_ASSERT(of_flow_add_match_get(flow_add1, &match) == 0);
@@ -1102,7 +1158,7 @@ test_simple_add_del(void)
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
-        TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
+        TEST_ASSERT(flow_add_v1_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         handle_message(flow_add);
         TEST_INDIGO_OK(do_barrier());
@@ -1129,7 +1185,7 @@ test_exact_add_del(void)
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
-        TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
+        TEST_ASSERT(flow_add_v1_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);
@@ -1170,7 +1226,7 @@ test_modify(void)
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
-        TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
+        TEST_ASSERT(flow_add_v1_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);
@@ -1214,7 +1270,7 @@ test_modify_strict(void)
     for (idx = 0; idx < TEST_FLOW_COUNT; idx++) {
         flow_add = of_flow_add_new(OF_VERSION_1_0);
         TEST_ASSERT(flow_add != NULL);
-        TEST_ASSERT(of_flow_add_OF_VERSION_1_0_populate(flow_add, idx) != 0);
+        TEST_ASSERT(flow_add_v1_populate(flow_add, idx) != 0);
         of_flow_add_flags_set(flow_add, 0);
         flow_add_keep[idx] = of_object_dup(flow_add);
         handle_message(flow_add);

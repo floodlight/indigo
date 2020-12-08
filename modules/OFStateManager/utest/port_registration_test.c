@@ -28,9 +28,9 @@
 #include <unistd.h>
 
 #include <loci/loci.h>
-#include <locitest/unittest.h>
-#include <locitest/test_common.h>
 #include <SocketManager/socketmanager.h>
+
+#include "test_infra.h"
 
 #define QUEUES_PER_PORT OFSTATEMANAGER_CONFIG_MAX_QUEUES/OFSTATEMANAGER_CONFIG_MAX_PORTS
 
