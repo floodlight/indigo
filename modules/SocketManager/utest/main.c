@@ -689,6 +689,8 @@ aim_main(int argc, char* argv[])
     test_task();
     test_priority();
 
+    ind_soc_finish();
+
     return 0;
 }
 

@@ -1563,8 +1563,13 @@ aim_main(int argc, char* argv[])
     RUN_TEST(modify);
     RUN_TEST(modify_strict);
 
+    indigo_core_table_unregister(0);
+
     TRY(ind_core_enable_set(0));
     TRY(ind_core_finish());
+
+    ind_soc_enable_set(0);
+    ind_soc_finish();
 
     return global_error;
 }

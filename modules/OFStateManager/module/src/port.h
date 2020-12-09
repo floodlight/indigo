@@ -45,5 +45,6 @@ extern struct ind_core_queue ind_core_queues[OFSTATEMANAGER_CONFIG_MAX_QUEUES];
 extern int ind_core_ports_registered;
 
 void ind_core_port_init(void);
+void ind_core_port_finish(void);
 
 #endif
