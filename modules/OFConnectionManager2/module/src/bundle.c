@@ -639,11 +639,13 @@ bundle_task(void *cookie)
         /* move to the next subbundle */
         state->cur_subbundle++;
         state->cur_offset = 0;
-        /* invoke subbundle start for next subbundle */
-        subbundle_info.subbundle_idx = state->cur_subbundle;
-        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.is_aborted = state->is_aborted;
-        invoke_subbundle_start(state->cxn_id, &subbundle_info);
+        if (state->cur_subbundle < state->subbundle_count) {
+            /* invoke subbundle start for next subbundle */
+            subbundle_info.subbundle_idx = state->cur_subbundle;
+            subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+            subbundle_info.is_aborted = state->is_aborted;
+            invoke_subbundle_start(state->cxn_id, &subbundle_info);
+        }
     }
 
     if (cxn) {
