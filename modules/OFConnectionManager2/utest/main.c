@@ -1640,7 +1640,7 @@ test_async_op(char *controller_suffix,
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == false,
                   "No outstanding operation blocks bundle task");
     OK(ind_soc_select_and_run(50));
-    printf("After unblock subbnel async: bundle task should yield become %d\n",
+    printf("After unblock subbundle async: bundle task should yield become %d\n",
            unit_test_cxn_bundle_task_should_yield(cxn_id));
 
     /* check second echo reply in bundle */
@@ -1852,14 +1852,19 @@ test_async_op(char *controller_suffix,
 
     ind_cxn_stats_show(&aim_pvs_stdout, 1);
 
-
-
     OK(indigo_controller_remove(id));
     OK(ind_soc_select_and_run(50));
 
     indigo_teardown();
 
     close(lsd);
+
+    printf("***Stop %s, %s, %s, controller_suffix %s, "
+           "domain %s, addr %s\n",
+           __FUNCTION__, get_tcp_tls(false),
+           "without CA",
+           controller_suffix? controller_suffix: "NONE",
+           get_domain_name(domain), addr);
 }
 
 static void
@@ -2818,6 +2823,14 @@ test_cxn_keepalive_max_outstanding_count(bool use_tls)
     OK(ind_soc_select_and_run(1000+10));
 
     tl_close(use_tls, tl);
+
+    OK(indigo_controller_remove(id));
+    OK(ind_soc_select_and_run(5));
+
+    indigo_teardown();
+    close(lsd);
+
+    printf("***End %s, %s\n", __FUNCTION__, get_tcp_tls(use_tls));
 }
 
 void run_all_tests(bool use_tls)
@@ -2876,6 +2889,7 @@ int aim_main(int argc, char* argv[])
 
     test_async_op(NULL, AF_INET, CONTROLLER_IP);
     test_cxn_keepalive_max_outstanding_count(false);
+
     return 0;
 }
 
