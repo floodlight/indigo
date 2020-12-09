@@ -1419,6 +1419,7 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     memset(invoke_start3, 0, sizeof(invoke_start3));
     memset(invoke_finish3, 0, sizeof(invoke_finish3));
     indigo_cxn_bundle_comparator_set(NULL);
+    /* set3() has higher priority */
     indigo_cxn_subbundle_set2(NUM_SUBBUNDLES,
                               subbundle_designator, subbundle_comparators,
                               subbundle_starts, subbundle_finishes);
@@ -1455,9 +1456,9 @@ test_normal(bool use_tls, bool use_ca_cert, char *controller_suffix,
     {
         int i;
         for (i = 0; i < NUM_SUBBUNDLES; i++) {
-            INDIGO_ASSERT(invoke_start[i] == (subbundle_starts[i]? 1: 0));
+            INDIGO_ASSERT(invoke_start[i] == 0);
             INDIGO_ASSERT(invoke_start3[i] == (subbundle_starts3[i]? 1: 0));
-            INDIGO_ASSERT(invoke_finish[i] == (subbundle_finishes[i]? 1: 0));
+            INDIGO_ASSERT(invoke_finish[i] == 0);
             INDIGO_ASSERT(invoke_finish3[i] == (subbundle_finishes3[i]? 1: 0));
         }
     }
