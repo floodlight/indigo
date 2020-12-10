@@ -207,6 +207,9 @@ test_random(void)
                 collisions++;
             }
         }
+
+        minimatch_cleanup(&minimatch_a);
+        minimatch_cleanup(&minimatch_b);
     }
 
     AIM_ASSERT(collisions < num_iters/10000, "too many hash collisions (%d)", collisions);
