@@ -409,8 +409,8 @@ find_next_timer_expiration(indigo_time_t now)
          */
         uint64_t delta = entry->deadline - now;
         if (entry->deadline < now) {
-            AIM_LOG_TRACE("find_next_timer_expiration deadline has past:",
-                          "now, %ld deadline %ld", now, entry->deadline);
+            AIM_LOG_TRACE("find_next_timer_expiration deadline has passed: "
+                          "now %ld, deadline %ld", now, entry->deadline);
             return 0;
         }
         if (delta > INT32_MAX) {
