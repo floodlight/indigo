@@ -1347,7 +1347,8 @@ ind_core_gentable_iter_task_callback(void *cookie)
     indigo_core_gentable_t *gentable = find_gentable_by_id(state->table_id);
 
     if (gentable == NULL || gentable->generation_id != state->generation_id) {
-        AIM_LOG_INTERNAL("gentable %s disappeared during iteration");
+        AIM_LOG_INTERNAL("gentable %u disappeared during iteration",
+                         state->table_id);
         state->callback(state->cookie, NULL, NULL);
         aim_free(state);
         return IND_SOC_TASK_FINISHED;

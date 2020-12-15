@@ -279,7 +279,7 @@ ind_cxn_bundle_add_handle(connection_t *cxn, of_object_t *obj)
             cxn->cxn_id, obj,
             OF_ERROR_TYPE_BUNDLE_FAILED,
             OFPBFC_MSG_BAD_LEN);
-        AIM_LOG_WARN("Inconsistent bundled message length", bundle->id);
+        AIM_LOG_WARN("Inconsistent bundled message length in bundle %u", bundle->id);
         return;
     }
 
