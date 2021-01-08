@@ -2999,18 +2999,18 @@ void run_all_tests(bool use_tls)
 
 int aim_main(int argc, char* argv[])
 {
-    // bool use_tls;
+    bool use_tls;
 
     basedir = dirname(argv[0]);
 
-    // use_tls = false;
-    // run_all_tests(use_tls);
+    use_tls = false;
+    run_all_tests(use_tls);
 
-    // use_tls = true;
-    // run_all_tests(use_tls);
+    use_tls = true;
+    run_all_tests(use_tls);
 
     test_async_op(NULL, AF_INET, CONTROLLER_IP);
-    // test_cxn_keepalive_max_outstanding_count(false);
+    test_cxn_keepalive_max_outstanding_count(false);
 
     return 0;
 }
