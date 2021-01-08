@@ -577,18 +577,20 @@ bundle_task(void *cookie)
     if (state->cur_subbundle == SUBBUNDLE_UNSET) {
         state->cur_subbundle = 0;
         state->is_aborted = false;
-        subbundle_info.subbundle_idx = state->cur_subbundle;
-        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.is_aborted = false;
-        invoke_subbundle_start(state->cxn_id, &subbundle_info);
     }
 
     while (state->cur_subbundle < state->subbundle_count) {
         subbundle_t *subbundle = &state->subbundles[state->cur_subbundle];
 
+        if (state->cur_offset == 0) {
+            subbundle_info.subbundle_idx = state->cur_subbundle;
+            subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+            subbundle_info.is_aborted = state->is_aborted;
+            invoke_subbundle_start(state->cxn_id, &subbundle_info);
+        }
+
         /* iterate through the current subbundle */
         while (state->cur_offset < subbundle->count) {
-            /* cxn is gone or outstanding operations have been done */
             if (cxn) {
                 AIM_LOG_TRACE("cur_subbundle=%u cur_offset=%u is_paused=%d",
                               state->cur_subbundle, state->cur_offset,
@@ -615,6 +617,10 @@ bundle_task(void *cookie)
                 /* Connection went away:
                  * All the remaining subbundles should be flushed away.
                  * Free the cur_offset and remaining messages.
+                 * Notes: this situation may not happen under current codes.
+                 * The connection detection needs socket read enabled. We
+                 * have paused the socket read before bundle task. Unless
+                 * we find other ways to detect the socket connections.
                  */
                 state->cur_subbundle_is_paused = false;
                 state->is_aborted = true;
@@ -628,14 +634,18 @@ bundle_task(void *cookie)
                 return IND_SOC_TASK_CONTINUE;
             }
         }
+   
         /* clean up subbundle */
-        aim_free(subbundle->objs);
-        subbundle->objs = NULL;
-        /* invoke subbundle finish before moving onto next subbundle */
-        subbundle_info.subbundle_idx = state->cur_subbundle;
-        subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
-        subbundle_info.is_aborted = state->is_aborted;
-        invoke_subbundle_finish(state->cxn_id, &subbundle_info);
+        if (subbundle->objs) {
+            aim_free(subbundle->objs);
+            subbundle->objs = NULL;
+            /* invoke subbundle finish before moving onto next subbundle */
+            subbundle_info.subbundle_idx = state->cur_subbundle;
+            subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
+            subbundle_info.is_aborted = state->is_aborted;
+            invoke_subbundle_finish(state->cxn_id, &subbundle_info);
+        }
+
         /* move to the next subbundle */
         state->cur_subbundle++;
         state->cur_offset = 0;
@@ -644,7 +654,14 @@ bundle_task(void *cookie)
             subbundle_info.subbundle_idx = state->cur_subbundle;
             subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
             subbundle_info.is_aborted = state->is_aborted;
-            invoke_subbundle_start(state->cxn_id, &subbundle_info);
+        }
+
+        /* At the end of a subbundle, we need to check whether we
+         * should be paused.
+         */
+        if (cxn && cxn->pending_cnt) {
+            state->cur_subbundle_is_paused = true;
+            return IND_SOC_TASK_CONTINUE;
         }
     }
 
