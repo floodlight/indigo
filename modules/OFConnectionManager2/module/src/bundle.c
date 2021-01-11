@@ -573,7 +573,7 @@ bundle_task(void *cookie)
 
     /* state->cur_msg_is_paused == false or cxn is NULL */
     
-    /* corner case: invoke start for first subbundle */
+    /* corner case: assign the cur_subbndle for first subbundle */
     if (state->cur_subbundle == SUBBUNDLE_UNSET) {
         state->cur_subbundle = 0;
         state->is_aborted = false;
@@ -586,7 +586,9 @@ bundle_task(void *cookie)
             subbundle_info.subbundle_idx = state->cur_subbundle;
             subbundle_info.total_msg_count = state->subbundles[state->cur_subbundle].count;
             subbundle_info.is_aborted = state->is_aborted;
-            invoke_subbundle_start(state->cxn_id, &subbundle_info);
+            if (subbundle->objs) {
+                invoke_subbundle_start(state->cxn_id, &subbundle_info);
+            }
         }
 
         /* iterate through the current subbundle */

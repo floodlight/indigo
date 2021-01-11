@@ -487,7 +487,7 @@ of_send_bsn_generic_command(bool is_tls, intptr_t tl,
 
 static of_object_t *
 tcp_recvmsg(int tl, uint8_t buf[], int buflen,
-            of_object_storage_t *storage)
+            of_object_storage_t *storage, bool allow_empty)
 {
     const int header_bytes = 8;
     int ret = 0;
@@ -498,6 +498,15 @@ tcp_recvmsg(int tl, uint8_t buf[], int buflen,
         ret = read(tl, buf, header_bytes);
         i++;
     } while (i < 256 && ret == -1 && errno == EAGAIN);
+
+    /* If allow receiving nothing, then we check the return code
+     * and error code after above while loop */
+    if (allow_empty) {
+        if ((ret == -1) && (errno == EAGAIN)) {
+            return NULL;
+        }
+    }
+
     INDIGO_ASSERT(ret != -1, "read error: %s", strerror(errno));
     INDIGO_ASSERT(ret == header_bytes, "read %d bytes, expected %d", 
                   ret, header_bytes);
@@ -513,39 +522,8 @@ tcp_recvmsg(int tl, uint8_t buf[], int buflen,
 }
 
 static of_object_t *
-tcp_no_recvmsg(int tl, uint8_t buf[], int buflen,
-               of_object_storage_t *storage)
-{
-    const int header_bytes = 8;
-    int ret = 0;
-    uint16_t msglen;
-    int i = 0;
-
-    do {
-        ret = read(tl, buf, header_bytes);
-        i++;
-    } while (i < 256 && ret == -1 && errno == EAGAIN);
-    if (ret == -1 && errno == EAGAIN) {
-        return NULL;
-    } else {
-        INDIGO_ASSERT(ret != -1, "read error: %s", strerror(errno));
-        INDIGO_ASSERT(ret == header_bytes, "read %d bytes, expected %d", 
-                  ret, header_bytes);
-        msglen = ntohs(*((uint16_t*)(buf+2)));
-        INDIGO_ASSERT(msglen <= buflen, "message len %d exceeds buffer len %d",
-                  msglen, buflen);
-        ret = read(tl, buf+header_bytes, msglen-header_bytes);
-        INDIGO_ASSERT(ret == msglen-header_bytes, 
-                  "body read %d bytes, expected %d",
-                  ret, msglen-header_bytes);
-
-        return of_object_new_from_message_preallocated(storage, buf, msglen);
-    }
-}
-
-static of_object_t *
 tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
-            of_object_storage_t *storage)
+            of_object_storage_t *storage, bool allow_empty)
 {
     const int header_bytes = 8;
     int ret = 0;
@@ -558,6 +536,14 @@ tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
         i++;
     } while (i < 256 && ret == -1 && 
              SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ);
+
+    /* If allow receiving nothing, then we check the return code
+     * and error code after above while loop */
+    if (allow_empty) {
+        if ((ret == -1) && (SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ)) {
+            return NULL;
+        }
+    }
     if (ret == -1) {
         ERR_print_errors_fp(stderr);
     }
@@ -578,51 +564,13 @@ tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
 }
 
 static of_object_t *
-tls_no_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
-               of_object_storage_t *storage)
-{
-    const int header_bytes = 8;
-    int ret = 0;
-    uint16_t msglen;
-    int i = 0;
-
-    do {
-        ERR_clear_error();
-        ret = SSL_read(ssl, buf, header_bytes);
-        i++;
-    } while (i < 256 && ret == -1 && 
-             SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ);
-    if ((ret == -1) &&  SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ) {
-        return NULL;
-    } else {
-        if (ret == -1) {
-            ERR_print_errors_fp(stderr);
-        }
-        INDIGO_ASSERT(ret == header_bytes, "read %d bytes, expected %d", 
-                      ret, header_bytes);
-        msglen = ntohs(*((uint16_t*)(buf+2)));
-        INDIGO_ASSERT(msglen <= buflen, "message len %d exceeds buffer len %d",
-                      msglen, buflen);
-        if (msglen - header_bytes > 0) {
-            ERR_clear_error();
-            ret = SSL_read(ssl, buf+header_bytes, msglen-header_bytes);
-            INDIGO_ASSERT(ret == msglen-header_bytes, 
-                          "body read %d bytes, expected %d",
-                          ret, msglen-header_bytes);
-        }
-
-        return of_object_new_from_message_preallocated(storage, buf, msglen);
-    }
-}
-
-static of_object_t *
 of_recvmsg(bool is_tls, intptr_t tl, uint8_t buf[], int buflen,
            of_object_storage_t *storage)
 {
     if (is_tls) {
-        return tls_recvmsg((SSL*)tl, buf, buflen, storage);
+        return tls_recvmsg((SSL*)tl, buf, buflen, storage, false);
     } else {
-        return tcp_recvmsg((int)tl, buf, buflen, storage);
+        return tcp_recvmsg((int)tl, buf, buflen, storage, false);
     }
 }
 
@@ -631,9 +579,9 @@ of_no_recvmsg(bool is_tls, intptr_t tl, uint8_t buf[], int buflen,
            of_object_storage_t *storage)
 {
     if (is_tls) {
-        return tls_no_recvmsg((SSL*)tl, buf, buflen, storage);
+        return tls_recvmsg((SSL*)tl, buf, buflen, storage, true);
     } else {
-        return tcp_no_recvmsg((int)tl, buf, buflen, storage);
+        return tcp_recvmsg((int)tl, buf, buflen, storage, true);
     }
 }
 
@@ -2843,7 +2791,7 @@ test_bad_controller_name(bool use_tls, int domain, char *addr)
            get_domain_name(domain), addr);
 }
 
-void
+static void
 test_cxn_keepalive_max_outstanding_count(bool use_tls)
 {
     indigo_controller_id_t id;
