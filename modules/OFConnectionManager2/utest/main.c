@@ -487,7 +487,7 @@ of_send_bsn_generic_command(bool is_tls, intptr_t tl,
 
 static of_object_t *
 tcp_recvmsg(int tl, uint8_t buf[], int buflen,
-            of_object_storage_t *storage)
+            of_object_storage_t *storage, bool allow_empty)
 {
     const int header_bytes = 8;
     int ret = 0;
@@ -498,6 +498,15 @@ tcp_recvmsg(int tl, uint8_t buf[], int buflen,
         ret = read(tl, buf, header_bytes);
         i++;
     } while (i < 256 && ret == -1 && errno == EAGAIN);
+
+    /* If allow receiving nothing, then we check the return code
+     * and error code after above while loop */
+    if (allow_empty) {
+        if ((ret == -1) && (errno == EAGAIN)) {
+            return NULL;
+        }
+    }
+
     INDIGO_ASSERT(ret != -1, "read error: %s", strerror(errno));
     INDIGO_ASSERT(ret == header_bytes, "read %d bytes, expected %d", 
                   ret, header_bytes);
@@ -514,7 +523,7 @@ tcp_recvmsg(int tl, uint8_t buf[], int buflen,
 
 static of_object_t *
 tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
-            of_object_storage_t *storage)
+            of_object_storage_t *storage, bool allow_empty)
 {
     const int header_bytes = 8;
     int ret = 0;
@@ -527,6 +536,14 @@ tls_recvmsg(SSL *ssl, uint8_t buf[], int buflen,
         i++;
     } while (i < 256 && ret == -1 && 
              SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ);
+
+    /* If allow receiving nothing, then we check the return code
+     * and error code after above while loop */
+    if (allow_empty) {
+        if ((ret == -1) && (SSL_get_error(ssl, ret) == SSL_ERROR_WANT_READ)) {
+            return NULL;
+        }
+    }
     if (ret == -1) {
         ERR_print_errors_fp(stderr);
     }
@@ -551,9 +568,20 @@ of_recvmsg(bool is_tls, intptr_t tl, uint8_t buf[], int buflen,
            of_object_storage_t *storage)
 {
     if (is_tls) {
-        return tls_recvmsg((SSL*)tl, buf, buflen, storage);
+        return tls_recvmsg((SSL*)tl, buf, buflen, storage, false);
     } else {
-        return tcp_recvmsg((int)tl, buf, buflen, storage);
+        return tcp_recvmsg((int)tl, buf, buflen, storage, false);
+    }
+}
+
+static of_object_t *
+of_no_recvmsg(bool is_tls, intptr_t tl, uint8_t buf[], int buflen,
+           of_object_storage_t *storage)
+{
+    if (is_tls) {
+        return tls_recvmsg((SSL*)tl, buf, buflen, storage, true);
+    } else {
+        return tcp_recvmsg((int)tl, buf, buflen, storage, true);
     }
 }
 
@@ -1612,7 +1640,10 @@ test_async_op(char *controller_suffix,
      *     only first echo reply, then wait for unblock
      *     second echo reply after unblock
      */
+    printf("\n****************************************************\n\n");
+    printf("Test case: subbundle has async pending message\n");
     printf("bundle add, no subbundle designator or comparators\n");
+    printf("bundle include sync, async_pending, and sync three messages:\n");
     indigo_cxn_bundle_comparator_set(NULL);
     indigo_cxn_subbundle_set(0, NULL, NULL);
     of_send_bundle_open(false, tl);
@@ -1634,6 +1665,19 @@ test_async_op(char *controller_suffix,
            unit_test_cxn_bundle_task_should_yield(cxn_id));
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == true,
                   "outstanding operation should block bundle task");
+
+    /* check no second echo and no cmmit_reply */
+    obj = of_no_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj == NULL,
+                  "should not receive any reply");
+
+    /* run connection manager again and still receive nothing */
+    OK(ind_soc_select_and_run(50));
+    obj = of_no_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj == NULL,
+                  "should not receive any reply");
+
+    /* unblock the bundle task by pretending resume call reception */
     indigo_cxn_unblock_async_op(cxn_id);
     printf("After unblock async: bundle task should yield() become %d\n",
            unit_test_cxn_bundle_task_should_yield(cxn_id));
@@ -1650,14 +1694,16 @@ test_async_op(char *controller_suffix,
     INDIGO_ASSERT(obj->object_id == OF_BUNDLE_CTRL_MSG,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
-    /* Test case: multiple outstanding operations
+    /* Test case: allow outstanding operations in subbundle
      * steps:
-     *     open, add echo, add async continue, add echo, commit
+     *     open, add echo, add 2 async continue, add echo, commit
      * expect:
-     *     all two first echoes reply, and then wait for unblock
+     *     all two echoes reply, and then wait for unblock
      */
-    printf("Test case: multiple outstanding operations...\n");
+    printf("\n****************************************************\n\n");
+    printf("Test case: allow outstanding operations in subbundle...\n");
     printf("bundle add, no subbundle designator or comparators\n");
+    printf("bundle includes sync, async_continue, sync\n"); 
     indigo_cxn_bundle_comparator_set(NULL);
     indigo_cxn_subbundle_set(0, NULL, NULL);
     of_send_bundle_open(false, tl);
@@ -1669,6 +1715,7 @@ test_async_op(char *controller_suffix,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
     of_send_bundled_echo(false, tl, 0x9328);
     of_send_bundled_bsn_generic_command(false, tl, 0x1288, "async_continue_test");
+    of_send_bundled_bsn_generic_command(false, tl, 0x1289, "async_continue_test");
     of_send_bundled_echo(false, tl, 0x1267);
     of_send_bundle_commit(false, tl);
     OK(ind_soc_select_and_run(50));
@@ -1681,7 +1728,32 @@ test_async_op(char *controller_suffix,
     check_for_echo(false, tl, 0x1267);
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == true,
                   "outstanding operation should block bundle task");
+
+    /* no more message should be received until we unblock async one */
+    obj = of_no_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj == NULL,
+                  "should not receive any reply");
+
+    /* run connection manager again and still receive nothing */
+    OK(ind_soc_select_and_run(50));
+    obj = of_no_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj == NULL,
+                  "should not receive any reply");
+
+    /* unblock 1 outstanding message */
     indigo_cxn_unblock_async_op(cxn_id);
+
+    /* run connection manager again and still receive nothing */
+    OK(ind_soc_select_and_run(50));
+    obj = of_no_recvmsg(false, tl, buf, sizeof(buf), &storage);
+    INDIGO_ASSERT(obj == NULL,
+                  "should not receive any reply");
+    INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == true,
+                  "Outstanding operation blocks bundle task");
+
+    /* again unblock 1 outstanding message */
+    indigo_cxn_unblock_async_op(cxn_id);
+
     printf("After unblock async: bundle task should yield() become %d\n",
            unit_test_cxn_bundle_task_should_yield(cxn_id));
     INDIGO_ASSERT(unit_test_cxn_bundle_task_should_yield(cxn_id) == false,
@@ -1696,8 +1768,6 @@ test_async_op(char *controller_suffix,
                   "did not receive OF_BUNDLE_CTTRL_MSG");
 
     /* test case end */
-
-    printf("test_async_op is done. Close connection.\n");
     tl_close(false, tl);
     OK(ind_soc_select_and_run(1));
     INDIGO_ASSERT(!cxn_is_connected[id][0]);
