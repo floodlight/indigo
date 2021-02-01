@@ -1623,10 +1623,10 @@ cxn_socket_ready(
 
     if (error_seen) {
         if (error_seen & POLLNVAL) {
-            LOG_INFO(cxn, "socket has bad file descriptor");
+            LOG_TRACE(cxn, "socket has bad file descriptor");
             cxn->controller->badfd_count++;
         } else if (error_seen & POLLHUP) {
-            LOG_INFO(cxn, "socket disconnected");
+            LOG_TRACE(cxn, "socket disconnected");
             cxn->controller->hup_count++;
         } else {
             int socket_error = 0;
