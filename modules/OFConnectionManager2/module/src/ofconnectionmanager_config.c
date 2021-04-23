@@ -132,7 +132,7 @@ ofconnectionmanager_config_lookup(const char* setting)
 {
     int i;
     for(i = 0; ofconnectionmanager_config_settings[i].name; i++) {
-        if(strcmp(ofconnectionmanager_config_settings[i].name, setting)) {
+        if(!strcmp(ofconnectionmanager_config_settings[i].name, setting)) {
             return ofconnectionmanager_config_settings[i].value;
         }
     }

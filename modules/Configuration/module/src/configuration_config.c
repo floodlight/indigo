@@ -83,7 +83,7 @@ configuration_config_lookup(const char* setting)
 {
     int i;
     for(i = 0; configuration_config_settings[i].name; i++) {
-        if(strcmp(configuration_config_settings[i].name, setting)) {
+        if(!strcmp(configuration_config_settings[i].name, setting)) {
             return configuration_config_settings[i].value;
         }
     }

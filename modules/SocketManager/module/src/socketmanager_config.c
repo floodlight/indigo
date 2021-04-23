@@ -114,7 +114,7 @@ socketmanager_config_lookup(const char* setting)
 {
     int i;
     for(i = 0; socketmanager_config_settings[i].name; i++) {
-        if(strcmp(socketmanager_config_settings[i].name, setting)) {
+        if(!strcmp(socketmanager_config_settings[i].name, setting)) {
             return socketmanager_config_settings[i].value;
         }
     }

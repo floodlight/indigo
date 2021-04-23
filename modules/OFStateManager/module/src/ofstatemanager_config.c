@@ -99,7 +99,7 @@ ofstatemanager_config_lookup(const char* setting)
 {
     int i;
     for(i = 0; ofstatemanager_config_settings[i].name; i++) {
-        if(strcmp(ofstatemanager_config_settings[i].name, setting)) {
+        if(!strcmp(ofstatemanager_config_settings[i].name, setting)) {
             return ofstatemanager_config_settings[i].value;
         }
     }
