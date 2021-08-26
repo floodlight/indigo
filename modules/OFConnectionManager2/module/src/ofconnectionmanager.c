@@ -702,7 +702,7 @@ listen_socket_ready(int socket_id, void *cookie, int read_ready,
                 AIM_LOG_INFO("Listen cxn %s: socket has a bad file descriptor", listen_cxn->desc);
                 listen_cxn->controller->badfd_count++;
             } else if (error_seen & POLLHUP) {
-                AIM_LOG_INFO("Listen cxn %s: socket disconnected", listen_cxn->desc);
+                AIM_LOG_TRACE("Listen cxn %s: socket disconnected", listen_cxn->desc);
                 listen_cxn->controller->hup_count++;
             }
             /* listen cxn doesn't go through connection state.
