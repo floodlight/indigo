@@ -1628,6 +1628,7 @@ cxn_socket_ready(
         } else if (error_seen & POLLHUP) {
             LOG_TRACE(cxn, "socket disconnected");
             cxn->controller->hup_count++;
+            cxn->controller->fail_count++;
         } else {
             int socket_error = 0;
             socklen_t len = sizeof(socket_error);
