@@ -313,17 +313,7 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_queue_stats_entry_delete(queue_stats);
         indigo_cxn_send_controller_message(cxn_id, reply);
     } else if (indigo_port_queue_stats_get_handler) {
-        rv = indigo_port_queue_stats_get_handler(obj, cxn_id);
-        if (rv == INDIGO_ERROR_NONE) {
-            of_port_no_t port_no;
-            uint32_t queue_id;
-            of_queue_stats_request_port_no_get(obj, &port_no);
-            of_queue_stats_request_queue_id_get(obj, &queue_id);
-            AIM_LOG_ERROR("Failed to get stats for queue %u on port %u: %s",
-                          queue_id, port_no, indigo_strerror(rv));
-            /* @todo sending type 0, code 0 error message */
-            indigo_cxn_send_error_reply(cxn_id, obj, 0, 0);
-        }
+        (void) indigo_port_queue_stats_get_handler(obj, cxn_id);
     } else if (indigo_port_queue_stats_get) {
         rv = indigo_port_queue_stats_get(obj, &reply);
         if (rv == INDIGO_ERROR_NONE) {
