@@ -313,7 +313,7 @@ ind_core_queue_stats_request_handler(of_object_t *_obj, indigo_cxn_id_t cxn_id)
         of_queue_stats_entry_delete(queue_stats);
         indigo_cxn_send_controller_message(cxn_id, reply);
     } else if (indigo_port_queue_stats_get_handler) {
-        (void) indigo_port_queue_stats_get_handler(obj, cxn_id);
+        indigo_port_queue_stats_get_handler(obj, cxn_id);
     } else if (indigo_port_queue_stats_get) {
         rv = indigo_port_queue_stats_get(obj, &reply);
         if (rv == INDIGO_ERROR_NONE) {
