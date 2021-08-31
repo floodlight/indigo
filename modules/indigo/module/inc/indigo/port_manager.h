@@ -226,6 +226,22 @@ extern indigo_error_t indigo_port_queue_config_get(
 
 
 /**
+ * @brief Prototype of an OF queue stats request handler; if defined, this
+ *        handler will be called when a port queue stats request is received
+ * @param queue_stats_request The LOXI request message
+ * @param cxn_id Connection ID on which the message arrived
+ *
+ * Ownership of the queue_stats_request LOXI object is maintained by the
+ * caller (OF state manager) and the handler will send the reply. This
+ * API will take the ownership of allocating reply buffer and sending
+ * reply messages.
+ */
+
+extern void indigo_port_queue_stats_get_handler(
+    of_queue_stats_request_t *queue_stats_request,
+    indigo_cxn_id_t cxn_id) AIM_COMPILER_ATTR_WEAK;
+
+/**
  * @brief Process an OF queue stats request
  * @param queue_stats_request The LOXI request message
  * @param [out] queue_stats_reply The LOXI reply message
