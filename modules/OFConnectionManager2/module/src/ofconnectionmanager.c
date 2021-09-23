@@ -500,14 +500,14 @@ ssl_ctx_alloc(bool do_common_name_check,
     if (SSL_CTX_use_certificate_file(ctx, switch_cert,
                                      SSL_FILETYPE_PEM) != 1) {
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("Failed to set certificate file: %s, error %s",
+        AIM_LOG_ERROR("Failed to set certificate file %s: %s",
                       switch_cert, buf);
         goto error;
     }
     if (SSL_CTX_use_PrivateKey_file(ctx, switch_priv_key,
                                     SSL_FILETYPE_PEM) != 1) {
         ERR_error_string(ERR_get_error(), buf);
-        AIM_LOG_ERROR("Failed to set private key file: %s, error %s",
+        AIM_LOG_ERROR("Failed to set private key file %s: %s",
                       switch_priv_key, buf);
         goto error;
     }
