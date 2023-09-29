@@ -1121,6 +1121,7 @@ read_message(connection_t *cxn)
     return INDIGO_ERROR_PENDING;
 }
 
+#define OFVERSION_IS_SET(cxn) ((cxn)->status.negotiated_version > 0)
 /**
  * Send an error for a message that we couldn't parse
  *
@@ -1154,8 +1155,15 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     payload.data = buf;
     /* truncate payload to fit in wire buffer */
     payload.bytes = (len < maxlen)? len: maxlen;
-
-    error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
+   
+    if (!(OFVERSION_IS_SET(cxn))) {
+        indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
+        error_msg = of_bad_request_error_msg_new(config_params->version);
+    }
+    else {
+        error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
+    }
+    
     if (error_msg == NULL) {
         AIM_DIE("Could not allocate error message");
     }
@@ -1171,7 +1179,6 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
 }
 
 
-#define OFVERSION_IS_SET(cxn) ((cxn)->status.negotiated_version > 0)
 
 /**
  * Process a message from the read buffer
