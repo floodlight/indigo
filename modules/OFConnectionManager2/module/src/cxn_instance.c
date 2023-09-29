@@ -1156,14 +1156,11 @@ send_parse_error_message(connection_t *cxn, uint8_t *buf, int len)
     /* truncate payload to fit in wire buffer */
     payload.bytes = (len < maxlen)? len: maxlen;
    
-    if (!(OFVERSION_IS_SET(cxn)))
-    {
+    if (!(OFVERSION_IS_SET(cxn))) {
         indigo_cxn_config_params_t *config_params = get_connection_config(cxn);
-
         error_msg = of_bad_request_error_msg_new(config_params->version);
     }
-    else
-    {
+    else {
         error_msg = of_bad_request_error_msg_new(cxn->status.negotiated_version);
     }
     
