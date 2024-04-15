@@ -1,9 +1,9 @@
 [submodule "submodules/infra"]
 	path = submodules/infra
-	url = git@github.com:floodlight/infra
+	url = git://github.com/floodlight/infra
 [submodule "submodules/bigcode"]
 	path = submodules/bigcode
-	url = git@github.com:floodlight/bigcode
+	url = git://github.com/floodlight/bigcode
 [submodule "submodules/loxigen-artifacts"]
 	path = submodules/loxigen-artifacts
-	url = git@github.com:floodlight/loxigen-artifacts.git
+	url = git://github.com/floodlight/loxigen-artifacts
